@@ -1,22 +1,88 @@
 package com.ThirtyNineEighty.Game.Collide;
 
 import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
-import com.ThirtyNineEighty.Helpers.VectorUtils;
 
 public class Collision2D
   extends Collision
 {
   public Collision2D(IPhysicalObject.ConvexHullResult first, IPhysicalObject.ConvexHullResult second)
   {
+    CheckResult result = check(first, second);
 
+    if (result == null)
+    {
+      collide = false;
+      return;
+    }
+
+    mtv = result.mtv;
+    mtvLength = result.mtvLength;
   }
 
-  private void verifyCollision(IPhysicalObject.ConvexHullResult figureOne, IPhysicalObject.ConvexHullResult figureTwo)
+  private CheckResult check(IPhysicalObject.ConvexHullResult figureOne, IPhysicalObject.ConvexHullResult figureTwo)
   {
+    float[] firstVertices = figureOne.getVertices();
+    float[] secondVertices = figureTwo.getVertices();
+    float[] firstNormals = figureOne.getNormals();
+    float[] secondNormals = figureTwo.getNormals();
 
+    CheckResult firstResult = check(firstVertices, secondVertices, firstNormals);
+    if (firstResult == null)
+      return null;
+
+    CheckResult secondResult = check(firstVertices, secondVertices, secondNormals);
+    if (secondResult == null)
+      return null;
+
+    if (firstResult.mtvLength <= secondResult.mtvLength)
+      return firstResult;
+
+    return secondResult;
   }
 
-  private float[] getProjectionOnLine(float[] vertices, float[] normal, int offset)
+  private CheckResult check(float[] firstVertices, float[] secondVertices, float[] normals)
+  {
+    boolean IsFirst = true;
+
+    int mtvIndex = 0;
+    float mtvLength = 0.0f;
+
+    for (int i = 0; i < normals.length; i += 3)
+    {
+      float[] firstProjection = getProjection(firstVertices, normals, i);
+      float[] secondProjection = getProjection(secondVertices, normals, i);
+
+      if (firstProjection[0] < secondProjection[1] || secondProjection[0] < firstProjection[1])
+        return null;
+
+      if (IsFirst)
+      {
+        mtvIndex = i;
+        mtvLength = (secondProjection[1] - firstProjection[0] > 0)
+          ? secondProjection[1] - firstProjection[0]
+          : firstProjection[1] - secondProjection[0];
+
+        IsFirst = false;
+      }
+      else
+      {
+        float tempMTVLength = (secondProjection[1] - firstProjection[0] > 0)
+          ? secondProjection[1] - firstProjection[0]
+          : firstProjection[1] - secondProjection[0];
+
+        if (Math.abs(tempMTVLength) < Math.abs(mtvLength))
+        {
+          mtvIndex = i;
+          mtvLength = tempMTVLength;
+        }
+      }
+    }
+
+    float[] mtv = new float[] { normals[0 + mtvIndex], normals[1 + mtvIndex] };
+    return new CheckResult(mtv, mtvLength);
+  }
+
+  private float[] getProjection(float[] vertices, float[] normal, int offset)
   {
     float[] result = new float[2];
 
@@ -37,14 +103,15 @@ public class Collision2D
     return result;
   }
 
-  private float[] selectMinMTV(float[] currentMTV3, float[] checkedMTV3)
+  private class CheckResult
   {
-    float lengthCurrent = VectorUtils.getLength2(currentMTV3, 0);
-    float lengthChecked = VectorUtils.getLength2(checkedMTV3, 0);
+    private float[] mtv;
+    private float mtvLength;
 
-    if (lengthChecked < lengthCurrent)
-      return checkedMTV3;
-
-    return currentMTV3;
+    public CheckResult(float[] mtv, float mtvLength)
+    {
+      this.mtv = mtv;
+      this.mtvLength = mtvLength;
+    }
   }
 }

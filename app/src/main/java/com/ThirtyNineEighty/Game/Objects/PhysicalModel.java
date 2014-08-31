@@ -23,6 +23,8 @@ public class PhysicalModel
   private float[] globalVertices;
   private float[] globalNormals;
 
+  private float[] projection;
+
   public PhysicalModel(String fileName)
   {
     loadGeometry(fileName);
@@ -38,19 +40,38 @@ public class PhysicalModel
     return null;
   }
 
-  private float[] getFirstPoint(float[] vertices)
+  private int getFirstPointIndex(float[] vertices)
   {
-    return null;
+    int minIndex = 0;
+
+    for(int i = 0; i < vertices.length; i += 2)
+      if (vertices[i] < vertices[minIndex])
+        minIndex = i;
+
+    return minIndex;
   }
 
-  private float[] getProjection(IPhysicalObject object, float[] planeNormal, int offset)
+  private float[] getProjection(float[] planeNormal, int offset)
   {
-    return null;
+    if (projection == null)
+      projection = new float[vertices.length];
+
+    VectorUtils.normalize3(planeNormal, offset);
+
+    for (int i = 0; i < projection.length; i++)
+      getPointProjection(projection, i, globalVertices, i, planeNormal, offset);
+
+    return projection;
   }
 
-  private float[] getPointProjection(float[] vector, int vecOffset, float[] planeNormal, int norOffset)
+  private void getPointProjection(float[] result, int resultOffset, float[] vector, int vecOffset, float[] planeNormal, int norOffset)
   {
-    return null;
+    float[] axisX = new float[] { -planeNormal[1], planeNormal[0], 0 };
+    float[] axisY = new float[3];
+    VectorUtils.getCross3(axisY, 0, planeNormal, norOffset, axisX, 0);
+
+    result[0 + resultOffset] = vector[0 + vecOffset] * axisX[0] + vector[1 + vecOffset] * axisX[1] + vector[2 + vecOffset] * axisX[2];
+    result[1 + resultOffset] = vector[0 + vecOffset] * axisY[0] + vector[1 + vecOffset] * axisY[1] + vector[2 + vecOffset] * axisY[2];
   }
 
   @Override

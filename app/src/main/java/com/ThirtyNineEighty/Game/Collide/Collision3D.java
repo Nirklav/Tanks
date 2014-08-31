@@ -17,7 +17,7 @@ public class Collision3D
     }
 
     mtv = getMTV3(result);
-    mtvLength = VectorUtils.getLength3(mtv, 0);
+    mtvLength = result.collision.mtvLength;
   }
 
   private CheckResult check(IPhysicalObject firstPh, IPhysicalObject secondPh)
@@ -47,7 +47,7 @@ public class Collision3D
     Collision2D min = null;
     int minNormalOffset = 0;
 
-    for(int i = 0; i < normals.length; i += 3)
+    for(int i = 0; i < normals.length; i += 4)
     {
       IPhysicalObject.ConvexHullResult resultOne = firstPh.getConvexHull(normals, i);
       IPhysicalObject.ConvexHullResult resultTwo = secondPh.getConvexHull(normals, i);
