@@ -85,7 +85,6 @@ public class PhysicalModel
       result.add(current);
     }
 
-
     //TODO: find normals
     return new ConvexHullResult(result, null);
   }

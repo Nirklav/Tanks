@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Collide;
 
+import android.opengl.Matrix;
+
 import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -77,12 +79,20 @@ public class Collision3D
 
   private Vector3 getMTV3(CheckResult result)
   {
-    //TODO : this is not right work
-
     Vector2 mtv2 = result.collision.getMTV();
-    Vector3 planeNormals = result.normal;
+    Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
 
-    Vector3 mtv3 = new Vector3();
+    Vector3 planeZ = result.normal;
+    Vector3 planeX = new Vector3(-planeZ.getY(), planeZ.getX(), 0);
+    Vector3 planeY = planeX.getCross(planeZ);
+
+    float angleX = planeX.getAngle(Vector3.xAxis);
+    float angleY = planeY.getAngle(Vector3.yAxis);
+    float angleZ = planeZ.getAngle(Vector3.zAxis);
+
+    float[] matrix = new float[16];
+    Matrix.setRotateEulerM(matrix, 0, angleX, angleY, angleZ);
+    Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
 
     return mtv3;
   }
