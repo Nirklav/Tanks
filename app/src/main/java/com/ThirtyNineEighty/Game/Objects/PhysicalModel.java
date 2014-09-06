@@ -37,11 +37,11 @@ public class PhysicalModel
   public ConvexHullResult getConvexHull(Vector3 planeNormal)
   {
     Vector<Vector2> projection = getDistinctProjection(planeNormal);
-    Vector2 first = getFirstPoint(projection);
-
     Vector<Vector2> result = new Vector<Vector2>(projection.size());
-    result.add(first);
+
+    Vector2 first = getFirstPoint(projection);
     projection.remove(first);
+    result.add(first);
 
     Collections.sort(projection, new Comparator<Vector2>()
     {
@@ -61,17 +61,12 @@ public class PhysicalModel
       }
     });
 
-    result.add(projection.firstElement());
-    boolean isFirst = true;
+    first = projection.firstElement();
+    projection.remove(first);
+    result.add(first);
 
     for(Vector2 current : projection)
     {
-      if (isFirst)
-      {
-        isFirst = false;
-        continue;
-      }
-
       Vector2 firstPrevPoint = result.get(result.size() - 1);
       Vector2 secondPrevPoint = result.get(result.size() - 2);
 
