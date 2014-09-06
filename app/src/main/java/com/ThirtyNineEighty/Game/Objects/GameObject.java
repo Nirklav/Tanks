@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.World;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Model3D;
 
@@ -46,7 +47,7 @@ public class GameObject
   }
 
   @Override
-  public float[] getPosition()
+  public Vector3 getPosition()
   {
     return visualModel.getPosition();
   }

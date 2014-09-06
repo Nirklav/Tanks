@@ -1,34 +1,17 @@
 package com.ThirtyNineEighty.Game.Collide;
 
-public abstract class Collision
+public abstract class Collision<T>
 {
-  protected float[] mtv;
-  protected float mtvLength;
-  protected boolean collide;
-
-  public float[] getMTV()
-  {
-    return mtv;
-  }
-
-  public float getMTVLength()
-  {
-    return mtvLength;
-  }
-
-  public boolean isCollide()
-  {
-    return collide;
-  }
+  public abstract T getMTV();
+  public abstract float getMTVLength();
+  public abstract boolean isCollide();
 
   public static int compare(Collision first, Collision second)
   {
-    if (first.mtvLength < second.mtvLength)
+    if (first.getMTVLength() < second.getMTVLength())
       return -1;
-
-    if (first.mtvLength > second.mtvLength)
+    if (first.getMTVLength() > second.getMTVLength())
       return 1;
-
     return 0;
   }
 }

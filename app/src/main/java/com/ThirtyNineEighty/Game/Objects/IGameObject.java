@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 
 public interface IGameObject
@@ -13,7 +14,7 @@ public interface IGameObject
   void onRotates(float angleX, float angleY, float angleZ);
 
   // properties
-  float[] getPosition();
+  Vector3 getPosition();
   float getAngleX();
   float getAngleY();
   float getAngleZ();

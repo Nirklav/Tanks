@@ -3,13 +3,17 @@ package com.ThirtyNineEighty.Game.Objects;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.ThirtyNineEighty.Helpers.VectorUtils;
+import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.ActivityContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
 
 public class PhysicalModel
   implements IPhysicalObject
@@ -17,92 +21,152 @@ public class PhysicalModel
   private float[] matrix;
 
   private int numOfTriangles;
-  private float[] vertices;
-  private float[] normals;
+  private Vector<Vector3> vertices;
+  private Vector<Vector3> normals;
 
-  private float[] globalVertices;
-  private float[] globalNormals;
-
-  private float[] projection;
+  private Vector<Vector3> globalVertices;
+  private Vector<Vector3> globalNormals;
 
   public PhysicalModel(String fileName)
   {
     loadGeometry(fileName);
     matrix = new float[16];
-
-    globalVertices = new float[numOfTriangles * 4];
-    globalNormals = new float[numOfTriangles * 4];
   }
 
   @Override
-  public ConvexHullResult getConvexHull(float[] planeNormal, int offset)
+  public ConvexHullResult getConvexHull(Vector3 planeNormal)
   {
-    return null;
+    Vector<Vector2> projection = getDistinctProjection(planeNormal);
+    Vector2 first = getFirstPoint(projection);
+
+    Vector<Vector2> result = new Vector<Vector2>(projection.size());
+    result.add(first);
+    projection.remove(first);
+
+    Collections.sort(projection, new Comparator<Vector2>()
+    {
+      @Override
+      public int compare(Vector2 lhs, Vector2 rhs)
+      {
+        float angleLeft = lhs.getAngle(Vector2.xAxis);
+        float angleRight = rhs.getAngle(Vector2.xAxis);
+
+        if (angleLeft < angleRight)
+          return -1;
+
+        if (angleLeft > angleRight)
+          return 1;
+
+        return 0;
+      }
+    });
+
+    result.add(projection.firstElement());
+    boolean isFirst = true;
+
+    for(Vector2 current : projection)
+    {
+      if (isFirst)
+      {
+        isFirst = false;
+        continue;
+      }
+
+      Vector2 firstPrevPoint = result.get(result.size() - 1);
+      Vector2 secondPrevPoint = result.get(result.size() - 2);
+
+      Vector2 prevVector = firstPrevPoint.subtract(secondPrevPoint);
+      Vector2 currentVector = current.subtract(firstPrevPoint);
+
+      float angle = prevVector.getAngle(currentVector);
+      if (angle >= 180)
+        result.remove(result.size() - 1);
+
+      result.add(current);
+    }
+
+
+    //TODO: find normals
+    return new ConvexHullResult(result, null);
   }
 
-  private int getFirstPointIndex(float[] vertices)
+  private Vector2 getFirstPoint(Vector<Vector2> projection)
   {
-    int minIndex = 0;
+    Vector2 minVector = null;
 
-    for(int i = 0; i < vertices.length; i += 2)
-      if (vertices[i] < vertices[minIndex])
-        minIndex = i;
+    for(Vector2 current : projection)
+    {
+      if (minVector == null)
+      {
+        minVector = current;
+        continue;
+      }
 
-    return minIndex;
+      if (current.getX() < minVector.getX())
+        minVector = current;
+    }
+
+    return minVector;
   }
 
-  private float[] getProjection(float[] planeNormal, int offset)
+  private Vector<Vector2> getDistinctProjection(Vector3 planeNormal)
   {
-    if (projection == null)
-      projection = new float[vertices.length];
+    setGlobalVertices();
+    planeNormal.normalize();
 
-    VectorUtils.normalize3(planeNormal, offset);
+    Vector<Vector2> result = new Vector<Vector2>();
 
-    for (int i = 0; i < projection.length; i++)
-      getPointProjection(projection, i, globalVertices, i, planeNormal, offset);
+    for(Vector3 current : globalVertices)
+    {
+      Vector2 vector = getProjection(current, planeNormal);
+      if (!result.contains(vector))
+        result.add(vector);
+    }
 
-    return projection;
+    return result;
   }
 
-  private void getPointProjection(float[] result, int resultOffset, float[] vector, int vecOffset, float[] planeNormal, int norOffset)
+  private Vector2 getProjection(Vector3 global, Vector3 planeNormal)
   {
-    float[] axisX = new float[] { -planeNormal[1], planeNormal[0], 0 };
-    float[] axisY = new float[3];
-    VectorUtils.getCross3(axisY, 0, planeNormal, norOffset, axisX, 0);
+    Vector3 axisX = new Vector3(-planeNormal.getY(), planeNormal.getX(), 0);
+    Vector3 axisY = axisX.getCross(planeNormal);
 
-    result[0 + resultOffset] = vector[0 + vecOffset] * axisX[0] + vector[1 + vecOffset] * axisX[1] + vector[2 + vecOffset] * axisX[2];
-    result[1 + resultOffset] = vector[0 + vecOffset] * axisY[0] + vector[1 + vecOffset] * axisY[1] + vector[2 + vecOffset] * axisY[2];
+    float x = global.getX() * axisX.getX() + global.getY() * axisX.getY() + global.getZ() * axisX.getZ();
+    float y = global.getX() * axisY.getX() + global.getY() * axisY.getY() + global.getZ() * axisY.getZ();
+
+    return new Vector2(x, y);
   }
 
   @Override
-  public void setGlobal(float[] position, float angleX, float angleY, float angleZ)
+  public void setGlobal(Vector3 position, float angleX, float angleY, float angleZ)
   {
     Matrix.setIdentityM(matrix, 0);
-    Matrix.translateM(matrix, 0, position[0], position[1], position[2]);
+    Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());
     Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
     Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
   }
 
-  public float[] getGlobalVertices()
+  private void setGlobalVertices()
   {
     for (int i = 0; i < numOfTriangles; i++)
     {
-      int num = i * 4;
-      Matrix.multiplyMV(globalVertices, num, matrix, 0, vertices, num);
+      Vector3 local = vertices.get(i);
+      Vector3 global = globalVertices.get(i);
+      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
     }
-
-    return globalVertices;
   }
 
   @Override
-  public float[] getGlobalNormals()
+  public Vector<Vector3> getGlobalNormals()
   {
     for(int i = 0; i < numOfTriangles; i++)
     {
-      int num = i * 4;
-      Matrix.multiplyMV(globalNormals, num, matrix, 0, normals, num);
-      VectorUtils.normalize3(globalNormals, num);
+      Vector3 local = normals.get(i);
+      Vector3 global = globalNormals.get(i);
+      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
+
+      global.normalize();
     }
 
     return globalNormals;
@@ -125,20 +189,25 @@ public class PhysicalModel
       dataBuffer.position(0);
 
       numOfTriangles = dataBuffer.getInt(0);
-      vertices = new float[numOfTriangles * 4];
-      normals = new float[numOfTriangles * 4];
+      vertices = new Vector<Vector3>(numOfTriangles);
+      normals = new Vector<Vector3>(numOfTriangles);
+
+      globalVertices = createAndFill(numOfTriangles);
+      globalNormals = createAndFill(numOfTriangles);
 
       for (int i = 0; i < numOfTriangles; i++)
       {
-        int num = i * 4;
+        float x = dataBuffer.getFloat();
+        float y = dataBuffer.getFloat();
+        float z = dataBuffer.getFloat();
 
-        vertices[num] = dataBuffer.getFloat();
-        vertices[num + 1] = dataBuffer.getFloat();
-        vertices[num + 2] = dataBuffer.getFloat();
+        vertices.add(new Vector3(x, y, z));
 
-        normals[num] = dataBuffer.getFloat();
-        normals[num + 1] = dataBuffer.getFloat();
-        normals[num + 2] = dataBuffer.getFloat();
+        x = dataBuffer.getFloat();
+        y = dataBuffer.getFloat();
+        z = dataBuffer.getFloat();
+
+        normals.add(new Vector3(x, y, z));
 
         // texture coord
         dataBuffer.getFloat();
@@ -151,5 +220,15 @@ public class PhysicalModel
     {
       Log.e("Error", e.getMessage());
     }
+  }
+
+  private Vector<Vector3> createAndFill(int count)
+  {
+    Vector<Vector3> result = new Vector<Vector3>(count);
+
+    for(int i = 0; i < count; i++)
+      result.add(new Vector3());
+
+    return result;
   }
 }

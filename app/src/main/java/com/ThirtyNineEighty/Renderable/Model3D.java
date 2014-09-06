@@ -7,6 +7,7 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.ActivityContext;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class Model3D implements I3DRenderable
 {
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
-  private float[] position;
+  private Vector3 position;
 
   private float xAngle;
   private float yAngle;
@@ -34,7 +35,7 @@ public class Model3D implements I3DRenderable
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
-    position = new float[3];
+    position = new Vector3();
 
     loadGeometry(geometryFileName);
     loadTexture(textureFileName);
@@ -99,7 +100,7 @@ public class Model3D implements I3DRenderable
       return;
 
     Matrix.setIdentityM(modelMatrix, 0);
-    Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2]);
+    Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), position.getZ());
 
     Matrix.rotateM(modelMatrix, 0, xAngle, 1.0f, 0.0f, 0.0f);
     Matrix.rotateM(modelMatrix, 0, yAngle, 0.0f, 1.0f, 0.0f);
@@ -186,13 +187,12 @@ public class Model3D implements I3DRenderable
     }
   }
 
-  public float[] getPosition() { return position; }
+  @Override
+  public Vector3 getPosition() { return position; }
 
-  public void setPosition(float x, float y, float z)
+  public void setPosition(Vector3 position)
   {
-    position[0] = x;
-    position[1] = y;
-    position[2] = z;
+    this.position = position;
 
     needBuildMatrix = true;
   }
@@ -209,13 +209,14 @@ public class Model3D implements I3DRenderable
 
     Matrix.multiplyMV(resultVector, 0, translateMatrix, 0, resultVector, 0);
 
-    position[0] += resultVector[0];
-    position[1] += resultVector[1];
-    position[2] += resultVector[2];
+    position.getRaw()[0] += resultVector[0];
+    position.getRaw()[1] += resultVector[1];
+    position.getRaw()[2] += resultVector[2];
 
     needBuildMatrix = true;
   }
 
+  @Override
   public float getXAngle() { return xAngle; }
 
   public void setXAngle(float value)
@@ -224,6 +225,7 @@ public class Model3D implements I3DRenderable
     needBuildMatrix = true;
   }
 
+  @Override
   public float getYAngle() { return yAngle; }
 
   public void setYAngle(float value)
@@ -232,6 +234,7 @@ public class Model3D implements I3DRenderable
     needBuildMatrix = true;
   }
 
+  @Override
   public float getZAngle() { return zAngle; }
 
   public void setZAngle(float value)
