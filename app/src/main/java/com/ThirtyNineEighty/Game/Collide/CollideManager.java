@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Collide;
 
+import android.util.Log;
+
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
 import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
 
@@ -9,6 +11,8 @@ public class CollideManager
 {
   public void move(IGameObject object, Collection<IGameObject> objects, float length)
   {
+    object.onMoved(length);
+
     for(IGameObject current : objects)
     {
       if (object.getId() == current.getId())
@@ -16,10 +20,9 @@ public class CollideManager
 
       Collision3D collision = check(object, current);
 
-      //if (collision.isCollide())
+      if (collision.isCollide())
+        Log.d("CollideManager", String.format("is collide mtv = %s mtvLength = %f", collision.getMTV().toString(), collision.getMTVLength()));
     }
-
-    object.onMoved(length);
   }
 
   public void rotate(IGameObject object, Collection<IGameObject> objects, float angleX, float angleY, float angleZ)

@@ -16,7 +16,7 @@ public class GameObject
   public GameObject(int id, World world, String name)
   {
     visualModel = new Model3D(String.format("Models/%s.raw", name), String.format("Textures/%s.png", name));
-    physicalModel = new PhysicalModel(String.format("Models/%s.raw", name));
+    physicalModel = new PhysicalModel(String.format("Models/%s.ph", name));
 
     this.id = id;
     this.world = world;
@@ -38,6 +38,12 @@ public class GameObject
   public void onMoved(float length)
   {
     visualModel.move(length);
+  }
+
+  @Override
+  public void onMoved(Vector3 vector, float length)
+  {
+    visualModel.move(vector, length);
   }
 
   @Override

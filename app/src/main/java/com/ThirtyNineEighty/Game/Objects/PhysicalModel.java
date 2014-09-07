@@ -201,10 +201,6 @@ public class PhysicalModel
         z = dataBuffer.getFloat();
 
         normals.add(new Vector3(x, y, z));
-
-        // texture coord
-        dataBuffer.getFloat();
-        dataBuffer.getFloat();
       }
 
       dataBuffer.clear();

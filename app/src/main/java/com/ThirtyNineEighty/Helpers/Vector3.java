@@ -19,6 +19,7 @@ public class Vector3
     value[0] = x;
     value[1] = y;
     value[2] = z;
+    value[3] = 1.0f;
   }
 
   public Vector3(float[] raw)
@@ -31,6 +32,7 @@ public class Vector3
       value[0] = raw[0];
       value[1] = raw[1];
       value[2] = raw[2];
+      value[3] = 1.0f;
     }
   }
 
@@ -122,5 +124,11 @@ public class Vector3
       && other.getX() == getX()
       && other.getY() == getY()
       && other.getZ() == getZ();
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format("{%f; %f; %f}", value[0], value[1], value[2]);
   }
 }

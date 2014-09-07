@@ -11,6 +11,7 @@ public interface IGameObject
 
   // callbacks
   void onMoved(float length);
+  void onMoved(Vector3 vector, float length);
   void onRotates(float angleX, float angleY, float angleZ);
 
   // properties

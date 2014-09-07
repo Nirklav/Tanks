@@ -25,6 +25,7 @@ public class Collision3D
       return;
     }
 
+    collide = true;
     mtv = getMTV(result);
     mtvLength = result.collision.getMTVLength();
   }

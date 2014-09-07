@@ -21,6 +21,7 @@ public class Collision2D
       return;
     }
 
+    collide = true;
     mtv = result.mtv;
     mtvLength = result.mtvLength;
   }

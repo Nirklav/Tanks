@@ -92,4 +92,10 @@ public class Vector2
       && other.getX() == getX()
       && other.getY() == getY();
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format("{%f; %f}", value[0], value[1]);
+  }
 }

@@ -16,14 +16,14 @@ void main()
     vec3 light = normalize(u_light - vec3(u_ModelViewM * a_position));
 
     mat4 ModelViewNormals = u_ModelViewM;
-	ModelViewNormals[0][3] = ModelViewNormals[3][0] = 0.0;
-	ModelViewNormals[1][3] = ModelViewNormals[3][1] = 0.0;
-	ModelViewNormals[2][3] = ModelViewNormals[3][2] = 0.0;
-	ModelViewNormals[3][3] = 1.0;
+    ModelViewNormals[0][3] = ModelViewNormals[3][0] = 0.0;
+    ModelViewNormals[1][3] = ModelViewNormals[3][1] = 0.0;
+    ModelViewNormals[2][3] = ModelViewNormals[3][2] = 0.0;
+    ModelViewNormals[3][3] = 1.0;
 
-	vec3 normal = normalize(vec3(ModelViewNormals * a_normal));
+    vec3 normal = normalize(vec3(ModelViewNormals * a_normal));
 
-	v_light = max(dot(normal, light), 0.0) + 0.20;
+    v_light = max(dot(normal, light), 0.0) + 0.20;
 
     gl_Position = u_ModelViewProjectionM * a_position;
 }
