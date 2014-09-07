@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Collide;
 
-import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
 import com.ThirtyNineEighty.Helpers.Vector2;
 
 import java.util.Vector;
@@ -12,7 +11,7 @@ public class Collision2D
   private float mtvLength;
   private boolean collide;
 
-  public Collision2D(IPhysicalObject.ConvexHullResult first, IPhysicalObject.ConvexHullResult second)
+  public Collision2D(Vector<Vector2> first, Vector<Vector2> second)
   {
     CheckResult result = check(first, second);
 
@@ -26,37 +25,18 @@ public class Collision2D
     mtvLength = result.mtvLength;
   }
 
-  private CheckResult check(IPhysicalObject.ConvexHullResult figureOne, IPhysicalObject.ConvexHullResult figureTwo)
+  private CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices)
   {
-    Vector<Vector2> firstVertices = figureOne.getVertices();
-    Vector<Vector2> secondVertices = figureTwo.getVertices();
-    Vector<Vector2> firstNormals = figureOne.getNormals();
-    Vector<Vector2> secondNormals = figureTwo.getNormals();
-
-    CheckResult firstResult = check(firstVertices, secondVertices, firstNormals);
-    if (firstResult == null)
-      return null;
-
-    CheckResult secondResult = check(firstVertices, secondVertices, secondNormals);
-    if (secondResult == null)
-      return null;
-
-    if (firstResult.mtvLength <= secondResult.mtvLength)
-      return firstResult;
-
-    return secondResult;
-  }
-
-  private CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices, Vector<Vector2> normals)
-  {
-    boolean IsFirst = true;
-
-    int mtvIndex = 0;
+    Vector2 mtv = null;
+    Vector2 normal = new Vector2();
     float mtvLength = 0.0f;
+    boolean IsFirst = true;
+    int count = firstVertices.size() + secondVertices.size();
 
-    for (int i = 0; i < normals.size(); i += 3)
+    for (int i = 0; i < count; i += 3)
     {
-      Vector2 normal = normals.get(i);
+      setNormal(normal, firstVertices, secondVertices, i);
+
       Vector2 firstProjection = getProjection(firstVertices, normal);
       Vector2 secondProjection = getProjection(secondVertices, normal);
 
@@ -65,7 +45,7 @@ public class Collision2D
 
       if (IsFirst)
       {
-        mtvIndex = i;
+        mtv = new Vector2(normal);
         mtvLength = (secondProjection.getY() - firstProjection.getX() > 0)
           ? secondProjection.getY() - firstProjection.getX()
           : firstProjection.getY() - secondProjection.getX();
@@ -80,13 +60,13 @@ public class Collision2D
 
         if (Math.abs(tempMTVLength) < Math.abs(mtvLength))
         {
-          mtvIndex = i;
+          mtv = new Vector2(normal);
           mtvLength = tempMTVLength;
         }
       }
     }
 
-    return new CheckResult(normals.get(mtvIndex), mtvLength);
+    return new CheckResult(mtv, mtvLength);
   }
 
   private Vector2 getProjection(Vector<Vector2> vertices, Vector2 normal)
@@ -108,6 +88,30 @@ public class Collision2D
     }
 
     return result;
+  }
+
+  private void setNormal(Vector2 normal, Vector<Vector2> firstVertices, Vector<Vector2> secondVertices, int num)
+  {
+    if (num < firstVertices.size())
+      setNormal(normal, firstVertices, num);
+    else
+    {
+      num -= firstVertices.size();
+      setNormal(normal, secondVertices, num);
+    }
+  }
+
+  private void setNormal(Vector2 normal, Vector<Vector2> vertices, int num)
+  {
+    Vector2 firstPoint = vertices.get(num);
+    Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
+
+    Vector2 edge = secondPoint.subtract(firstPoint);
+
+    normal.setX(-edge.getY());
+    normal.setY(edge.getX());
+
+    normal.normalize();
   }
 
   @Override

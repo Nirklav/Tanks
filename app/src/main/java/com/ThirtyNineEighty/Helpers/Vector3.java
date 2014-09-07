@@ -34,6 +34,11 @@ public class Vector3
     }
   }
 
+  public Vector3(Vector3 vec)
+  {
+    this(vec.getX(), vec.getY(), vec.getZ());
+  }
+
   public float getX() { return value[0]; }
   public float getY() { return value[1]; }
   public float getZ() { return value[2]; }
@@ -41,6 +46,10 @@ public class Vector3
   public void setX(float v) { value[0] = v; }
   public void setY(float v) { value[1] = v; }
   public void setZ(float v) { value[2] = v; }
+
+  public void addToX(float v) { value[0] += v; }
+  public void addToY(float v) { value[1] += v; }
+  public void addToZ(float v) { value[2] += v; }
 
   public float[] getRaw() { return value; }
 

@@ -14,6 +14,8 @@ public interface IGameObject
   void onRotates(float angleX, float angleY, float angleZ);
 
   // properties
+  long getId();
+
   Vector3 getPosition();
   float getAngleX();
   float getAngleY();

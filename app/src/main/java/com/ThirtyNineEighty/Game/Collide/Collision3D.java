@@ -25,7 +25,7 @@ public class Collision3D
       return;
     }
 
-    mtv = getMTV3(result);
+    mtv = getMTV(result);
     mtvLength = result.collision.getMTVLength();
   }
 
@@ -60,8 +60,8 @@ public class Collision3D
     {
       Vector3 normal = normals.get(i);
 
-      IPhysicalObject.ConvexHullResult resultOne = firstPh.getConvexHull(normal);
-      IPhysicalObject.ConvexHullResult resultTwo = secondPh.getConvexHull(normal);
+      Vector<Vector2> resultOne = firstPh.getConvexHull(normal);
+      Vector<Vector2> resultTwo = secondPh.getConvexHull(normal);
 
       Collision2D collision = new Collision2D(resultOne, resultTwo);
       if (!collision.isCollide())
@@ -77,7 +77,7 @@ public class Collision3D
     return new CheckResult(min, minNormal);
   }
 
-  private Vector3 getMTV3(CheckResult result)
+  private Vector3 getMTV(CheckResult result)
   {
     Vector2 mtv2 = result.collision.getMTV();
     Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
@@ -94,6 +94,7 @@ public class Collision3D
     Matrix.setRotateEulerM(matrix, 0, angleX, angleY, angleZ);
     Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
 
+    mtv3.normalize();
     return mtv3;
   }
 

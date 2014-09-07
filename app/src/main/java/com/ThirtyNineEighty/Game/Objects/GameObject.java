@@ -11,12 +11,14 @@ public class GameObject
   private Model3D visualModel;
   private PhysicalModel physicalModel;
   private World world;
+  private long id;
 
-  public GameObject(World world, String name)
+  public GameObject(int id, World world, String name)
   {
     visualModel = new Model3D(String.format("Models/%s.raw", name), String.format("Textures/%s.png", name));
     physicalModel = new PhysicalModel(String.format("Models/%s.raw", name));
 
+    this.id = id;
     this.world = world;
   }
 
@@ -44,6 +46,12 @@ public class GameObject
     visualModel.rotateAboutX(angleX);
     visualModel.rotateAboutY(angleY);
     visualModel.rotateAboutZ(angleZ);
+  }
+
+  @Override
+  public long getId()
+  {
+    return id;
   }
 
   @Override

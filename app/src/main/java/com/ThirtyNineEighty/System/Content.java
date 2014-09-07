@@ -7,6 +7,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import com.ThirtyNineEighty.Game.World;
+import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
@@ -72,19 +74,13 @@ public class Content
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
     I3DRenderable target = world.getCameraTarget();
+    Vector3 center = target.getPosition();
+    Vector3 eye = new Vector3(target.getPosition());
+    eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle())));
+    eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle())));
+    eye.addToZ(6);
 
-    float eyeX = target.getPosition()[0];
-    float eyeY = target.getPosition()[1];
-    float eyeZ = target.getPosition()[2] + 6.0f;
-
-    eyeX -= 8.0f * (float)Math.cos(Math.toRadians(target.getZAngle()));
-    eyeY -= 8.0f * (float)Math.sin(Math.toRadians(target.getZAngle()));
-
-    float centerX = target.getPosition()[0];
-    float centerY = target.getPosition()[1];
-    float centerZ = target.getPosition()[2];
-
-    Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0.0f, 0.0f, 1.0f);
+    Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
     Matrix.perspectiveM(projectionMatrix, 0, 60.0f, width / height, 0.1f, 40.0f);
     Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 

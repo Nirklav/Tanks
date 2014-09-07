@@ -34,14 +34,14 @@ public class PhysicalModel
   }
 
   @Override
-  public ConvexHullResult getConvexHull(Vector3 planeNormal)
+  public Vector<Vector2> getConvexHull(Vector3 planeNormal)
   {
     Vector<Vector2> projection = getDistinctProjection(planeNormal);
-    Vector<Vector2> result = new Vector<Vector2>(projection.size());
+    Vector<Vector2> convexHull = new Vector<Vector2>();
 
     Vector2 first = getFirstPoint(projection);
     projection.remove(first);
-    result.add(first);
+    convexHull.add(first);
 
     Collections.sort(projection, new Comparator<Vector2>()
     {
@@ -51,37 +51,33 @@ public class PhysicalModel
         float angleLeft = lhs.getAngle(Vector2.xAxis);
         float angleRight = rhs.getAngle(Vector2.xAxis);
 
-        if (angleLeft < angleRight)
-          return -1;
+        if (angleLeft == angleRight)
+          return 0;
 
-        if (angleLeft > angleRight)
-          return 1;
-
-        return 0;
+        return angleLeft < angleRight ? -1 : 1;
       }
     });
 
     first = projection.firstElement();
     projection.remove(first);
-    result.add(first);
+    convexHull.add(first);
 
     for(Vector2 current : projection)
     {
-      Vector2 firstPrevPoint = result.get(result.size() - 1);
-      Vector2 secondPrevPoint = result.get(result.size() - 2);
+      Vector2 firstPrevPoint = convexHull.get(convexHull.size() - 1);
+      Vector2 secondPrevPoint = convexHull.get(convexHull.size() - 2);
 
       Vector2 prevVector = firstPrevPoint.subtract(secondPrevPoint);
       Vector2 currentVector = current.subtract(firstPrevPoint);
 
       float angle = prevVector.getAngle(currentVector);
       if (angle >= 180)
-        result.remove(result.size() - 1);
+        convexHull.remove(convexHull.size() - 1);
 
-      result.add(current);
+      convexHull.add(current);
     }
 
-    //TODO: find normals
-    return new ConvexHullResult(result, null);
+    return convexHull;
   }
 
   private Vector2 getFirstPoint(Vector<Vector2> projection)
@@ -105,12 +101,12 @@ public class PhysicalModel
 
   private Vector<Vector2> getDistinctProjection(Vector3 planeNormal)
   {
-    setGlobalVertices();
     planeNormal.normalize();
 
     Vector<Vector2> result = new Vector<Vector2>();
+    Vector<Vector3> global = getGlobalVertices();
 
-    for(Vector3 current : globalVertices)
+    for(Vector3 current : global)
     {
       Vector2 vector = getProjection(current, planeNormal);
       if (!result.contains(vector))
@@ -141,7 +137,8 @@ public class PhysicalModel
     Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
   }
 
-  private void setGlobalVertices()
+  @Override
+  public Vector<Vector3> getGlobalVertices()
   {
     for (int i = 0; i < numOfTriangles; i++)
     {
@@ -149,6 +146,8 @@ public class PhysicalModel
       Vector3 global = globalVertices.get(i);
       Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
     }
+
+    return globalVertices;
   }
 
   @Override

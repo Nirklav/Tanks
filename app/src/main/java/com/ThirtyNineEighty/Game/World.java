@@ -19,6 +19,7 @@ public class World
   protected CollideManager collideManager;
 
   private GameObject playerTank;
+  private GameObject otherTank;
   private GameObject land;
 
   public void initialize(String mapName)
@@ -26,12 +27,14 @@ public class World
     aiManager = new AIManager();
     collideManager = new CollideManager();
 
-    playerTank = new GameObject(this, "tank");
-    land = new GameObject(this, "land");
+    playerTank = new GameObject(0, this, "tank");
+    otherTank = new GameObject(1, this, "tank");
+    land = new GameObject(2, this, "land");
 
     objects = new Vector<IGameObject>();
     objects.add(playerTank);
-    objects.add(land);
+    objects.add(otherTank);
+    //objects.add(land);
   }
 
   public AIManager getAI()

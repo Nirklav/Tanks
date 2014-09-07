@@ -19,11 +19,19 @@ public class Vector2
     value[1] = y;
   }
 
+  public Vector2(Vector2 vec)
+  {
+    this(vec.getX(), vec.getY());
+  }
+
   public float getX() { return value[0]; }
   public float getY() { return value[1]; }
 
   public void setX(float v) { value[0] = v; }
   public void setY(float v) { value[1] = v; }
+
+  public void addToX(float v) { value[0] += v; }
+  public void addToY(float v) { value[1] += v; }
 
   public float[] getRaw() { return value; }
 
