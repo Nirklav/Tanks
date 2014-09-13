@@ -46,7 +46,7 @@ public class Collision3D
     float mtvLengthOne = resultOne.collision.getMTVLength();
     float mtvLengthTwo = resultTwo.collision.getMTVLength();
 
-    if (mtvLengthOne <= mtvLengthTwo)
+    if (Math.abs(mtvLengthOne) <= Math.abs(mtvLengthTwo))
       return resultOne;
 
     return resultTwo;
@@ -57,16 +57,13 @@ public class Collision3D
     Collision2D min = null;
     Vector3 minNormal = null;
 
-    for(int i = 0; i < normals.size(); i += 4)
+    for (Vector3 normal : normals)
     {
-      Vector3 normal = normals.get(i);
-
       Vector<Vector2> resultOne = firstPh.getConvexHull(normal);
       Vector<Vector2> resultTwo = secondPh.getConvexHull(normal);
 
       Collision2D collision = new Collision2D(resultOne, resultTwo);
-      if (!collision.isCollide())
-        return null;
+      if (!collision.isCollide()) return null;
 
       if (min == null || Collision2D.compare(min, collision) < 0)
       {
@@ -84,7 +81,7 @@ public class Collision3D
     Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
 
     Vector3 planeZ = result.normal;
-    Vector3 planeX = new Vector3(-planeZ.getY(), planeZ.getX(), 0);
+    Vector3 planeX = planeZ.getOrthogonal();
     Vector3 planeY = planeX.getCross(planeZ);
 
     float angleX = planeX.getAngle(Vector3.xAxis);

@@ -18,9 +18,9 @@ import java.util.Vector;
 public class PhysicalModel
   implements IPhysicalObject
 {
-  private float[] matrix;
+  private float[] positionMatrix;
+  private float[] rotateMatrix;
 
-  private int numOfTriangles;
   private Vector<Vector3> vertices;
   private Vector<Vector3> normals;
 
@@ -30,7 +30,8 @@ public class PhysicalModel
   public PhysicalModel(String fileName)
   {
     loadGeometry(fileName);
-    matrix = new float[16];
+    positionMatrix = new float[16];
+    rotateMatrix = new float[16];
   }
 
   @Override
@@ -118,7 +119,7 @@ public class PhysicalModel
 
   private Vector2 getProjection(Vector3 global, Vector3 planeNormal)
   {
-    Vector3 axisX = new Vector3(-planeNormal.getY(), planeNormal.getX(), 0);
+    Vector3 axisX = planeNormal.getOrthogonal();
     Vector3 axisY = axisX.getCross(planeNormal);
 
     float x = global.getX() * axisX.getX() + global.getY() * axisX.getY() + global.getZ() * axisX.getZ();
@@ -130,21 +131,23 @@ public class PhysicalModel
   @Override
   public void setGlobal(Vector3 position, float angleX, float angleY, float angleZ)
   {
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());
-    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    Matrix.setIdentityM(positionMatrix, 0);
+    Matrix.translateM(positionMatrix, 0, position.getX(), position.getY(), position.getZ());
+    Matrix.rotateM(positionMatrix, 0, angleX, 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(positionMatrix, 0, angleY, 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(positionMatrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+
+    Matrix.setRotateEulerM(rotateMatrix, 0, angleX, angleY, angleZ);
   }
 
   @Override
   public Vector<Vector3> getGlobalVertices()
   {
-    for (int i = 0; i < numOfTriangles; i++)
+    for (int i = 0; i < vertices.size(); i++)
     {
       Vector3 local = vertices.get(i);
       Vector3 global = globalVertices.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
+      Matrix.multiplyMV(global.getRaw(), 0, positionMatrix, 0, local.getRaw(), 0);
     }
 
     return globalVertices;
@@ -153,11 +156,11 @@ public class PhysicalModel
   @Override
   public Vector<Vector3> getGlobalNormals()
   {
-    for(int i = 0; i < numOfTriangles; i++)
+    for(int i = 0; i < normals.size(); i++)
     {
       Vector3 local = normals.get(i);
       Vector3 global = globalNormals.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
+      Matrix.multiplyMV(global.getRaw(), 0, rotateMatrix, 0, local.getRaw(), 0);
 
       global.normalize();
     }
@@ -181,27 +184,43 @@ public class PhysicalModel
       dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
       dataBuffer.position(0);
 
-      numOfTriangles = dataBuffer.getInt(0);
+      int numOfTriangles = dataBuffer.getInt();
       vertices = new Vector<Vector3>(numOfTriangles);
       normals = new Vector<Vector3>(numOfTriangles);
 
-      globalVertices = createAndFill(numOfTriangles);
-      globalNormals = createAndFill(numOfTriangles);
-
-      for (int i = 0; i < numOfTriangles; i++)
+      for (int i = 0; i < numOfTriangles * 3; i++)
       {
         float x = dataBuffer.getFloat();
         float y = dataBuffer.getFloat();
         float z = dataBuffer.getFloat();
 
-        vertices.add(new Vector3(x, y, z));
+        Vector3 point = new Vector3(x, y, z);
+        if (!vertices.contains(point))
+          vertices.add(point);
 
         x = dataBuffer.getFloat();
         y = dataBuffer.getFloat();
         z = dataBuffer.getFloat();
 
-        normals.add(new Vector3(x, y, z));
+        Vector3 normal = new Vector3(x, y, z);
+        normal.normalize();
+
+        boolean needAdd = true;
+        for(Vector3 current : normals)
+        {
+          needAdd = !current.equals(normal);
+          needAdd &= !current.getCross(normal).equals(Vector3.zero);
+
+          if (!needAdd)
+            break;
+        }
+
+        if (needAdd)
+          normals.add(normal);
       }
+
+      globalVertices = createAndFill(vertices.size());
+      globalNormals = createAndFill(normals.size());
 
       dataBuffer.clear();
     }

@@ -34,7 +34,7 @@ public class Collision2D
     boolean IsFirst = true;
     int count = firstVertices.size() + secondVertices.size();
 
-    for (int i = 0; i < count; i += 3)
+    for (int i = 0; i < count; i ++)
     {
       setNormal(normal, firstVertices, secondVertices, i);
 
@@ -109,8 +109,8 @@ public class Collision2D
 
     Vector2 edge = secondPoint.subtract(firstPoint);
 
-    normal.setX(-edge.getY());
-    normal.setY(edge.getX());
+    normal.setX(edge.getY());
+    normal.setY(-edge.getX());
 
     normal.normalize();
   }

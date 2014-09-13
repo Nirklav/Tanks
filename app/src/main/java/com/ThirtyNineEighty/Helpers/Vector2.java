@@ -58,7 +58,7 @@ public class Vector2
     float lengthTwo = other.getLength();
     float angle = (float)Math.toDegrees(Math.acos(scalar / (lengthOne * lengthTwo)));
 
-    return getCross(other) > 0 ? angle : angle - 360;
+    return getCross(other) > 0 ? angle - 360 : angle;
   }
 
   public float getScalar(Vector2 other)

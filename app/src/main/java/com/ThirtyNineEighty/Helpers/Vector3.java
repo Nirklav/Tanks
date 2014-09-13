@@ -5,6 +5,7 @@ public class Vector3
   public static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
   public static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
   public static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
+  public static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
 
   protected float[] value;
 
@@ -68,9 +69,19 @@ public class Vector3
   {
     float length = getLength();
 
+    if (length == 0f)
+      return;
+
     value[0] /= length;
     value[1] /= length;
     value[2] /= length;
+  }
+
+  public void scale(float coefficient)
+  {
+    value[0] *= coefficient;
+    value[1] *= coefficient;
+    value[2] *= coefficient;
   }
 
   public float getAngle(Vector3 other)
@@ -103,6 +114,16 @@ public class Vector3
     float result6 = -1 * value[1] * otherValue[0];
 
     return new Vector3(result1 + result2, result3 + result4, result5 + result6);
+  }
+
+  public Vector3 getOrthogonal()
+  {
+    Vector3 orthogonal = new Vector3(-getY(), getX(), 0);
+
+    if (orthogonal.equals(Vector3.zero))
+      orthogonal = new Vector3(0, getZ(), -getY());
+
+    return orthogonal;
   }
 
   public Vector3 subtract(Vector3 other)

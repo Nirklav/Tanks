@@ -199,13 +199,7 @@ public class Model3D implements I3DRenderable
 
   public void move(float length)
   {
-    move(Vector3.xAxis, length);
-  }
-
-  public void move(Vector3 vector, float length)
-  {
-    //TODO : fix it
-
+    Vector3 vector = new Vector3();
     float[] translateMatrix = new float[16];
     Matrix.setIdentityM(translateMatrix, 0);
 
@@ -213,11 +207,16 @@ public class Model3D implements I3DRenderable
     Matrix.rotateM(translateMatrix, 0, yAngle, 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(translateMatrix, 0, zAngle, 0.0f, 0.0f, 1.0f);
 
-    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, vector.getRaw(), 0);
+    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, Vector3.xAxis.getRaw(), 0);
 
-    position.addToX(vector.getX());
-    position.addToY(vector.getY());
-    position.addToZ(vector.getZ());
+    move(vector, length);
+  }
+
+  public void move(Vector3 vector, float length)
+  {
+    position.addToX(vector.getX() * length);
+    position.addToY(vector.getY() * length);
+    position.addToZ(vector.getZ() * length);
 
     needBuildMatrix = true;
   }
