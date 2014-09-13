@@ -5,6 +5,7 @@ import android.view.MotionEvent;
 import com.ThirtyNineEighty.Game.Collide.CollideManager;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 import com.ThirtyNineEighty.System.DeltaTime;
@@ -19,8 +20,6 @@ public class World
   protected CollideManager collideManager;
 
   private GameObject playerTank;
-  private GameObject otherTank;
-  private GameObject land;
 
   public void initialize(String mapName)
   {
@@ -28,8 +27,10 @@ public class World
     collideManager = new CollideManager();
 
     playerTank = new GameObject(0, this, "tank");
-    otherTank = new GameObject(1, this, "tank");
-    land = new GameObject(2, this, "land");
+    playerTank.onMoved(-20);
+
+    GameObject otherTank = new GameObject(1, this, "tank");
+    //GameObject land = new GameObject(2, this, "land");
 
     objects = new Vector<IGameObject>();
     objects.add(playerTank);

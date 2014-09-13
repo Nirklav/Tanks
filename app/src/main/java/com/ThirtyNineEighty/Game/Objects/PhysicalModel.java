@@ -109,23 +109,12 @@ public class PhysicalModel
 
     for(Vector3 current : global)
     {
-      Vector2 vector = getProjection(current, planeNormal);
+      Vector2 vector = current.getProjection(planeNormal);
       if (!result.contains(vector))
         result.add(vector);
     }
 
     return result;
-  }
-
-  private Vector2 getProjection(Vector3 global, Vector3 planeNormal)
-  {
-    Vector3 axisX = planeNormal.getOrthogonal();
-    Vector3 axisY = axisX.getCross(planeNormal);
-
-    float x = global.getX() * axisX.getX() + global.getY() * axisX.getY() + global.getZ() * axisX.getZ();
-    float y = global.getX() * axisY.getX() + global.getY() * axisY.getY() + global.getZ() * axisY.getZ();
-
-    return new Vector2(x, y);
   }
 
   @Override
@@ -137,7 +126,10 @@ public class PhysicalModel
     Matrix.rotateM(positionMatrix, 0, angleY, 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(positionMatrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
 
-    Matrix.setRotateEulerM(rotateMatrix, 0, angleX, angleY, angleZ);
+    Matrix.setIdentityM(rotateMatrix, 0);
+    Matrix.rotateM(rotateMatrix, 0, angleX, 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(rotateMatrix, 0, angleY, 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(rotateMatrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
   }
 
   @Override

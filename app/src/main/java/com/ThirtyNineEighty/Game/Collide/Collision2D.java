@@ -23,7 +23,7 @@ public class Collision2D
 
     collide = true;
     mtv = result.mtv;
-    mtvLength = result.mtvLength;
+    mtvLength = Math.abs(result.mtvLength);
   }
 
   private CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices)

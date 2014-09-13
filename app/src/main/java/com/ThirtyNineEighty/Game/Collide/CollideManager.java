@@ -21,7 +21,10 @@ public class CollideManager
       Collision3D collision = check(object, current);
 
       if (collision.isCollide())
+      {
         Log.d("CollideManager", String.format("is collide mtv = %s mtvLength = %f", collision.getMTV().toString(), collision.getMTVLength()));
+        object.onMoved(collision.getMTV(), collision.getMTVLength());
+      }
     }
   }
 

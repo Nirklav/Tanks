@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Helpers;
 
+import android.util.Log;
+
 public class Vector3
 {
   public static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
@@ -86,11 +88,15 @@ public class Vector3
 
   public float getAngle(Vector3 other)
   {
-    float scalar = getScalar(other);
-    float lengthOne = this.getLength();
-    float lengthTwo = other.getLength();
+    Vector3 normal = getCross(other);
 
-    return (float)Math.toDegrees(Math.acos(scalar / (lengthOne * lengthTwo)));
+    if (normal.equals(Vector3.zero))
+      return getScalar(other) > 0 ? 0 : 180;
+
+    Vector2 vecOne = this.getProjection(normal);
+    Vector2 vecTwo = other.getProjection(normal);
+
+    return vecOne.getAngle(vecTwo);
   }
 
   public float getScalar(Vector3 other)
@@ -114,6 +120,17 @@ public class Vector3
     float result6 = -1 * value[1] * otherValue[0];
 
     return new Vector3(result1 + result2, result3 + result4, result5 + result6);
+  }
+
+  public Vector2 getProjection(Vector3 planeNormal)
+  {
+    Vector3 axisX = planeNormal.getOrthogonal();
+    Vector3 axisY = axisX.getCross(planeNormal);
+
+    float x = getX() * axisX.getX() + getY() * axisX.getY() + getZ() * axisX.getZ();
+    float y = getX() * axisY.getX() + getY() * axisY.getY() + getZ() * axisY.getZ();
+
+    return new Vector2(x, y);
   }
 
   public Vector3 getOrthogonal()
