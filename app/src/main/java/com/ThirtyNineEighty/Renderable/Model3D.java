@@ -55,40 +55,40 @@ public class Model3D implements I3DRenderable
   @Override
   public void draw(float[] projectionViewMatrix, float[] lightPosition)
   {
-    //if modelMatrix need rebuilding - rebuild it
+    // if modelMatrix need rebuilding - rebuild it
     tryBuildMatrix();
 
-    //build result matrix
+    // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, projectionViewMatrix, 0, modelMatrix, 0);
 
-    //bind texture to 0 slot
+    // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
 
-    //bind data buffer
+    // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
 
     Shader3D shader = (Shader3D)Shader.getCurrent();
-    //send uniform data to shader
+    // send uniform data to shader
     GLES20.glUniform1i(shader.UniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.UniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.UniformMatrixHandle, 1, false, modelMatrix, 0);
     GLES20.glUniform3f(shader.UniformLightVectorHandle, lightPosition[0], lightPosition[1], lightPosition[2]);
 
-    //enable attribute arrays
+    // enable attribute arrays
     GLES20.glEnableVertexAttribArray(shader.AttributePositionHandle);
     GLES20.glEnableVertexAttribArray(shader.AttributeNormalHandle);
     GLES20.glEnableVertexAttribArray(shader.AttributeTexCoordHandle);
 
-    //set offsets to arrays for buffer
+    // set offsets to arrays for buffer
     GLES20.glVertexAttribPointer(shader.AttributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
     GLES20.glVertexAttribPointer(shader.AttributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
     GLES20.glVertexAttribPointer(shader.AttributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
 
-    //draw
+    // draw
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numOfTriangles * 3);
 
-    //disable attribute arrays
+    // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.AttributePositionHandle);
     GLES20.glDisableVertexAttribArray(shader.AttributeNormalHandle);
     GLES20.glDisableVertexAttribArray(shader.AttributeTexCoordHandle);

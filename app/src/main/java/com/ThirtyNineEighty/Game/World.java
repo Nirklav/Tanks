@@ -84,7 +84,7 @@ public class World
       float x = event.getX(i);
 
       if (x > leftBorder && x < rightBorder)
-        playerTank.move(5.0f * DeltaTime.getDelta());
+        playerTank.move(0.2f); //* DeltaTime.getDelta());
 
       if (x <= leftBorder)
         playerTank.rotate(0.0f, 0.0f, 45.0f * DeltaTime.getDelta());

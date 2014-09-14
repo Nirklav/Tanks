@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Objects;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.ActivityContext;
@@ -18,8 +19,7 @@ import java.util.Vector;
 public class PhysicalModel
   implements IPhysicalObject
 {
-  private float[] positionMatrix;
-  private float[] rotateMatrix;
+  private float[] matrix;
 
   private Vector<Vector3> vertices;
   private Vector<Vector3> normals;
@@ -30,14 +30,13 @@ public class PhysicalModel
   public PhysicalModel(String fileName)
   {
     loadGeometry(fileName);
-    positionMatrix = new float[16];
-    rotateMatrix = new float[16];
+    matrix = new float[16];
   }
 
   @Override
-  public Vector<Vector2> getConvexHull(Vector3 planeNormal)
+  public Vector<Vector2> getConvexHull(Plane plane)
   {
-    Vector<Vector2> projection = getDistinctProjection(planeNormal);
+    Vector<Vector2> projection = getDistinctProjection(plane);
     Vector<Vector2> convexHull = new Vector<Vector2>();
 
     Vector2 first = getFirstPoint(projection);
@@ -68,8 +67,8 @@ public class PhysicalModel
       Vector2 firstPrevPoint = convexHull.get(convexHull.size() - 1);
       Vector2 secondPrevPoint = convexHull.get(convexHull.size() - 2);
 
-      Vector2 prevVector = firstPrevPoint.subtract(secondPrevPoint);
-      Vector2 currentVector = current.subtract(firstPrevPoint);
+      Vector2 prevVector = firstPrevPoint.getSubtract(secondPrevPoint);
+      Vector2 currentVector = current.getSubtract(firstPrevPoint);
 
       float angle = prevVector.getAngle(currentVector);
       if (angle >= 180)
@@ -100,16 +99,13 @@ public class PhysicalModel
     return minVector;
   }
 
-  private Vector<Vector2> getDistinctProjection(Vector3 planeNormal)
+  private Vector<Vector2> getDistinctProjection(Plane plane)
   {
-    planeNormal.normalize();
-
     Vector<Vector2> result = new Vector<Vector2>();
-    Vector<Vector3> global = getGlobalVertices();
 
-    for(Vector3 current : global)
+    for(Vector3 current : getGlobalVertices())
     {
-      Vector2 vector = current.getProjection(planeNormal);
+      Vector2 vector = plane.getProjection(current);
       if (!result.contains(vector))
         result.add(vector);
     }
@@ -120,43 +116,45 @@ public class PhysicalModel
   @Override
   public void setGlobal(Vector3 position, float angleX, float angleY, float angleZ)
   {
-    Matrix.setIdentityM(positionMatrix, 0);
-    Matrix.translateM(positionMatrix, 0, position.getX(), position.getY(), position.getZ());
-    Matrix.rotateM(positionMatrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(positionMatrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(positionMatrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    // vertices
+    Matrix.setIdentityM(matrix, 0);
+    Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());
+    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
 
-    Matrix.setIdentityM(rotateMatrix, 0);
-    Matrix.rotateM(rotateMatrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(rotateMatrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(rotateMatrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    for (int i = 0; i < vertices.size(); i++)
+    {
+      Vector3 local = vertices.get(i);
+      Vector3 global = globalVertices.get(i);
+      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
+    }
+
+    // normals
+    Matrix.setIdentityM(matrix, 0);
+    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+
+    for(int i = 0; i < normals.size(); i++)
+    {
+      Vector3 local = normals.get(i);
+      Vector3 global = globalNormals.get(i);
+      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
+
+      global.normalize();
+    }
   }
 
   @Override
   public Vector<Vector3> getGlobalVertices()
   {
-    for (int i = 0; i < vertices.size(); i++)
-    {
-      Vector3 local = vertices.get(i);
-      Vector3 global = globalVertices.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, positionMatrix, 0, local.getRaw(), 0);
-    }
-
     return globalVertices;
   }
 
   @Override
   public Vector<Vector3> getGlobalNormals()
   {
-    for(int i = 0; i < normals.size(); i++)
-    {
-      Vector3 local = normals.get(i);
-      Vector3 global = globalNormals.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, rotateMatrix, 0, local.getRaw(), 0);
-
-      global.normalize();
-    }
-
     return globalNormals;
   }
 

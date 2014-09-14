@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Collide;
 
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
+import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 
@@ -36,44 +36,42 @@ public class Collision3D
     Vector<Vector3> firstNormals = firstPh.getGlobalNormals();
     Vector<Vector3> secondNormals = secondPh.getGlobalNormals();
 
-    CheckResult resultOne = check(firstPh, secondPh, firstNormals);
-    if (resultOne == null)
-      return null;
-
-    CheckResult resultTwo = check(firstPh, secondPh, secondNormals);
-    if (resultTwo == null)
-      return null;
-
-    float mtvLengthOne = resultOne.collision.getMTVLength();
-    float mtvLengthTwo = resultTwo.collision.getMTVLength();
-
-    if (Math.abs(mtvLengthOne) <= Math.abs(mtvLengthTwo))
-      return resultOne;
-
-    return resultTwo;
-  }
-
-  private CheckResult check(IPhysicalObject firstPh, IPhysicalObject secondPh, Vector<Vector3> normals)
-  {
     Collision2D min = null;
-    Vector3 minNormal = null;
+    Plane minPlane = null;
+    Plane plane = new Plane();
 
-    for (Vector3 normal : normals)
+    int count = firstNormals.size() + secondNormals.size();
+
+    for (int i = 0; i < count; i++)
     {
-      Vector<Vector2> resultOne = firstPh.getConvexHull(normal);
-      Vector<Vector2> resultTwo = secondPh.getConvexHull(normal);
+      setPlane(plane, firstNormals, secondNormals, i);
+
+      Vector<Vector2> resultOne = firstPh.getConvexHull(plane);
+      Vector<Vector2> resultTwo = secondPh.getConvexHull(plane);
 
       Collision2D collision = new Collision2D(resultOne, resultTwo);
-      if (!collision.isCollide()) return null;
+      if (!collision.isCollide())
+        return null;
 
-      if (min == null || Collision2D.compare(min, collision) < 0)
+      if (min == null || Collision2D.compare(collision, min) < 0)
       {
         min = collision;
-        minNormal = normal;
+        minPlane = plane;
       }
     }
 
-    return new CheckResult(min, minNormal);
+    return new CheckResult(min, minPlane);
+  }
+
+  public void setPlane(Plane plane, Vector<Vector3> firstNormals, Vector<Vector3> secondNormals, int num)
+  {
+    if (num < firstNormals.size())
+      plane.setFrom(firstNormals.get(num));
+    else
+    {
+      num -= secondNormals.size();
+      plane.setFrom(secondNormals.get(num));
+    }
   }
 
   private Vector3 getMTV(CheckResult result)
@@ -81,19 +79,24 @@ public class Collision3D
     Vector2 mtv2 = result.collision.getMTV();
     Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
 
-    Vector3 planeZ = result.normal;
-    Vector3 planeX = planeZ.getOrthogonal();
-    Vector3 planeY = planeX.getCross(planeZ);
-
-    float angleX = Vector3.xAxis.getAngle(planeX);
-    float angleY = Vector3.yAxis.getAngle(planeY);
-    float angleZ = Vector3.zAxis.getAngle(planeZ);
+    Vector3 planeX = result.plane.xAxis();
+    Vector3 planeY = result.plane.yAxis();
+    Vector3 planeZ = result.plane.zAxis();
 
     float[] matrix = new float[16];
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    matrix[0] = planeX.getX();
+    matrix[1] = planeX.getY();
+    matrix[2] = planeX.getZ();
+
+    matrix[4] = planeY.getX();
+    matrix[5] = planeY.getY();
+    matrix[6] = planeY.getZ();
+
+    matrix[8] = planeZ.getX();
+    matrix[9] = planeZ.getY();
+    matrix[10] = planeZ.getZ();
+
+    matrix[15] = 1.0f;
 
     Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
 
@@ -122,12 +125,12 @@ public class Collision3D
   private class CheckResult
   {
     public Collision2D collision;
-    public Vector3 normal;
+    public Plane plane;
 
-    public CheckResult(Collision2D collision, Vector3 normal)
+    public CheckResult(Collision2D collision, Plane plane)
     {
       this.collision = collision;
-      this.normal = normal;
+      this.plane = plane;
     }
   }
 }

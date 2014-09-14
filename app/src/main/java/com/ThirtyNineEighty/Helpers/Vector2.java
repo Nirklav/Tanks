@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Helpers;
 
+/*
+ * Operation with prefix get - immutable;
+ */
 public class Vector2
 {
   public static Vector2 xAxis = new Vector2(1.0f, 0.0f);
@@ -15,13 +18,29 @@ public class Vector2
   public Vector2(float x, float y)
   {
     value = new float[2];
-    value[0] = x;
-    value[1] = y;
+    setFrom(x, y);
+  }
+
+  public Vector2(float[] raw)
+  {
+    value = raw;
   }
 
   public Vector2(Vector2 vec)
   {
-    this(vec.getX(), vec.getY());
+    value = new float[2];
+    setFrom(vec.getX(), vec.getY());
+  }
+
+  public void setFrom(float x, float y)
+  {
+    value[0] = x;
+    value[1] = y;
+  }
+
+  public void setFrom(Vector3 vec)
+  {
+    setFrom(vec.getX(), vec.getY());
   }
 
   public float getX() { return value[0]; }
@@ -41,14 +60,6 @@ public class Vector2
     double powY = Math.pow(getY(), 2);
 
     return (float)Math.sqrt(powX + powY);
-  }
-
-  public void normalize()
-  {
-    float length = getLength();
-
-    value[0] /= length;
-    value[1] /= length;
   }
 
   public float getAngle(Vector2 other)
@@ -74,13 +85,31 @@ public class Vector2
     return getX() * other.getY() - getY() * other.getX();
   }
 
-  public Vector2 subtract(Vector2 other)
+  public void normalize()
   {
-    return new Vector2
-    (
-      getX() - other.getX(),
-      getY() - other.getY()
-    );
+    float length = getLength();
+
+    value[0] /= length;
+    value[1] /= length;
+  }
+
+  public void subtract(Vector2 other)
+  {
+    setFrom(getX() - other.getX(), getY() - other.getY());
+  }
+
+  public Vector2 getNormalize()
+  {
+    Vector2 result = new Vector2(this);
+    result.normalize();
+    return result;
+  }
+
+  public Vector2 getSubtract(Vector2 other)
+  {
+    Vector2 result = new Vector2(this);
+    result.subtract(other);
+    return result;
   }
 
   @Override

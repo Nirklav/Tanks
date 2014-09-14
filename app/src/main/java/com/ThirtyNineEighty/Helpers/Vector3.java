@@ -1,7 +1,8 @@
 package com.ThirtyNineEighty.Helpers;
 
-import android.util.Log;
-
+/*
+ * Operation with prefix get - immutable;
+ */
 public class Vector3
 {
   public static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
@@ -19,29 +20,31 @@ public class Vector3
   public Vector3(float x, float y, float z)
   {
     value = new float[4];
+    setFrom(x, y, z);
+  }
+
+  public Vector3(float[] raw)
+  {
+    value = raw;
+  }
+
+  public Vector3(Vector3 vec)
+  {
+    value = new float[4];
+    setFrom(vec.getX(), vec.getY(), vec.getZ());
+  }
+
+  public void setFrom(float x, float y, float z)
+  {
     value[0] = x;
     value[1] = y;
     value[2] = z;
     value[3] = 1.0f;
   }
 
-  public Vector3(float[] raw)
+  public void setFrom(Vector3 vec)
   {
-    if (raw.length == 4)
-      value = raw;
-    else
-    {
-      value = new float[4];
-      value[0] = raw[0];
-      value[1] = raw[1];
-      value[2] = raw[2];
-      value[3] = 1.0f;
-    }
-  }
-
-  public Vector3(Vector3 vec)
-  {
-    this(vec.getX(), vec.getY(), vec.getZ());
+    setFrom(vec.getX(), vec.getY(), vec.getZ());
   }
 
   public float getX() { return value[0]; }
@@ -67,6 +70,21 @@ public class Vector3
     return (float)Math.sqrt(powX + powY + powZ);
   }
 
+  public float getAngle(Vector3 other)
+  {
+    Vector3 normal = getCross(other);
+
+    if (normal.equals(Vector3.zero))
+      return getScalar(other) > 0 ? 0 : 180;
+
+    Plane plane = new Plane(normal);
+
+    Vector2 vecOne = plane.getProjection(this);
+    Vector2 vecTwo = plane.getProjection(other);
+
+    return vecOne.getAngle(vecTwo);
+  }
+
   public void normalize()
   {
     float length = getLength();
@@ -79,26 +97,6 @@ public class Vector3
     value[2] /= length;
   }
 
-  public void scale(float coefficient)
-  {
-    value[0] *= coefficient;
-    value[1] *= coefficient;
-    value[2] *= coefficient;
-  }
-
-  public float getAngle(Vector3 other)
-  {
-    Vector3 normal = getCross(other);
-
-    if (normal.equals(Vector3.zero))
-      return getScalar(other) > 0 ? 0 : 180;
-
-    Vector2 vecOne = this.getProjection(normal);
-    Vector2 vecTwo = other.getProjection(normal);
-
-    return vecOne.getAngle(vecTwo);
-  }
-
   public float getScalar(Vector3 other)
   {
     float multOne   = getX() * other.getX();
@@ -108,7 +106,14 @@ public class Vector3
     return multOne + multTwo + multThree;
   }
 
-  public Vector3 getCross(Vector3 other)
+  public void scale(float coefficient)
+  {
+    value[0] *= coefficient;
+    value[1] *= coefficient;
+    value[2] *= coefficient;
+  }
+
+  public void cross(Vector3 other)
   {
     float[] otherValue = other.getRaw();
 
@@ -119,38 +124,61 @@ public class Vector3
     float result5 =      value[0] * otherValue[1];
     float result6 = -1 * value[1] * otherValue[0];
 
-    return new Vector3(result1 + result2, result3 + result4, result5 + result6);
+    setFrom(result1 + result2, result3 + result4, result5 + result6);
   }
 
-  public Vector2 getProjection(Vector3 planeNormal)
+  public void orthogonal()
   {
-    Vector3 axisX = planeNormal.getOrthogonal();
-    Vector3 axisY = axisX.getCross(planeNormal);
+    float x = getX();
+    float y = getY();
+    float z = getZ();
 
-    float x = getX() * axisX.getX() + getY() * axisX.getY() + getZ() * axisX.getZ();
-    float y = getX() * axisY.getX() + getY() * axisY.getY() + getZ() * axisY.getZ();
+    setFrom(-y, x, 0);
 
-    return new Vector2(x, y);
+    if (this.equals(Vector3.zero))
+      setFrom(0, z, -y);
+  }
+
+  public void subtract(Vector3 other)
+  {
+    setFrom(getX() - other.getX(),
+            getY() - other.getY(),
+            getZ() - other.getZ());
+  }
+
+  public Vector3 getNormalize()
+  {
+    Vector3 result = new Vector3(this);
+    result.normalize();
+    return result;
+  }
+
+  public Vector3 getScale(float coefficient)
+  {
+    Vector3 result = new Vector3(this);
+    result.scale(coefficient);
+    return result;
+  }
+
+  public Vector3 getCross(Vector3 other)
+  {
+    Vector3 result = new Vector3(this);
+    result.cross(other);
+    return result;
   }
 
   public Vector3 getOrthogonal()
   {
-    Vector3 orthogonal = new Vector3(-getY(), getX(), 0);
-
-    if (orthogonal.equals(Vector3.zero))
-      orthogonal = new Vector3(0, getZ(), -getY());
-
-    return orthogonal;
+    Vector3 result = new Vector3(this);
+    result.orthogonal();
+    return result;
   }
 
-  public Vector3 subtract(Vector3 other)
+  public Vector3 getSubtract(Vector3 other)
   {
-    return new Vector3
-    (
-      getX() - other.getX(),
-      getY() - other.getY(),
-      getZ() - other.getZ()
-    );
+    Vector3 result = new Vector3(this);
+    result.subtract(other);
+    return result;
   }
 
   @Override

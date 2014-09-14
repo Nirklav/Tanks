@@ -107,7 +107,7 @@ public class Collision2D
     Vector2 firstPoint = vertices.get(num);
     Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
 
-    Vector2 edge = secondPoint.subtract(firstPoint);
+    Vector2 edge = secondPoint.getSubtract(firstPoint);
 
     normal.setX(edge.getY());
     normal.setY(-edge.getX());

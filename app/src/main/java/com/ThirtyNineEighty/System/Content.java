@@ -76,8 +76,8 @@ public class Content
     I3DRenderable target = world.getCameraTarget();
     Vector3 center = target.getPosition();
     Vector3 eye = new Vector3(target.getPosition());
-    eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle())));
-    eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle())));
+    eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle() + 90)));
+    eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle() + 90)));
     eye.addToZ(6);
 
     Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
