@@ -26,7 +26,7 @@ public class Collision2D
     mtvLength = Math.abs(result.mtvLength);
   }
 
-  private CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices)
+  private static CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices)
   {
     Vector2 mtv = null;
     Vector2 normal = new Vector2();
@@ -70,7 +70,7 @@ public class Collision2D
     return new CheckResult(mtv, mtvLength);
   }
 
-  private Vector2 getProjection(Vector<Vector2> vertices, Vector2 normal)
+  private static Vector2 getProjection(Vector<Vector2> vertices, Vector2 normal)
   {
     Vector2 result = null;
 
@@ -91,7 +91,7 @@ public class Collision2D
     return result;
   }
 
-  private void setNormal(Vector2 normal, Vector<Vector2> firstVertices, Vector<Vector2> secondVertices, int num)
+  private static void setNormal(Vector2 normal, Vector<Vector2> firstVertices, Vector<Vector2> secondVertices, int num)
   {
     if (num < firstVertices.size())
       setNormal(normal, firstVertices, num);
@@ -102,7 +102,7 @@ public class Collision2D
     }
   }
 
-  private void setNormal(Vector2 normal, Vector<Vector2> vertices, int num)
+  private static void setNormal(Vector2 normal, Vector<Vector2> vertices, int num)
   {
     Vector2 firstPoint = vertices.get(num);
     Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
@@ -133,7 +133,7 @@ public class Collision2D
     return collide;
   }
 
-  private class CheckResult
+  private static class CheckResult
   {
     private Vector2 mtv;
     private float mtvLength;

@@ -31,7 +31,7 @@ public class Collision3D
     mtvLength = result.collision.getMTVLength();
   }
 
-  private CheckResult check(IPhysicalObject firstPh, IPhysicalObject secondPh)
+  private static CheckResult check(IPhysicalObject firstPh, IPhysicalObject secondPh)
   {
     Vector<Vector3> firstNormals = firstPh.getGlobalNormals();
     Vector<Vector3> secondNormals = secondPh.getGlobalNormals();
@@ -63,7 +63,7 @@ public class Collision3D
     return new CheckResult(min, minPlane);
   }
 
-  public void setPlane(Plane plane, Vector<Vector3> firstNormals, Vector<Vector3> secondNormals, int num)
+  private static void setPlane(Plane plane, Vector<Vector3> firstNormals, Vector<Vector3> secondNormals, int num)
   {
     if (num < firstNormals.size())
       plane.setFrom(firstNormals.get(num));
@@ -74,7 +74,7 @@ public class Collision3D
     }
   }
 
-  private Vector3 getMTV(CheckResult result)
+  private static Vector3 getMTV(CheckResult result)
   {
     Vector2 mtv2 = result.collision.getMTV();
     Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
@@ -122,7 +122,7 @@ public class Collision3D
     return collide;
   }
 
-  private class CheckResult
+  private static class CheckResult
   {
     public Collision2D collision;
     public Plane plane;

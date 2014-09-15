@@ -39,12 +39,19 @@ public class Plane
 
   // </editor-fold>
 
-  public Vector2 getProjection(Vector3 vector)
+  public void getProjection(Vector2 result, Vector3 vector)
   {
     float x = vector.getX() * xAxis.getX() + vector.getY() * xAxis.getY() + vector.getZ() * xAxis.getZ();
     float y = vector.getX() * yAxis.getX() + vector.getY() * yAxis.getY() + vector.getZ() * yAxis.getZ();
 
-    return new Vector2(x, y);
+    result.setFrom(x, y);
+  }
+
+  public Vector2 getProjection(Vector3 vector)
+  {
+    Vector2 result = new Vector2();
+    getProjection(result, vector);
+    return result;
   }
 
   // <editor-fold desc="getters">

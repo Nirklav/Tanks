@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Helpers;
 /*
  * Operation with prefix get - immutable;
  */
-public class Vector3
+public class Vector3 extends Vector
 {
   public static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
   public static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
@@ -196,5 +196,17 @@ public class Vector3
   public String toString()
   {
     return String.format("{%f; %f; %f}", value[0], value[1], value[2]);
+  }
+
+  @Override
+  public float get(int num)
+  {
+    return value[num];
+  }
+
+  @Override
+  public void set(int num, float v)
+  {
+    value[num] = v;
   }
 }

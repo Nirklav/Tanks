@@ -80,7 +80,7 @@ public class PhysicalModel
     return convexHull;
   }
 
-  private Vector2 getFirstPoint(Vector<Vector2> projection)
+  private static Vector2 getFirstPoint(Vector<Vector2> projection)
   {
     Vector2 minVector = null;
 
@@ -102,12 +102,13 @@ public class PhysicalModel
   private Vector<Vector2> getDistinctProjection(Plane plane)
   {
     Vector<Vector2> result = new Vector<Vector2>();
+    Vector2 vector = new Vector2();
 
     for(Vector3 current : getGlobalVertices())
     {
-      Vector2 vector = plane.getProjection(current);
+      plane.getProjection(vector, current);
       if (!result.contains(vector))
-        result.add(vector);
+        result.add(new Vector2(vector));
     }
 
     return result;
@@ -123,7 +124,8 @@ public class PhysicalModel
     Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
 
-    for (int i = 0; i < vertices.size(); i++)
+    int size = vertices.size();
+    for (int i = 0; i < size; i++)
     {
       Vector3 local = vertices.get(i);
       Vector3 global = globalVertices.get(i);
@@ -136,7 +138,8 @@ public class PhysicalModel
     Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
 
-    for(int i = 0; i < normals.size(); i++)
+    size = normals.size();
+    for(int i = 0; i < size; i++)
     {
       Vector3 local = normals.get(i);
       Vector3 global = globalNormals.get(i);
