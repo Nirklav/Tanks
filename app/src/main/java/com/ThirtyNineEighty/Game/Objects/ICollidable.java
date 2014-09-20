@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 
 import java.util.Vector;
 
-public interface IPhysicalObject
+public interface ICollidable
 {
   void setGlobal(Vector3 position, float angleX, float angleY, float angleZ);
 

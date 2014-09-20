@@ -35,6 +35,21 @@ public class Plane
 
     yAxis.setFrom(normal);
     yAxis.cross(xAxis);
+
+    xAxis.normalize();
+    yAxis.normalize();
+    zAxis.normalize();
+  }
+
+  public void setFrom(Plane other)
+  {
+    xAxis.setFrom(other.xAxis());
+    yAxis.setFrom(other.yAxis());
+    zAxis.setFrom(other.zAxis());
+
+    xAxis.normalize();
+    yAxis.normalize();
+    zAxis.normalize();
   }
 
   // </editor-fold>

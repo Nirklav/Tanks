@@ -4,6 +4,8 @@ import android.util.Log;
 
 public abstract class Vector
 {
+  protected static final float epsilon = 0.0001f;
+
   public static <TVector extends Vector> TVector getInstance(int vectorSize)
   {
     try

@@ -187,9 +187,9 @@ public class Vector3 extends Vector
     Vector3 other = o instanceof Vector3 ? (Vector3)o : null;
 
     return other != null
-      && other.getX() == getX()
-      && other.getY() == getY()
-      && other.getZ() == getZ();
+      && Math.abs(other.getX() - getX()) < epsilon
+      && Math.abs(other.getY() - getY()) < epsilon
+      && Math.abs(other.getZ() - getZ()) < epsilon;
   }
 
   @Override

@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Collide;
 import android.util.Log;
 
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
-import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
+import com.ThirtyNineEighty.Game.Objects.ICollidable;
 
 import java.util.Collection;
 
@@ -21,22 +21,30 @@ public class CollideManager
       Collision3D collision = check(object, current);
 
       if (collision.isCollide())
-      {
-        Log.d("CollideManager", String.format("is collide mtv = %s mtvLength = %f", collision.getMTV().toString(), collision.getMTVLength()));
         object.onMoved(collision.getMTV(), collision.getMTVLength());
-      }
     }
   }
 
   public void rotate(IGameObject object, Collection<IGameObject> objects, float angleX, float angleY, float angleZ)
   {
     object.onRotates(angleX, angleY, angleZ);
+
+    for(IGameObject current : objects)
+    {
+      if (object.getId() == current.getId())
+        continue;
+
+      Collision3D collision = check(object, current);
+
+      if (collision.isCollide())
+        object.onMoved(collision.getMTV(), collision.getMTVLength());
+    }
   }
 
   private Collision3D check(IGameObject first, IGameObject second)
   {
-    IPhysicalObject firstPh = first.getPhysicalModel();
-    IPhysicalObject secondPh = second.getPhysicalModel();
+    ICollidable firstPh = first.getPhysicalModel();
+    ICollidable secondPh = second.getPhysicalModel();
 
     return new Collision3D(firstPh, secondPh);
   }

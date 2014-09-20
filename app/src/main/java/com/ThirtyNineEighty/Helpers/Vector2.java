@@ -7,6 +7,8 @@ public class Vector2 extends Vector
 {
   public static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public static Vector2 yAxis = new Vector2(0.0f, 1.0f);
+  public static Vector2 invertXAxis = new Vector2(-1.0f,  0.0f);
+  public static Vector2 invertYAxis = new Vector2( 0.0f, -1.0f);
 
   protected float[] value;
 
@@ -38,7 +40,7 @@ public class Vector2 extends Vector
     value[1] = y;
   }
 
-  public void setFrom(Vector3 vec)
+  public void setFrom(Vector2 vec)
   {
     setFrom(vec.getX(), vec.getY());
   }
@@ -69,7 +71,7 @@ public class Vector2 extends Vector
     float lengthTwo = other.getLength();
     float angle = (float)Math.toDegrees(Math.acos(scalar / (lengthOne * lengthTwo)));
 
-    return getCross(other) > 0 ? angle - 360 : angle;
+    return getCross(other) > 0 ? angle : 360 - angle;
   }
 
   public float getScalar(Vector2 other)
@@ -118,8 +120,8 @@ public class Vector2 extends Vector
     Vector2 other = o instanceof Vector2 ? (Vector2)o : null;
 
     return other != null
-      && other.getX() == getX()
-      && other.getY() == getY();
+      && Math.abs(other.getX() - getX()) < epsilon
+      && Math.abs(other.getY() - getY()) < epsilon;
   }
 
   @Override

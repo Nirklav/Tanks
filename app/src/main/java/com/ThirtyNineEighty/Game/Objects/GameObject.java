@@ -91,7 +91,7 @@ public class GameObject
   }
 
   @Override
-  public IPhysicalObject getPhysicalModel()
+  public ICollidable getPhysicalModel()
   {
     physicalModel.setGlobal(visualModel.getPosition(), visualModel.getXAngle(), visualModel.getYAngle(), visualModel.getZAngle());
     return physicalModel;

@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 public class PhysicalModel
-  implements IPhysicalObject
+  implements ICollidable
 {
   private float[] matrix;
 
@@ -39,28 +39,15 @@ public class PhysicalModel
     Vector<Vector2> projection = getDistinctProjection(plane);
     Vector<Vector2> convexHull = new Vector<Vector2>();
 
-    Vector2 first = getFirstPoint(projection);
+    final Vector2 first = getFirstPoint(projection);
     projection.remove(first);
     convexHull.add(first);
 
-    Collections.sort(projection, new Comparator<Vector2>()
-    {
-      @Override
-      public int compare(Vector2 lhs, Vector2 rhs)
-      {
-        float angleLeft = lhs.getAngle(Vector2.xAxis);
-        float angleRight = rhs.getAngle(Vector2.xAxis);
+    Collections.sort(projection, new AngleComparator(first));
 
-        if (angleLeft == angleRight)
-          return 0;
-
-        return angleLeft < angleRight ? -1 : 1;
-      }
-    });
-
-    first = projection.firstElement();
-    projection.remove(first);
-    convexHull.add(first);
+    final Vector2 second = projection.firstElement();
+    projection.remove(second);
+    convexHull.add(second);
 
     for(Vector2 current : projection)
     {
@@ -71,7 +58,7 @@ public class PhysicalModel
       Vector2 currentVector = current.getSubtract(firstPrevPoint);
 
       float angle = prevVector.getAngle(currentVector);
-      if (angle >= 180)
+      if (angle >= 180 && angle < 360)
         convexHull.remove(convexHull.size() - 1);
 
       convexHull.add(current);
@@ -112,6 +99,31 @@ public class PhysicalModel
     }
 
     return result;
+  }
+
+  private static class AngleComparator implements Comparator<Vector2>
+  {
+    private Vector2 first;
+    private Vector2 lhsVector = new Vector2();
+    private Vector2 rhsVector = new Vector2();
+
+    public AngleComparator(Vector2 first)
+    {
+      this.first = first;
+    }
+
+    @Override
+    public int compare(Vector2 lhs, Vector2 rhs)
+    {
+      lhsVector.setFrom(first);
+      lhsVector.subtract(lhs);
+
+      rhsVector.setFrom(first);
+      rhsVector.subtract(rhs);
+
+      float angle = lhsVector.getAngle(rhsVector);
+      return angle > 180f ? 1 : -1;
+    }
   }
 
   @Override

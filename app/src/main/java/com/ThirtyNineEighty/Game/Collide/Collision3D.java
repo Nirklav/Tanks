@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Collide;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Game.Objects.IPhysicalObject;
+import com.ThirtyNineEighty.Game.Objects.ICollidable;
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -16,7 +16,7 @@ public class Collision3D
   private float mtvLength;
   private boolean collide;
 
-  public Collision3D(IPhysicalObject objectOne, IPhysicalObject objectTwo)
+  public Collision3D(ICollidable objectOne, ICollidable objectTwo)
   {
     CheckResult result = check(objectOne, objectTwo);
 
@@ -31,13 +31,13 @@ public class Collision3D
     mtvLength = result.collision.getMTVLength();
   }
 
-  private static CheckResult check(IPhysicalObject firstPh, IPhysicalObject secondPh)
+  private static CheckResult check(ICollidable firstPh, ICollidable secondPh)
   {
     Vector<Vector3> firstNormals = firstPh.getGlobalNormals();
     Vector<Vector3> secondNormals = secondPh.getGlobalNormals();
 
     Collision2D min = null;
-    Plane minPlane = null;
+    Plane minPlane = new Plane();
     Plane plane = new Plane();
 
     int count = firstNormals.size() + secondNormals.size();
@@ -56,7 +56,7 @@ public class Collision3D
       if (min == null || Collision2D.compare(collision, min) < 0)
       {
         min = collision;
-        minPlane = plane;
+        minPlane.setFrom(plane);
       }
     }
 

@@ -22,5 +22,5 @@ public interface IGameObject
   float getAngleY();
   float getAngleZ();
   I3DRenderable getVisualModel();
-  IPhysicalObject getPhysicalModel();
+  ICollidable getPhysicalModel();
 }

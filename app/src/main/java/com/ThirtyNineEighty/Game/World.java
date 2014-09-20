@@ -1,13 +1,10 @@
 package com.ThirtyNineEighty.Game;
 
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Collide.CollideManager;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Helpers.VectorCollection;
 import com.ThirtyNineEighty.Renderable.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 import com.ThirtyNineEighty.System.DeltaTime;
@@ -86,7 +83,7 @@ public class World
       float x = event.getX(i);
 
       if (x > leftBorder && x < rightBorder)
-        playerTank.move(0.2f );//* DeltaTime.getDelta());
+        playerTank.move(0.2f);//* DeltaTime.getDelta());
 
       if (x <= leftBorder)
         playerTank.rotate(0.0f, 0.0f, 45f * DeltaTime.getDelta());
