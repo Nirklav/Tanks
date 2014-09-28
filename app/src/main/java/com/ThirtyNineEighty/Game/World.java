@@ -5,16 +5,18 @@ import android.view.MotionEvent;
 import com.ThirtyNineEighty.Game.Collide.CollideManager;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 import com.ThirtyNineEighty.System.DeltaTime;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
 public class World
 {
-  protected Vector<IGameObject> objects;
+  protected ArrayList<IGameObject> objects;
   protected AIManager aiManager;
   protected CollideManager collideManager;
 
@@ -29,12 +31,14 @@ public class World
     playerTank.onMoved(-20);
 
     GameObject otherTank = new GameObject(1, this, "tank");
-    //GameObject land = new GameObject(2, this, "land");
+    GameObject land = new GameObject(2, this, "land");
 
-    objects = new Vector<IGameObject>();
+    land.onMoved(Vector3.zAxis, -0.8f);
+
+    objects = new ArrayList<IGameObject>();
     objects.add(playerTank);
     objects.add(otherTank);
-    //objects.add(land);
+    objects.add(land);
   }
 
   public AIManager getAI()

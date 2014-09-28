@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game.Collide;
 
-import android.util.Log;
-
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
 import com.ThirtyNineEighty.Game.Objects.ICollidable;
 

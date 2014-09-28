@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Collide;
 
 import com.ThirtyNineEighty.Helpers.Vector2;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Collision2D
   extends Collision<Vector2>
@@ -11,7 +11,7 @@ public class Collision2D
   private float mtvLength;
   private boolean collide;
 
-  public Collision2D(Vector<Vector2> first, Vector<Vector2> second)
+  public Collision2D(ArrayList<Vector2> first, ArrayList<Vector2> second)
   {
     CheckResult result = check(first, second);
 
@@ -26,7 +26,7 @@ public class Collision2D
     mtvLength = Math.abs(result.mtvLength);
   }
 
-  private static CheckResult check(Vector<Vector2> firstVertices, Vector<Vector2> secondVertices)
+  private static CheckResult check(ArrayList<Vector2> firstVertices, ArrayList<Vector2> secondVertices)
   {
     Vector2 mtv = null;
     Vector2 normal = new Vector2();
@@ -70,7 +70,7 @@ public class Collision2D
     return new CheckResult(mtv, mtvLength);
   }
 
-  private static Vector2 getProjection(Vector<Vector2> vertices, Vector2 normal)
+  private static Vector2 getProjection(ArrayList<Vector2> vertices, Vector2 normal)
   {
     Vector2 result = null;
 
@@ -91,7 +91,7 @@ public class Collision2D
     return result;
   }
 
-  private static void setNormal(Vector2 normal, Vector<Vector2> firstVertices, Vector<Vector2> secondVertices, int num)
+  private static void setNormal(Vector2 normal, ArrayList<Vector2> firstVertices, ArrayList<Vector2> secondVertices, int num)
   {
     if (num < firstVertices.size())
       setNormal(normal, firstVertices, num);
@@ -102,7 +102,7 @@ public class Collision2D
     }
   }
 
-  private static void setNormal(Vector2 normal, Vector<Vector2> vertices, int num)
+  private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
   {
     Vector2 firstPoint = vertices.get(num);
     Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);

@@ -6,8 +6,6 @@ public class Plane
   private Vector3 yAxis;
   private Vector3 zAxis;
 
-  // <editor-fold desc="initialization">
-
   public Plane()
   {
     xAxis = new Vector3(Vector3.xAxis);
@@ -17,13 +15,14 @@ public class Plane
 
   public Plane(Vector3 normal)
   {
-    zAxis = new Vector3(normal);
-    xAxis = normal.getOrthogonal();
-    yAxis = normal.getCross(xAxis);
+    this();
+    setFrom(normal);
+  }
 
-    xAxis.normalize();
-    yAxis.normalize();
-    zAxis.normalize();
+  public Plane(Plane other)
+  {
+    this();
+    setFrom(other);
   }
 
   public void setFrom(Vector3 normal)
@@ -52,8 +51,6 @@ public class Plane
     zAxis.normalize();
   }
 
-  // </editor-fold>
-
   public void getProjection(Vector2 result, Vector3 vector)
   {
     float x = vector.getX() * xAxis.getX() + vector.getY() * xAxis.getY() + vector.getZ() * xAxis.getZ();
@@ -68,8 +65,6 @@ public class Plane
     getProjection(result, vector);
     return result;
   }
-
-  // <editor-fold desc="getters">
 
   public Vector3 xAxis()
   {
@@ -110,6 +105,4 @@ public class Plane
   {
     return new Vector3(zAxis);
   }
-
-  // </editor-fold>
 }

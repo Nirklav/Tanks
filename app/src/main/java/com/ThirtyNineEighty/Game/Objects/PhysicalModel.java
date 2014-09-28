@@ -12,20 +12,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
 
 public class PhysicalModel
   implements ICollidable
 {
   private float[] matrix;
 
-  private Vector<Vector3> vertices;
-  private Vector<Vector3> normals;
+  private ArrayList<Vector3> vertices;
+  private ArrayList<Vector3> normals;
 
-  private Vector<Vector3> globalVertices;
-  private Vector<Vector3> globalNormals;
+  private ArrayList<Vector3> globalVertices;
+  private ArrayList<Vector3> globalNormals;
 
   public PhysicalModel(String fileName)
   {
@@ -34,10 +34,10 @@ public class PhysicalModel
   }
 
   @Override
-  public Vector<Vector2> getConvexHull(Plane plane)
+  public ArrayList<Vector2> getConvexHull(Plane plane)
   {
-    Vector<Vector2> projection = getDistinctProjection(plane);
-    Vector<Vector2> convexHull = new Vector<Vector2>();
+    ArrayList<Vector2> projection = getDistinctProjection(plane);
+    ArrayList<Vector2> convexHull = new ArrayList<Vector2>();
 
     final Vector2 first = getFirstPoint(projection);
     projection.remove(first);
@@ -45,7 +45,7 @@ public class PhysicalModel
 
     Collections.sort(projection, new AngleComparator(first));
 
-    final Vector2 second = projection.firstElement();
+    final Vector2 second = projection.get(0);
     projection.remove(second);
     convexHull.add(second);
 
@@ -67,7 +67,7 @@ public class PhysicalModel
     return convexHull;
   }
 
-  private static Vector2 getFirstPoint(Vector<Vector2> projection)
+  private static Vector2 getFirstPoint(ArrayList<Vector2> projection)
   {
     Vector2 minVector = null;
 
@@ -86,9 +86,9 @@ public class PhysicalModel
     return minVector;
   }
 
-  private Vector<Vector2> getDistinctProjection(Plane plane)
+  private ArrayList<Vector2> getDistinctProjection(Plane plane)
   {
-    Vector<Vector2> result = new Vector<Vector2>();
+    ArrayList<Vector2> result = new ArrayList<Vector2>();
     Vector2 vector = new Vector2();
 
     for(Vector3 current : getGlobalVertices())
@@ -162,13 +162,13 @@ public class PhysicalModel
   }
 
   @Override
-  public Vector<Vector3> getGlobalVertices()
+  public ArrayList<Vector3> getGlobalVertices()
   {
     return globalVertices;
   }
 
   @Override
-  public Vector<Vector3> getGlobalNormals()
+  public ArrayList<Vector3> getGlobalNormals()
   {
     return globalNormals;
   }
@@ -190,8 +190,8 @@ public class PhysicalModel
       dataBuffer.position(0);
 
       int numOfTriangles = dataBuffer.getInt();
-      vertices = new Vector<Vector3>(numOfTriangles);
-      normals = new Vector<Vector3>(numOfTriangles);
+      vertices = new ArrayList<Vector3>(numOfTriangles);
+      normals = new ArrayList<Vector3>(numOfTriangles);
 
       for (int i = 0; i < numOfTriangles * 3; i++)
       {
@@ -235,9 +235,9 @@ public class PhysicalModel
     }
   }
 
-  private Vector<Vector3> createAndFill(int count)
+  private ArrayList<Vector3> createAndFill(int count)
   {
-    Vector<Vector3> result = new Vector<Vector3>(count);
+    ArrayList<Vector3> result = new ArrayList<Vector3>(count);
 
     for(int i = 0; i < count; i++)
       result.add(new Vector3());

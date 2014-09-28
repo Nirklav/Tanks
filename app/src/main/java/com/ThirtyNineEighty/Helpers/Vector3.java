@@ -14,12 +14,12 @@ public class Vector3 extends Vector
 
   public Vector3()
   {
-    this(0, 0, 0);
+    value = new float[4];
   }
 
   public Vector3(float x, float y, float z)
   {
-    value = new float[4];
+    this();
     setFrom(x, y, z);
   }
 
@@ -30,8 +30,8 @@ public class Vector3 extends Vector
 
   public Vector3(Vector3 vec)
   {
-    value = new float[4];
-    setFrom(vec.getX(), vec.getY(), vec.getZ());
+    this();
+    setFrom(vec);
   }
 
   public void setFrom(float x, float y, float z)

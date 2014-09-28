@@ -7,7 +7,7 @@ import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Collision3D
   extends Collision<Vector3>
@@ -33,21 +33,15 @@ public class Collision3D
 
   private static CheckResult check(ICollidable firstPh, ICollidable secondPh)
   {
-    Vector<Vector3> firstNormals = firstPh.getGlobalNormals();
-    Vector<Vector3> secondNormals = secondPh.getGlobalNormals();
+    ArrayList<Plane> planes = getPlanes(firstPh, secondPh);
 
     Collision2D min = null;
     Plane minPlane = new Plane();
-    Plane plane = new Plane();
 
-    int count = firstNormals.size() + secondNormals.size();
-
-    for (int i = 0; i < count; i++)
+    for(Plane plane : planes)
     {
-      setPlane(plane, firstNormals, secondNormals, i);
-
-      Vector<Vector2> resultOne = firstPh.getConvexHull(plane);
-      Vector<Vector2> resultTwo = secondPh.getConvexHull(plane);
+      ArrayList<Vector2> resultOne = firstPh.getConvexHull(plane);
+      ArrayList<Vector2> resultTwo = secondPh.getConvexHull(plane);
 
       Collision2D collision = new Collision2D(resultOne, resultTwo);
       if (!collision.isCollide())
@@ -63,7 +57,36 @@ public class Collision3D
     return new CheckResult(min, minPlane);
   }
 
-  private static void setPlane(Plane plane, Vector<Vector3> firstNormals, Vector<Vector3> secondNormals, int num)
+  private static ArrayList<Plane> getPlanes(ICollidable firstPh, ICollidable secondPh)
+  {
+    ArrayList<Plane> planes = new ArrayList<Plane>();
+    ArrayList<Vector3> firstNormals = firstPh.getGlobalNormals();
+    ArrayList<Vector3> secondNormals = secondPh.getGlobalNormals();
+
+    int size = firstNormals.size() + secondNormals.size();
+
+    Plane plane = new Plane();
+    Plane xPlane = new Plane();
+    Plane yPlane = new Plane();
+
+    for(int i = 0; i < size; i++)
+    {
+      setPlane(plane, firstNormals, secondNormals, i);
+
+      xPlane.setFrom(plane.xAxis());
+      yPlane.setFrom(plane.yAxis());
+
+      if (!planes.contains(xPlane))
+        planes.add(new Plane(xPlane));
+
+      if (!planes.contains(yPlane))
+        planes.add(new Plane(yPlane));
+    }
+
+    return planes;
+  }
+
+  private static void setPlane(Plane plane, ArrayList<Vector3> firstNormals, ArrayList<Vector3> secondNormals, int num)
   {
     if (num < firstNormals.size())
       plane.setFrom(firstNormals.get(num));
