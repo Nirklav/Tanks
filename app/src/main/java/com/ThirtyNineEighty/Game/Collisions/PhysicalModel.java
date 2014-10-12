@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Objects;
+package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
 import android.util.Log;
@@ -26,6 +26,8 @@ public class PhysicalModel
 
   private ArrayList<Vector3> globalVertices;
   private ArrayList<Vector3> globalNormals;
+
+  private float radius;
 
   public PhysicalModel(String fileName)
   {
@@ -173,6 +175,11 @@ public class PhysicalModel
     return globalNormals;
   }
 
+  public float getRadius()
+  {
+    return radius;
+  }
+
   private void loadGeometry(String fileName)
   {
     try
@@ -213,15 +220,21 @@ public class PhysicalModel
         boolean needAdd = true;
         for(Vector3 current : normals)
         {
-          needAdd = !current.equals(normal);
-          needAdd &= !current.getCross(normal).equals(Vector3.zero);
-
+          needAdd = !current.getCross(normal).equals(Vector3.zero);
           if (!needAdd)
             break;
         }
 
         if (needAdd)
           normals.add(normal);
+      }
+
+      radius = 0.0f;
+      for(Vector3 current : vertices)
+      {
+        float currentLength = current.getLength();
+        if (currentLength > radius)
+          radius = currentLength;
       }
 
       globalVertices = createAndFill(vertices.size());

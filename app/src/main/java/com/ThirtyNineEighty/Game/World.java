@@ -2,7 +2,8 @@ package com.ThirtyNineEighty.Game;
 
 import android.view.MotionEvent;
 
-import com.ThirtyNineEighty.Game.Collide.CollideManager;
+import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
+import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -12,20 +13,22 @@ import com.ThirtyNineEighty.System.DeltaTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 public class World
 {
   protected ArrayList<IGameObject> objects;
-  protected AIManager aiManager;
-  protected CollideManager collideManager;
+
+  protected AI ai;
+  protected GameMenu menu;
+  protected CollisionManager collisionManager;
 
   private GameObject playerTank;
 
   public void initialize(String mapName)
   {
-    aiManager = new AIManager();
-    collideManager = new CollideManager();
+    ai = new AI();
+    menu = new GameMenu();
+    collisionManager = new CollisionManager();
 
     playerTank = new GameObject(0, this, "tank");
     playerTank.onMoved(-20);
@@ -41,64 +44,56 @@ public class World
     objects.add(land);
   }
 
-  public AIManager getAI()
+  public AI getAI()
   {
-    return aiManager;
+    return ai;
   }
 
   public I3DRenderable getCameraTarget()
   {
-    return playerTank.getVisualModel();
+    return playerTank.getRenderable();
   }
 
   public Collection<I3DRenderable> get3DRenderable()
   {
-    Vector<I3DRenderable> result = new Vector<I3DRenderable>();
+    ArrayList<I3DRenderable> result = new ArrayList<I3DRenderable>();
     for(IGameObject object : objects)
-      result.add(object.getVisualModel());
+      result.add(object.getRenderable());
 
     return result;
   }
 
   public Collection<I2DRenderable> get2DRenderable()
   {
-    return null;
+    return menu.getControls();
   }
 
   public void move(IGameObject gameObject, float length)
   {
-    collideManager.move(gameObject, objects, length);
+    collisionManager.move(gameObject, objects, length);
   }
 
   public void rotate(IGameObject gameObject, float angleX, float angleY, float angleZ)
   {
-    collideManager.rotate(gameObject, objects, angleX, angleY, angleZ);
+    collisionManager.rotate(gameObject, objects, angleX, angleY, angleZ);
   }
 
-  public void updatePlayer(MotionEvent event, float width, float height)
+  public boolean pushEvent(MotionEvent event, float width, float height)
   {
-    int pointerCount = event.getPointerCount();
-
-    for(int i = 0; i < pointerCount; i++)
-    {
-      float leftBorder = (1.0f / 3.0f) * width;
-      float rightBorder = (2.0f / 3.0f) * width;
-
-      float x = event.getX(i);
-
-      if (x > leftBorder && x < rightBorder)
-        playerTank.move(0.2f);//* DeltaTime.getDelta());
-
-      if (x <= leftBorder)
-        playerTank.rotate(0.0f, 0.0f, 45f * DeltaTime.getDelta());
-
-      if (x >= rightBorder)
-        playerTank.rotate(0.0f, 0.0f, -45f * DeltaTime.getDelta());
-    }
+    return menu.processEvent(event, width, height);
   }
 
   public void update()
   {
-    aiManager.update(objects);
+    if (menu.getForwardState())
+      playerTank.move(0.2f);//* DeltaTime.getDelta());
+
+    if (menu.getLeftState())
+      playerTank.rotate(0.0f, 0.0f, 45f * DeltaTime.getDelta());
+
+    if (menu.getRightState())
+      playerTank.rotate(0.0f, 0.0f, -45f * DeltaTime.getDelta());
+
+    ai.update(objects);
   }
 }

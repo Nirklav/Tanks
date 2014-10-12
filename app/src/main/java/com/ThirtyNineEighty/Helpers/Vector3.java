@@ -135,7 +135,7 @@ public class Vector3 extends Vector
 
     setFrom(-y, x, 0);
 
-    if (this.equals(Vector3.zero))
+    if (equals(Vector3.zero))
       setFrom(0, z, -y);
   }
 

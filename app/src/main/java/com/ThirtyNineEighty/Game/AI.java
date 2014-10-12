@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Game.Objects.IGameObject;
 
 import java.util.Collection;
 
-public final class AIManager
+public final class AI
 {
   public void update(Collection<IGameObject> object)
   {

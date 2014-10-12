@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
 
@@ -17,10 +18,14 @@ public interface IGameObject
   // properties
   long getId();
 
-  Vector3 getPosition();
+  float getRadius();
+
   float getAngleX();
   float getAngleY();
   float getAngleZ();
-  I3DRenderable getVisualModel();
-  ICollidable getPhysicalModel();
+
+  Vector3 getPosition();
+
+  I3DRenderable getRenderable();
+  ICollidable getCollidable();
 }

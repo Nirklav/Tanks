@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Collide;
+package com.ThirtyNineEighty.Game.Collisions;
 
 public abstract class Collision<T>
 {

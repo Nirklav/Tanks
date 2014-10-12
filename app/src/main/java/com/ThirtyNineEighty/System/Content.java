@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.System;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -7,7 +8,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import com.ThirtyNineEighty.Game.World;
-import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
@@ -17,9 +17,11 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
+import android.view.View;
 
 public class Content
-  implements GLSurfaceView.Renderer
+  implements GLSurfaceView.Renderer,
+             View.OnTouchListener
 {
   private boolean initialized = false;
 
@@ -33,10 +35,8 @@ public class Content
   private float[] projectionViewMatrix;
   private float[] lightPosition;
 
-  private Vector<I3DRenderable> renderable3DObjects;
-  private Vector<I2DRenderable> renderable2DObjects;
-
-  private MotionEvent.PointerProperties properties;
+  private ArrayList<I3DRenderable> renderable3DObjects;
+  private ArrayList<I2DRenderable> renderable2DObjects;
 
   public Content()
   {
@@ -45,20 +45,24 @@ public class Content
     viewMatrix = new float[16];
     projectionMatrix = new float[16];
     projectionViewMatrix = new float[16];
-    properties = new MotionEvent.PointerProperties();
 
     world = new World();
 
-    renderable3DObjects = new Vector<I3DRenderable>();
-    renderable2DObjects = new Vector<I2DRenderable>();
+    renderable3DObjects = new ArrayList<I3DRenderable>();
+    renderable2DObjects = new ArrayList<I2DRenderable>();
   }
 
-  public void Update(MotionEvent event)
+  @Override
+  public boolean onTouch(View v, MotionEvent event)
   {
-    if (!initialized || event == null)
+    return initialized && world.pushEvent(event, width, height);
+  }
+
+  public void onUpdate()
+  {
+    if (!initialized)
       return;
 
-    world.updatePlayer(event, width, height);
     world.update();
   }
 
@@ -67,8 +71,6 @@ public class Content
   {
     if (!initialized)
       return;
-
-    DeltaTime.UpdateTime();
 
     GLES20.glClearColor(0.0f, 0.0f, 0.0f ,1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -104,8 +106,6 @@ public class Content
   @Override
   public void onSurfaceChanged(GL10 egl, int width, int height)
   {
-    egl.glViewport(0, 0, width, height);
-
     GLES20.glEnable(GLES20.GL_CULL_FACE);
     GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     GLES20.glDepthFunc(GLES20.GL_LEQUAL);
@@ -113,9 +113,15 @@ public class Content
     GLES20.glEnable(GLES20.GL_BLEND);
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
+    egl.glViewport(0, 0, width, height);
+
     this.width = width;
     this.height = height;
+  }
 
+  @Override
+  public void onSurfaceCreated(GL10 egl, EGLConfig config)
+  {
     world.initialize(null);
 
     Collection<I3DRenderable> i3DRenderable = world.get3DRenderable();
@@ -128,11 +134,5 @@ public class Content
       renderable2DObjects.addAll(i2DRenderable);
 
     initialized = true;
-  }
-
-  @Override
-  public void onSurfaceCreated(GL10 egl, EGLConfig config)
-  {
-    Shader.setShader3D();
   }
 }

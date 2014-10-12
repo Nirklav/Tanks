@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Game.Collisions.ICollidable;
+import com.ThirtyNineEighty.Game.Collisions.PhysicalModel;
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.I3DRenderable;
@@ -8,10 +10,11 @@ import com.ThirtyNineEighty.Renderable.Model3D;
 public class GameObject
   implements IGameObject
 {
+  private World world;
+
+  private long id;
   private Model3D visualModel;
   private PhysicalModel physicalModel;
-  private World world;
-  private long id;
 
   public GameObject(int id, World world, String name)
   {
@@ -61,6 +64,12 @@ public class GameObject
   }
 
   @Override
+  public float getRadius()
+  {
+    return physicalModel.getRadius();
+  }
+
+  @Override
   public Vector3 getPosition()
   {
     return visualModel.getPosition();
@@ -85,13 +94,13 @@ public class GameObject
   }
 
   @Override
-  public I3DRenderable getVisualModel()
+  public I3DRenderable getRenderable()
   {
     return visualModel;
   }
 
   @Override
-  public ICollidable getPhysicalModel()
+  public ICollidable getCollidable()
   {
     physicalModel.setGlobal(visualModel.getPosition(), visualModel.getXAngle(), visualModel.getYAngle(), visualModel.getZAngle());
     return physicalModel;

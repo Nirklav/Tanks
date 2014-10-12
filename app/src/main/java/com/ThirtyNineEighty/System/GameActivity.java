@@ -5,15 +5,12 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class GameActivity
   extends Activity
-  implements View.OnTouchListener
 {
   private static final int FPS = 30;
 
@@ -21,8 +18,9 @@ public class GameActivity
   private Handler handler;
 
   private GLSurfaceView view;
-  private Content renderer;
-  private MotionEvent event;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  private Content content;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -30,8 +28,7 @@ public class GameActivity
     super.onCreate(savedInstanceState);
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     ActivityContext.setContext(this);
 
@@ -49,22 +46,16 @@ public class GameActivity
     view.setEGLConfigChooser(new ConfigChooser());
     view.setEGLConfigChooser(true);
 
-    //renderer init
-    renderer = new Content();
-    view.setRenderer(renderer);
+    // Content init
+    content = new Content();
+    view.setRenderer(content);
     view.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
+    // Set view
     setContentView(view);
     
-    //Bind listener and set view
-    view.setOnTouchListener(this);
-  }
-  
-  @Override
-  public boolean onTouch(View v, MotionEvent event)
-  {
-    this.event = event;
-    return true;
+    // Bind listener
+    view.setOnTouchListener(content);
   }
 
   private void requestRenderer()
@@ -73,7 +64,8 @@ public class GameActivity
     if(!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
-      renderer.Update(event);
+      DeltaTime.updateTime();
+      content.onUpdate();
       view.requestRender();
     }
   }

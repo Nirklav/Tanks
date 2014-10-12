@@ -1,8 +1,7 @@
-package com.ThirtyNineEighty.Game.Collide;
+package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Game.Objects.ICollidable;
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;

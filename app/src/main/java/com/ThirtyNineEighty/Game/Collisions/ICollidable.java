@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Objects;
+package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;

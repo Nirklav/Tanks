@@ -6,7 +6,7 @@ public class DeltaTime
   private static long delta;
   private static long lastTick;
 
-  public static float UpdateTime()
+  public static float updateTime()
   {
     long currentTick;
 

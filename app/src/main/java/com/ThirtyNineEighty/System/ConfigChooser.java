@@ -25,9 +25,7 @@ public class ConfigChooser implements EGLConfigChooser
     };
     
     if (!egl.eglChooseConfig(display, configSpec, null, 0, Value))
-    {
       throw new IllegalArgumentException("RGB888 eglChooseConfig failed");
-    }
     
     int numConfigs = Value[0];
     if (numConfigs <= 0)
@@ -42,20 +40,16 @@ public class ConfigChooser implements EGLConfigChooser
       };
       
       if (!egl.eglChooseConfig(display, configSpec, null, 0, Value))
-      {
         throw new IllegalArgumentException("RGB565 eglChooseConfig failed");
-      }
 
       numConfigs = Value[0];
 
       if (numConfigs <= 0)
-      {
         throw new IllegalArgumentException("No configs match configSpec RGB565");
-      }
     }
     
     EGLConfig[] configs = new EGLConfig[numConfigs];
-    egl.eglChooseConfig(display, configSpec, configs, numConfigs, Value); 
+    egl.eglChooseConfig(display, configSpec, configs, numConfigs, Value);
     return configs[0];
   }
 }
