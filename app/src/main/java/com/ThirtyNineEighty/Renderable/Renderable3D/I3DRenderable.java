@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Renderable3D;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
 

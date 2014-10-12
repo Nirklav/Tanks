@@ -2,15 +2,15 @@ package com.ThirtyNineEighty.System;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.I2DRenderable;
-import com.ThirtyNineEighty.Renderable.I3DRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable2D.Sprite;
+import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 
 import android.opengl.GLES20;
@@ -35,6 +35,8 @@ public class Content
   private float[] projectionViewMatrix;
   private float[] lightPosition;
 
+  private float[] orthoMatrix;
+
   private ArrayList<I3DRenderable> renderable3DObjects;
   private ArrayList<I2DRenderable> renderable2DObjects;
 
@@ -46,6 +48,8 @@ public class Content
     projectionMatrix = new float[16];
     projectionViewMatrix = new float[16];
 
+    orthoMatrix = new float[16];
+
     world = new World();
 
     renderable3DObjects = new ArrayList<I3DRenderable>();
@@ -55,7 +59,7 @@ public class Content
   @Override
   public boolean onTouch(View v, MotionEvent event)
   {
-    return initialized && world.pushEvent(event, width, height);
+    return initialized && world.processEvent(event, width, height);
   }
 
   public void onUpdate()
@@ -75,19 +79,19 @@ public class Content
     GLES20.glClearColor(0.0f, 0.0f, 0.0f ,1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-    I3DRenderable target = world.getCameraTarget();
-    Vector3 center = target.getPosition();
-    Vector3 eye = new Vector3(target.getPosition());
-    eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle())));
-    eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle())));
-    eye.addToZ(6);
-
-    Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
-    Matrix.perspectiveM(projectionMatrix, 0, 60.0f, width / height, 0.1f, 40.0f);
-    Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
     if (renderable3DObjects.size() != 0)
     {
+      I3DRenderable target = world.getCameraTarget();
+      Vector3 center = target.getPosition();
+      Vector3 eye = new Vector3(target.getPosition());
+      eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle())));
+      eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle())));
+      eye.addToZ(6);
+
+      Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
+      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, width / height, 0.1f, 40.0f);
+      Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
       Shader.setShader3D();
 
       for (I3DRenderable renderable : renderable3DObjects)
@@ -96,10 +100,15 @@ public class Content
 
     if (renderable2DObjects.size() != 0)
     {
+      float aspect = width / height;
+
+      Matrix.setIdentityM(orthoMatrix, 0);
+      Matrix.orthoM(orthoMatrix, 0, Sprite.left, Sprite.right, Sprite.bottom / aspect, Sprite.top / aspect, 0.0f, 1.0f);
+
       Shader.setShader2D();
 
       for (I2DRenderable renderable : renderable2DObjects)
-        renderable.draw();
+        renderable.draw(orthoMatrix);
     }
   }
   

@@ -14,6 +14,11 @@ public abstract class Shader
   private static Shader shader2D;
   private static Shader shader3D;
 
+  protected int shaderProgramHandle;
+
+  public abstract void compile();
+  protected abstract void getLocations();
+
   public static Shader getCurrent()
   {
     return current;
@@ -24,7 +29,7 @@ public abstract class Shader
     if (shader3D == null)
     {
       shader3D = new Shader3D();
-      shader3D.Compile();
+      shader3D.compile();
     }
 
     if (current != shader3D)
@@ -36,18 +41,23 @@ public abstract class Shader
 
   public static void setShader2D()
   {
-    current = null;
+    if (shader2D == null)
+    {
+      shader2D = new Shader2D();
+      shader2D.compile();
+    }
+
+    if (current != shader2D)
+    {
+      current = shader2D;
+      GLES20.glUseProgram(current.shaderProgramHandle);
+    }
   }
 
-  protected int shaderProgramHandle;
-
-  public abstract void Compile();
-  protected abstract void GetLocations();
-
-  protected void Compile(String vertexFileName, String fragmentFileName)
+  protected void compile(String vertexFileName, String fragmentFileName)
   {
-    int vertexShader    = CompileShader(GLES20.GL_VERTEX_SHADER, vertexFileName);
-    int fragmentShader  = CompileShader(GLES20.GL_FRAGMENT_SHADER, fragmentFileName);
+    int vertexShader    = compileShader(GLES20.GL_VERTEX_SHADER, vertexFileName);
+    int fragmentShader  = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentFileName);
     shaderProgramHandle = GLES20.glCreateProgram();
 
     GLES20.glAttachShader(shaderProgramHandle, vertexShader);
@@ -56,10 +66,10 @@ public abstract class Shader
 
     GLES20.glReleaseShaderCompiler();
 
-    GetLocations();
+    getLocations();
   }
 
-  private int CompileShader(int type, String path)
+  private int compileShader(int type, String path)
   {
     int shaderHandle = 0;
 

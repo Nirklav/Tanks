@@ -4,8 +4,8 @@ import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.PhysicalModel;
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.I3DRenderable;
-import com.ThirtyNineEighty.Renderable.Model3D;
+import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable3D.Model3D;
 
 public class GameObject
   implements IGameObject

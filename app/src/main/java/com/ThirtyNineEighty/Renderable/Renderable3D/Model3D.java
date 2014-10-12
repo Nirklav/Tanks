@@ -1,13 +1,13 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Renderable3D;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Renderable.Renderable;
+import com.ThirtyNineEighty.Renderable.Shader;
+import com.ThirtyNineEighty.Renderable.Shader3D;
 import com.ThirtyNineEighty.System.ActivityContext;
 
 import java.io.IOException;
@@ -38,7 +38,8 @@ public class Model3D implements I3DRenderable
     position = new Vector3();
 
     loadGeometry(geometryFileName);
-    loadTexture(textureFileName);
+
+    textureHandle = Renderable.loadTexture(textureFileName, true);
 
     needBuildMatrix = true;
   }
@@ -68,30 +69,30 @@ public class Model3D implements I3DRenderable
     // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
 
-    Shader3D shader = (Shader3D)Shader.getCurrent();
+    Shader3D shader = (Shader3D) Shader.getCurrent();
     // send uniform data to shader
-    GLES20.glUniform1i(shader.UniformTextureHandle, 0);
-    GLES20.glUniformMatrix4fv(shader.UniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
-    GLES20.glUniformMatrix4fv(shader.UniformMatrixHandle, 1, false, modelMatrix, 0);
-    GLES20.glUniform3f(shader.UniformLightVectorHandle, lightPosition[0], lightPosition[1], lightPosition[2]);
+    GLES20.glUniform1i(shader.uniformTextureHandle, 0);
+    GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
+    GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
+    GLES20.glUniform3f(shader.uniformLightVectorHandle, lightPosition[0], lightPosition[1], lightPosition[2]);
 
     // enable attribute arrays
-    GLES20.glEnableVertexAttribArray(shader.AttributePositionHandle);
-    GLES20.glEnableVertexAttribArray(shader.AttributeNormalHandle);
-    GLES20.glEnableVertexAttribArray(shader.AttributeTexCoordHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributeNormalHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
     // set offsets to arrays for buffer
-    GLES20.glVertexAttribPointer(shader.AttributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
-    GLES20.glVertexAttribPointer(shader.AttributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
-    GLES20.glVertexAttribPointer(shader.AttributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
+    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
+    GLES20.glVertexAttribPointer(shader.attributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
+    GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
 
     // draw
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numOfTriangles * 3);
 
     // disable attribute arrays
-    GLES20.glDisableVertexAttribArray(shader.AttributePositionHandle);
-    GLES20.glDisableVertexAttribArray(shader.AttributeNormalHandle);
-    GLES20.glDisableVertexAttribArray(shader.AttributeTexCoordHandle);
+    GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
+    GLES20.glDisableVertexAttribArray(shader.attributeNormalHandle);
+    GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
   private void tryBuildMatrix()
@@ -143,45 +144,6 @@ public class Model3D implements I3DRenderable
       bufferHandle = buffers[0];
     }
     catch(IOException e)
-    {
-      Log.e("Error", e.getMessage());
-    }
-  }
-
-  private void loadTexture(String fileName)
-  {
-    try
-    {
-      InputStream stream = ActivityContext.getContext().getAssets().open(fileName);
-      Bitmap bitmap = BitmapFactory.decodeStream(stream);
-      stream.close();
-
-      int type = GLUtils.getType(bitmap);
-      int format = GLUtils.getInternalFormat(bitmap);
-
-      int[] textures = new int[1];
-      GLES20.glGenTextures(1, textures, 0);
-      GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
-      GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, format, bitmap, type, 0);
-
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-
-      GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-
-      bitmap.recycle();
-
-      int error;
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        Log.e("Error", Integer.toString(error));
-
-      textureHandle = textures[0];
-    }
-    catch(Exception e)
     {
       Log.e("Error", e.getMessage());
     }

@@ -2,32 +2,33 @@ package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.GLES20;
 
-public class Shader3D extends Shader
+public class Shader3D
+  extends Shader
 {
-  public int AttributePositionHandle;
-  public int AttributeTexCoordHandle;
-  public int AttributeNormalHandle;
-  public int UniformMatrixProjectionHandle;
-  public int UniformMatrixHandle;
-  public int UniformTextureHandle;
-  public int UniformLightVectorHandle;
+  public int attributePositionHandle;
+  public int attributeTexCoordHandle;
+  public int attributeNormalHandle;
+  public int uniformMatrixProjectionHandle;
+  public int uniformMatrixHandle;
+  public int uniformTextureHandle;
+  public int uniformLightVectorHandle;
 
   @Override
-  public void Compile()
+  public void compile()
   {
-    Compile("Shaders/vertex.c", "Shaders/fragment.c");
+    compile("Shaders/vertex3D.c", "Shaders/fragment3D.c");
   }
 
   @Override
-  protected void GetLocations()
+  protected void getLocations()
   {
     //get shaders handles
-    AttributePositionHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_position");
-    AttributeTexCoordHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_texcoord");
-    AttributeNormalHandle         = GLES20.glGetAttribLocation(shaderProgramHandle, "a_normal");
-    UniformMatrixProjectionHandle = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewProjectionM");
-    UniformMatrixHandle           = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewM");
-    UniformLightVectorHandle      = GLES20.glGetUniformLocation(shaderProgramHandle, "u_light");
-    UniformTextureHandle          = GLES20.glGetUniformLocation(shaderProgramHandle, "u_texture");
+    attributePositionHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_position");
+    attributeTexCoordHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_texcoord");
+    attributeNormalHandle         = GLES20.glGetAttribLocation(shaderProgramHandle, "a_normal");
+    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewProjectionM");
+    uniformMatrixHandle           = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewM");
+    uniformLightVectorHandle      = GLES20.glGetUniformLocation(shaderProgramHandle, "u_light");
+    uniformTextureHandle          = GLES20.glGetUniformLocation(shaderProgramHandle, "u_texture");
   }
 }

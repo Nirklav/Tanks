@@ -7,8 +7,8 @@ import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.I2DRenderable;
-import com.ThirtyNineEighty.Renderable.I3DRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.DeltaTime;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class World
     collisionManager.rotate(gameObject, objects, angleX, angleY, angleZ);
   }
 
-  public boolean pushEvent(MotionEvent event, float width, float height)
+  public boolean processEvent(MotionEvent event, float width, float height)
   {
     return menu.processEvent(event, width, height);
   }
