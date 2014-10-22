@@ -65,21 +65,13 @@ public class Collision3D
     int size = firstNormals.size() + secondNormals.size();
 
     Plane plane = new Plane();
-    Plane xPlane = new Plane();
-    Plane yPlane = new Plane();
 
     for(int i = 0; i < size; i++)
     {
       setPlane(plane, firstNormals, secondNormals, i);
 
-      xPlane.setFrom(plane.xAxis());
-      yPlane.setFrom(plane.yAxis());
-
-      if (!planes.contains(xPlane))
-        planes.add(new Plane(xPlane));
-
-      if (!planes.contains(yPlane))
-        planes.add(new Plane(yPlane));
+      if (!planes.contains(plane))
+        planes.add(new Plane(plane));
     }
 
     return planes;
@@ -94,6 +86,8 @@ public class Collision3D
       num -= secondNormals.size();
       plane.setFrom(secondNormals.get(num));
     }
+
+    plane.swapZY();
   }
 
   private static Vector3 getMTV(CheckResult result)

@@ -1,0 +1,68 @@
+package com.ThirtyNineEighty.Game.Menu;
+
+import android.view.MotionEvent;
+
+import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+public abstract class BaseMenu
+  implements IMenu
+{
+  private ArrayList<IEventProcessor> processors;
+
+  protected BaseMenu()
+  {
+    processors = new ArrayList<IEventProcessor>();
+  }
+
+  protected void addEventProcessor(IEventProcessor processor)
+  {
+    processors.add(processor);
+  }
+
+  protected void removeEventProcessor(IEventProcessor processor)
+  {
+    processors.remove(processor);
+  }
+
+  @Override
+  public Collection<I2DRenderable> getControls()
+  {
+    return null;
+  }
+
+  @Override
+  public boolean processEvent(MotionEvent event, float width, float height)
+  {
+    int action = event.getActionMasked();
+    int pointerIndex = event.getActionIndex();
+
+    float x = event.getX(pointerIndex) / width;
+    float y = event.getY(pointerIndex) / height;
+    int id = event.getPointerId(pointerIndex);
+
+    switch (action)
+    {
+    case MotionEvent.ACTION_DOWN:
+    case MotionEvent.ACTION_POINTER_DOWN:
+      for(IEventProcessor processor : processors)
+      {
+        processor.processDown(id, x, y);
+      }
+      break;
+
+    case MotionEvent.ACTION_UP:
+    case MotionEvent.ACTION_POINTER_UP:
+    case MotionEvent.ACTION_CANCEL:
+      for(IEventProcessor processor : processors)
+      {
+        processor.processUp(id, x, y);
+      }
+      break;
+    }
+
+    return true;
+  }
+}

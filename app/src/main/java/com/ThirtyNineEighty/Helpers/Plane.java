@@ -66,6 +66,13 @@ public class Plane
     return result;
   }
 
+  public void swapZY()
+  {
+    Vector3 temp = xAxis;
+    xAxis = zAxis;
+    zAxis = temp;
+  }
+
   public Vector3 xAxis()
   {
     return xAxis;
