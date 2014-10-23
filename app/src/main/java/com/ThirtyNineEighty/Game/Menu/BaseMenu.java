@@ -28,13 +28,10 @@ public abstract class BaseMenu
   }
 
   @Override
-  public Collection<I2DRenderable> getControls()
-  {
-    return null;
-  }
+  public abstract Collection<I2DRenderable> getControls();
 
   @Override
-  public boolean processEvent(MotionEvent event, float width, float height)
+  public final boolean processEvent(MotionEvent event, float width, float height)
   {
     int action = event.getActionMasked();
     int pointerIndex = event.getActionIndex();
@@ -48,18 +45,19 @@ public abstract class BaseMenu
     case MotionEvent.ACTION_DOWN:
     case MotionEvent.ACTION_POINTER_DOWN:
       for(IEventProcessor processor : processors)
-      {
         processor.processDown(id, x, y);
-      }
+      break;
+
+    case MotionEvent.ACTION_MOVE:
+      for(IEventProcessor processor : processors)
+        processor.processMove(id, x, y);
       break;
 
     case MotionEvent.ACTION_UP:
     case MotionEvent.ACTION_POINTER_UP:
     case MotionEvent.ACTION_CANCEL:
       for(IEventProcessor processor : processors)
-      {
         processor.processUp(id, x, y);
-      }
       break;
     }
 

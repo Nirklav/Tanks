@@ -9,6 +9,7 @@ import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -25,14 +26,18 @@ public class Sprite implements I2DRenderable
 
   static
   {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(numIndices * 2);
-    buffer.putShort((short)0);
-    buffer.putShort((short)2);
-    buffer.putShort((short)1);
-    buffer.putShort((short)0);
-    buffer.putShort((short)3);
-    buffer.putShort((short)2);
-    indices = buffer.asShortBuffer();
+    indices = ByteBuffer.allocateDirect(numIndices * 2)
+                        .order(ByteOrder.nativeOrder())
+                        .asShortBuffer();
+
+    indices.put((short) 0)
+           .put((short) 2)
+           .put((short) 1)
+           .put((short) 0)
+           .put((short) 3)
+           .put((short) 2);
+
+    indices.position(0);
   }
 
   private FloatBuffer vertices;
@@ -49,9 +54,9 @@ public class Sprite implements I2DRenderable
 
   private int textureHandle;
 
-  public Sprite(String fileName)
+  public Sprite(String atlasName)
   {
-    textureHandle = Renderable.loadTexture(fileName, false);
+    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", atlasName), false);
 
     modelMatrix = new float[16];
     modelOrthoViewMatrix = new float[16];
@@ -119,7 +124,9 @@ public class Sprite implements I2DRenderable
   public void setSize(float width, float height)
   {
     if (vertices == null)
-      vertices = FloatBuffer.allocate(12);
+      vertices = ByteBuffer.allocateDirect(12 * 4)
+                           .order(ByteOrder.nativeOrder())
+                           .asFloatBuffer();
 
     vertices.put(0, width / 2);
     vertices.put(1, height / 2);
@@ -138,7 +145,9 @@ public class Sprite implements I2DRenderable
   public void setTextureCoordinates(float x, float y, float width, float height)
   {
     if (textureCoordinates == null)
-      textureCoordinates = FloatBuffer.allocate(8);
+      textureCoordinates = ByteBuffer.allocateDirect(8 * 4)
+                                     .order(ByteOrder.nativeOrder())
+                                     .asFloatBuffer();
 
     textureCoordinates.put(0, x + width);
     textureCoordinates.put(1, y);
@@ -151,5 +160,35 @@ public class Sprite implements I2DRenderable
 
     textureCoordinates.put(6, x);
     textureCoordinates.put(7, y);
+  }
+
+  public void setPosition(Vector2 value)
+  {
+    position = value;
+  }
+
+  public Vector2 getPosition()
+  {
+    return position;
+  }
+
+  public void setAngle(float value)
+  {
+    angle = value;
+  }
+
+  public float getAngle()
+  {
+    return angle;
+  }
+
+  public void setZIndex(float value)
+  {
+    zIndex = value;
+  }
+
+  public float getZIndex()
+  {
+    return zIndex;
   }
 }

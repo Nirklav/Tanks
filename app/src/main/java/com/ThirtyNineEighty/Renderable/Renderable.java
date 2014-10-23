@@ -9,11 +9,17 @@ import android.util.Log;
 import com.ThirtyNineEighty.System.ActivityContext;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
 public final class Renderable
 {
+  private static HashMap<String, Integer> cache = new HashMap<String, Integer>();
+
   public static int loadTexture(String fileName, boolean generateMipmap)
   {
+    if (cache.containsKey(fileName))
+      return cache.get(fileName);
+
     try
     {
       InputStream stream = ActivityContext.getContext().getAssets().open(fileName);
@@ -43,6 +49,8 @@ public final class Renderable
       int error;
       if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
         Log.e("Error", Integer.toString(error));
+
+      cache.put(fileName, textures[0]);
 
       return textures[0];
     }
