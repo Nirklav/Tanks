@@ -6,7 +6,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import com.ThirtyNineEighty.System.ActivityContext;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public final class Renderable
 
     try
     {
-      InputStream stream = ActivityContext.getContext().getAssets().open(fileName);
+      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
       Bitmap bitmap = BitmapFactory.decodeStream(stream);
       stream.close();
 

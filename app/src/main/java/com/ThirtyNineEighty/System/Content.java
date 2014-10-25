@@ -9,7 +9,6 @@ import javax.microedition.khronos.opengles.GL10;
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
-import com.ThirtyNineEighty.Renderable.Renderable2D.Sprite;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 
@@ -26,9 +25,6 @@ public class Content
   private boolean initialized = false;
 
   private World world;
-
-  private float width;
-  private float height;
 
   private float[] viewMatrix;
   private float[] projectionMatrix;
@@ -59,7 +55,7 @@ public class Content
   @Override
   public boolean onTouch(View v, MotionEvent event)
   {
-    return initialized && world.processEvent(event, width, height);
+    return initialized && world.processEvent(event);
   }
 
   public void onUpdate()
@@ -89,7 +85,7 @@ public class Content
       eye.addToZ(6);
 
       Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
-      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, width / height, 0.1f, 40.0f);
+      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 40.0f);
       Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
       Shader.setShader3D();
@@ -100,10 +96,13 @@ public class Content
 
     if (renderable2DObjects.size() != 0)
     {
-      float aspect = width / height;
+      float width = GameContext.getWidth();
+      float left = width / -2f;
+      float right = width / 2f;
+      float top = width / (2f * GameContext.getAspect());
+      float bottom = width / (-2f * GameContext.getAspect());
 
-      Matrix.setIdentityM(orthoMatrix, 0);
-      Matrix.orthoM(orthoMatrix, 0, Sprite.left, Sprite.right, Sprite.bottom / aspect, Sprite.top / aspect, 0.0f, 1.0f);
+      Matrix.orthoM(orthoMatrix, 0, left, right, top, bottom, 0.1f, -5.0f);
 
       Shader.setShader2D();
 
@@ -115,17 +114,17 @@ public class Content
   @Override
   public void onSurfaceChanged(GL10 egl, int width, int height)
   {
-    GLES20.glEnable(GLES20.GL_CULL_FACE);
-    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-    GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-    GLES20.glEnable(GLES20.GL_ALPHA);
-    GLES20.glEnable(GLES20.GL_BLEND);
-    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+    GameContext.setWidth(width);
+    GameContext.setHeight(height);
+
+    egl.glEnable(GLES20.GL_CULL_FACE);
+    egl.glEnable(GLES20.GL_DEPTH_TEST);
+    egl.glDepthFunc(GLES20.GL_LEQUAL);
+    egl.glEnable(GLES20.GL_ALPHA);
+    egl.glEnable(GLES20.GL_BLEND);
+    egl.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
     egl.glViewport(0, 0, width, height);
-
-    this.width = width;
-    this.height = height;
   }
 
   @Override

@@ -9,7 +9,7 @@ import com.ThirtyNineEighty.Game.Objects.IGameObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.System.DeltaTime;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,9 +78,9 @@ public class World
     collisionManager.rotate(gameObject, objects, angleX, angleY, angleZ);
   }
 
-  public boolean processEvent(MotionEvent event, float width, float height)
+  public boolean processEvent(MotionEvent event)
   {
-    return menu.processEvent(event, width, height);
+    return menu.processEvent(event);
   }
 
   public void update()
@@ -89,10 +89,10 @@ public class World
       playerTank.move(0.2f);//* DeltaTime.getDelta());
 
     if (menu.getLeftState())
-      playerTank.rotate(0.0f, 0.0f, 45f * DeltaTime.getDelta());
+      playerTank.rotate(0.0f, 0.0f, 45f * GameContext.getDelta());
 
     if (menu.getRightState())
-      playerTank.rotate(0.0f, 0.0f, -45f * DeltaTime.getDelta());
+      playerTank.rotate(0.0f, 0.0f, -45f * GameContext.getDelta());
 
     ai.update(objects);
   }

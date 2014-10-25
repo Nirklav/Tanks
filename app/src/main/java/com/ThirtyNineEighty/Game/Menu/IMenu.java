@@ -9,5 +9,5 @@ import java.util.Collection;
 public interface IMenu
 {
   Collection<I2DRenderable> getControls();
-  boolean processEvent(MotionEvent event, float width, float height);
+  boolean processEvent(MotionEvent event);
 }

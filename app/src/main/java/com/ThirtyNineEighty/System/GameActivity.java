@@ -30,7 +30,7 @@ public class GameActivity
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-    ActivityContext.setContext(this);
+    GameContext.setAppContext(this);
 
     handler = new Handler();
 
@@ -64,7 +64,7 @@ public class GameActivity
     if(!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
-      DeltaTime.updateTime();
+      GameContext.updateTime();
       content.onUpdate();
       view.requestRender();
     }

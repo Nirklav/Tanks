@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,7 @@ public class GameMenu extends BaseMenu
   {
     super();
 
-    Button button = new Button(0, 0, 40, 40);
+    Button button = new Button(0, 0, 600, 600);
 
     addEventProcessor((forwardProcessor = new VerticalEventProcessor(0.33f, 0.66f)));
     addEventProcessor((leftProcessor = new VerticalEventProcessor(0f, 0.33f)));
@@ -73,6 +74,9 @@ public class GameMenu extends BaseMenu
     @Override
     public void processDown(int pointerId, float x, float y)
     {
+      float leftBorder = this.leftBorder * GameContext.getWidth();
+      float rightBorder = this.rightBorder * GameContext.getWidth();
+
       if (x > leftBorder && x < rightBorder)
       {
         state = true;

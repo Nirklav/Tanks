@@ -6,7 +6,7 @@ import android.util.Log;
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.System.ActivityContext;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,7 +184,7 @@ public class PhysicalModel
   {
     try
     {
-      InputStream stream = ActivityContext.getContext().getAssets().open(fileName);
+      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
 
       int size = stream.available();
       byte[] data = new byte[size];

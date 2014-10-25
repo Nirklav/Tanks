@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Renderable;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.ThirtyNineEighty.System.ActivityContext;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +77,7 @@ public abstract class Shader
     {
       //load shader source
       shaderHandle = GLES20.glCreateShader(type);
-      InputStream stream = ActivityContext.getContext().getAssets().open(path);
+      InputStream stream = GameContext.getAppContext().getAssets().open(path);
       int size = stream.available();
       byte[] buffer = new byte[size];
       int readCount = stream.read(buffer);

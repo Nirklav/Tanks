@@ -15,12 +15,6 @@ import java.nio.ShortBuffer;
 
 public class Sprite implements I2DRenderable
 {
-  public static final float left = -960f;
-  public static final float right = 960f;
-
-  public static final float top = 640;
-  public static final float bottom = -640;
-
   private static final int numIndices = 6;
   private static ShortBuffer indices;
 
@@ -30,14 +24,12 @@ public class Sprite implements I2DRenderable
                         .order(ByteOrder.nativeOrder())
                         .asShortBuffer();
 
-    indices.put((short) 0)
-           .put((short) 2)
-           .put((short) 1)
-           .put((short) 0)
-           .put((short) 3)
-           .put((short) 2);
-
-    indices.position(0);
+    indices.put(0, (short) 0)
+           .put(1, (short) 2)
+           .put(2, (short) 1)
+           .put(3, (short) 0)
+           .put(4, (short) 3)
+           .put(5, (short) 2);
   }
 
   private FloatBuffer vertices;
@@ -81,7 +73,7 @@ public class Sprite implements I2DRenderable
     tryBuildMatrix();
 
     // build result matrix
-    Matrix.multiplyMM(modelOrthoViewMatrix, 0, orthoViewMatrix, 0, modelMatrix, 0);
+    Matrix.multiplyMM(modelOrthoViewMatrix, 0, modelMatrix, 0, orthoViewMatrix, 0);
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -91,7 +83,7 @@ public class Sprite implements I2DRenderable
 
     // send data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, textureHandle);
-    GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
+    GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelOrthoViewMatrix, 0);
 
     GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 8, textureCoordinates);
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertices);
@@ -115,7 +107,6 @@ public class Sprite implements I2DRenderable
 
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), zIndex);
-
     Matrix.rotateM(modelMatrix, 0, angle, 0.0f, 0.0f, 1.0f);
 
     needBuildMatrix = false;
@@ -128,18 +119,18 @@ public class Sprite implements I2DRenderable
                            .order(ByteOrder.nativeOrder())
                            .asFloatBuffer();
 
-    vertices.put(0, width / 2);
-    vertices.put(1, height / 2);
-    vertices.put(2, 0.0f);
-    vertices.put(3, width / 2);
-    vertices.put(4, -height / 2);
-    vertices.put(5, 0.0f);
-    vertices.put(6, -width / 2);
-    vertices.put(7, -height / 2);
-    vertices.put(8, 0.0f);
-    vertices.put(9, -width / 2);
-    vertices.put(10, height / 2);
-    vertices.put(11, 0.0f);
+    vertices.put(0, width / 2)
+            .put(1, height / 2)
+            .put(2, 0.0f)
+            .put(3, width / 2)
+            .put(4, -height / 2)
+            .put(5, 0.0f)
+            .put(6, -width / 2)
+            .put(7, -height / 2)
+            .put(8, 0.0f)
+            .put(9, -width / 2)
+            .put(10, height / 2)
+            .put(11, 0.0f);
   }
 
   public void setTextureCoordinates(float x, float y, float width, float height)
@@ -149,17 +140,25 @@ public class Sprite implements I2DRenderable
                                      .order(ByteOrder.nativeOrder())
                                      .asFloatBuffer();
 
-    textureCoordinates.put(0, x + width);
-    textureCoordinates.put(1, y);
+    textureCoordinates.put(0, x + width)
+                      .put(1, y)
+                      .put(2, x + width)
+                      .put(3, y + height)
+                      .put(4, x)
+                      .put(5, y + height)
+                      .put(6, x)
+                      .put(7, y);
+  }
 
-    textureCoordinates.put(2, x + width);
-    textureCoordinates.put(3, y + height);
+  public void setPosition(float x, float y)
+  {
+    if (position != null)
+    {
+      position.setFrom(x, y);
+      return;
+    }
 
-    textureCoordinates.put(4, x);
-    textureCoordinates.put(5, y + height);
-
-    textureCoordinates.put(6, x);
-    textureCoordinates.put(7, y);
+    position = new Vector2(x, y);
   }
 
   public void setPosition(Vector2 value)

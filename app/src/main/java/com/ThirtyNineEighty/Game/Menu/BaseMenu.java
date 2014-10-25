@@ -31,13 +31,13 @@ public abstract class BaseMenu
   public abstract Collection<I2DRenderable> getControls();
 
   @Override
-  public final boolean processEvent(MotionEvent event, float width, float height)
+  public final boolean processEvent(MotionEvent event)
   {
     int action = event.getActionMasked();
     int pointerIndex = event.getActionIndex();
 
-    float x = event.getX(pointerIndex) / width;
-    float y = event.getY(pointerIndex) / height;
+    float x = event.getX(pointerIndex);
+    float y = event.getY(pointerIndex);
     int id = event.getPointerId(pointerIndex);
 
     switch (action)

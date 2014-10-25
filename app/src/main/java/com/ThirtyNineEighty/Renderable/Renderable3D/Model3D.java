@@ -8,7 +8,7 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
-import com.ThirtyNineEighty.System.ActivityContext;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,7 +114,7 @@ public class Model3D implements I3DRenderable
   {
     try
     {
-      InputStream stream = ActivityContext.getContext().getAssets().open(fileName);
+      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
 
       int size = stream.available();
       byte[] data = new byte[size];
