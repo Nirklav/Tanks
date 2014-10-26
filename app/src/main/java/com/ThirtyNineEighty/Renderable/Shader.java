@@ -14,7 +14,9 @@ public abstract class Shader
   private static Shader shader2D;
   private static Shader shader3D;
 
-  protected int shaderProgramHandle;
+  protected int vertexShaderHandle;
+  protected int fragmentShaderHandle;
+  protected int programHandle;
 
   public abstract void compile();
   protected abstract void getLocations();
@@ -24,45 +26,75 @@ public abstract class Shader
     return current;
   }
 
+  public static void initShader3D()
+  {
+    if (shader3D != null)
+      shader3D.deleteProgram();
+
+    shader3D = new Shader3D();
+    shader3D.compile();
+  }
+
+  public static void initShader2D()
+  {
+    if (shader2D != null)
+      shader2D.deleteProgram();
+
+    shader2D = new Shader2D();
+    shader2D.compile();
+  }
+
   public static void setShader3D()
   {
-    if (shader3D == null)
-    {
-      shader3D = new Shader3D();
-      shader3D.compile();
-    }
+    if (current == shader3D)
+      return;
 
-    if (current != shader3D)
-    {
-      current = shader3D;
-      GLES20.glUseProgram(current.shaderProgramHandle);
-    }
+    current = shader3D;
+    GLES20.glUseProgram(current.programHandle);
   }
 
   public static void setShader2D()
   {
-    if (shader2D == null)
+    if (current == shader2D)
+      return;
+
+    current = shader2D;
+    GLES20.glUseProgram(current.programHandle);
+  }
+
+  public boolean validateProgram()
+  {
+    if (!GameContext.isDebuggable())
+      return true;
+
+    int[] result = new int[1];
+
+    GLES20.glValidateProgram(programHandle);
+    GLES20.glGetProgramiv(programHandle, GLES20.GL_VALIDATE_STATUS, result, 0);
+
+    boolean validated = result[0] != 0;
+    if (!validated)
     {
-      shader2D = new Shader2D();
-      shader2D.compile();
+      Log.e("Shader", "Program do not validated!");
+
+      if (!GLES20.glIsProgram(programHandle))
+        Log.e("Shader", "Program handle deprecated!");
     }
 
-    if (current != shader2D)
-    {
-      current = shader2D;
-      GLES20.glUseProgram(current.shaderProgramHandle);
-    }
+    return validated;
   }
 
   protected void compile(String vertexFileName, String fragmentFileName)
   {
-    int vertexShader    = compileShader(GLES20.GL_VERTEX_SHADER, vertexFileName);
-    int fragmentShader  = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentFileName);
-    shaderProgramHandle = GLES20.glCreateProgram();
+    Log.d("Shader", String.format("compiler called for [vertex: %s, fragment: %s]", vertexFileName, fragmentFileName));
 
-    GLES20.glAttachShader(shaderProgramHandle, vertexShader);
-    GLES20.glAttachShader(shaderProgramHandle, fragmentShader);
-    GLES20.glLinkProgram(shaderProgramHandle);
+    vertexShaderHandle    = compileShader(GLES20.GL_VERTEX_SHADER, vertexFileName);
+    fragmentShaderHandle  = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentFileName);
+    programHandle = GLES20.glCreateProgram();
+
+    GLES20.glAttachShader(programHandle, vertexShaderHandle);
+    GLES20.glAttachShader(programHandle, fragmentShaderHandle);
+    GLES20.glLinkProgram(programHandle);
 
     GLES20.glReleaseShaderCompiler();
 
@@ -107,5 +139,12 @@ public abstract class Shader
     }
 
     return shaderHandle;
+  }
+
+  private void deleteProgram()
+  {
+    GLES20.glDeleteShader(vertexShaderHandle);
+    GLES20.glDeleteShader(fragmentShaderHandle);
+    GLES20.glDeleteProgram(programHandle);
   }
 }

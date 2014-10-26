@@ -20,9 +20,9 @@ public class Shader2D
   protected void getLocations()
   {
     //get shaders handles
-    attributePositionHandle = GLES20.glGetAttribLocation(shaderProgramHandle, "a_position");
-    attributeTexCoordHandle = GLES20.glGetAttribLocation(shaderProgramHandle, "a_texcoord");
-    uniformMatrixHandle     = GLES20.glGetUniformLocation(shaderProgramHandle, "u_matrix");
-    uniformTextureHandle    = GLES20.glGetUniformLocation(shaderProgramHandle, "u_texture");
+    attributePositionHandle = GLES20.glGetAttribLocation(programHandle, "a_position");
+    attributeTexCoordHandle = GLES20.glGetAttribLocation(programHandle, "a_texcoord");
+    uniformMatrixHandle     = GLES20.glGetUniformLocation(programHandle, "u_matrix");
+    uniformTextureHandle    = GLES20.glGetUniformLocation(programHandle, "u_texture");
   }
 }

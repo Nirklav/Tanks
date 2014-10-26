@@ -5,6 +5,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,34 +35,33 @@ public class GameActivity
 
     handler = new Handler();
 
+    // Content init
+    content = new Content();
+
     //OpenGL init
     view = new GLSurfaceView(this);
-    view.setPreserveEGLContextOnPause(true);
-    SurfaceHolder holder = view.getHolder();
-
-    if (holder != null)
-      holder.setFormat(PixelFormat.RGBA_8888);
-
     view.setEGLContextClientVersion(2);
     view.setEGLConfigChooser(new ConfigChooser());
     view.setEGLConfigChooser(true);
-
-    // Content init
-    content = new Content();
+    view.setPreserveEGLContextOnPause(true);
     view.setRenderer(content);
     view.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
-    // Set view
-    setContentView(view);
-    
+    SurfaceHolder holder = view.getHolder();
+    if (holder != null)
+      holder.setFormat(PixelFormat.RGBA_8888);
+
     // Bind listener
     view.setOnTouchListener(content);
+
+    // Set view
+    setContentView(view);
   }
 
   private void requestRenderer()
   {
     handler.removeCallbacks(drawRunnable);
-    if(!pause)
+    if (!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
       GameContext.updateTime();

@@ -67,7 +67,7 @@ public class Content
   }
 
   @Override
-  public void onDrawFrame(GL10 egl)
+  public void onDrawFrame(GL10 gl)
   {
     if (!initialized)
       return;
@@ -102,7 +102,7 @@ public class Content
       float top = width / (2f * GameContext.getAspect());
       float bottom = width / (-2f * GameContext.getAspect());
 
-      Matrix.orthoM(orthoMatrix, 0, left, right, top, bottom, 0.1f, -5.0f);
+      Matrix.orthoM(orthoMatrix, 0, left, right, bottom, top, -1, 1);
 
       Shader.setShader2D();
 
@@ -112,23 +112,26 @@ public class Content
   }
   
   @Override
-  public void onSurfaceChanged(GL10 egl, int width, int height)
+  public void onSurfaceChanged(GL10 gl, int width, int height)
   {
     GameContext.setWidth(width);
     GameContext.setHeight(height);
 
-    egl.glEnable(GLES20.GL_CULL_FACE);
-    egl.glEnable(GLES20.GL_DEPTH_TEST);
-    egl.glDepthFunc(GLES20.GL_LEQUAL);
-    egl.glEnable(GLES20.GL_ALPHA);
-    egl.glEnable(GLES20.GL_BLEND);
-    egl.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+    GLES20.glEnable(GLES20.GL_CULL_FACE);
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+    GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+    GLES20.glEnable(GLES20.GL_ALPHA);
+    GLES20.glEnable(GLES20.GL_BLEND);
+    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-    egl.glViewport(0, 0, width, height);
+    GLES20.glViewport(0, 0, width, height);
+
+    Shader.initShader3D();
+    Shader.initShader2D();
   }
 
   @Override
-  public void onSurfaceCreated(GL10 egl, EGLConfig config)
+  public void onSurfaceCreated(GL10 gl, EGLConfig config)
   {
     world.initialize(null);
 

@@ -15,7 +15,7 @@ public class Button
     sprite = new Sprite("button");
     sprite.setPosition(x, y);
     sprite.setSize(width, height);
-    sprite.setZIndex(-1.0f);
+    sprite.setZIndex(0.5f);
   }
 
   @Override

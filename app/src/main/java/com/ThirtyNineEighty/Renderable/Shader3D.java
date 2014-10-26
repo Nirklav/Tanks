@@ -23,12 +23,12 @@ public class Shader3D
   protected void getLocations()
   {
     //get shaders handles
-    attributePositionHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_position");
-    attributeTexCoordHandle       = GLES20.glGetAttribLocation(shaderProgramHandle, "a_texcoord");
-    attributeNormalHandle         = GLES20.glGetAttribLocation(shaderProgramHandle, "a_normal");
-    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewProjectionM");
-    uniformMatrixHandle           = GLES20.glGetUniformLocation(shaderProgramHandle, "u_ModelViewM");
-    uniformLightVectorHandle      = GLES20.glGetUniformLocation(shaderProgramHandle, "u_light");
-    uniformTextureHandle          = GLES20.glGetUniformLocation(shaderProgramHandle, "u_texture");
+    attributePositionHandle       = GLES20.glGetAttribLocation(programHandle, "a_position");
+    attributeTexCoordHandle       = GLES20.glGetAttribLocation(programHandle, "a_texcoord");
+    attributeNormalHandle         = GLES20.glGetAttribLocation(programHandle, "a_normal");
+    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(programHandle, "u_ModelViewProjectionM");
+    uniformMatrixHandle           = GLES20.glGetUniformLocation(programHandle, "u_ModelViewM");
+    uniformLightVectorHandle      = GLES20.glGetUniformLocation(programHandle, "u_light");
+    uniformTextureHandle          = GLES20.glGetUniformLocation(programHandle, "u_texture");
   }
 }

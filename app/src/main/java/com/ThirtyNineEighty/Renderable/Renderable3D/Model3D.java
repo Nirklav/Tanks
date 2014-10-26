@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import javax.microedition.khronos.egl.EGLContext;
+
 public class Model3D implements I3DRenderable
 {
   private float[] modelProjectionViewMatrix;
@@ -70,11 +72,12 @@ public class Model3D implements I3DRenderable
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
 
     Shader3D shader = (Shader3D) Shader.getCurrent();
+
     // send uniform data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
-    GLES20.glUniform3f(shader.uniformLightVectorHandle, lightPosition[0], lightPosition[1], lightPosition[2]);
+    GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, lightPosition, 0);
 
     // enable attribute arrays
     GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
@@ -85,6 +88,9 @@ public class Model3D implements I3DRenderable
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
     GLES20.glVertexAttribPointer(shader.attributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
     GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
+
+    // validating if debug
+    shader.validateProgram();
 
     // draw
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numOfTriangles * 3);

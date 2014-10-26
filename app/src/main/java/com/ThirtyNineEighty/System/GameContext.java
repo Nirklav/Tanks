@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.System;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 
 public class GameContext
 {
@@ -9,6 +10,8 @@ public class GameContext
   private static long lastTick;
 
   private static Context appContext;
+
+  private static boolean isDebaggable;
 
   private static float width;
   private static float height;
@@ -21,6 +24,8 @@ public class GameContext
   public static void setAppContext(Context value)
   {
     appContext = value;
+
+    isDebaggable = 0 != (appContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE);
   }
 
   public static float updateTime()
@@ -39,6 +44,11 @@ public class GameContext
     lastTick = currentTick;
 
     return delta / 1000.0f;
+  }
+
+  public static boolean isDebuggable()
+  {
+    return isDebaggable;
   }
 
   public static float getAspect()
