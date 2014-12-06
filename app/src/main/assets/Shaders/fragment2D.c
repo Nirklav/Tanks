@@ -1,6 +1,6 @@
 uniform sampler2D u_texture;
 
-varying mediump vec2 v_texcoord;
+varying highp vec2 v_texcoord;
 
 void main (void)
 {

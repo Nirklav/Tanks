@@ -8,14 +8,23 @@ public class Button
   implements I2DRenderable,
              IEventProcessor
 {
+  private int pointerId;
+  private boolean state;
+
   private Sprite sprite;
+
+  private IClickListener clickListener;
 
   public Button(float x, float y, float width, float height)
   {
     sprite = new Sprite("button");
     sprite.setPosition(x, y);
     sprite.setSize(width, height);
-    sprite.setZIndex(0.5f);
+  }
+
+  public void close()
+  {
+    sprite.close();
   }
 
   @Override
@@ -24,6 +33,9 @@ public class Button
     super.finalize();
     sprite.finalize();
   }
+
+  public void setClickListener(IClickListener listener) { clickListener = listener; }
+  public boolean getState() { return state; }
 
   @Override
   public void draw(float[] orthoViewMatrix)
@@ -34,7 +46,8 @@ public class Button
   @Override
   public void processDown(int pointerId, float x, float y)
   {
-
+    state = true;
+    this.pointerId = pointerId;
   }
 
   @Override
@@ -46,6 +59,17 @@ public class Button
   @Override
   public void processUp(int pointerId, float x, float y)
   {
+    if (this.pointerId == pointerId)
+    {
+      state = false;
 
+      if (clickListener != null)
+        clickListener.onClick();
+    }
+  }
+
+  public interface IClickListener
+  {
+    void onClick();
   }
 }

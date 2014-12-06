@@ -19,7 +19,7 @@ public class GameMenu extends BaseMenu
   {
     super();
 
-    Button button = new Button(0, 0, 600, 600);
+    Button button = new Button(-910, -490, 100, 100);
 
     addEventProcessor((forwardProcessor = new VerticalEventProcessor(0.33f, 0.66f)));
     addEventProcessor((leftProcessor = new VerticalEventProcessor(0f, 0.33f)));
@@ -94,7 +94,10 @@ public class GameMenu extends BaseMenu
     public void processUp(int pointerId, float x, float y)
     {
       if (this.pointerId == pointerId)
+      {
+        this.pointerId = 0;
         state = false;
+      }
     }
   }
 }

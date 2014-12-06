@@ -50,7 +50,7 @@ public abstract class Shader
       return;
 
     current = shader3D;
-    GLES20.glUseProgram(current.programHandle);
+    GLES20.glUseProgram(shader3D.programHandle);
   }
 
   public static void setShader2D()
@@ -59,7 +59,7 @@ public abstract class Shader
       return;
 
     current = shader2D;
-    GLES20.glUseProgram(current.programHandle);
+    GLES20.glUseProgram(shader2D.programHandle);
   }
 
   public boolean validateProgram()
@@ -75,10 +75,10 @@ public abstract class Shader
     boolean validated = result[0] != 0;
     if (!validated)
     {
-      Log.e("Shader", "Program do not validated!");
+      Log.e("Error", "Program do not validated!");
 
       if (!GLES20.glIsProgram(programHandle))
-        Log.e("Shader", "Program handle deprecated!");
+        Log.e("Error", "Program handle deprecated!");
     }
 
     return validated;

@@ -61,4 +61,9 @@ public final class Renderable
       return 0;
     }
   }
+
+  public static void clearCache()
+  {
+    cache.clear();
+  }
 }

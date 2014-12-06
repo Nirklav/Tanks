@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
+import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.IGameObject;
@@ -30,10 +31,10 @@ public class World
     menu = new GameMenu();
     collisionManager = new CollisionManager();
 
-    playerTank = new GameObject(0, this, "tank");
+    playerTank = new Tank(0, this);
     playerTank.onMoved(-20);
 
-    GameObject otherTank = new GameObject(1, this, "tank");
+    GameObject otherTank = new Tank(1, this);
     GameObject land = new GameObject(2, this, "land");
 
     land.onMoved(Vector3.zAxis, -0.8f);

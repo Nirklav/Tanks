@@ -8,6 +8,7 @@ public class Shader3D
   public int attributePositionHandle;
   public int attributeTexCoordHandle;
   public int attributeNormalHandle;
+
   public int uniformMatrixProjectionHandle;
   public int uniformMatrixHandle;
   public int uniformTextureHandle;

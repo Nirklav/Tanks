@@ -8,6 +8,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
@@ -15,6 +16,7 @@ import com.ThirtyNineEighty.Renderable.Shader;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -72,7 +74,7 @@ public class Content
     if (!initialized)
       return;
 
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f ,1.0f);
+    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
     if (renderable3DObjects.size() != 0)
@@ -102,6 +104,7 @@ public class Content
       float top = width / (2f * GameContext.getAspect());
       float bottom = width / (-2f * GameContext.getAspect());
 
+      Matrix.setIdentityM(orthoMatrix, 0);
       Matrix.orthoM(orthoMatrix, 0, left, right, bottom, top, -1, 1);
 
       Shader.setShader2D();
@@ -109,6 +112,10 @@ public class Content
       for (I2DRenderable renderable : renderable2DObjects)
         renderable.draw(orthoMatrix);
     }
+
+    int error = GLES20.glGetError();
+    if (error != GLES20.GL_NO_ERROR)
+      Log.e("Error", "OpenGL error. Code: " + Integer.toString(error));
   }
   
   @Override
@@ -119,20 +126,16 @@ public class Content
 
     GLES20.glEnable(GLES20.GL_CULL_FACE);
     GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-    GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-    GLES20.glEnable(GLES20.GL_ALPHA);
     GLES20.glEnable(GLES20.GL_BLEND);
+    GLES20.glDepthFunc(GLES20.GL_LEQUAL);
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-
     GLES20.glViewport(0, 0, width, height);
 
     Shader.initShader3D();
     Shader.initShader2D();
-  }
 
-  @Override
-  public void onSurfaceCreated(GL10 gl, EGLConfig config)
-  {
+    Renderable.clearCache();
+
     world.initialize(null);
 
     Collection<I3DRenderable> i3DRenderable = world.get3DRenderable();
@@ -145,5 +148,15 @@ public class Content
       renderable2DObjects.addAll(i2DRenderable);
 
     initialized = true;
+
+    int error = GLES20.glGetError();
+    if (error != GLES20.GL_NO_ERROR)
+      Log.e("Error", "OpenGL error. Code: " + Integer.toString(error));
+  }
+
+  @Override
+  public void onSurfaceCreated(GL10 gl, EGLConfig config)
+  {
+
   }
 }

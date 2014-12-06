@@ -1,13 +1,14 @@
-uniform mat4 u_matrix;
+uniform mat4 u_modelViewMatrix;
+uniform mat3 u_texMatrix;
 
-attribute mediump vec2 a_texcoord;
+attribute highp vec2 a_texcoord;
 attribute highp vec4 a_position;
 
-varying mediump vec2 v_texcoord;
+varying highp vec2 v_texcoord;
 
 void main()
 {
-   v_texcoord = a_texcoord;
+   v_texcoord = (u_texMatrix * vec3(a_texcoord, 1.0)).xy;
 
-   gl_Position = u_matrix * a_position;
+   gl_Position = u_modelViewMatrix * a_position;
 }

@@ -2,43 +2,72 @@ package com.ThirtyNineEighty.Renderable.Renderable2D;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 public class Sprite implements I2DRenderable
 {
-  private FloatBuffer vertices;
-  private FloatBuffer texCoords;
+  private static float[] bufferData = new float[]
+  {
+    -1,  1, 0, 0,
+    -1, -1, 0, 1,
+     1,  1, 1, 0,
+    -1, -1, 0, 1,
+     1, -1, 1, 1,
+     1,  1, 1, 0,
+  };
 
   private float[] modelMatrix;
-  private float[] modelOrthoViewMatrix;
+  private float[] modelViewMatrix;
+
+  private Matrix3f textureMatrix;
 
   private boolean needBuildMatrix;
 
   private Vector2 position;
   private float angle;
   private float zIndex;
+  private float width;
+  private float height;
 
   private int textureHandle;
+  private int bufferHandle;
 
-  public Sprite(String atlasName)
+  private boolean closed;
+
+  public Sprite(String textureName)
   {
-    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", atlasName), false);
+    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), false);
+    bufferHandle = setBuffer();
 
     modelMatrix = new float[16];
-    modelOrthoViewMatrix = new float[16];
+    modelViewMatrix = new float[16];
+    textureMatrix = new Matrix3f();
+    position = new Vector2(0f, 0f);
 
-    setSize(1.0f, 1.0f);
-    setTextureCoordinates(0.0f, 0.0f, 1.0f, 1.0f);
+    setSize(1, 1);
+    setTextureCoordinates(0f, 0f, 1f, 1f);
 
     needBuildMatrix = true;
+  }
+
+  public void close()
+  {
+    if (closed)
+      return;
+
+    closed = true;
+
+    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
+    GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
   }
 
   @Override
@@ -46,29 +75,32 @@ public class Sprite implements I2DRenderable
   {
     super.finalize();
 
-    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
+    close();
   }
 
   @Override
-  public void draw(float[] orthoViewMatrix)
+  public void draw(float[] viewMatrix)
   {
     tryBuildMatrix();
 
     // build result matrix
-    Matrix.multiplyMM(modelOrthoViewMatrix, 0, orthoViewMatrix, 0, modelMatrix, 0);
+    Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
 
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
+
     Shader2D shader = (Shader2D)Shader.getCurrent();
 
     // send data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
-    GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelOrthoViewMatrix, 0);
+    GLES20.glUniformMatrix3fv(shader.uniformTextureMatrixHandle, 1, false, textureMatrix.getArray(), 0);
+    GLES20.glUniformMatrix4fv(shader.uniformModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
 
-    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertices);
-    GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 8, texCoords);
+    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, 0);
+    GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, 8);
 
     // enable arrays
     GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
@@ -92,73 +124,47 @@ public class Sprite implements I2DRenderable
 
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), zIndex);
-    Matrix.rotateM(modelMatrix, 0, angle, 0.0f, 0.0f, 1.0f);
+    Matrix.rotateM(modelMatrix, 0, angle, 0.0f, 0.0f, 1);
+    Matrix.scaleM(modelMatrix, 0, width / 2, height / 2, 1);
 
     needBuildMatrix = false;
   }
 
+  private int setBuffer()
+  {
+    Buffer data = ByteBuffer.allocateDirect(bufferData.length * 4)
+                            .order(ByteOrder.nativeOrder())
+                            .asFloatBuffer()
+                            .put(bufferData)
+                            .position(0);
+
+    int[] buffers = new int[1];
+    GLES20.glGenBuffers(1, buffers, 0);
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers[0]);
+    GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, data.capacity() * 4, data, GLES20.GL_STATIC_DRAW);
+
+    return buffers[0];
+  }
+
   public void setSize(float width, float height)
   {
-    if (vertices == null)
-      vertices = ByteBuffer.allocateDirect(18 * 4)
-                           .order(ByteOrder.nativeOrder())
-                           .asFloatBuffer();
+    this.width = width;
+    this.height = height;
 
-    vertices.put(width / 2)   // 0
-            .put(height / 2)
-            .put(0.0f)
-            .put(-width / 2)  // 2
-            .put(-height / 2)
-            .put(0.0f)
-            .put(width / 2)   // 1
-            .put(-height / 2)
-            .put(0.0f)
-            .put(width / 2)   // 0
-            .put(height / 2)
-            .put(0.0f)
-            .put(-width / 2)  // 3
-            .put(height / 2)
-            .put(0.0f)
-            .put(-width / 2)  // 2
-            .put(-height / 2)
-            .put(0.0f);
-
-    vertices.position(0);
+    needBuildMatrix = true;
   }
 
   public void setTextureCoordinates(float x, float y, float width, float height)
   {
-    if (texCoords == null)
-      texCoords = ByteBuffer.allocateDirect(12 * 4)
-                            .order(ByteOrder.nativeOrder())
-                            .asFloatBuffer();
-
-    texCoords.put(x + width) // 0
-             .put(y)
-             .put(x)         // 2
-             .put(y + height)
-             .put(x + width) // 1
-             .put(y + height)
-             .put(x + width) // 0
-             .put(y)
-             .put(x)         // 3
-             .put(y)
-             .put(x)         // 2
-             .put(y + height);
-
-    texCoords.position(0);
+    textureMatrix.loadIdentity();
+    textureMatrix.translate(x, y);
+    textureMatrix.scale(width, height);
   }
 
   public void setPosition(float x, float y)
   {
-    if (position != null)
-    {
-      position.setFrom(x, y);
-      needBuildMatrix = true;
-      return;
-    }
+    position.setFrom(x, y);
 
-    position = new Vector2(x, y);
     needBuildMatrix = true;
   }
 

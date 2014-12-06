@@ -25,7 +25,8 @@ public class GameContext
   {
     appContext = value;
 
-    isDebaggable = 0 != (appContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE);
+    int flags = appContext.getApplicationInfo().flags;
+    isDebaggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
   }
 
   public static float updateTime()

@@ -7,7 +7,9 @@ public class Shader2D
 {
   public int attributePositionHandle;
   public int attributeTexCoordHandle;
-  public int uniformMatrixHandle;
+
+  public int uniformModelViewMatrixHandle;
+  public int uniformTextureMatrixHandle;
   public int uniformTextureHandle;
 
   @Override
@@ -20,9 +22,10 @@ public class Shader2D
   protected void getLocations()
   {
     //get shaders handles
-    attributePositionHandle = GLES20.glGetAttribLocation(programHandle, "a_position");
-    attributeTexCoordHandle = GLES20.glGetAttribLocation(programHandle, "a_texcoord");
-    uniformMatrixHandle     = GLES20.glGetUniformLocation(programHandle, "u_matrix");
-    uniformTextureHandle    = GLES20.glGetUniformLocation(programHandle, "u_texture");
+    attributePositionHandle       = GLES20.glGetAttribLocation(programHandle, "a_position");
+    attributeTexCoordHandle       = GLES20.glGetAttribLocation(programHandle, "a_texcoord");
+    uniformModelViewMatrixHandle  = GLES20.glGetUniformLocation(programHandle, "u_modelViewMatrix");
+    uniformTextureMatrixHandle    = GLES20.glGetUniformLocation(programHandle, "u_texMatrix");
+    uniformTextureHandle          = GLES20.glGetUniformLocation(programHandle, "u_texture");
   }
 }

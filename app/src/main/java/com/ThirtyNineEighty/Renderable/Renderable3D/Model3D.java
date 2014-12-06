@@ -15,8 +15,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.microedition.khronos.egl.EGLContext;
-
 public class Model3D implements I3DRenderable
 {
   private float[] modelProjectionViewMatrix;
@@ -33,17 +31,29 @@ public class Model3D implements I3DRenderable
 
   private boolean needBuildMatrix;
 
-  public Model3D(String geometryFileName, String textureFileName)
+  private boolean closed;
+
+  public Model3D(String geometryName, String textureName)
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
     position = new Vector3();
 
-    loadGeometry(geometryFileName);
-
-    textureHandle = Renderable.loadTexture(textureFileName, true);
+    loadGeometry(geometryName);
+    textureHandle = Renderable.loadTexture(textureName, true);
 
     needBuildMatrix = true;
+  }
+
+  public void close()
+  {
+    if (closed)
+      return;
+
+    closed = true;
+
+    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
+    GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
   }
 
   @Override
@@ -51,8 +61,7 @@ public class Model3D implements I3DRenderable
   {
     super.finalize();
 
-    GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
-    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
+    close();
   }
 
   @Override
@@ -79,15 +88,15 @@ public class Model3D implements I3DRenderable
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
     GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, lightPosition, 0);
 
-    // enable attribute arrays
-    GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
-    GLES20.glEnableVertexAttribArray(shader.attributeNormalHandle);
-    GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
-
     // set offsets to arrays for buffer
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
     GLES20.glVertexAttribPointer(shader.attributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
     GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
+
+    // enable attribute arrays
+    GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributeNormalHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
     // validating if debug
     shader.validateProgram();
@@ -128,13 +137,13 @@ public class Model3D implements I3DRenderable
       stream.close();
 
       ByteBuffer dataBuffer = ByteBuffer.allocateDirect(size - 4);
+      dataBuffer.order(ByteOrder.nativeOrder());
       dataBuffer.put(data, 4, size - 4);
-      dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
       dataBuffer.position(0);
 
       ByteBuffer numBuffer = ByteBuffer.allocateDirect(4);
+      numBuffer.order(ByteOrder.nativeOrder());
       numBuffer.put(data, 0, 4);
-      numBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
       numOfTriangles = numBuffer.getInt(0);
 
