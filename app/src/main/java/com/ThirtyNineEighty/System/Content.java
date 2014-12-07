@@ -1,13 +1,13 @@
 package com.ThirtyNineEighty.System;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.ThirtyNineEighty.Game.World;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Game.Menu.IMenu;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
@@ -26,14 +26,15 @@ public class Content
 {
   private boolean initialized = false;
 
-  private World world;
-
   private float[] viewMatrix;
   private float[] projectionMatrix;
   private float[] projectionViewMatrix;
   private float[] lightPosition;
 
   private float[] orthoMatrix;
+
+  private IWorld world;
+  private IMenu menu;
 
   private ArrayList<I3DRenderable> renderable3DObjects;
   private ArrayList<I2DRenderable> renderable2DObjects;
@@ -48,16 +49,21 @@ public class Content
 
     orthoMatrix = new float[16];
 
-    world = new World();
-
     renderable3DObjects = new ArrayList<I3DRenderable>();
     renderable2DObjects = new ArrayList<I2DRenderable>();
+  }
+
+  public void setWorld(IWorld value)
+  {
+    world = value;
+    world.initialize(this, null);
+    menu = world.getMenu();
   }
 
   @Override
   public boolean onTouch(View v, MotionEvent event)
   {
-    return initialized && world.processEvent(event);
+    return initialized && menu.processEvent(event);
   }
 
   public void onUpdate()
@@ -77,16 +83,11 @@ public class Content
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
+    renderable3DObjects.clear();
+    world.fillRenderable(renderable3DObjects);
     if (renderable3DObjects.size() != 0)
     {
-      I3DRenderable target = world.getCameraTarget();
-      Vector3 center = target.getPosition();
-      Vector3 eye = new Vector3(target.getPosition());
-      eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(target.getZAngle())));
-      eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(target.getZAngle())));
-      eye.addToZ(6);
-
-      Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
+      world.setViewMatrix(viewMatrix);
       Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 40.0f);
       Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
@@ -96,6 +97,8 @@ public class Content
         renderable.draw(projectionViewMatrix, lightPosition);
     }
 
+    renderable2DObjects.clear();
+    menu.fillRenderable(renderable2DObjects);
     if (renderable2DObjects.size() != 0)
     {
       Matrix.setIdentityM(orthoMatrix, 0);
@@ -130,16 +133,7 @@ public class Content
 
     Renderable.clearCache();
 
-    world.initialize(null);
-
-    Collection<I3DRenderable> i3DRenderable = world.get3DRenderable();
-    Collection<I2DRenderable> i2DRenderable = world.get2DRenderable();
-
-    if (i3DRenderable != null)
-      renderable3DObjects.addAll(i3DRenderable);
-
-    if (i2DRenderable != null)
-      renderable2DObjects.addAll(i2DRenderable);
+    setWorld(new GameWorld());
 
     initialized = true;
 

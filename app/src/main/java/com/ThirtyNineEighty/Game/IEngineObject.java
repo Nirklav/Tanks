@@ -1,29 +1,22 @@
-package com.ThirtyNineEighty.Game.Objects;
+package com.ThirtyNineEighty.Game;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
-public interface IGameObject
+public interface IEngineObject
 {
   // manage
   void move(float length);
-  void rotate(float angleX, float angleY, float angleZ);
+  void rotate(Vector3 angles);
 
   // callbacks
   void onMoved(float length);
   void onMoved(Vector3 vector, float length);
-  void onRotates(float angleX, float angleY, float angleZ);
+  void onRotates(Vector3 angles);
 
   // properties
-  long getId();
-
-  float getRadius();
-
-  float getAngleX();
-  float getAngleY();
-  float getAngleZ();
-
+  Vector3 getAngles();
   Vector3 getPosition();
 
   I3DRenderable getRenderable();

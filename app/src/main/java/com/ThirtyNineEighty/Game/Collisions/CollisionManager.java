@@ -1,38 +1,38 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Game.Objects.IGameObject;
+import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
 
 import java.util.Collection;
 
 public class CollisionManager
 {
-  public void move(IGameObject object, Collection<IGameObject> objects, float length)
+  public void move(IEngineObject object, Collection<IEngineObject> objects, float length)
   {
     object.onMoved(length);
 
     resolve(object, objects);
   }
 
-  public void rotate(IGameObject object, Collection<IGameObject> objects, float angleX, float angleY, float angleZ)
+  public void rotate(IEngineObject object, Collection<IEngineObject> objects, Vector3 angles)
   {
-    object.onRotates(angleX, angleY, angleZ);
+    object.onRotates(angles);
 
     resolve(object, objects);
   }
 
-  private void resolve(IGameObject object, Collection<IGameObject> objects)
+  private void resolve(IEngineObject object, Collection<IEngineObject> objects)
   {
-    for(IGameObject current : objects)
+    for(IEngineObject current : objects)
     {
-      if (object.getId() == current.getId())
-        continue;
-
-      if (object.getRadius() + current.getRadius() < getLength(object, current))
+      if (object == current)
         continue;
 
       ICollidable firstPh = object.getCollidable();
       ICollidable secondPh = current.getCollidable();
+
+      if (firstPh.getRadius() + secondPh.getRadius() < getLength(object, current))
+        continue;
 
       Collision3D collision = new Collision3D(firstPh, secondPh);
 
@@ -41,7 +41,7 @@ public class CollisionManager
     }
   }
 
-  private float getLength(IGameObject one, IGameObject two)
+  private float getLength(IEngineObject one, IEngineObject two)
   {
     Vector3 positionOne = one.getPosition();
     Vector3 positionTwo = two.getPosition();

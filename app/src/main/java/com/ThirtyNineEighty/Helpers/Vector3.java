@@ -139,6 +139,13 @@ public class Vector3 extends Vector
       setFrom(0, z, -y);
   }
 
+  public void add(Vector3 other)
+  {
+    setFrom(getX() + other.getX(),
+            getY() + other.getY(),
+            getZ() + other.getZ());
+  }
+
   public void subtract(Vector3 other)
   {
     setFrom(getX() - other.getX(),
@@ -171,6 +178,13 @@ public class Vector3 extends Vector
   {
     Vector3 result = new Vector3(this);
     result.orthogonal();
+    return result;
+  }
+
+  public Vector3 getSum(Vector3 other)
+  {
+    Vector3 result = new Vector3(this);
+    result.add(other);
     return result;
   }
 

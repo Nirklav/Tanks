@@ -135,14 +135,14 @@ public class Collidable
   }
 
   @Override
-  public void setGlobal(Vector3 position, float angleX, float angleY, float angleZ)
+  public void setGlobal(Vector3 position, Vector3 angles)
   {
     // vertices
     Matrix.setIdentityM(matrix, 0);
     Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());
-    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    Matrix.rotateM(matrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
 
     int size = vertices.size();
     for (int i = 0; i < size; i++)
@@ -154,9 +154,9 @@ public class Collidable
 
     // normals
     Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, angleX, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleY, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angleZ, 0.0f, 0.0f, 1.0f);
+    Matrix.rotateM(matrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
 
     size = normals.size();
     for(int i = 0; i < size; i++)
@@ -171,9 +171,11 @@ public class Collidable
 
   @Override
   public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
+
   @Override
   public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
 
+  @Override
   public float getRadius() { return radius; }
 
   private void loadGeometry(String fileName)

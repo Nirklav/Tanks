@@ -19,17 +19,10 @@ public class Model3D implements I3DRenderable
 {
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
-  private Vector3 position;
-
-  private float xAngle;
-  private float yAngle;
-  private float zAngle;
 
   private int textureHandle;
   private int bufferHandle;
   private int numOfTriangles;
-
-  private boolean needBuildMatrix;
 
   private boolean closed;
 
@@ -37,12 +30,9 @@ public class Model3D implements I3DRenderable
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
-    position = new Vector3();
 
     loadGeometry(geometryName);
     textureHandle = Renderable.loadTexture(textureName, true);
-
-    needBuildMatrix = true;
   }
 
   public void close()
@@ -67,9 +57,6 @@ public class Model3D implements I3DRenderable
   @Override
   public void draw(float[] projectionViewMatrix, float[] lightPosition)
   {
-    // if modelMatrix need rebuilding - rebuild it
-    tryBuildMatrix();
-
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, projectionViewMatrix, 0, modelMatrix, 0);
 
@@ -110,19 +97,14 @@ public class Model3D implements I3DRenderable
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
-  private void tryBuildMatrix()
+  public void setGlobal(Vector3 position, Vector3 angles)
   {
-    if (!needBuildMatrix)
-      return;
-
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), position.getZ());
 
-    Matrix.rotateM(modelMatrix, 0, xAngle, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(modelMatrix, 0, yAngle, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(modelMatrix, 0, zAngle, 0.0f, 0.0f, 1.0f);
-
-    needBuildMatrix = false;
+    Matrix.rotateM(modelMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
   }
 
   private void loadGeometry(String fileName)
@@ -162,98 +144,5 @@ public class Model3D implements I3DRenderable
     {
       Log.e("Error", e.getMessage());
     }
-  }
-
-  @Override
-  public Vector3 getPosition() { return position; }
-
-  public void setPosition(Vector3 position)
-  {
-    this.position = position;
-
-    needBuildMatrix = true;
-  }
-
-  public void move(float length)
-  {
-    Vector3 vector = new Vector3();
-    float[] translateMatrix = new float[16];
-    Matrix.setIdentityM(translateMatrix, 0);
-
-    Matrix.rotateM(translateMatrix, 0, xAngle, 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, yAngle, 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, zAngle, 0.0f, 0.0f, 1.0f);
-
-    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, Vector3.xAxis.getRaw(), 0);
-
-    move(vector, length);
-  }
-
-  public void move(Vector3 vector, float length)
-  {
-    position.addToX(vector.getX() * length);
-    position.addToY(vector.getY() * length);
-    position.addToZ(vector.getZ() * length);
-
-    needBuildMatrix = true;
-  }
-
-  @Override
-  public float getXAngle() { return xAngle; }
-
-  public void setXAngle(float value)
-  {
-    xAngle = value;
-    needBuildMatrix = true;
-  }
-
-  @Override
-  public float getYAngle() { return yAngle; }
-
-  public void setYAngle(float value)
-  {
-    yAngle = value;
-    needBuildMatrix = true;
-  }
-
-  @Override
-  public float getZAngle() { return zAngle; }
-
-  public void setZAngle(float value)
-  {
-    zAngle = value;
-    needBuildMatrix = true;
-  }
-
-  public void rotateAboutX(float angle)
-  {
-    xAngle += angle;
-    xAngle = CorrectAngle(xAngle);
-    needBuildMatrix = true;
-  }
-
-  public void rotateAboutY(float angle)
-  {
-    yAngle += angle;
-    yAngle = CorrectAngle(yAngle);
-    needBuildMatrix = true;
-  }
-
-  public void rotateAboutZ(float angle)
-  {
-    zAngle += angle;
-    zAngle = CorrectAngle(zAngle);
-    needBuildMatrix = true;
-  }
-
-  private float CorrectAngle(float angle)
-  {
-    if (angle < 0.0f)
-      angle += 360.0f;
-
-    if (angle >= 360.0f)
-      angle -= 360.0f;
-
-    return angle;
   }
 }

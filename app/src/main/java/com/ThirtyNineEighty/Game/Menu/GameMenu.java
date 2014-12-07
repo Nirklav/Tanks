@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class GameMenu extends BaseMenu
 {
@@ -26,9 +26,10 @@ public class GameMenu extends BaseMenu
   }
 
   @Override
-  public Collection<I2DRenderable> getControls()
+  public void fillRenderable(List<I2DRenderable> renderables)
   {
-    return controls;
+    for(I2DRenderable renderable : controls)
+      renderables.add(renderable);
   }
 
   public boolean getForwardState() { return forwardButton.getState(); }

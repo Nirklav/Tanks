@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public abstract class BaseMenu
   implements IMenu
@@ -29,7 +29,7 @@ public abstract class BaseMenu
   }
 
   @Override
-  public abstract Collection<I2DRenderable> getControls();
+  public abstract void fillRenderable(List<I2DRenderable> renderables);
 
   @Override
   public final boolean processEvent(MotionEvent event)

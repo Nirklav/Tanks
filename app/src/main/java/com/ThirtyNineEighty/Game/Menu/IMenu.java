@@ -4,10 +4,10 @@ import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface IMenu
 {
-  Collection<I2DRenderable> getControls();
+  void fillRenderable(List<I2DRenderable> renderables);
   boolean processEvent(MotionEvent event);
 }

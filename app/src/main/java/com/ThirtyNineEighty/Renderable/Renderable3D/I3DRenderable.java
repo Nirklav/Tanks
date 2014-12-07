@@ -6,8 +6,5 @@ public interface I3DRenderable
 {
   void draw(float[] modelProjectionViewMatrix, float[] light);
 
-  Vector3 getPosition();
-  float getXAngle();
-  float getYAngle();
-  float getZAngle();
+  void setGlobal(Vector3 position, Vector3 angles);
 }
