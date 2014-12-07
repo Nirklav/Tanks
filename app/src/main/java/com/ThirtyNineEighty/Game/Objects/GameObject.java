@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
-import com.ThirtyNineEighty.Game.Collisions.PhysicalModel;
+import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Game.World;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
@@ -14,12 +14,12 @@ public class GameObject
 
   private long id;
   private Model3D visualModel;
-  private PhysicalModel physicalModel;
+  private Collidable physicalModel;
 
   public GameObject(int id, World world, String name)
   {
     visualModel = new Model3D(String.format("Models/%s.raw", name), String.format("Textures/%s.png", name));
-    physicalModel = new PhysicalModel(String.format("Models/%s.ph", name));
+    physicalModel = new Collidable(String.format("Models/%s.ph", name));
 
     this.id = id;
     this.world = world;

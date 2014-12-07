@@ -98,14 +98,8 @@ public class Content
 
     if (renderable2DObjects.size() != 0)
     {
-      float width = GameContext.getWidth();
-      float left = width / -2f;
-      float right = width / 2f;
-      float top = width / (2f * GameContext.getAspect());
-      float bottom = width / (-2f * GameContext.getAspect());
-
       Matrix.setIdentityM(orthoMatrix, 0);
-      Matrix.orthoM(orthoMatrix, 0, left, right, bottom, top, -1, 1);
+      Matrix.orthoM(orthoMatrix, 0, GameContext.Left, GameContext.Right, GameContext.Bottom, GameContext.Top, -1, 1);
 
       Shader.setShader2D();
 

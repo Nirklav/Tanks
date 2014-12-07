@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,8 +37,8 @@ public abstract class BaseMenu
     int action = event.getActionMasked();
     int pointerIndex = event.getActionIndex();
 
-    float x = event.getX(pointerIndex);
-    float y = event.getY(pointerIndex);
+    float x = event.getX(pointerIndex) - GameContext.EtalonWidth / 2;
+    float y = - (event.getY(pointerIndex) - GameContext.EtalonHeight / 2);
     int id = event.getPointerId(pointerIndex);
 
     switch (action)

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class PhysicalModel
+public class Collidable
   implements ICollidable
 {
   private float[] matrix;
@@ -29,7 +29,7 @@ public class PhysicalModel
 
   private float radius;
 
-  public PhysicalModel(String fileName)
+  public Collidable(String fileName)
   {
     loadGeometry(fileName);
     matrix = new float[16];
@@ -51,13 +51,19 @@ public class PhysicalModel
     projection.remove(second);
     convexHull.add(second);
 
+    Vector2 prevVector = new Vector2();
+    Vector2 currentVector = new Vector2();
+
     for(Vector2 current : projection)
     {
       Vector2 firstPrevPoint = convexHull.get(convexHull.size() - 1);
       Vector2 secondPrevPoint = convexHull.get(convexHull.size() - 2);
 
-      Vector2 prevVector = firstPrevPoint.getSubtract(secondPrevPoint);
-      Vector2 currentVector = current.getSubtract(firstPrevPoint);
+      prevVector.setFrom(firstPrevPoint);
+      prevVector.subtract(secondPrevPoint);
+
+      currentVector.setFrom(current);
+      currentVector.subtract(firstPrevPoint);
 
       float angle = prevVector.getAngle(currentVector);
       if (angle >= 180 && angle < 360)
@@ -164,21 +170,11 @@ public class PhysicalModel
   }
 
   @Override
-  public ArrayList<Vector3> getGlobalVertices()
-  {
-    return globalVertices;
-  }
-
+  public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
   @Override
-  public ArrayList<Vector3> getGlobalNormals()
-  {
-    return globalNormals;
-  }
+  public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
 
-  public float getRadius()
-  {
-    return radius;
-  }
+  public float getRadius() { return radius; }
 
   private void loadGeometry(String fileName)
   {

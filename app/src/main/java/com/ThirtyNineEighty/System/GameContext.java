@@ -5,28 +5,34 @@ import android.content.pm.ApplicationInfo;
 
 public class GameContext
 {
+  public static final float EtalonHeight = 1080f;
+  public static final float EtalonWidth  = 1920f;
+  public static final float EtalonAspect = EtalonWidth / EtalonHeight;
+
+  public static final float Left = EtalonWidth / -2f;
+  public static final float Right = EtalonWidth / 2f;
+  public static final float Bottom = EtalonHeight / -2f;
+  public static final float Top = EtalonHeight / 2f;
+
   private static boolean isFirst;
   private static long delta;
   private static long lastTick;
 
   private static Context appContext;
 
-  private static boolean isDebaggable;
+  private static boolean debuggable;
 
   private static float width;
   private static float height;
 
-  public static Context getAppContext()
-  {
-    return appContext;
-  }
+  public static Context getAppContext() { return appContext; }
 
   public static void setAppContext(Context value)
   {
     appContext = value;
 
     int flags = appContext.getApplicationInfo().flags;
-    isDebaggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    debuggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
   }
 
   public static float updateTime()
@@ -47,38 +53,11 @@ public class GameContext
     return delta / 1000.0f;
   }
 
-  public static boolean isDebuggable()
-  {
-    return isDebaggable;
-  }
-
-  public static float getAspect()
-  {
-    return width / height;
-  }
-
-  public static float getDelta()
-  {
-    return delta / 1000.0f;
-  }
-
-  public static float getWidth()
-  {
-    return width;
-  }
-
-  public static void setWidth(float width)
-  {
-    GameContext.width = width;
-  }
-
-  public static float getHeight()
-  {
-    return height;
-  }
-
-  public static void setHeight(float height)
-  {
-    GameContext.height = height;
-  }
+  public static boolean isDebuggable() { return debuggable; }
+  public static float getAspect() { return width / height; }
+  public static float getDelta() { return delta / 1000.0f; }
+  public static float getWidth() { return width; }
+  public static void setWidth(float value) { width = value; }
+  public static float getHeight() { return height; }
+  public static void setHeight(float value) { height = value; }
 }
