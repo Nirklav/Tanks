@@ -5,10 +5,10 @@ package com.ThirtyNineEighty.Helpers;
  */
 public class Vector3 extends Vector
 {
-  public static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
-  public static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
-  public static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
-  public static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
+  public final static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
+  public final static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
+  public final static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
+  public final static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
 
   protected float[] value;
 
@@ -222,5 +222,11 @@ public class Vector3 extends Vector
   public void set(int num, float v)
   {
     value[num] = v;
+  }
+
+  @Override
+  public int getSize()
+  {
+    return 3;
   }
 }

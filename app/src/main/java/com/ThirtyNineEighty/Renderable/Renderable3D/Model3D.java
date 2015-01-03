@@ -31,8 +31,8 @@ public class Model3D implements I3DRenderable
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
 
-    loadGeometry(geometryName);
-    textureHandle = Renderable.loadTexture(textureName, true);
+    loadGeometry(String.format("Models/%s.raw", geometryName));
+    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), true);
   }
 
   public void close()

@@ -1,12 +1,9 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Game.Menu.IEventProcessor;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable2D.Sprite;
 
 public class Button
-  implements I2DRenderable,
-             IEventProcessor
+  implements IControl
 {
   private int pointerId;
   private boolean state;
@@ -30,6 +27,8 @@ public class Button
     bottom = y - height / 2;
     top = y + height / 2;
 
+    pointerId = -1;
+
     pressed = new float[] { 0, 0, 1, 1 };
     notPressed = new float[] { 0, 0, 1, 1 };
 
@@ -38,9 +37,9 @@ public class Button
     sprite.setSize(width, height);
   }
 
-  public void close()
+  public void dispose()
   {
-    sprite.close();
+    sprite.dispose();
   }
 
   @Override
@@ -50,8 +49,20 @@ public class Button
     sprite.finalize();
   }
 
-  public void setPressedTextureCoordinates(float x, float y, float width, float height) { pressed = new float[] { x, y, width, height }; }
-  public void setNotPressedTextureCoordinates(float x, float y, float width, float height) { notPressed = new float[] { x, y, width, height }; }
+  public void setPressedTextureCoordinates(float x, float y, float width, float height)
+  {
+    pressed = new float[] { x, y, width, height };
+    if (state)
+      setTextureCoordinates(pressed);
+  }
+
+  public void setNotPressedTextureCoordinates(float x, float y, float width, float height)
+  {
+    notPressed = new float[] { x, y, width, height };
+    if (!state)
+      setTextureCoordinates(notPressed);
+  }
+
   private void setTextureCoordinates(float[] texCoords) { sprite.setTextureCoordinates(texCoords[0], texCoords[1], texCoords[2], texCoords[3]); }
 
   public void setClickListener(IClickListener listener) { clickListener = listener; }
@@ -88,7 +99,7 @@ public class Button
     if (this.pointerId == pointerId)
     {
       state = false;
-      this.pointerId = 0;
+      this.pointerId = -1;
 
       setTextureCoordinates(notPressed);
 

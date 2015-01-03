@@ -6,14 +6,14 @@ import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
 public interface IEngineObject
 {
-  // manage
-  void move(float length);
-  void rotate(Vector3 angles);
-
   // callbacks
   void onMoved(float length);
   void onMoved(Vector3 vector, float length);
   void onRotates(Vector3 angles);
+
+  void onCollide(IEngineObject object);
+
+  void onRemoved();
 
   // properties
   Vector3 getAngles();

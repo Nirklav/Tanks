@@ -1,29 +1,48 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
-
-import java.util.Collection;
+import com.ThirtyNineEighty.System.GameContext;
 
 public class CollisionManager
 {
-  public void move(IEngineObject object, Collection<IEngineObject> objects, float length)
+  private final Iterable<IEngineObject> worldObjects;
+
+  public CollisionManager(Iterable<IEngineObject> objects)
+  {
+    worldObjects = objects;
+  }
+
+  public void move(GameObject object)
+  {
+    Characteristic c = object.getCharacteristics();
+    object.onMoved(c.getSpeed() * GameContext.getDelta());
+    resolve(object);
+  }
+
+  public void move(IEngineObject object, float length)
   {
     object.onMoved(length);
-
-    resolve(object, objects);
+    resolve(object);
   }
 
-  public void rotate(IEngineObject object, Collection<IEngineObject> objects, Vector3 angles)
+  public void move(IEngineObject object, Vector3 vector, float length)
+  {
+    object.onMoved(vector, length);
+    resolve(object);
+  }
+
+  public void rotate(IEngineObject object, Vector3 angles)
   {
     object.onRotates(angles);
-
-    resolve(object, objects);
+    resolve(object);
   }
 
-  private void resolve(IEngineObject object, Collection<IEngineObject> objects)
+  private void resolve(IEngineObject object)
   {
-    for(IEngineObject current : objects)
+    for (IEngineObject current : worldObjects)
     {
       if (object == current)
         continue;
@@ -37,7 +56,10 @@ public class CollisionManager
       Collision3D collision = new Collision3D(firstPh, secondPh);
 
       if (collision.isCollide())
+      {
+        object.onCollide(current);
         object.onMoved(collision.getMTV(), collision.getMTVLength());
+      }
     }
   }
 

@@ -2,96 +2,130 @@ package com.ThirtyNineEighty.Game.Worlds;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Game.AI;
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.EngineObject;
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
-import com.ThirtyNineEighty.Game.Menu.IMenu;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.System.Content;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.IContent;
+import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class GameWorld implements IGameWorld
+public class GameWorld
+  implements IWorld
 {
-  private Content content;
-
-  private AI ai;
-  private GameMenu menu;
-  private CollisionManager collisionManager;
-
   private ArrayList<IEngineObject> objects;
+  private IEngineObject player;
+  private GameMenu menu;
 
-  private EngineObject playerTank;
+  private ISubprogram otherTankSubprogram;
+  private ISubprogram worldSubprogram;
 
-  private Vector3 vector;
+  public final CollisionManager collisionManager;
 
-  @Override
-  public void initialize(Content content, Object args)
+  public GameWorld()
   {
-    this.content = content;
-
-    ai = new AI();
-    menu = new GameMenu();
-    collisionManager = new CollisionManager();
-    vector = new Vector3();
-
-    playerTank = new Tank(this);
-    playerTank.onMoved(-20);
-
-    EngineObject otherTank = new Tank(this);
-    EngineObject land = new EngineObject(this, "land");
-
-    land.onMoved(Vector3.zAxis, -0.8f);
-
     objects = new ArrayList<IEngineObject>();
-    objects.add(playerTank);
-    objects.add(otherTank);
-    objects.add(land);
+    collisionManager = new CollisionManager(objects);
   }
 
   @Override
-  public void update()
+  public void initialize(Object args)
   {
-    if (menu.getForwardState())
-      playerTank.move(0.2f);//* DeltaTime.getDelta());
+    menu = new GameMenu();
 
-    if (menu.getLeftState())
+    player = Tank.Create(CharacteristicFactory.TANK);
+    player.onMoved(-20);
+
+    final Tank otherTank = Tank.Create(CharacteristicFactory.TANK);
+
+    EngineObject land = new EngineObject("land", "land", "land");
+    land.onMoved(Vector3.zAxis, -0.8f);
+
+    add(player);
+    add(land);
+    add(otherTank);
+
+    IContent content = GameContext.getContent();
+
+    content.setMenu(menu);
+    content.bindProgram(worldSubprogram = new ISubprogram()
     {
-      vector.setFrom(0, 0, 45 * GameContext.getDelta());
-      playerTank.rotate(vector);
-    }
+      @Override
+      public void update()
+      {
+        if (menu.getForwardState())
+          collisionManager.move(player, 5f * GameContext.getDelta());
 
-    if (menu.getRightState())
+        Vector3 vector = Vector.getInstance(3);
+
+        if (menu.getLeftState())
+        {
+          vector.setFrom(0, 0, 45 * GameContext.getDelta());
+          collisionManager.rotate(player, vector);
+        }
+
+        if (menu.getRightState())
+        {
+          vector.setFrom(0, 0, -45 * GameContext.getDelta());
+          collisionManager.rotate(player, vector);
+        }
+
+        Vector.release(vector);
+      }
+    });
+
+    content.bindProgram(otherTankSubprogram = new ISubprogram()
     {
-      vector.setFrom(0, 0, -45 * GameContext.getDelta());
-      playerTank.rotate(vector);
-    }
+      @Override
+      public void update()
+      {
+        collisionManager.move(otherTank, 5f * GameContext.getDelta());
 
-    ai.update(objects);
+        Vector3 vector = Vector.getInstance(3);
+        vector.setFrom(0, 0, -45 * GameContext.getDelta());
+        collisionManager.rotate(otherTank, vector);
+
+        Vector.release(vector);
+      }
+    });
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    for(IEngineObject object : objects)
+      object.onRemoved();
+
+    objects.clear();
+
+    IContent content = GameContext.getContent();
+    content.unbindProgram(worldSubprogram);
+    content.unbindProgram(otherTankSubprogram);
   }
 
   @Override
   public void setViewMatrix(float[] viewMatrix)
   {
-    Vector3 center = playerTank.getPosition();
-    Vector3 eye = new Vector3(playerTank.getPosition());
-    Vector3 angles = playerTank.getAngles();
+    Vector3 center = player.getPosition();
+    Vector3 eye = Vector.getInstance(3, player.getPosition());
 
-    eye.addToX(-8.0f * (float)Math.cos(Math.toRadians(angles.getZ())));
-    eye.addToY(-8.0f * (float)Math.sin(Math.toRadians(angles.getZ())));
-    eye.addToZ(6);
+    eye.addToX(0.0f);
+    eye.addToY(14.0f);
+    eye.addToZ(30);
 
     Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
-  }
 
-  @Override
-  public void addObject(IEngineObject object) { objects.add(object); }
+    Vector.release(eye);
+  }
 
   @Override
   public void fillRenderable(List<I3DRenderable> renderables)
@@ -101,11 +135,18 @@ public class GameWorld implements IGameWorld
   }
 
   @Override
-  public void move(IEngineObject gameObject, float length) { collisionManager.move(gameObject, objects, length); }
+  public IEngineObject getPlayer() { return player; }
 
   @Override
-  public void rotate(IEngineObject gameObject, Vector3 angles) { collisionManager.rotate(gameObject, objects, angles); }
+  public Collection<IEngineObject> getObjects() { return objects; }
 
   @Override
-  public IMenu getMenu() { return menu; }
+  public void add(IEngineObject engineObject) { objects.add(engineObject); }
+
+  @Override
+  public void remove(IEngineObject engineObject)
+  {
+    objects.remove(engineObject);
+    engineObject.onRemoved();
+  }
 }

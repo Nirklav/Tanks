@@ -1,35 +1,38 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.IContent;
 
 public class GameMenu extends BaseMenu
 {
-  private ArrayList<I2DRenderable> controls;
-
   private Button forwardButton;
   private Button leftButton;
   private Button rightButton;
 
-  public GameMenu()
+  @Override
+  public void initialize(Object args)
   {
-    super();
+    Button fireButton = new Button(810, 440, 300, 200);
+    fireButton.setClickListener(new Button.IClickListener()
+    {
+      @Override
+      public void onClick()
+      {
+        IContent content = GameContext.getContent();
+        IWorld world = content.getWorld();
 
-    controls = new ArrayList<I2DRenderable>();
+        Tank player = (Tank) world.getPlayer();
+        player.fire();
+      }
+    });
 
     addButton(forwardButton = new Button(0, -440, 300, 200));
     addButton(leftButton = new Button(-810, -440, 300, 200));
     addButton(rightButton = new Button(810, -440, 300, 200));
-  }
-
-  @Override
-  public void fillRenderable(List<I2DRenderable> renderables)
-  {
-    for(I2DRenderable renderable : controls)
-      renderables.add(renderable);
+    addButton(fireButton);
   }
 
   public boolean getForwardState() { return forwardButton.getState(); }
@@ -38,9 +41,7 @@ public class GameMenu extends BaseMenu
 
   private void addButton(Button btn)
   {
-    controls.add(btn);
-
-    addEventProcessor(btn);
+    addControl(btn);
 
     btn.setNotPressedTextureCoordinates(0f, 0f, 0.5f, 1f);
     btn.setPressedTextureCoordinates(0.5f, 0f, 0.5f, 1f);

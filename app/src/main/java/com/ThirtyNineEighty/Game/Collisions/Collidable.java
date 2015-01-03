@@ -4,6 +4,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.ThirtyNineEighty.Helpers.Plane;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
@@ -31,7 +32,7 @@ public class Collidable
 
   public Collidable(String fileName)
   {
-    loadGeometry(fileName);
+    loadGeometry(String.format("Models/%s.ph", fileName));
     matrix = new float[16];
   }
 
@@ -51,8 +52,8 @@ public class Collidable
     projection.remove(second);
     convexHull.add(second);
 
-    Vector2 prevVector = new Vector2();
-    Vector2 currentVector = new Vector2();
+    Vector2 prevVector = Vector.getInstance(2);
+    Vector2 currentVector = Vector.getInstance(2);
 
     for(Vector2 current : projection)
     {
@@ -71,6 +72,9 @@ public class Collidable
 
       convexHull.add(current);
     }
+
+    Vector.release(prevVector);
+    Vector.release(currentVector);
 
     return convexHull;
   }
@@ -97,14 +101,17 @@ public class Collidable
   private ArrayList<Vector2> getDistinctProjection(Plane plane)
   {
     ArrayList<Vector2> result = new ArrayList<Vector2>();
-    Vector2 vector = new Vector2();
+
+    Vector2 vector = Vector.getInstance(2);
 
     for(Vector3 current : getGlobalVertices())
     {
       plane.getProjection(vector, current);
       if (!result.contains(vector))
-        result.add(new Vector2(vector));
+        result.add(Vector.getInstance(2, vector));
     }
+
+    Vector.release(vector);
 
     return result;
   }
@@ -112,12 +119,14 @@ public class Collidable
   private static class AngleComparator implements Comparator<Vector2>
   {
     private Vector2 first;
-    private Vector2 lhsVector = new Vector2();
-    private Vector2 rhsVector = new Vector2();
+    private Vector2 lhsVector;
+    private Vector2 rhsVector;
 
     public AngleComparator(Vector2 first)
     {
       this.first = first;
+      lhsVector = new Vector2();
+      rhsVector = new Vector2();
     }
 
     @Override

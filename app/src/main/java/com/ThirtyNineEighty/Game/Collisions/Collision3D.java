@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Collisions;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Helpers.Plane;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 
@@ -43,6 +44,10 @@ public class Collision3D
       ArrayList<Vector2> resultTwo = secondPh.getConvexHull(plane);
 
       Collision2D collision = new Collision2D(resultOne, resultTwo);
+
+      Vector.release(resultOne);
+      Vector.release(resultTwo);
+
       if (!collision.isCollide())
         return null;
 

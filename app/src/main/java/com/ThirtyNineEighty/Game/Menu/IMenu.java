@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface IMenu
 {
+  void initialize(Object args);
+  void uninitialize();
+
   void fillRenderable(List<I2DRenderable> renderables);
   boolean processEvent(MotionEvent event);
 }

@@ -41,7 +41,7 @@ public class Sprite implements I2DRenderable
   private int textureHandle;
   private int bufferHandle;
 
-  private boolean closed;
+  private boolean disposed;
 
   public Sprite(String textureName)
   {
@@ -59,12 +59,12 @@ public class Sprite implements I2DRenderable
     needBuildMatrix = true;
   }
 
-  public void close()
+  public void dispose()
   {
-    if (closed)
+    if (disposed)
       return;
 
-    closed = true;
+    disposed = true;
 
     GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
     GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
@@ -75,7 +75,7 @@ public class Sprite implements I2DRenderable
   {
     super.finalize();
 
-    close();
+    dispose();
   }
 
   @Override

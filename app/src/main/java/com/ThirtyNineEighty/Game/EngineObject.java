@@ -4,7 +4,6 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
-import com.ThirtyNineEighty.Game.Worlds.IGameWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.Model3D;
@@ -12,33 +11,29 @@ import com.ThirtyNineEighty.Renderable.Renderable3D.Model3D;
 public class EngineObject
   implements IEngineObject
 {
-  protected IGameWorld world;
-
   protected Vector3 position;
   protected Vector3 angles;
 
-  private Model3D visualModel;
-  private Collidable physicalModel;
+  private I3DRenderable visualModel;
+  private ICollidable physicalModel;
 
-  public EngineObject(IGameWorld world, String name)
+  public EngineObject(String visualModelName, String phModelName, String textureName)
   {
-    visualModel = new Model3D(String.format("Models/%s.raw", name), String.format("Textures/%s.png", name));
-    physicalModel = new Collidable(String.format("Models/%s.ph", name));
+    visualModel = new Model3D(visualModelName, textureName);
+    physicalModel = new Collidable(phModelName);
 
     position = new Vector3();
     angles = new Vector3();
 
     visualModel.setGlobal(position, angles);
     physicalModel.setGlobal(position, angles);
-
-    this.world = world;
   }
 
   @Override
-  public void move(float length) { world.move(this, length); }
+  public void onCollide(IEngineObject object) { }
 
   @Override
-  public void rotate(Vector3 angles) { world.rotate(this, angles);  }
+  public void onRemoved() { }
 
   @Override
   public void onRotates(Vector3 value)
@@ -81,6 +76,8 @@ public class EngineObject
   @Override
   public void onMoved(Vector3 vector, float length)
   {
+    vector.normalize();
+
     position.addToX(vector.getX() * length);
     position.addToY(vector.getY() * length);
     position.addToZ(vector.getZ() * length);

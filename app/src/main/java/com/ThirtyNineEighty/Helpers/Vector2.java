@@ -5,10 +5,10 @@ package com.ThirtyNineEighty.Helpers;
  */
 public class Vector2 extends Vector
 {
-  public static Vector2 xAxis = new Vector2(1.0f, 0.0f);
-  public static Vector2 yAxis = new Vector2(0.0f, 1.0f);
-  public static Vector2 invertXAxis = new Vector2(-1.0f,  0.0f);
-  public static Vector2 invertYAxis = new Vector2( 0.0f, -1.0f);
+  public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
+  public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
+  public final static Vector2 invertXAxis = new Vector2(-1.0f,  0.0f);
+  public final static Vector2 invertYAxis = new Vector2( 0.0f, -1.0f);
 
   protected float[] value;
 
@@ -76,8 +76,8 @@ public class Vector2 extends Vector
 
   public float getScalar(Vector2 other)
   {
-    float multOne   = getX() * other.getX();
-    float multTwo   = getY() * other.getY();
+    float multOne = getX() * other.getX();
+    float multTwo = getY() * other.getY();
 
     return multOne + multTwo;
   }
@@ -140,5 +140,11 @@ public class Vector2 extends Vector
   public void set(int num, float v)
   {
     value[num] = v;
+  }
+
+  @Override
+  public int getSize()
+  {
+    return 2;
   }
 }

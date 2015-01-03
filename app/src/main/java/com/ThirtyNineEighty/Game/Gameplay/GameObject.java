@@ -1,10 +1,8 @@
 package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Upgrade;
 import com.ThirtyNineEighty.Game.EngineObject;
-import com.ThirtyNineEighty.Game.Worlds.IGameWorld;
 
 import java.util.ArrayList;
 
@@ -15,12 +13,14 @@ public abstract class GameObject
   private Characteristic characteristics;
   private ArrayList<Upgrade> upgrades;
 
-  public GameObject(int type, IGameWorld world, String name)
+  protected GameObject(Characteristic characteristics)
   {
-    super(world, name);
+    super(characteristics.visualModelName, characteristics.phModelName, characteristics.textureName);
 
-    baseCharacteristics = CharacteristicFactory.get(type);
+    baseCharacteristics = characteristics;
     upgrades = new ArrayList<Upgrade>();
+
+    setCurrentCharacteristics();
   }
 
   protected void setCurrentCharacteristics()

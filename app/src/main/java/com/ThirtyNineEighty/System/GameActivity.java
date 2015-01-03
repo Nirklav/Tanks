@@ -16,10 +16,9 @@ public class GameActivity
   private boolean pause;
   private Handler handler;
 
-  private GLSurfaceView view;
-
-  @SuppressWarnings("FieldCanBeLocal")
   private Content content;
+
+  private GLSurfaceView view;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -29,11 +28,7 @@ public class GameActivity
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-    GameContext.setAppContext(this);
-
     handler = new Handler();
-
-    // Content init
     content = new Content();
 
     // OpenGL init
@@ -49,6 +44,9 @@ public class GameActivity
 
     // Set view
     setContentView(view);
+
+    GameContext.setAppContext(this);
+    GameContext.setContent(content);
   }
 
   private void requestRenderer()

@@ -19,6 +19,7 @@ public class GameContext
   private static long lastTick;
 
   private static Context appContext;
+  private static IContent content;
 
   private static boolean debuggable;
 
@@ -26,7 +27,6 @@ public class GameContext
   private static float height;
 
   public static Context getAppContext() { return appContext; }
-
   public static void setAppContext(Context value)
   {
     appContext = value;
@@ -34,6 +34,9 @@ public class GameContext
     int flags = appContext.getApplicationInfo().flags;
     debuggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
   }
+
+  public static IContent getContent() { return content; }
+  public static void setContent(IContent value) { content = value; }
 
   public static float updateTime()
   {
@@ -53,9 +56,18 @@ public class GameContext
     return delta / 1000.0f;
   }
 
+  public static float getDelta()
+  {
+    float d = delta / 1000.0f;
+
+    if (d >= 1.0f)
+      return 1.0f;
+
+    return d;
+  }
+
   public static boolean isDebuggable() { return debuggable; }
   public static float getAspect() { return width / height; }
-  public static float getDelta() { return delta / 1000.0f; }
   public static float getWidth() { return width; }
   public static void setWidth(float value) { width = value; }
   public static float getHeight() { return height; }

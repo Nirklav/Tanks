@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import android.view.MotionEvent;
 
+import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -11,25 +12,33 @@ import java.util.List;
 public abstract class BaseMenu
   implements IMenu
 {
-  private ArrayList<IEventProcessor> processors;
+  private ArrayList<IControl> controls;
 
   protected BaseMenu()
   {
-    processors = new ArrayList<IEventProcessor>();
+    controls = new ArrayList<IControl>();
   }
 
-  protected void addEventProcessor(IEventProcessor processor)
-  {
-    processors.add(processor);
-  }
+  protected void addControl(IControl control) { controls.add(control); }
+  protected void removeControl(IControl control) { controls.remove(control); }
+  protected Iterable<IControl> getControls() { return controls; }
 
-  protected void removeEventProcessor(IEventProcessor processor)
+  @Override
+  public abstract void initialize(Object args);
+
+  @Override
+  public void uninitialize()
   {
-    processors.remove(processor);
+    for(IControl control : controls)
+      control.dispose();
   }
 
   @Override
-  public abstract void fillRenderable(List<I2DRenderable> renderables);
+  public final void fillRenderable(List<I2DRenderable> renderables)
+  {
+    for(I2DRenderable renderable : controls)
+      renderables.add(renderable);
+  }
 
   @Override
   public final boolean processEvent(MotionEvent event)
@@ -45,20 +54,20 @@ public abstract class BaseMenu
     {
     case MotionEvent.ACTION_DOWN:
     case MotionEvent.ACTION_POINTER_DOWN:
-      for(IEventProcessor processor : processors)
-        processor.processDown(id, x, y);
+      for(IControl control : controls)
+        control.processDown(id, x, y);
       break;
 
     case MotionEvent.ACTION_MOVE:
-      for(IEventProcessor processor : processors)
-        processor.processMove(id, x, y);
+      for(IControl control : controls)
+        control.processMove(id, x, y);
       break;
 
     case MotionEvent.ACTION_UP:
     case MotionEvent.ACTION_POINTER_UP:
     case MotionEvent.ACTION_CANCEL:
-      for(IEventProcessor processor : processors)
-        processor.processUp(id, x, y);
+      for(IControl control : controls)
+        control.processUp(id, x, y);
       break;
     }
 

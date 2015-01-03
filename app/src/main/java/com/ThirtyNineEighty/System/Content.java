@@ -21,7 +21,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class Content
-  implements GLSurfaceView.Renderer,
+  implements IContent,
+             GLSurfaceView.Renderer,
              View.OnTouchListener
 {
   private boolean initialized = false;
@@ -35,6 +36,7 @@ public class Content
 
   private IWorld world;
   private IMenu menu;
+  private ArrayList<ISubprogram> subprograms;
 
   private ArrayList<I3DRenderable> renderable3DObjects;
   private ArrayList<I2DRenderable> renderable2DObjects;
@@ -49,16 +51,52 @@ public class Content
 
     orthoMatrix = new float[16];
 
+    subprograms = new ArrayList<ISubprogram>();
     renderable3DObjects = new ArrayList<I3DRenderable>();
     renderable2DObjects = new ArrayList<I2DRenderable>();
   }
 
-  public void setWorld(IWorld value)
+  //region IContent
+
+  @Override
+  public void setWorld(IWorld value) { setWorld(value, null); }
+
+  @Override
+  public void setWorld(IWorld value, Object args)
   {
+    if (world != null)
+      world.uninitialize();
+
     world = value;
-    world.initialize(this, null);
-    menu = world.getMenu();
+    world.initialize(args);
   }
+
+  @Override
+  public IWorld getWorld() { return world; }
+
+  @Override
+  public void setMenu(IMenu value) { setMenu(value, null); }
+
+  @Override
+  public void setMenu(IMenu value, Object args)
+  {
+    if (menu != null)
+      menu.uninitialize();
+
+    menu = value;
+    menu.initialize(args);
+  }
+
+  @Override
+  public IMenu getMenu() { return menu; }
+
+  @Override
+  public void bindProgram(ISubprogram subprogram) { subprograms.add(subprogram); }
+
+  @Override
+  public void unbindProgram(ISubprogram subprogram) { subprograms.add(subprogram); }
+
+  //endregion
 
   @Override
   public boolean onTouch(View v, MotionEvent event)
@@ -71,8 +109,11 @@ public class Content
     if (!initialized)
       return;
 
-    world.update();
+    for (ISubprogram subprogram : subprograms)
+      subprogram.update();
   }
+
+  //region Renderer
 
   @Override
   public void onDrawFrame(GL10 gl)
@@ -84,11 +125,14 @@ public class Content
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
     renderable3DObjects.clear();
-    world.fillRenderable(renderable3DObjects);
+
+    if (world != null)
+      world.fillRenderable(renderable3DObjects);
+
     if (renderable3DObjects.size() != 0)
     {
       world.setViewMatrix(viewMatrix);
-      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 40.0f);
+      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 50.0f);
       Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
       Shader.setShader3D();
@@ -98,7 +142,10 @@ public class Content
     }
 
     renderable2DObjects.clear();
-    menu.fillRenderable(renderable2DObjects);
+
+    if (menu != null)
+      menu.fillRenderable(renderable2DObjects);
+
     if (renderable2DObjects.size() != 0)
     {
       Matrix.setIdentityM(orthoMatrix, 0);
@@ -147,4 +194,6 @@ public class Content
   {
 
   }
+
+  //endregion
 }
