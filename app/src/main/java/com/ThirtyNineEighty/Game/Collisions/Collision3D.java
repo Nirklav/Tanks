@@ -88,7 +88,7 @@ public class Collision3D
       plane.setFrom(firstNormals.get(num));
     else
     {
-      num -= secondNormals.size();
+      num -= firstNormals.size();
       plane.setFrom(secondNormals.get(num));
     }
 

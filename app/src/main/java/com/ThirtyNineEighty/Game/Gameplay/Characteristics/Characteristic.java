@@ -7,7 +7,8 @@ public class Characteristic
   public final String textureName;
 
   private float health;
-  private float speed; // m / s
+  private float speed; // m/s
+  private float damage;
 
   public Characteristic(String visualModelName, String phModelName, String textureName)
   {
@@ -34,4 +35,7 @@ public class Characteristic
 
   public float getSpeed() { return speed; }
   public void setSpeed(float value) { speed = value; }
+
+  public float getDamage() { return damage; }
+  public void setDamage(float value) { damage = value; }
 }

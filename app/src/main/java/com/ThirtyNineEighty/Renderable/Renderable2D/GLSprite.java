@@ -13,7 +13,8 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class Sprite implements I2DRenderable
+public class GLSprite
+  implements I2DRenderable
 {
   private static float[] bufferData = new float[]
   {
@@ -43,7 +44,7 @@ public class Sprite implements I2DRenderable
 
   private boolean disposed;
 
-  public Sprite(String textureName)
+  public GLSprite(String textureName)
   {
     textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), false);
     bufferHandle = setBuffer();

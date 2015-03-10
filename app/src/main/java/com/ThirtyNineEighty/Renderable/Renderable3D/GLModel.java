@@ -15,7 +15,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class Model3D implements I3DRenderable
+public class GLModel
+  implements I3DRenderable
 {
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
@@ -24,12 +25,18 @@ public class Model3D implements I3DRenderable
   private int bufferHandle;
   private int numOfTriangles;
 
+  private Vector3 position;
+  private Vector3 angles;
+
   private boolean closed;
 
-  public Model3D(String geometryName, String textureName)
+  public GLModel(String geometryName, String textureName)
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
+
+    position = Vector3.getInstance(3);
+    angles = Vector3.getInstance(3);
 
     loadGeometry(String.format("Models/%s.raw", geometryName));
     textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), true);
@@ -99,6 +106,12 @@ public class Model3D implements I3DRenderable
 
   public void setGlobal(Vector3 position, Vector3 angles)
   {
+    if (position.equals(this.position) && angles.equals(this.angles))
+      return;
+
+    this.position.setFrom(position);
+    this.angles.setFrom(angles);
+
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), position.getZ());
 

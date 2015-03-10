@@ -31,7 +31,7 @@ public class CharacteristicFactory
     String fileName = String.format("Characteristics/%s.ch", type);
     Characteristic c = cache.get(type);
     if (c != null)
-      return c;
+      return new Characteristic(c);
 
     try
     {
@@ -59,7 +59,7 @@ public class CharacteristicFactory
       Log.e(Tag, "get method error", e);
     }
 
-    return c;
+    return new Characteristic(c);
   }
 
   private static String readString(ByteBuffer buffer, int length)

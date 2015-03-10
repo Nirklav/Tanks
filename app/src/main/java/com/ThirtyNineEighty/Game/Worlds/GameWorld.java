@@ -1,10 +1,11 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
-import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
@@ -42,12 +43,12 @@ public class GameWorld
   {
     menu = new GameMenu();
 
-    player = Tank.Create(CharacteristicFactory.TANK);
+    player = new Tank(CharacteristicFactory.TANK);
     player.onMoved(-20);
 
-    final Tank otherTank = Tank.Create(CharacteristicFactory.TANK);
+    final Tank otherTank = new Tank(CharacteristicFactory.TANK);
 
-    EngineObject land = new EngineObject("land", "land", "land");
+    Land land = new Land();
     land.onMoved(Vector3.zAxis, -0.8f);
 
     add(player);
@@ -141,7 +142,10 @@ public class GameWorld
   public Collection<IEngineObject> getObjects() { return objects; }
 
   @Override
-  public void add(IEngineObject engineObject) { objects.add(engineObject); }
+  public void add(IEngineObject engineObject)
+  {
+    objects.add(engineObject);
+  }
 
   @Override
   public void remove(IEngineObject engineObject)

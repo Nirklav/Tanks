@@ -36,10 +36,12 @@ public class Content
 
   private IWorld world;
   private IMenu menu;
-  private ArrayList<ISubprogram> subprograms;
 
-  private ArrayList<I3DRenderable> renderable3DObjects;
-  private ArrayList<I2DRenderable> renderable2DObjects;
+  private final ArrayList<ISubprogram> subprograms;
+  private final ArrayList<SubprogramAction> subprogramActions;
+
+  private final ArrayList<I3DRenderable> renderable3DObjects;
+  private final ArrayList<I2DRenderable> renderable2DObjects;
 
   public Content()
   {
@@ -52,11 +54,10 @@ public class Content
     orthoMatrix = new float[16];
 
     subprograms = new ArrayList<ISubprogram>();
+    subprogramActions = new ArrayList<SubprogramAction>();
     renderable3DObjects = new ArrayList<I3DRenderable>();
     renderable2DObjects = new ArrayList<I2DRenderable>();
   }
-
-  //region IContent
 
   @Override
   public void setWorld(IWorld value) { setWorld(value, null); }
@@ -91,17 +92,15 @@ public class Content
   public IMenu getMenu() { return menu; }
 
   @Override
-  public void bindProgram(ISubprogram subprogram) { subprograms.add(subprogram); }
-
-  @Override
-  public void unbindProgram(ISubprogram subprogram) { subprograms.add(subprogram); }
-
-  //endregion
-
-  @Override
-  public boolean onTouch(View v, MotionEvent event)
+  public void bindProgram(ISubprogram subprogram)
   {
-    return initialized && menu.processEvent(event);
+    subprogramActions.add(new SubprogramAction(subprogram, SubprogramAction.ADD_ACTION));
+  }
+
+  @Override
+  public void unbindProgram(ISubprogram subprogram)
+  {
+    subprogramActions.add(new SubprogramAction(subprogram, SubprogramAction.REMOVE_ACTION));
   }
 
   public void onUpdate()
@@ -111,9 +110,30 @@ public class Content
 
     for (ISubprogram subprogram : subprograms)
       subprogram.update();
+
+    // update can change subprograms
+    for (SubprogramAction action : subprogramActions)
+    {
+      switch (action.type)
+      {
+      case SubprogramAction.ADD_ACTION:
+        subprograms.add(action.subprogram);
+        break;
+
+      case SubprogramAction.REMOVE_ACTION:
+        subprograms.remove(action.subprogram);
+        break;
+      }
+    }
+
+    subprogramActions.clear();
   }
 
-  //region Renderer
+  @Override
+  public boolean onTouch(View v, MotionEvent event)
+  {
+    return initialized && menu.processEvent(event);
+  }
 
   @Override
   public void onDrawFrame(GL10 gl)
@@ -195,5 +215,18 @@ public class Content
 
   }
 
-  //endregion
+  private static final class SubprogramAction
+  {
+    public static final int ADD_ACTION = 0;
+    public static final int REMOVE_ACTION = 1;
+
+    public final ISubprogram subprogram;
+    public final int type;
+
+    public SubprogramAction(ISubprogram subprogram, int type)
+    {
+      this.subprogram = subprogram;
+      this.type = type;
+    }
+  }
 }

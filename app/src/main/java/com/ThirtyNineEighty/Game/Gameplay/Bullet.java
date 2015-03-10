@@ -13,20 +13,14 @@ public class Bullet extends GameObject
 {
   private ISubprogram subprogram;
 
-  public static Bullet Create(String type)
+  protected Bullet(String type)
   {
-    Characteristic c = CharacteristicFactory.get(type);
-    return new Bullet(c);
-  }
-
-  protected Bullet(Characteristic characteristic)
-  {
-    super(characteristic);
-
-    final Bullet bullet = this;
-    final GameWorld world = (GameWorld)GameContext.getContent().getWorld();
+    super(CharacteristicFactory.get(type));
 
     IContent content = GameContext.getContent();
+    final Bullet bullet = this;
+    final GameWorld world = (GameWorld)content.getWorld();
+
     content.bindProgram(subprogram = new ISubprogram()
     {
       @Override
@@ -45,7 +39,7 @@ public class Bullet extends GameObject
     GameObject gameObject = (GameObject)object;
     Characteristic c = gameObject.getCharacteristics();
 
-    c.addHealth(10); //TODO get form Characteristic
+    c.addHealth(c.getDamage());
 
     IWorld world = GameContext.getContent().getWorld();
     world.remove(this);

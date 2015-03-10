@@ -19,6 +19,9 @@ public interface IEngineObject
   Vector3 getAngles();
   Vector3 getPosition();
 
+  void setAngles(Vector3 value);
+  void setPosition(Vector3 value);
+
   I3DRenderable getRenderable();
   ICollidable getCollidable();
 }

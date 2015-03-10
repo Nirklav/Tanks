@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.Sprite;
+import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
 
 public class Button
   implements IControl
@@ -8,7 +8,7 @@ public class Button
   private int pointerId;
   private boolean state;
 
-  private Sprite sprite;
+  private GLSprite sprite;
 
   private IClickListener clickListener;
 
@@ -32,7 +32,7 @@ public class Button
     pressed = new float[] { 0, 0, 1, 1 };
     notPressed = new float[] { 0, 0, 1, 1 };
 
-    sprite = new Sprite("button");
+    sprite = new GLSprite("button");
     sprite.setPosition(x, y);
     sprite.setSize(width, height);
   }

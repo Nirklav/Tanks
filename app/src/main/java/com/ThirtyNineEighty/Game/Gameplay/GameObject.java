@@ -17,9 +17,9 @@ public abstract class GameObject
   {
     super(characteristics.visualModelName, characteristics.phModelName, characteristics.textureName);
 
-    baseCharacteristics = characteristics;
     upgrades = new ArrayList<Upgrade>();
 
+    baseCharacteristics = characteristics;
     setCurrentCharacteristics();
   }
 

@@ -6,9 +6,9 @@ import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Renderable.Renderable3D.Model3D;
+import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
 
-public class EngineObject
+public abstract class EngineObject
   implements IEngineObject
 {
   protected Vector3 position;
@@ -17,15 +17,15 @@ public class EngineObject
   private I3DRenderable visualModel;
   private ICollidable physicalModel;
 
-  public EngineObject(String visualModelName, String phModelName, String textureName)
+  protected EngineObject(String visualModelName, String phModelName, String textureName)
   {
-    visualModel = new Model3D(visualModelName, textureName);
-    physicalModel = new Collidable(phModelName);
-
     position = new Vector3();
     angles = new Vector3();
 
+    visualModel = new GLModel(visualModelName, textureName);
     visualModel.setGlobal(position, angles);
+
+    physicalModel = new Collidable(phModelName);
     physicalModel.setGlobal(position, angles);
   }
 
@@ -42,8 +42,6 @@ public class EngineObject
     angles.setFrom(correctAngle(angles.getX()),
                    correctAngle(angles.getY()),
                    correctAngle(angles.getZ()));
-
-    visualModel.setGlobal(position, angles);
   }
 
   private float correctAngle(float angle)
@@ -81,8 +79,6 @@ public class EngineObject
     position.addToX(vector.getX() * length);
     position.addToY(vector.getY() * length);
     position.addToZ(vector.getZ() * length);
-
-    visualModel.setGlobal(position, angles);
   }
 
   @Override
@@ -92,7 +88,17 @@ public class EngineObject
   public Vector3 getAngles() { return angles; }
 
   @Override
-  public I3DRenderable getRenderable() { return visualModel; }
+  public void setAngles(Vector3 value) { angles.setFrom(value); }
+
+  @Override
+  public void setPosition(Vector3 value) { position.setFrom(value); }
+
+  @Override
+  public I3DRenderable getRenderable()
+  {
+    visualModel.setGlobal(position, angles);
+    return visualModel;
+  }
 
   @Override
   public ICollidable getCollidable()
