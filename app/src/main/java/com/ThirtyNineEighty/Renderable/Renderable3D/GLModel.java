@@ -8,12 +8,6 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
-import com.ThirtyNineEighty.System.GameContext;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class GLModel
   implements I3DRenderable
@@ -21,14 +15,13 @@ public class GLModel
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
 
-  private int textureHandle;
-  private int bufferHandle;
-  private int numOfTriangles;
+  private Renderable.TextureData textureData;
+  private Renderable.GeometryData geometryData;
 
   private Vector3 position;
   private Vector3 angles;
 
-  private boolean closed;
+  private boolean disposed;
 
   public GLModel(String geometryName, String textureName)
   {
@@ -38,19 +31,16 @@ public class GLModel
     position = Vector3.getInstance(3);
     angles = Vector3.getInstance(3);
 
-    loadGeometry(String.format("Models/%s.raw", geometryName));
-    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), true);
+    geometryData = Renderable.load3DGeometry(String.format("Models/%s.raw", geometryName));
+    textureData = Renderable.loadTexture(String.format("Textures/%s.png", textureName), true);
   }
 
-  public void close()
+  public void dispose()
   {
-    if (closed)
+    if (disposed)
       return;
 
-    closed = true;
-
-    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
-    GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
+    disposed = true;
   }
 
   @Override
@@ -58,7 +48,7 @@ public class GLModel
   {
     super.finalize();
 
-    close();
+    dispose();
   }
 
   @Override
@@ -69,10 +59,10 @@ public class GLModel
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
 
     // bind data buffer
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.handle);
 
     Shader3D shader = (Shader3D) Shader.getCurrent();
 
@@ -96,7 +86,7 @@ public class GLModel
     shader.validateProgram();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numOfTriangles * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.numOfTriangles * 3);
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
@@ -118,44 +108,5 @@ public class GLModel
     Matrix.rotateM(modelMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
     Matrix.rotateM(modelMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(modelMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
-  }
-
-  private void loadGeometry(String fileName)
-  {
-    try
-    {
-      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
-
-      int size = stream.available();
-      byte[] data = new byte[size];
-      stream.read(data);
-      stream.close();
-
-      ByteBuffer dataBuffer = ByteBuffer.allocateDirect(size - 4);
-      dataBuffer.order(ByteOrder.nativeOrder());
-      dataBuffer.put(data, 4, size - 4);
-      dataBuffer.position(0);
-
-      ByteBuffer numBuffer = ByteBuffer.allocateDirect(4);
-      numBuffer.order(ByteOrder.nativeOrder());
-      numBuffer.put(data, 0, 4);
-
-      numOfTriangles = numBuffer.getInt(0);
-
-      int[] buffers = new int[1];
-      GLES20.glGenBuffers(1, buffers, 0);
-      GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers[0]);
-      GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, dataBuffer.capacity(), dataBuffer, GLES20.GL_STATIC_DRAW);
-
-      int error;
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        Log.e("Error", Integer.toString(error));
-
-      bufferHandle = buffers[0];
-    }
-    catch(IOException e)
-    {
-      Log.e("Error", e.getMessage());
-    }
   }
 }

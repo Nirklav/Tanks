@@ -23,8 +23,21 @@ public class Bullet extends GameObject
 
     content.bindProgram(subprogram = new ISubprogram()
     {
+      private int steps;
+
       @Override
-      public void update() { world.collisionManager.move(bullet); }
+      public void update()
+      {
+        if (steps > 100)
+        {
+          IContent content = GameContext.getContent();
+          content.unbindProgram(this);
+          return;
+        }
+
+        steps++;
+        world.collisionManager.move(bullet);
+      }
     });
   }
 
@@ -41,8 +54,11 @@ public class Bullet extends GameObject
 
     c.addHealth(c.getDamage());
 
-    IWorld world = GameContext.getContent().getWorld();
-    world.remove(this);
+    if (c.getHealth() <= 0)
+    {
+      IWorld world = GameContext.getContent().getWorld();
+      world.remove(this);
+    }
   }
 
   @Override

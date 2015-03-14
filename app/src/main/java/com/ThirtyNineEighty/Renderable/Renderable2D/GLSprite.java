@@ -9,14 +9,10 @@ import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 public class GLSprite
   implements I2DRenderable
 {
-  private static float[] bufferData = new float[]
+  private final static float[] bufferData = new float[]
   {
     -1,  1, 0, 0,
     -1, -1, 0, 1,
@@ -39,15 +35,15 @@ public class GLSprite
   private float width;
   private float height;
 
-  private int textureHandle;
-  private int bufferHandle;
+  private Renderable.TextureData textureData;
+  private Renderable.GeometryData geometryData;
 
   private boolean disposed;
 
   public GLSprite(String textureName)
   {
-    textureHandle = Renderable.loadTexture(String.format("Textures/%s.png", textureName), false);
-    bufferHandle = setBuffer();
+    textureData = Renderable.loadTexture(String.format("Textures/%s.png", textureName), false);
+    geometryData = Renderable.load2DGeometry("GLSpriteMesh", bufferData);
 
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];
@@ -66,9 +62,6 @@ public class GLSprite
       return;
 
     disposed = true;
-
-    GLES20.glDeleteTextures(1, new int[] { textureHandle }, 0);
-    GLES20.glDeleteBuffers(1, new int[] { bufferHandle }, 0);
   }
 
   @Override
@@ -89,9 +82,9 @@ public class GLSprite
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
 
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferHandle);
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.handle);
 
     Shader2D shader = (Shader2D)Shader.getCurrent();
 
@@ -111,7 +104,7 @@ public class GLSprite
     shader.validateProgram();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.numOfTriangles * 3);
 
     // disable arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
@@ -129,22 +122,6 @@ public class GLSprite
     Matrix.scaleM(modelMatrix, 0, width / 2, height / 2, 1);
 
     needBuildMatrix = false;
-  }
-
-  private int setBuffer()
-  {
-    Buffer data = ByteBuffer.allocateDirect(bufferData.length * 4)
-                            .order(ByteOrder.nativeOrder())
-                            .asFloatBuffer()
-                            .put(bufferData)
-                            .position(0);
-
-    int[] buffers = new int[1];
-    GLES20.glGenBuffers(1, buffers, 0);
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers[0]);
-    GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, data.capacity() * 4, data, GLES20.GL_STATIC_DRAW);
-
-    return buffers[0];
   }
 
   public void setSize(float width, float height)

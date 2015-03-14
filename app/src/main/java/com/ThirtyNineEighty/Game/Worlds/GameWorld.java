@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
