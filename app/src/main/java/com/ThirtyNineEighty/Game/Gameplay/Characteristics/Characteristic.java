@@ -9,6 +9,7 @@ public class Characteristic
   private float health;
   private float speed; // m/s
   private float damage;
+  private float rotationSpeed;
 
   public Characteristic(String visualModelName, String phModelName, String textureName)
   {
@@ -25,6 +26,8 @@ public class Characteristic
 
     health = other.getHealth();
     speed = other.getSpeed();
+    damage = other.getDamage();
+    rotationSpeed = other.getRotationSpeed();
   }
 
   public float getHealth() { return health; }
@@ -38,4 +41,7 @@ public class Characteristic
 
   public float getDamage() { return damage; }
   public void setDamage(float value) { damage = value; }
+
+  public float getRotationSpeed() { return rotationSpeed; }
+  public void setRotationSpeed(float value) { rotationSpeed = value; }
 }

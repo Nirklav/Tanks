@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Renderable.Renderable3D;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
@@ -20,6 +19,7 @@ public class GLModel
 
   private Vector3 position;
   private Vector3 angles;
+  private float scale;
 
   private boolean disposed;
 
@@ -27,12 +27,13 @@ public class GLModel
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
+    scale = 1f;
 
     position = Vector3.getInstance(3);
     angles = Vector3.getInstance(3);
 
-    geometryData = Renderable.load3DGeometry(String.format("Models/%s.raw", geometryName));
-    textureData = Renderable.loadTexture(String.format("Textures/%s.png", textureName), true);
+    geometryData = Renderable.getGeometry(geometryName);
+    textureData = Renderable.getTexture(textureName);
   }
 
   public void dispose()
@@ -108,5 +109,12 @@ public class GLModel
     Matrix.rotateM(modelMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
     Matrix.rotateM(modelMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(modelMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
+
+    Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
+  }
+
+  public void setScale(float value)
+  {
+    scale = value;
   }
 }

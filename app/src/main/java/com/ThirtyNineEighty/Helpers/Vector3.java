@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Helpers;
 
+import android.opengl.Matrix;
+
 /*
  * Operation with prefix get - immutable;
  */
@@ -153,6 +155,32 @@ public class Vector3 extends Vector
             getZ() - other.getZ());
   }
 
+  public void multiply(float coefficient)
+  {
+    value[0] = value[0] * coefficient;
+    value[1] = value[1] * coefficient;
+    value[2] = value[2] * coefficient;
+  }
+
+  public void move(float length, Vector3 angles)
+  {
+    Vector3 vector = new Vector3();
+    float[] translateMatrix = new float[16];
+    Matrix.setIdentityM(translateMatrix, 0);
+
+    Matrix.rotateM(translateMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(translateMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(translateMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
+
+    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, Vector3.xAxis.getRaw(), 0);
+
+    vector.normalize();
+
+    value[0] += vector.getX() * length;
+    value[1] += vector.getY() * length;
+    value[2] += vector.getZ() * length;
+  }
+
   public Vector3 getNormalize()
   {
     Vector3 result = new Vector3(this);
@@ -192,6 +220,20 @@ public class Vector3 extends Vector
   {
     Vector3 result = new Vector3(this);
     result.subtract(other);
+    return result;
+  }
+
+  public Vector3 getMultiply(float coefficient)
+  {
+    Vector3 result = new Vector3(this);
+    result.multiply(coefficient);
+    return result;
+  }
+
+  public Vector3 getMove(float length, Vector3 angles)
+  {
+    Vector3 result = new Vector3(this);
+    result.move(length, angles);
     return result;
   }
 

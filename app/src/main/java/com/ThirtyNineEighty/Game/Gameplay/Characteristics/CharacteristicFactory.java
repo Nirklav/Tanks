@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -16,6 +15,8 @@ import java.util.HashMap;
 // 20 chars - TextureName (in folder Textures with extension png)
 // float - Health
 // float - Speed
+// float - Damage
+// float - RotationSpeed
 
 public class CharacteristicFactory
 {
@@ -51,15 +52,17 @@ public class CharacteristicFactory
       c = new Characteristic(visualModelName, phModelName, textureName);
       c.setHealth(buffer.getFloat());
       c.setSpeed(buffer.getFloat());
+      c.setDamage(buffer.getFloat());
+      c.setRotationSpeed(buffer.getFloat());
 
       cache.put(type, c);
+      return new Characteristic(c);
     }
     catch (IOException e)
     {
       Log.e(Tag, "get method error", e);
+      return null;
     }
-
-    return new Characteristic(c);
   }
 
   private static String readString(ByteBuffer buffer, int length)

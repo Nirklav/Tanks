@@ -8,7 +8,7 @@ public interface IEngineObject
 {
   // callbacks
   void onMoved(float length);
-  void onMoved(Vector3 vector, float length);
+  void onMoved(float length, Vector3 vector);
   void onRotates(Vector3 angles);
 
   void onCollide(IEngineObject object);

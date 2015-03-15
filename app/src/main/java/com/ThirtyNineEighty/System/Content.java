@@ -180,6 +180,8 @@ public class Content
     int error = GLES20.glGetError();
     if (error != GLES20.GL_NO_ERROR)
       Log.e("Error", "OpenGL error. Code: " + Integer.toString(error));
+
+    Shader.setShader3D();
   }
   
   @Override
@@ -199,6 +201,7 @@ public class Content
     Shader.initShader2D();
 
     Renderable.clearCache();
+    Renderable.loadResources();
 
     setWorld(new GameWorld());
 

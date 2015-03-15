@@ -3,8 +3,10 @@ package com.ThirtyNineEighty.Game.Worlds;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
+import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
@@ -23,7 +25,7 @@ public class GameWorld
   implements IWorld
 {
   private ArrayList<IEngineObject> objects;
-  private IEngineObject player;
+  private Tank player;
   private GameMenu menu;
 
   private ISubprogram otherTankSubprogram;
@@ -45,10 +47,10 @@ public class GameWorld
     player = new Tank(CharacteristicFactory.TANK);
     player.onMoved(-20);
 
-    final Tank otherTank = new Tank(CharacteristicFactory.TANK);
+    Tank otherTank = new Tank(CharacteristicFactory.TANK);
 
     Land land = new Land();
-    land.onMoved(Vector3.zAxis, -0.8f);
+    land.onMoved(-0.8f, Vector3.zAxis);
 
     add(player);
     add(land);
@@ -57,42 +59,30 @@ public class GameWorld
     IContent content = GameContext.getContent();
 
     content.setMenu(menu);
+    content.bindProgram(otherTankSubprogram = new MoveSubprogram(otherTank));
     content.bindProgram(worldSubprogram = new ISubprogram()
     {
       @Override
       public void update()
       {
+        Characteristic c = player.getCharacteristics();
+
         if (menu.getForwardState())
-          collisionManager.move(player, 5f * GameContext.getDelta());
+          collisionManager.move(player, c.getSpeed()  * GameContext.getDelta());
 
         Vector3 vector = Vector.getInstance(3);
 
         if (menu.getLeftState())
         {
-          vector.setFrom(0, 0, 45 * GameContext.getDelta());
+          vector.setFrom(0, 0, c.getRotationSpeed() * GameContext.getDelta());
           collisionManager.rotate(player, vector);
         }
 
         if (menu.getRightState())
         {
-          vector.setFrom(0, 0, -45 * GameContext.getDelta());
+          vector.setFrom(0, 0, -c.getRotationSpeed() * GameContext.getDelta());
           collisionManager.rotate(player, vector);
         }
-
-        Vector.release(vector);
-      }
-    });
-
-    content.bindProgram(otherTankSubprogram = new ISubprogram()
-    {
-      @Override
-      public void update()
-      {
-        collisionManager.move(otherTank, 5f * GameContext.getDelta());
-
-        Vector3 vector = Vector.getInstance(3);
-        vector.setFrom(0, 0, -45 * GameContext.getDelta());
-        collisionManager.rotate(otherTank, vector);
 
         Vector.release(vector);
       }

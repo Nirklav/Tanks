@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game;
 
-import android.opengl.Matrix;
-
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -58,27 +56,15 @@ public abstract class EngineObject
   @Override
   public void onMoved(float length)
   {
-    Vector3 vector = new Vector3();
-    float[] translateMatrix = new float[16];
-    Matrix.setIdentityM(translateMatrix, 0);
-
-    Matrix.rotateM(translateMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
-
-    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, Vector3.xAxis.getRaw(), 0);
-
-    onMoved(vector, length);
+    position.move(length, angles);
   }
 
   @Override
-  public void onMoved(Vector3 vector, float length)
+  public void onMoved( float length, Vector3 vector)
   {
     vector.normalize();
-
-    position.addToX(vector.getX() * length);
-    position.addToY(vector.getY() * length);
-    position.addToZ(vector.getZ() * length);
+    vector.multiply(length);
+    position.add(vector);
   }
 
   @Override

@@ -34,7 +34,7 @@ public class CollisionManager
 
   public void move(IEngineObject object, Vector3 vector, float length)
   {
-    object.onMoved(vector, length);
+    object.onMoved(length, vector);
     resolve(object);
   }
 
@@ -60,7 +60,7 @@ public class CollisionManager
       if (collision.isCollide())
       {
         collidedObjects.add(object);
-        object.onMoved(collision.getMTV(), collision.getMTVLength());
+        object.onMoved(collision.getMTVLength(), collision.getMTV());
       }
     }
 

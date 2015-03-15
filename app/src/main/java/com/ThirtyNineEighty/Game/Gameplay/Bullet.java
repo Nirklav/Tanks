@@ -2,8 +2,8 @@ package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.IEngineObject;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
@@ -18,27 +18,7 @@ public class Bullet extends GameObject
     super(CharacteristicFactory.get(type));
 
     IContent content = GameContext.getContent();
-    final Bullet bullet = this;
-    final GameWorld world = (GameWorld)content.getWorld();
-
-    content.bindProgram(subprogram = new ISubprogram()
-    {
-      private int steps;
-
-      @Override
-      public void update()
-      {
-        if (steps > 100)
-        {
-          IContent content = GameContext.getContent();
-          content.unbindProgram(this);
-          return;
-        }
-
-        steps++;
-        world.collisionManager.move(bullet);
-      }
-    });
+    content.bindProgram(subprogram = new MoveSubprogram(this).setLifeTime(150));
   }
 
   @Override
