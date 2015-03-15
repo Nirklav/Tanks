@@ -41,7 +41,7 @@ public abstract class BaseMenu
   }
 
   @Override
-  public final boolean processEvent(MotionEvent event)
+  public final void processEvent(MotionEvent event)
   {
     int action = event.getActionMasked();
     int pointerIndex = event.getActionIndex();
@@ -70,7 +70,5 @@ public abstract class BaseMenu
         control.processUp(id, x, y);
       break;
     }
-
-    return true;
   }
 }

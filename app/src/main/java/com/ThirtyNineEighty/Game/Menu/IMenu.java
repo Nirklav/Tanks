@@ -12,5 +12,5 @@ public interface IMenu
   void uninitialize();
 
   void fillRenderable(List<I2DRenderable> renderables);
-  boolean processEvent(MotionEvent event);
+  void processEvent(MotionEvent event);
 }

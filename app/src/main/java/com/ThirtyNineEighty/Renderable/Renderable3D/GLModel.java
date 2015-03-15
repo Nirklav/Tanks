@@ -32,8 +32,8 @@ public class GLModel
     position = Vector3.getInstance(3);
     angles = Vector3.getInstance(3);
 
-    geometryData = Renderable.getGeometry(geometryName);
-    textureData = Renderable.getTexture(textureName);
+    geometryData = Renderable.load3DGeometry(geometryName);
+    textureData = Renderable.loadTexture(textureName, true);
   }
 
   public void dispose()

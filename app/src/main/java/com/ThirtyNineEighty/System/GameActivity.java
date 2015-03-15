@@ -5,11 +5,14 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class GameActivity
   extends Activity
+  implements View.OnTouchListener
 {
   private static final int FPS = 30;
 
@@ -18,7 +21,11 @@ public class GameActivity
 
   private Content content;
 
-  private GLSurfaceView view;
+  private GLSurfaceView glView;
+
+  private Runnable touchRunnable;
+  private Runnable updateRunnable;
+  private Runnable drawRunnable;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -32,18 +39,18 @@ public class GameActivity
     content = new Content();
 
     // OpenGL init
-    view = new GLSurfaceView(this);
-    view.getHolder().setFormat(PixelFormat.RGBA_8888);
-    view.setEGLContextClientVersion(2);
-    view.setEGLConfigChooser(new ConfigChooser());
-    view.setRenderer(content);
-    view.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+    glView = new GLSurfaceView(this);
+    glView.getHolder().setFormat(PixelFormat.RGBA_8888);
+    glView.setEGLContextClientVersion(2);
+    glView.setEGLConfigChooser(new ConfigChooser());
+    glView.setRenderer(content);
+    glView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
     // Bind listener
-    view.setOnTouchListener(content);
+    glView.setOnTouchListener(this);
 
     // Set view
-    setContentView(view);
+    setContentView(glView);
 
     GameContext.setAppContext(this);
     GameContext.setContent(content);
@@ -51,30 +58,55 @@ public class GameActivity
 
   private void requestRenderer()
   {
+    if (drawRunnable == null)
+    {
+      drawRunnable = new Runnable()
+      {
+        @Override
+        public void run() { requestRenderer(); }
+      };
+    }
+
+    if (updateRunnable == null)
+    {
+      updateRunnable = new Runnable()
+      {
+        @Override
+        public void run() { content.onUpdate(); }
+      };
+    }
+
     handler.removeCallbacks(drawRunnable);
     if (!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
       GameContext.updateTime();
-      content.onUpdate();
-      view.requestRender();
+      glView.queueEvent(updateRunnable);
+      glView.requestRender();
     }
   }
 
-  private final Runnable drawRunnable = new Runnable()
+  @Override
+  public boolean onTouch(View view, final MotionEvent motionEvent)
   {
-    @Override
-    public void run()
+    if (touchRunnable == null)
     {
-      requestRenderer();
+      touchRunnable = new Runnable()
+      {
+        @Override
+        public void run() { content.onTouch(motionEvent); }
+      };
     }
-  };
+
+    glView.queueEvent(touchRunnable);
+    return true;
+  }
 
   @Override
   protected void onPause()
   {
     super.onPause();
-    view.onPause();
+    glView.onPause();
     pause = true;
   }
 
@@ -82,7 +114,7 @@ public class GameActivity
   protected void onResume()
   {
     super.onResume();
-    view.onResume();
+    glView.onResume();
     pause = false;
     requestRenderer();
   }

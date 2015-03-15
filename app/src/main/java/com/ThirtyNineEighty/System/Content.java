@@ -18,12 +18,10 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
 public class Content
   implements IContent,
-             GLSurfaceView.Renderer,
-             View.OnTouchListener
+             GLSurfaceView.Renderer
 {
   private boolean initialized = false;
 
@@ -129,10 +127,12 @@ public class Content
     subprogramActions.clear();
   }
 
-  @Override
-  public boolean onTouch(View v, MotionEvent event)
+  public void onTouch(MotionEvent event)
   {
-    return initialized && menu.processEvent(event);
+    if (!initialized)
+       return;
+
+    menu.processEvent(event);
   }
 
   @Override
@@ -201,7 +201,6 @@ public class Content
     Shader.initShader2D();
 
     Renderable.clearCache();
-    Renderable.loadResources();
 
     setWorld(new GameWorld());
 

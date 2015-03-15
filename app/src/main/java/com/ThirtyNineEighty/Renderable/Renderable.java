@@ -7,7 +7,6 @@ import android.opengl.GLException;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
@@ -22,38 +21,11 @@ public final class Renderable
   private static HashMap<String, TextureData> texturesCache = new HashMap<String, TextureData>();
   private static HashMap<String, GeometryData> geometryCache = new HashMap<String, GeometryData>();
 
-  public static TextureData getTexture(String name)
+  public static TextureData loadTexture(String name, boolean generateMipmap)
   {
     if (texturesCache.containsKey(name))
       return texturesCache.get(name);
 
-    return null;
-  }
-
-  public static GeometryData getGeometry(String name)
-  {
-    if (geometryCache.containsKey(name))
-      return geometryCache.get(name);
-
-    return null;
-  }
-
-  //TODO: Move all resource loading on GLThread or leave this :(
-  public static void loadResources()
-  {
-    loadTexture("tank", true);
-    loadTexture("land", true);
-    loadTexture("bullet", true);
-    loadTexture("button", false);
-
-    load2DGeometry("GLSpriteMesh", GLSprite.bufferData); //TODO: the saddest place
-    load3DGeometry("tank");
-    load3DGeometry("land");
-    load3DGeometry("bullet");
-  }
-
-  private static TextureData loadTexture(String name, boolean generateMipmap)
-  {
     try
     {
       String fileName = getTextureFileName(name);
@@ -110,8 +82,11 @@ public final class Renderable
     }
   }
 
-  private static GeometryData load2DGeometry(String name, float[] bufferData)
+  public static GeometryData load2DGeometry(String name, float[] bufferData)
   {
+    if (geometryCache.containsKey(name))
+      return geometryCache.get(name);
+
     Buffer data = ByteBuffer.allocateDirect(bufferData.length * 4)
                             .order(ByteOrder.nativeOrder())
                             .asFloatBuffer()
@@ -128,8 +103,11 @@ public final class Renderable
     return geometry;
   }
 
-  private static GeometryData load3DGeometry(String name)
+  public static GeometryData load3DGeometry(String name)
   {
+    if (geometryCache.containsKey(name))
+      return geometryCache.get(name);
+
     try
     {
       String fileName = getModelFileName(name);
