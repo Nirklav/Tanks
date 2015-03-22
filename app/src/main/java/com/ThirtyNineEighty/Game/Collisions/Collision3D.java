@@ -56,6 +56,8 @@ public class Collision3D
         min = collision;
         minPlane.setFrom(plane);
       }
+
+      plane.release();
     }
 
     return new CheckResult(min, minPlane);

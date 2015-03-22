@@ -36,28 +36,34 @@ public class Vector2 extends Vector
 
   public void setFrom(float x, float y)
   {
+    throwIfReleased();
+
     value[0] = x;
     value[1] = y;
   }
 
   public void setFrom(Vector2 vec)
   {
+    throwIfReleased();
+
     setFrom(vec.getX(), vec.getY());
   }
 
-  public float getX() { return value[0]; }
-  public float getY() { return value[1]; }
+  public float getX() { throwIfReleased(); return value[0]; }
+  public float getY() { throwIfReleased(); return value[1]; }
 
-  public void setX(float v) { value[0] = v; }
-  public void setY(float v) { value[1] = v; }
+  public void setX(float v) { throwIfReleased(); value[0] = v; }
+  public void setY(float v) { throwIfReleased(); value[1] = v; }
 
-  public void addToX(float v) { value[0] += v; }
-  public void addToY(float v) { value[1] += v; }
+  public void addToX(float v) { throwIfReleased(); value[0] += v; }
+  public void addToY(float v) { throwIfReleased(); value[1] += v; }
 
-  public float[] getRaw() { return value; }
+  public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()
   {
+    throwIfReleased();
+
     double powX = Math.pow(getX(), 2);
     double powY = Math.pow(getY(), 2);
 
@@ -66,6 +72,8 @@ public class Vector2 extends Vector
 
   public float getAngle(Vector2 other)
   {
+    throwIfReleased();
+
     float scalar = getScalar(other);
     float lengthOne = this.getLength();
     float lengthTwo = other.getLength();
@@ -76,6 +84,8 @@ public class Vector2 extends Vector
 
   public float getScalar(Vector2 other)
   {
+    throwIfReleased();
+
     float multOne = getX() * other.getX();
     float multTwo = getY() * other.getY();
 
@@ -84,11 +94,15 @@ public class Vector2 extends Vector
 
   public float getCross(Vector2 other)
   {
+    throwIfReleased();
+
     return getX() * other.getY() - getY() * other.getX();
   }
 
   public void normalize()
   {
+    throwIfReleased();
+
     float length = getLength();
 
     value[0] /= length;
@@ -97,11 +111,15 @@ public class Vector2 extends Vector
 
   public void subtract(Vector2 other)
   {
+    throwIfReleased();
+
     setFrom(getX() - other.getX(), getY() - other.getY());
   }
 
   public Vector2 getNormalize()
   {
+    throwIfReleased();
+
     Vector2 result = new Vector2(this);
     result.normalize();
     return result;
@@ -109,6 +127,8 @@ public class Vector2 extends Vector
 
   public Vector2 getSubtract(Vector2 other)
   {
+    throwIfReleased();
+
     Vector2 result = new Vector2(this);
     result.subtract(other);
     return result;
@@ -117,6 +137,8 @@ public class Vector2 extends Vector
   @Override
   public boolean equals(Object o)
   {
+    throwIfReleased();
+
     Vector2 other = o instanceof Vector2 ? (Vector2)o : null;
 
     return other != null
@@ -127,18 +149,21 @@ public class Vector2 extends Vector
   @Override
   public String toString()
   {
+    throwIfReleased();
     return String.format("{%f; %f}", value[0], value[1]);
   }
 
   @Override
   public float get(int num)
   {
+    throwIfReleased();
     return value[num];
   }
 
   @Override
   public void set(int num, float v)
   {
+    throwIfReleased();
     value[num] = v;
   }
 

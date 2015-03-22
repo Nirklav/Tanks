@@ -1,8 +1,11 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import android.util.Log;
+
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 
@@ -29,9 +32,20 @@ public class GameMenu extends BaseMenu
       }
     });
 
+    Button cacheStatusButton = new Button(-810, 440, 300, 200);
+    cacheStatusButton.setClickListener(new Button.IClickListener()
+    {
+      @Override
+      public void onClick()
+      {
+        Log.d("Cache status", Vector.getCacheStatus());
+      }
+    });
+
     addButton(forwardButton = new Button(0, -440, 300, 200));
     addButton(leftButton = new Button(-810, -440, 300, 200));
     addButton(rightButton = new Button(810, -440, 300, 200));
+    addButton(cacheStatusButton);
     addButton(fireButton);
   }
 

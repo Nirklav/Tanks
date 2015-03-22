@@ -38,6 +38,8 @@ public class Vector3 extends Vector
 
   public void setFrom(float x, float y, float z)
   {
+    throwIfReleased();
+
     value[0] = x;
     value[1] = y;
     value[2] = z;
@@ -46,25 +48,29 @@ public class Vector3 extends Vector
 
   public void setFrom(Vector3 vec)
   {
+    throwIfReleased();
+
     setFrom(vec.getX(), vec.getY(), vec.getZ());
   }
 
-  public float getX() { return value[0]; }
-  public float getY() { return value[1]; }
-  public float getZ() { return value[2]; }
+  public float getX() { throwIfReleased(); return value[0]; }
+  public float getY() { throwIfReleased(); return value[1]; }
+  public float getZ() { throwIfReleased(); return value[2]; }
 
-  public void setX(float v) { value[0] = v; }
-  public void setY(float v) { value[1] = v; }
-  public void setZ(float v) { value[2] = v; }
+  public void setX(float v) { throwIfReleased(); value[0] = v; }
+  public void setY(float v) { throwIfReleased(); value[1] = v; }
+  public void setZ(float v) { throwIfReleased(); value[2] = v; }
 
-  public void addToX(float v) { value[0] += v; }
-  public void addToY(float v) { value[1] += v; }
-  public void addToZ(float v) { value[2] += v; }
+  public void addToX(float v) { throwIfReleased(); value[0] += v; }
+  public void addToY(float v) { throwIfReleased(); value[1] += v; }
+  public void addToZ(float v) { throwIfReleased(); value[2] += v; }
 
-  public float[] getRaw() { return value; }
+  public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()
   {
+    throwIfReleased();
+
     double powX = Math.pow(getX(), 2);
     double powY = Math.pow(getY(), 2);
     double powZ = Math.pow(getZ(), 2);
@@ -74,6 +80,8 @@ public class Vector3 extends Vector
 
   public float getAngle(Vector3 other)
   {
+    throwIfReleased();
+
     Vector3 normal = getCross(other);
 
     if (normal.equals(Vector3.zero))
@@ -89,6 +97,8 @@ public class Vector3 extends Vector
 
   public void normalize()
   {
+    throwIfReleased();
+
     float length = getLength();
 
     if (length == 0f)
@@ -101,6 +111,8 @@ public class Vector3 extends Vector
 
   public float getScalar(Vector3 other)
   {
+    throwIfReleased();
+
     float multOne   = getX() * other.getX();
     float multTwo   = getY() * other.getY();
     float multThree = getZ() * other.getZ();
@@ -110,6 +122,8 @@ public class Vector3 extends Vector
 
   public void scale(float coefficient)
   {
+    throwIfReleased();
+
     value[0] *= coefficient;
     value[1] *= coefficient;
     value[2] *= coefficient;
@@ -117,6 +131,8 @@ public class Vector3 extends Vector
 
   public void cross(Vector3 other)
   {
+    throwIfReleased();
+
     float[] otherValue = other.getRaw();
 
     float result1 =      value[1] * otherValue[2];
@@ -131,6 +147,8 @@ public class Vector3 extends Vector
 
   public void orthogonal()
   {
+    throwIfReleased();
+
     float x = getX();
     float y = getY();
     float z = getZ();
@@ -143,6 +161,8 @@ public class Vector3 extends Vector
 
   public void add(Vector3 other)
   {
+    throwIfReleased();
+
     setFrom(getX() + other.getX(),
             getY() + other.getY(),
             getZ() + other.getZ());
@@ -150,6 +170,8 @@ public class Vector3 extends Vector
 
   public void subtract(Vector3 other)
   {
+    throwIfReleased();
+
     setFrom(getX() - other.getX(),
             getY() - other.getY(),
             getZ() - other.getZ());
@@ -157,6 +179,8 @@ public class Vector3 extends Vector
 
   public void multiply(float coefficient)
   {
+    throwIfReleased();
+
     value[0] = value[0] * coefficient;
     value[1] = value[1] * coefficient;
     value[2] = value[2] * coefficient;
@@ -164,6 +188,8 @@ public class Vector3 extends Vector
 
   public void move(float length, Vector3 angles)
   {
+    throwIfReleased();
+
     Vector3 vector = new Vector3();
     float[] translateMatrix = new float[16];
     Matrix.setIdentityM(translateMatrix, 0);
@@ -183,6 +209,8 @@ public class Vector3 extends Vector
 
   public Vector3 getNormalize()
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.normalize();
     return result;
@@ -190,6 +218,8 @@ public class Vector3 extends Vector
 
   public Vector3 getScale(float coefficient)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.scale(coefficient);
     return result;
@@ -197,6 +227,8 @@ public class Vector3 extends Vector
 
   public Vector3 getCross(Vector3 other)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.cross(other);
     return result;
@@ -204,6 +236,8 @@ public class Vector3 extends Vector
 
   public Vector3 getOrthogonal()
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.orthogonal();
     return result;
@@ -211,6 +245,8 @@ public class Vector3 extends Vector
 
   public Vector3 getSum(Vector3 other)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.add(other);
     return result;
@@ -218,6 +254,8 @@ public class Vector3 extends Vector
 
   public Vector3 getSubtract(Vector3 other)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.subtract(other);
     return result;
@@ -225,6 +263,8 @@ public class Vector3 extends Vector
 
   public Vector3 getMultiply(float coefficient)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.multiply(coefficient);
     return result;
@@ -232,6 +272,8 @@ public class Vector3 extends Vector
 
   public Vector3 getMove(float length, Vector3 angles)
   {
+    throwIfReleased();
+
     Vector3 result = new Vector3(this);
     result.move(length, angles);
     return result;
@@ -240,6 +282,8 @@ public class Vector3 extends Vector
   @Override
   public boolean equals(Object o)
   {
+    throwIfReleased();
+
     Vector3 other = o instanceof Vector3 ? (Vector3)o : null;
 
     return other != null
@@ -251,18 +295,21 @@ public class Vector3 extends Vector
   @Override
   public String toString()
   {
+    throwIfReleased();
     return String.format("{%f; %f; %f}", value[0], value[1], value[2]);
   }
 
   @Override
   public float get(int num)
   {
+    throwIfReleased();
     return value[num];
   }
 
   @Override
   public void set(int num, float v)
   {
+    throwIfReleased();
     value[num] = v;
   }
 

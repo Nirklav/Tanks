@@ -10,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 public abstract class Vector
 {
-  //region nested type
-
   private static class Vectors
   {
     private ArrayDeque<Vector> vectors;
@@ -26,7 +24,7 @@ public abstract class Vector
     public void release(Vector vector)
     {
       if (vector.getSize() != size)
-        return;
+        throw new IllegalStateException("Can't add this vector in cache. Wrong size.");
 
       vectors.add(vector);
     }
@@ -36,15 +34,14 @@ public abstract class Vector
     public int getVectorSize() { return size; }
   }
 
-  //endregion
-
   protected static final float epsilon = 0.0001f;
 
-  // region cache
-
-  private static final int cacheSizeLimit = 1000;
+  private static final int cacheSizeLimit = 500;
+  private static final boolean disableCache = false;
   private static final SparseArray<Vectors> cache = new SparseArray<Vectors>();
   private static final AtomicInteger cacheSize = new AtomicInteger();
+
+  protected boolean released;
 
   public static <TVector extends Vector> TVector getInstance(int vectorSize, TVector copy)
   {
@@ -62,6 +59,9 @@ public abstract class Vector
   @SuppressWarnings({ "unchecked" })
   public static <TVector extends Vector> TVector getInstance(int vectorSize)
   {
+    if (disableCache)
+      return create(vectorSize);
+
     Vectors vectors;
     synchronized (cache)
     {
@@ -76,10 +76,17 @@ public abstract class Vector
       if (vector != null)
       {
         cacheSize.decrementAndGet();
+        vector.released = false;
         return (TVector) vector;
       }
     }
 
+    return create(vectorSize);
+  }
+
+  @SuppressWarnings({ "unchecked" })
+  private static <TVector extends Vector> TVector create(int vectorSize)
+  {
     try
     {
       switch (vectorSize)
@@ -100,18 +107,54 @@ public abstract class Vector
     }
   }
 
-  public static <TVector extends Vector> void release(Collection<TVector> vectors)
+  public static <TVector extends Vector> void release(Collection<TVector> vectorsCollection)
   {
-    for(TVector vec : vectors)
-      release(vec);
+    if (disableCache)
+      return;
+
+    if (vectorsCollection.size() == 0)
+      return;
+
+    int addedCount = tryAddCacheSize(vectorsCollection.size());
+    if (addedCount == 0)
+      return;
+
+    int vectorSize = -1;
+    //noinspection LoopStatementThatDoesntLoop
+    for(TVector first : vectorsCollection)
+    {
+      vectorSize = first.getSize();
+      break;
+    }
+
+    if (vectorSize == -1)
+      return;
+
+    Vectors vectors;
+    synchronized (cache)
+    {
+      vectors = cache.get(vectorSize);
+      if (vectors == null)
+        cache.append(vectorSize, vectors = new Vectors(vectorSize));
+    }
+
+    synchronized (vectors)
+    {
+      for(TVector vector : vectorsCollection)
+      {
+        vector.released = true;
+        vectors.release(vector);
+      }
+    }
   }
 
   public static void release(Vector vector)
   {
-    if (cacheSize.get() >= cacheSizeLimit)
+    if (disableCache)
       return;
 
-    cacheSize.incrementAndGet();
+    if (tryAddCacheSize(1) == 0)
+      return;
 
     int size = vector.getSize();
     Vectors vectors;
@@ -124,13 +167,30 @@ public abstract class Vector
 
     synchronized (vectors)
     {
+      vector.released = true;
       vectors.release(vector);
+    }
+  }
+
+  private static int tryAddCacheSize(int value)
+  {
+    while (true)
+    {
+      int cachedValue = cacheSize.get();
+      int changedValue = Math.min(cachedValue + value, cacheSizeLimit);
+
+      if (changedValue >= cacheSizeLimit)
+        return 0;
+
+      if (cacheSize.compareAndSet(cachedValue, changedValue))
+        return changedValue - cachedValue;
     }
   }
 
   public static String getCacheStatus()
   {
     StringBuilder builder = new StringBuilder();
+    builder.append(String.format("\n[Cache size: %s]\n", cacheSize.get()));
     synchronized (cache)
     {
       int size = cache.size();
@@ -139,16 +199,20 @@ public abstract class Vector
         int key = cache.keyAt(i);
         Vectors vectors = cache.get(key);
 
-        builder.append(String.format("[Size: %s, VectorSize: %s] /n", vectors.getCacheSize(), vectors.getVectorSize()));
+        builder.append(String.format("[Size: %s, VectorSize: %s] \n", vectors.getCacheSize(), vectors.getVectorSize()));
       }
     }
 
     return builder.toString();
   }
 
-  //endregion
-
   public abstract float get(int num);
   public abstract void set(int num, float value);
   public abstract int getSize();
+
+  protected void throwIfReleased()
+  {
+    if (released)
+      throw new IllegalStateException("Vector released not use it.");
+  }
 }
