@@ -7,6 +7,7 @@ import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
+import com.ThirtyNineEighty.Game.Gameplay.Subprograms.TurnSubprogram;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
@@ -28,7 +29,8 @@ public class GameWorld
   private Tank player;
   private GameMenu menu;
 
-  private ISubprogram otherTankSubprogram;
+  private ISubprogram otherTankMoveSubprogram;
+  private ISubprogram otherTankTurnSubprogram;
   private ISubprogram worldSubprogram;
 
   public final CollisionManager collisionManager;
@@ -59,8 +61,9 @@ public class GameWorld
     IContent content = GameContext.getContent();
 
     content.setMenu(menu);
-    content.bindProgram(otherTankSubprogram = new MoveSubprogram(otherTank));
-    content.bindProgram(worldSubprogram = new ISubprogram()
+    content.bindProgram(otherTankMoveSubprogram = new MoveSubprogram(otherTank));
+    content.bindProgram(otherTankTurnSubprogram = new TurnSubprogram(otherTank, -1));
+    content.bindProgram(worldSubprogram = new ISubprogram() // TODO: move this code in button callbacks
     {
       @Override
       public void update()
@@ -68,7 +71,7 @@ public class GameWorld
         Characteristic c = player.getCharacteristics();
 
         if (menu.getForwardState())
-          collisionManager.move(player, c.getSpeed()  * GameContext.getDelta());
+          collisionManager.move(player, c.getSpeed() * GameContext.getDelta());
 
         Vector3 vector = Vector.getInstance(3);
 
@@ -83,6 +86,12 @@ public class GameWorld
           vector.setFrom(0, 0, -c.getRotationSpeed() * GameContext.getDelta());
           collisionManager.rotate(player, vector);
         }
+
+        if (menu.getLeftTurretState())
+          player.turnTurret(45f * GameContext.getDelta());
+
+        if (menu.getRightTurretState())
+          player.turnTurret(-45f * GameContext.getDelta());
 
         Vector.release(vector);
       }
@@ -99,7 +108,8 @@ public class GameWorld
 
     IContent content = GameContext.getContent();
     content.unbindProgram(worldSubprogram);
-    content.unbindProgram(otherTankSubprogram);
+    content.unbindProgram(otherTankMoveSubprogram);
+    content.unbindProgram(otherTankTurnSubprogram);
   }
 
   @Override
@@ -121,7 +131,7 @@ public class GameWorld
   public void fillRenderable(List<I3DRenderable> renderables)
   {
     for(IEngineObject engineObject : objects)
-      renderables.add(engineObject.getRenderable());
+      renderables.addAll(engineObject.getRenderables());
   }
 
   @Override

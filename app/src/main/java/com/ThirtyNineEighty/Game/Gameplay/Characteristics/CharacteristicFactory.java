@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
 
 import android.util.Log;
 
+import com.ThirtyNineEighty.Game.EngineObjectDescription;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
@@ -10,9 +11,14 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 // Characteristic file format:
-// 20 chars - VisualModelName (in folder Models with extension raw)
+
+// int - visualModels count
+// {
+//   20 chars - VisualModelName (in folder Models with extension raw)
+//   20 chars - TextureName (in folder Textures with extension png)
+// }
+
 // 20 chars - PhysicalModelName (in folder Models with extension ph)
-// 20 chars - TextureName (in folder Textures with extension png)
 // float - Health
 // float - Speed
 // float - Damage
@@ -45,11 +51,21 @@ public class CharacteristicFactory
 
       ByteBuffer buffer = ByteBuffer.wrap(data);
 
-      String visualModelName = readString(buffer, 20);
-      String phModelName = readString(buffer, 20);
-      String textureName = readString(buffer, 20);
+      int visualModelsCount = buffer.getInt();
+      EngineObjectDescription initializer = new EngineObjectDescription();
 
-      c = new Characteristic(visualModelName, phModelName, textureName);
+      for (int i = 0; i < visualModelsCount; i++)
+      {
+        String visualModelName = readString(buffer, 20);
+        String textureName = readString(buffer, 20);
+
+        initializer.VisualModels.add(new EngineObjectDescription.VisualModelDescription(visualModelName, textureName));
+      }
+
+      String phModelName = readString(buffer, 20);
+      initializer.PhysicalModel = new EngineObjectDescription.PhysicalModelDescription(phModelName);
+
+      c = new Characteristic(initializer);
       c.setHealth(buffer.getFloat());
       c.setSpeed(buffer.getFloat());
       c.setDamage(buffer.getFloat());

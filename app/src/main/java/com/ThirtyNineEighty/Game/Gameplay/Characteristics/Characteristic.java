@@ -1,28 +1,24 @@
 package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
 
+import com.ThirtyNineEighty.Game.EngineObjectDescription;
+
 public class Characteristic
 {
-  public final String visualModelName;
-  public final String phModelName;
-  public final String textureName;
+  public final EngineObjectDescription initializer;
 
   private float health;
   private float speed; // m/s
   private float damage;
   private float rotationSpeed;
 
-  public Characteristic(String visualModelName, String phModelName, String textureName)
+  public Characteristic(EngineObjectDescription init)
   {
-    this.visualModelName = visualModelName;
-    this.phModelName = phModelName;
-    this.textureName = textureName;
+    initializer = init;
   }
 
   public Characteristic(Characteristic other)
   {
-    visualModelName = other.visualModelName;
-    phModelName = other.phModelName;
-    textureName = other.textureName;
+    initializer = other.initializer;
 
     health = other.getHealth();
     speed = other.getSpeed();

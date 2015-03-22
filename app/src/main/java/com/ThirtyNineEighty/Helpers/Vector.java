@@ -26,6 +26,7 @@ public abstract class Vector
       if (vector.getSize() != size)
         throw new IllegalStateException("Can't add this vector in cache. Wrong size.");
 
+      vector.clear();
       vectors.add(vector);
     }
 
@@ -209,6 +210,7 @@ public abstract class Vector
   public abstract float get(int num);
   public abstract void set(int num, float value);
   public abstract int getSize();
+  public abstract void clear();
 
   protected void throwIfReleased()
   {

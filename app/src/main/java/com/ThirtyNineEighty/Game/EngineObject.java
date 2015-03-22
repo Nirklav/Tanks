@@ -6,24 +6,32 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public abstract class EngineObject
   implements IEngineObject
 {
   protected Vector3 position;
   protected Vector3 angles;
 
-  private I3DRenderable visualModel;
+  private ArrayList<I3DRenderable> visualModels;
   private ICollidable physicalModel;
 
-  protected EngineObject(String visualModelName, String phModelName, String textureName)
+  protected EngineObject(EngineObjectDescription initializer)
   {
     position = new Vector3();
     angles = new Vector3();
 
-    visualModel = new GLModel(visualModelName, textureName);
-    visualModel.setGlobal(position, angles);
+    visualModels = new ArrayList<I3DRenderable>();
+    for (EngineObjectDescription.VisualModelDescription vmInit : initializer.VisualModels)
+    {
+      GLModel visualModel = new GLModel(vmInit.ModelName, vmInit.TextureName);
+      visualModel.setGlobal(position, angles);
+      visualModels.add(visualModel);
+    }
 
-    physicalModel = new Collidable(phModelName);
+    physicalModel = new Collidable(initializer.PhysicalModel.ModelName);
     physicalModel.setGlobal(position, angles);
   }
 
@@ -80,14 +88,22 @@ public abstract class EngineObject
   public void setPosition(Vector3 value) { position.setFrom(value); }
 
   @Override
-  public I3DRenderable getRenderable()
+  public final Collection<I3DRenderable> getRenderables()
   {
-    visualModel.setGlobal(position, angles);
-    return visualModel;
+    int index = 0;
+    for(I3DRenderable vm : visualModels)
+      setGlobal(index++, vm);
+
+    return visualModels;
+  }
+
+  protected void setGlobal(int index, I3DRenderable renderable)
+  {
+    renderable.setGlobal(position, angles);
   }
 
   @Override
-  public ICollidable getCollidable()
+  public final ICollidable getCollidable()
   {
     physicalModel.setGlobal(position, angles);
     return physicalModel;

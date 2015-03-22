@@ -168,6 +168,13 @@ public class Vector2 extends Vector
   }
 
   @Override
+  public void clear()
+  {
+    value[0] = 0;
+    value[1] = 0;
+  }
+
+  @Override
   public int getSize()
   {
     return 2;

@@ -15,7 +15,7 @@ public abstract class GameObject
 
   protected GameObject(Characteristic characteristics)
   {
-    super(characteristics.visualModelName, characteristics.phModelName, characteristics.textureName);
+    super(characteristics.initializer);
 
     upgrades = new ArrayList<Upgrade>();
 

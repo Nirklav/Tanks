@@ -4,6 +4,8 @@ import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
+import java.util.Collection;
+
 public interface IEngineObject
 {
   // callbacks
@@ -22,6 +24,6 @@ public interface IEngineObject
   void setAngles(Vector3 value);
   void setPosition(Vector3 value);
 
-  I3DRenderable getRenderable();
+  Collection<I3DRenderable> getRenderables();
   ICollidable getCollidable();
 }

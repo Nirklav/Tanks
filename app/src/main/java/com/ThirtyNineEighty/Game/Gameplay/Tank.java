@@ -4,10 +4,13 @@ import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Tank extends GameObject
 {
+  private float turretAngle;
+
   public Tank(String type)
   {
     super(CharacteristicFactory.get(type));
@@ -15,16 +18,40 @@ public class Tank extends GameObject
 
   public void fire()
   {
-    Vector3 angles = getAngles();
-
     Bullet bullet = new Bullet(CharacteristicFactory.BULLET);
-    Vector3 bulletPos = Vector.getInstance(3, getPosition());
-    bulletPos.move(getCollidable().getRadius(), angles);
 
+    Vector3 bulletAngles = Vector.getInstance(3, angles);
+    bulletAngles.addToZ(turretAngle);
+    bullet.setAngles(bulletAngles);
+
+    Vector3 bulletPos = Vector.getInstance(3, position);
+    bulletPos.move(getCollidable().getRadius(), bulletAngles);
     bullet.setPosition(bulletPos);
-    bullet.setAngles(angles);
 
     IWorld world = GameContext.getContent().getWorld();
     world.add(bullet);
+
+    Vector.release(bulletPos);
+    Vector.release(bulletAngles);
+  }
+
+  public void turnTurret(float delta)
+  {
+    turretAngle += delta;
+  }
+
+  @Override
+  protected void setGlobal(int index, I3DRenderable renderable)
+  {
+    if (index == 1) // turret model
+    {
+      Vector3 vec = Vector.getInstance(3, angles);
+      vec.addToZ(turretAngle);
+      renderable.setGlobal(position, vec);
+      Vector.release(vec);
+      return;
+    }
+
+    super.setGlobal(index, renderable);
   }
 }

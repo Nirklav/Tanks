@@ -314,6 +314,15 @@ public class Vector3 extends Vector
   }
 
   @Override
+  public void clear()
+  {
+    value[0] = 0;
+    value[1] = 0;
+    value[2] = 0;
+    value[3] = 1;
+  }
+
+  @Override
   public int getSize()
   {
     return 3;
