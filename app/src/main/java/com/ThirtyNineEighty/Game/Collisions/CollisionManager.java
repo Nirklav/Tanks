@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
+import android.util.Log;
+
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
@@ -7,19 +9,22 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CollisionManager
 {
   private final Iterable<IEngineObject> worldObjects;
   private final ArrayList<IEngineObject> resolvingObjects;
 
-  // cached list
-  private final ArrayList<IEngineObject> collidedObjects;
+  private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
   public CollisionManager(Iterable<IEngineObject> objects)
   {
     worldObjects = objects;
-    collidedObjects = new ArrayList<IEngineObject>();
     resolvingObjects = new ArrayList<IEngineObject>();
   }
 
@@ -50,11 +55,45 @@ public class CollisionManager
 
   public void resolve()
   {
-    int size = resolvingObjects.size();
-    for (int i = size - 1; i >= 0; i--)
+    ArrayList<Future<ResolveResult>> results = new ArrayList<Future<ResolveResult>>(resolvingObjects.size());
+
+    for (final IEngineObject current : resolvingObjects)
     {
-      IEngineObject currentObj = resolvingObjects.get(i);
-      resolve(currentObj);
+      Future<ResolveResult> futureResult = threadPool.submit(
+        new Callable<ResolveResult>()
+        {
+          @Override
+          public ResolveResult call() throws Exception
+          {
+            return resolve(current);
+          }
+        }
+      );
+
+      results.add(futureResult);
+    }
+
+    try
+    {
+      for (Future<ResolveResult> current : results)
+      {
+        ResolveResult result = current.get();
+        if (result == null)
+          continue;
+
+        IEngineObject object = result.checkedObject;
+        for (CollisionResult collResult : result.collisions)
+        {
+          Collision3D collision = collResult.collision;
+
+          object.onMoved(collision.getMTVLength(), collision.getMTV());
+          object.onCollide(collResult.collidedObject);
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      Log.e("CollisionManager", "Resolve error", e);
     }
 
     resolvingObjects.clear();
@@ -66,11 +105,13 @@ public class CollisionManager
       resolvingObjects.add(object);
   }
 
-  private void resolve(IEngineObject object)
+  private ResolveResult resolve(IEngineObject object)
   {
     ICollidable objectPh = object.getCollidable();
     if (objectPh == null)
-      return;
+      return null;
+
+    ResolveResult result = null;
 
     for (IEngineObject current : worldObjects)
     {
@@ -88,16 +129,14 @@ public class CollisionManager
 
       if (collision.isCollide())
       {
-        collidedObjects.add(object);
-        object.onMoved(collision.getMTVLength(), collision.getMTV());
+        if (result == null)
+          result = new ResolveResult(object);
+
+        result.collisions.add(new CollisionResult(current, collision));
       }
     }
 
-    // onCollide can change worldObjects
-    for (IEngineObject current : collidedObjects)
-      object.onCollide(current);
-
-    collidedObjects.clear();
+    return result;
   }
 
   private float getLength(IEngineObject one, IEngineObject two)
@@ -107,5 +146,29 @@ public class CollisionManager
 
     Vector3 lengthVector = positionOne.getSubtract(positionTwo);
     return lengthVector.getLength();
+  }
+
+  private static class ResolveResult
+  {
+    public final IEngineObject checkedObject;
+    public final LinkedList<CollisionResult> collisions;
+
+    public ResolveResult(IEngineObject obj)
+    {
+      checkedObject = obj;
+      collisions = new LinkedList<CollisionResult>();
+    }
+  }
+
+  private static class CollisionResult
+  {
+    public final IEngineObject collidedObject;
+    public final Collision3D collision;
+
+    public CollisionResult(IEngineObject obj, Collision3D coll)
+    {
+      collidedObject = obj;
+      collision = coll;
+    }
   }
 }
