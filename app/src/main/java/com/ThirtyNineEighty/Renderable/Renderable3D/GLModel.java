@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Renderable.Renderable3D;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
@@ -29,8 +30,8 @@ public class GLModel
     modelProjectionViewMatrix = new float[16];
     scale = 1f;
 
-    position = Vector3.getInstance(3);
-    angles = Vector3.getInstance(3);
+    position = Vector.getInstance(3);
+    angles = Vector.getInstance(3);
 
     geometryData = Renderable.load3DGeometry(geometryName);
     textureData = Renderable.loadTexture(textureName, true);

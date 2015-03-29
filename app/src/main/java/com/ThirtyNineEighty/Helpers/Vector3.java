@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Helpers;
 
 import android.opengl.Matrix;
 
+import java.util.Arrays;
+
 /*
  * Operation with prefix get - immutable;
  */
@@ -290,6 +292,13 @@ public class Vector3 extends Vector
       && Math.abs(other.getX() - getX()) < epsilon
       && Math.abs(other.getY() - getY()) < epsilon
       && Math.abs(other.getZ() - getZ()) < epsilon;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    throwIfReleased();
+    return Arrays.hashCode(value);
   }
 
   @Override

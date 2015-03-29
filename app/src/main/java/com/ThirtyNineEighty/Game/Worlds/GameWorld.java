@@ -93,6 +93,9 @@ public class GameWorld
         if (menu.getRightTurretState())
           player.turnTurret(-45f * GameContext.getDelta());
 
+        // resolve all collisions
+        collisionManager.resolve();
+
         Vector.release(vector);
       }
     });

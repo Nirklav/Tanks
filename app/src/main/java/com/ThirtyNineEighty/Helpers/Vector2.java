@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Helpers;
 
+import java.util.Arrays;
+
 /*
  * Operation with prefix get - immutable;
  */
@@ -144,6 +146,13 @@ public class Vector2 extends Vector
     return other != null
       && Math.abs(other.getX() - getX()) < epsilon
       && Math.abs(other.getY() - getY()) < epsilon;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    throwIfReleased();
+    return Arrays.hashCode(value);
   }
 
   @Override

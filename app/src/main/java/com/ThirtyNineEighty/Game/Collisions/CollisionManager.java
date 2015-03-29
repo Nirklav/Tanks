@@ -11,51 +11,80 @@ import java.util.ArrayList;
 public class CollisionManager
 {
   private final Iterable<IEngineObject> worldObjects;
+  private final ArrayList<IEngineObject> resolvingObjects;
+
+  // cached list
   private final ArrayList<IEngineObject> collidedObjects;
 
   public CollisionManager(Iterable<IEngineObject> objects)
   {
     worldObjects = objects;
     collidedObjects = new ArrayList<IEngineObject>();
+    resolvingObjects = new ArrayList<IEngineObject>();
   }
 
   public void move(GameObject object)
   {
     Characteristic c = object.getCharacteristics();
     object.onMoved(c.getSpeed() * GameContext.getDelta());
-    resolve(object);
+    addToResolving(object);
   }
 
   public void move(IEngineObject object, float length)
   {
     object.onMoved(length);
-    resolve(object);
+    addToResolving(object);
   }
 
   public void move(IEngineObject object, Vector3 vector, float length)
   {
     object.onMoved(length, vector);
-    resolve(object);
+    addToResolving(object);
   }
 
   public void rotate(IEngineObject object, Vector3 angles)
   {
     object.onRotates(angles);
-    resolve(object);
+    addToResolving(object);
+  }
+
+  public void resolve()
+  {
+    int size = resolvingObjects.size();
+    for (int i = size - 1; i >= 0; i--)
+    {
+      IEngineObject currentObj = resolvingObjects.get(i);
+      resolve(currentObj);
+    }
+
+    resolvingObjects.clear();
+  }
+
+  private void addToResolving(IEngineObject object)
+  {
+    if (!resolvingObjects.contains(object))
+      resolvingObjects.add(object);
   }
 
   private void resolve(IEngineObject object)
   {
+    ICollidable objectPh = object.getCollidable();
+    if (objectPh == null)
+      return;
+
     for (IEngineObject current : worldObjects)
     {
-      if (object == current) continue;
+      if (object == current)
+        continue;
 
-      ICollidable firstPh = object.getCollidable();
-      ICollidable secondPh = current.getCollidable();
+      ICollidable currentPh = current.getCollidable();
+      if (currentPh == null)
+        continue;
 
-      if (firstPh.getRadius() + secondPh.getRadius() < getLength(object, current)) continue;
+      if (objectPh.getRadius() + currentPh.getRadius() < getLength(object, current))
+        continue;
 
-      Collision3D collision = new Collision3D(firstPh, secondPh);
+      Collision3D collision = new Collision3D(objectPh, currentPh);
 
       if (collision.isCollide())
       {

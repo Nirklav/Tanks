@@ -28,28 +28,34 @@ public class Collidable
   private ArrayList<Vector3> globalVertices;
   private ArrayList<Vector3> globalNormals;
 
+  private Vector3 position;
+  private Vector3 angles;
   private float radius;
 
   public Collidable(String fileName)
   {
     loadGeometry(String.format("Models/%s.ph", fileName));
+
     matrix = new float[16];
+
+    position = Vector.getInstance(3);
+    angles = Vector.getInstance(3);
   }
 
   @Override
   public ArrayList<Vector2> getConvexHull(Plane plane)
   {
     ArrayList<Vector2> projection = getDistinctProjection(plane);
-    ArrayList<Vector2> convexHull = new ArrayList<Vector2>();
+    ArrayList<Vector2> convexHull = new ArrayList<Vector2>(projection.size());
 
-    final Vector2 first = getFirstPoint(projection);
-    projection.remove(first);
+    int firstIndex = getFirstPointIndex(projection);
+
+    final Vector2 first = projection.remove(firstIndex);
     convexHull.add(first);
 
     Collections.sort(projection, new AngleComparator(first));
 
-    final Vector2 second = projection.get(0);
-    projection.remove(second);
+    final Vector2 second = projection.remove(0);
     convexHull.add(second);
 
     Vector2 prevVector = Vector.getInstance(2);
@@ -79,12 +85,16 @@ public class Collidable
     return convexHull;
   }
 
-  private static Vector2 getFirstPoint(ArrayList<Vector2> projection)
+  private static int getFirstPointIndex(ArrayList<Vector2> projection)
   {
     Vector2 minVector = null;
+    int minVectorIndex = 0;
 
-    for(Vector2 current : projection)
+    int size = projection.size();
+    for (int i = 0; i < size; i++)
     {
+      Vector2 current = projection.get(i);
+
       if (minVector == null)
       {
         minVector = current;
@@ -92,19 +102,21 @@ public class Collidable
       }
 
       if (current.getX() < minVector.getX())
+      {
         minVector = current;
+        minVectorIndex = i;
+      }
     }
 
-    return minVector;
+    return minVectorIndex;
   }
 
   private ArrayList<Vector2> getDistinctProjection(Plane plane)
   {
+    Vector2 vector = Vector.getInstance(2);
     ArrayList<Vector2> result = new ArrayList<Vector2>();
 
-    Vector2 vector = Vector.getInstance(2);
-
-    for(Vector3 current : getGlobalVertices())
+    for(Vector3 current : globalVertices)
     {
       plane.getProjection(vector, current);
       if (!result.contains(vector))
@@ -112,7 +124,6 @@ public class Collidable
     }
 
     Vector.release(vector);
-
     return result;
   }
 
@@ -146,6 +157,12 @@ public class Collidable
   @Override
   public void setGlobal(Vector3 position, Vector3 angles)
   {
+    if (position.equals(this.position) && angles.equals(this.angles))
+      return;
+
+    this.position.setFrom(position);
+    this.angles.setFrom(angles);
+
     // vertices
     Matrix.setIdentityM(matrix, 0);
     Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());

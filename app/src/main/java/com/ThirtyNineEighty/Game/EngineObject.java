@@ -31,8 +31,11 @@ public abstract class EngineObject
       visualModels.add(visualModel);
     }
 
-    physicalModel = new Collidable(initializer.PhysicalModel.ModelName);
-    physicalModel.setGlobal(position, angles);
+    if (initializer.PhysicalModel != null)
+    {
+      physicalModel = new Collidable(initializer.PhysicalModel.ModelName);
+      physicalModel.setGlobal(position, angles);
+    }
   }
 
   @Override
@@ -105,6 +108,9 @@ public abstract class EngineObject
   @Override
   public final ICollidable getCollidable()
   {
+    if (physicalModel == null)
+      return null;
+
     physicalModel.setGlobal(position, angles);
     return physicalModel;
   }

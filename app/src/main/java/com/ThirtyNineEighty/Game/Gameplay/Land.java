@@ -11,7 +11,7 @@ public class Land extends EngineObject
   {
     initializer = new EngineObjectDescription();
     initializer.VisualModels.add(new EngineObjectDescription.VisualModelDescription("land", "land"));
-    initializer.PhysicalModel = new EngineObjectDescription.PhysicalModelDescription("land");
+    initializer.PhysicalModel = null;//new EngineObjectDescription.PhysicalModelDescription("land");
   }
 
   public Land()
