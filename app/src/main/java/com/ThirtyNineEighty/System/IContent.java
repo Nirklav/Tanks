@@ -14,5 +14,7 @@ public interface IContent
   IMenu getMenu();
 
   void bindProgram(ISubprogram subprogram);
+  void bindLastProgram(ISubprogram subprogram);
   void unbindProgram(ISubprogram subprogram);
+  void unbindLastProgram();
 }

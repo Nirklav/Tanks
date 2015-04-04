@@ -11,7 +11,9 @@ import com.ThirtyNineEighty.Game.Gameplay.Subprograms.TurnSubprogram;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
+import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
+import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
@@ -68,24 +70,16 @@ public class GameWorld
       @Override
       public void update()
       {
-        Characteristic c = player.getCharacteristics();
-
-        if (menu.getForwardState())
-          collisionManager.move(player, c.getSpeed() * GameContext.getDelta());
-
         Vector3 vector = Vector.getInstance(3);
 
-        if (menu.getLeftState())
-        {
-          vector.setFrom(0, 0, c.getRotationSpeed() * GameContext.getDelta());
-          collisionManager.rotate(player, vector);
-        }
+        float joyAngle = menu.getJoystickAngle();
+        float playerAngle = player.getAngles().getZ();
 
-        if (menu.getRightState())
-        {
-          vector.setFrom(0, 0, -c.getRotationSpeed() * GameContext.getDelta());
-          collisionManager.rotate(player, vector);
-        }
+        if (Math.abs(joyAngle - playerAngle) < 30)
+          collisionManager.move(player);
+
+        if (Math.abs(joyAngle - playerAngle) > 5)
+          collisionManager.rotate(player, joyAngle);
 
         if (menu.getLeftTurretState())
           player.turnTurret(45f * GameContext.getDelta());
@@ -93,10 +87,17 @@ public class GameWorld
         if (menu.getRightTurretState())
           player.turnTurret(-45f * GameContext.getDelta());
 
+        Vector.release(vector);
+      }
+    });
+
+    content.bindLastProgram(new ISubprogram()
+    {
+      @Override
+      public void update()
+      {
         // resolve all collisions
         collisionManager.resolve();
-
-        Vector.release(vector);
       }
     });
   }
@@ -113,6 +114,7 @@ public class GameWorld
     content.unbindProgram(worldSubprogram);
     content.unbindProgram(otherTankMoveSubprogram);
     content.unbindProgram(otherTankTurnSubprogram);
+    content.unbindLastProgram();
   }
 
   @Override

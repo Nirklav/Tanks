@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.renderscript.Matrix3f;
 
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
@@ -53,7 +54,7 @@ public class GLSprite
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];
     textureMatrix = new Matrix3f();
-    position = new Vector2(0f, 0f);
+    position = Vector.getInstance(2);
 
     setSize(1, 1);
     setTextureCoordinates(0f, 0f, 1f, 1f);
@@ -133,7 +134,6 @@ public class GLSprite
   {
     this.width = width;
     this.height = height;
-
     needBuildMatrix = true;
   }
 
@@ -147,14 +147,12 @@ public class GLSprite
   public void setPosition(float x, float y)
   {
     position.setFrom(x, y);
-
     needBuildMatrix = true;
   }
 
   public void setPosition(Vector2 value)
   {
-    position = value;
-
+    position.setFrom(value);
     needBuildMatrix = true;
   }
 
@@ -166,7 +164,6 @@ public class GLSprite
   public void setAngle(float value)
   {
     angle = value;
-
     needBuildMatrix = true;
   }
 
@@ -178,7 +175,6 @@ public class GLSprite
   public void setZIndex(float value)
   {
     zIndex = value;
-
     needBuildMatrix = true;
   }
 

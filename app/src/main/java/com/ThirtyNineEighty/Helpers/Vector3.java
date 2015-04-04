@@ -67,6 +67,10 @@ public class Vector3 extends Vector
   public void addToY(float v) { throwIfReleased(); value[1] += v; }
   public void addToZ(float v) { throwIfReleased(); value[2] += v; }
 
+  public void multiplyToX(float v) { throwIfReleased(); value[0] *= v; }
+  public void multiplyToY(float v) { throwIfReleased(); value[1] *= v; }
+  public void multiplyToZ(float v) { throwIfReleased(); value[2] *= v; }
+
   public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()

@@ -35,6 +35,7 @@ public class Content
   private IWorld world;
   private IMenu menu;
 
+  private ISubprogram lastSubprogram;
   private final ArrayList<ISubprogram> subprograms;
   private final ArrayList<SubprogramAction> subprogramActions;
 
@@ -96,9 +97,24 @@ public class Content
   }
 
   @Override
+  public void bindLastProgram(ISubprogram subprogram)
+  {
+    if (lastSubprogram != null)
+      throw new IllegalStateException("last subprogram already set!");
+
+    lastSubprogram = subprogram;
+  }
+
+  @Override
   public void unbindProgram(ISubprogram subprogram)
   {
     subprogramActions.add(new SubprogramAction(subprogram, SubprogramAction.REMOVE_ACTION));
+  }
+
+  @Override
+  public void unbindLastProgram()
+  {
+    lastSubprogram = null;
   }
 
   public void onUpdate()
@@ -108,6 +124,9 @@ public class Content
 
     for (ISubprogram subprogram : subprograms)
       subprogram.update();
+
+    if (lastSubprogram != null)
+      lastSubprogram.update();
 
     // update can change subprograms
     for (SubprogramAction action : subprogramActions)

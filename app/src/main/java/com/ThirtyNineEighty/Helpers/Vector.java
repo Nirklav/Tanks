@@ -212,6 +212,15 @@ public abstract class Vector
   public abstract int getSize();
   public abstract void clear();
 
+  public void correctAngles()
+  {
+    for (int i = 0; i < getSize(); i++)
+    {
+      float angle = Angle.correct(get(i));
+      set(i, angle);
+    }
+  }
+
   protected void throwIfReleased()
   {
     if (released)

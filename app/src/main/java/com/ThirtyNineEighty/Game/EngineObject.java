@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
+import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
@@ -48,20 +49,7 @@ public abstract class EngineObject
   public void onRotates(Vector3 value)
   {
     angles.add(value);
-    angles.setFrom(correctAngle(angles.getX()),
-                   correctAngle(angles.getY()),
-                   correctAngle(angles.getZ()));
-  }
-
-  private float correctAngle(float angle)
-  {
-    if (angle < 0.0f)
-      angle += 360.0f;
-
-    if (angle >= 360.0f)
-      angle -= 360.0f;
-
-    return angle;
+    angles.correctAngles();
   }
 
   @Override
@@ -85,7 +73,11 @@ public abstract class EngineObject
   public Vector3 getAngles() { return angles; }
 
   @Override
-  public void setAngles(Vector3 value) { angles.setFrom(value); }
+  public void setAngles(Vector3 value)
+  {
+    angles.setFrom(value);
+    angles.correctAngles();
+  }
 
   @Override
   public void setPosition(Vector3 value) { position.setFrom(value); }

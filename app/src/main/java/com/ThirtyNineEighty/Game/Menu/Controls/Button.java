@@ -29,12 +29,14 @@ public class Button
 
     pointerId = -1;
 
-    pressed = new float[] { 0, 0, 1, 1 };
-    notPressed = new float[] { 0, 0, 1, 1 };
-
     sprite = new GLSprite("button");
     sprite.setPosition(x, y);
     sprite.setSize(width, height);
+
+    pressed = new float[] { 0.5f, 0f, 0.5f, 1f };
+    notPressed = new float[] { 0f, 0f, 0.5f, 1f };
+
+    setTextureCoordinates(notPressed);
   }
 
   public void dispose()
@@ -77,8 +79,7 @@ public class Button
   @Override
   public void processDown(int pointerId, float x, float y)
   {
-    if (isBetween(x, left, right) &&
-        isBetween(y, bottom, top))
+    if (isBetween(x, left, right) && isBetween(y, bottom, top) && this.pointerId == -1)
     {
       state = true;
       this.pointerId = pointerId;

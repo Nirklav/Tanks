@@ -5,6 +5,7 @@ import android.util.Log;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -45,6 +46,31 @@ public class CollisionManager
   {
     object.onMoved(length, vector);
     addToResolving(object);
+  }
+
+  public void rotate(GameObject object, float angle)
+  {
+    Characteristic c = object.getCharacteristics();
+
+    float speed = c.getRotationSpeed() * GameContext.getDelta();
+    float objectAngle = object.getAngles().getZ();
+    float addedValue = 0;
+
+    if (objectAngle != angle)
+    {
+      float tempValue = (objectAngle - angle < 0) ? objectAngle - angle + 360 : objectAngle - angle;
+
+      int k = (tempValue < 180) ? -1 : 1;
+
+      if (Math.abs(angle - objectAngle) > speed)
+        addedValue = speed * k;
+    }
+
+    Vector3 vector = Vector.getInstance(3);
+    vector.addToZ(addedValue);
+    object.onRotates(vector);
+    addToResolving(object);
+    Vector.release(vector);
   }
 
   public void rotate(IEngineObject object, Vector3 angles)

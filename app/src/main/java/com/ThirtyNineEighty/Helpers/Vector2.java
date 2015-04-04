@@ -60,6 +60,9 @@ public class Vector2 extends Vector
   public void addToX(float v) { throwIfReleased(); value[0] += v; }
   public void addToY(float v) { throwIfReleased(); value[1] += v; }
 
+  public void multiplyToX(float v) { throwIfReleased(); value[0] *= v; }
+  public void multiplyToY(float v) { throwIfReleased(); value[1] *= v; }
+
   public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()
@@ -81,7 +84,7 @@ public class Vector2 extends Vector
     float lengthTwo = other.getLength();
     float angle = (float)Math.toDegrees(Math.acos(scalar / (lengthOne * lengthTwo)));
 
-    return getCross(other) > 0 ? angle : 360 - angle;
+    return Angle.correct(getCross(other) > 0 ? angle : 360 - angle);
   }
 
   public float getScalar(Vector2 other)
