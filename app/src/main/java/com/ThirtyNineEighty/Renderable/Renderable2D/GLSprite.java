@@ -12,7 +12,7 @@ import com.ThirtyNineEighty.Renderable.Shader2D;
 public class GLSprite
   implements I2DRenderable
 {
-  private final static float[] bufferData = new float[]
+  private final static float[] quadMeshData = new float[]
   {
     -1,  1, 0, 0,
     -1, -1, 0, 1,
@@ -29,11 +29,11 @@ public class GLSprite
 
   private boolean needBuildMatrix;
 
-  private Vector2 position;
-  private float angle;
-  private float zIndex;
-  private float width;
-  private float height;
+  protected Vector2 position;
+  protected float angle;
+  protected float zIndex;
+  protected float width;
+  protected float height;
 
   private Renderable.TextureData textureData;
   private Renderable.GeometryData geometryData;
@@ -42,8 +42,13 @@ public class GLSprite
 
   public GLSprite(String textureName)
   {
+    this(textureName, "GLSpriteMesh", quadMeshData);
+  }
+
+  protected GLSprite(String textureName, String meshName, float[] meshData)
+  {
     textureData = Renderable.loadTexture(textureName, false);
-    geometryData = Renderable.load2DGeometry("GLSpriteMesh", bufferData);
+    geometryData = Renderable.load2DGeometry(meshName, meshData);
 
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];

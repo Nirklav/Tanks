@@ -6,6 +6,7 @@ import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
+import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 
@@ -52,6 +53,8 @@ public class GameMenu extends BaseMenu
     addButton(leftTurretButton = new Button(-885, 0, 150, 100));
     addButton(cacheStatusButton);
     addButton(fireButton);
+
+    addRenderable(new GLLabel("Test text!\nWith new lines\n\tand tabs..\nKu-ku~", "SimpleFont", 100, 100));
   }
 
   public boolean getForwardState() { return forwardButton.getState(); }

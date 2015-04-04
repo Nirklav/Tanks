@@ -13,15 +13,21 @@ public abstract class BaseMenu
   implements IMenu
 {
   private ArrayList<IControl> controls;
+  private ArrayList<I2DRenderable> renderables;
 
   protected BaseMenu()
   {
     controls = new ArrayList<IControl>();
+    renderables = new ArrayList<I2DRenderable>();
   }
 
   protected void addControl(IControl control) { controls.add(control); }
   protected void removeControl(IControl control) { controls.remove(control); }
   protected Iterable<IControl> getControls() { return controls; }
+
+  protected void addRenderable(I2DRenderable control) { renderables.add(control); }
+  protected void removeRenderable(I2DRenderable control) { renderables.remove(control); }
+
 
   @Override
   public abstract void initialize(Object args);
@@ -34,10 +40,13 @@ public abstract class BaseMenu
   }
 
   @Override
-  public final void fillRenderable(List<I2DRenderable> renderables)
+  public final void fillRenderable(List<I2DRenderable> filled)
   {
     for(I2DRenderable renderable : controls)
-      renderables.add(renderable);
+      filled.add(renderable);
+
+    for(I2DRenderable renderable : renderables)
+      filled.add(renderable);
   }
 
   @Override

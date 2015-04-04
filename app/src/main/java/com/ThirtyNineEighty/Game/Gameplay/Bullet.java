@@ -29,16 +29,17 @@ public class Bullet extends GameObject
     if (!(object instanceof GameObject))
       return;
 
-    GameObject gameObject = (GameObject)object;
-    Characteristic c = gameObject.getCharacteristics();
+    GameObject target = (GameObject)object;
+    Characteristic targetCharacteristic = target.getCharacteristics();
+    Characteristic bulletCharacteristic = getCharacteristics();
 
-    c.addHealth(c.getDamage());
+    targetCharacteristic.addHealth(bulletCharacteristic.getDamage());
 
-    if (c.getHealth() <= 0)
-    {
-      IWorld world = GameContext.getContent().getWorld();
-      world.remove(this);
-    }
+    IWorld world = GameContext.getContent().getWorld();
+    if (targetCharacteristic.getHealth() <= 0)
+      world.remove(object);
+
+    world.remove(this);
   }
 
   @Override

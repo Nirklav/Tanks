@@ -75,8 +75,11 @@ public class CollisionManager
 
     try
     {
-      for (Future<ResolveResult> current : results)
+      int size = results.size();
+      for (int i = size - 1; i >= 0; i--)
       {
+        Future<ResolveResult> current = results.get(i);
+
         ResolveResult result = current.get();
         if (result == null)
           continue;
