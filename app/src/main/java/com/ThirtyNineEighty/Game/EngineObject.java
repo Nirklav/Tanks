@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
-import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
@@ -83,27 +82,29 @@ public abstract class EngineObject
   public void setPosition(Vector3 value) { position.setFrom(value); }
 
   @Override
-  public final Collection<I3DRenderable> getRenderables()
-  {
-    int index = 0;
-    for(I3DRenderable vm : visualModels)
-      setGlobal(index++, vm);
+  public final Collection<I3DRenderable> getRenderables() { return visualModels; }
 
-    return visualModels;
-  }
+  @Override
+  public final ICollidable getCollidable() { return physicalModel; }
 
-  protected void setGlobal(int index, I3DRenderable renderable)
+  @Override
+  public void setGlobalCollidablePosition()
   {
-    renderable.setGlobal(position, angles);
+    if (physicalModel == null)
+      return;
+    physicalModel.setGlobal(position, angles);
   }
 
   @Override
-  public final ICollidable getCollidable()
+  public void setGlobalRenderablePosition()
   {
-    if (physicalModel == null)
-      return null;
+    int index = 0;
+    for(I3DRenderable vm : visualModels)
+      setGlobalRenderablePosition(index++, vm);
+  }
 
-    physicalModel.setGlobal(position, angles);
-    return physicalModel;
+  protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
+  {
+    renderable.setGlobal(position, angles);
   }
 }

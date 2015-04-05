@@ -135,8 +135,11 @@ public class GameWorld
   @Override
   public void fillRenderable(List<I3DRenderable> renderables)
   {
-    for(IEngineObject engineObject : objects)
+    for (IEngineObject engineObject : objects)
+    {
+      engineObject.setGlobalRenderablePosition();
       renderables.addAll(engineObject.getRenderables());
+    }
   }
 
   @Override

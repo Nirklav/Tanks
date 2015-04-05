@@ -41,7 +41,7 @@ public class Tank extends GameObject
   }
 
   @Override
-  protected void setGlobal(int index, I3DRenderable renderable)
+  protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
   {
     if (index == 1) // turret model
     {
@@ -52,6 +52,6 @@ public class Tank extends GameObject
       return;
     }
 
-    super.setGlobal(index, renderable);
+    super.setGlobalRenderablePosition(index, renderable);
   }
 }

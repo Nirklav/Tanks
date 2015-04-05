@@ -53,7 +53,7 @@ public class GameMenu extends BaseMenu
 
     addControl(joystick = new Joystick(-710, -290, 150));
 
-    addRenderable(new GLLabel("test text!\nwith new lines\n\tand tabs..\nKu-ku~", "SimpleFont", 100, 100));
+    addRenderable(new GLLabel("test text!\nwith new lines\n\tand tabs...\nKu-ku~", "SimpleFont", 100, 100));
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }

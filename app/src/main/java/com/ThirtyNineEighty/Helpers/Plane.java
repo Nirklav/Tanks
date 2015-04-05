@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Helpers;
 
 public class Plane
 {
+  public static final Plane zero = new Plane(new Vector3(0, 0, 0));
+
   private boolean released;
 
   private Vector3 xAxis;
@@ -10,18 +12,23 @@ public class Plane
 
   public Plane()
   {
-    xAxis = Vector.getInstance(3, Vector3.xAxis);
-    yAxis = Vector.getInstance(3, Vector3.yAxis);
-    zAxis = Vector.getInstance(3, Vector3.zAxis);
+    this(Vector3.xAxis, Vector3.yAxis, Vector3.zAxis);
+  }
+
+  public Plane(Vector3 x, Vector3 y, Vector3 z)
+  {
+    xAxis = Vector.getInstance(3, x);
+    yAxis = Vector.getInstance(3, y);
+    zAxis = Vector.getInstance(3, z);
   }
 
   public void release()
   {
+    released = true;
+
     Vector.release(xAxis);
     Vector.release(yAxis);
     Vector.release(zAxis);
-
-    released = true;
   }
 
   public Plane(Vector3 normal)
@@ -146,5 +153,25 @@ public class Plane
   {
     if (released)
       throw new IllegalStateException("plane released do not use it.");
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    throwIfReleased();
+
+    Plane other = o instanceof Plane ? (Plane)o : null;
+
+    return other != null
+      && xAxis.equals(other.xAxis)
+      && yAxis.equals(other.yAxis)
+      && zAxis.equals(other.zAxis);
+  }
+
+  @Override
+  public String toString()
+  {
+    throwIfReleased();
+    return String.format("[x:%s, y:%s, z:%s]", xAxis.toString(), yAxis.toString(), zAxis.toString());
   }
 }

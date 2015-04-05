@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import android.util.Log;
-
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
@@ -12,9 +10,11 @@ import com.ThirtyNineEighty.System.GameContext;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class CollisionManager
 {
@@ -48,7 +48,7 @@ public class CollisionManager
     addToResolving(object);
   }
 
-  public void rotate(GameObject object, float angle)
+  public void rotate(GameObject object, float targetAngle)
   {
     Characteristic c = object.getCharacteristics();
 
@@ -56,13 +56,13 @@ public class CollisionManager
     float objectAngle = object.getAngles().getZ();
     float addedValue = 0;
 
-    if (objectAngle != angle)
+    if (objectAngle != targetAngle)
     {
-      float tempValue = (objectAngle - angle < 0) ? objectAngle - angle + 360 : objectAngle - angle;
+      float tempValue = (objectAngle - targetAngle < 0) ? objectAngle - targetAngle + 360 : objectAngle - targetAngle;
 
       int k = (tempValue < 180) ? -1 : 1;
 
-      if (Math.abs(angle - objectAngle) > speed)
+      if (Math.abs(targetAngle - objectAngle) > speed)
         addedValue = speed * k;
     }
 
@@ -81,8 +81,14 @@ public class CollisionManager
 
   public void resolve()
   {
+    // Set current global positions for all objects
+    for (IEngineObject current : worldObjects)
+      current.setGlobalCollidablePosition();
+
+    // Parallel collision search (should not change world or objects)
     ArrayList<Future<ResolveResult>> results = new ArrayList<Future<ResolveResult>>(resolvingObjects.size());
 
+    final CountDownLatch latch = new CountDownLatch(resolvingObjects.size());
     for (final IEngineObject current : resolvingObjects)
     {
       Future<ResolveResult> futureResult = threadPool.submit(
@@ -91,7 +97,16 @@ public class CollisionManager
           @Override
           public ResolveResult call() throws Exception
           {
-            return resolve(current);
+            ResolveResult result;
+            try
+            {
+              result = resolve(current);
+            }
+            finally
+            {
+              latch.countDown();
+            }
+            return result;
           }
         }
       );
@@ -101,6 +116,10 @@ public class CollisionManager
 
     try
     {
+      // Wait for all tasks will be completed
+      latch.await(10, TimeUnit.SECONDS);
+
+      // Resolving collisions
       int size = results.size();
       for (int i = size - 1; i >= 0; i--)
       {
@@ -122,7 +141,7 @@ public class CollisionManager
     }
     catch (Exception e)
     {
-      Log.e("CollisionManager", "Resolve error", e);
+      throw new RuntimeException(e);
     }
 
     resolvingObjects.clear();

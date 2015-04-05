@@ -24,6 +24,9 @@ public interface IEngineObject
   void setAngles(Vector3 value);
   void setPosition(Vector3 value);
 
+  void setGlobalRenderablePosition();
   Collection<I3DRenderable> getRenderables();
+
+  void setGlobalCollidablePosition();
   ICollidable getCollidable();
 }
