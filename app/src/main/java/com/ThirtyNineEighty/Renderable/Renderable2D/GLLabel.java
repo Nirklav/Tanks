@@ -1,14 +1,32 @@
 package com.ThirtyNineEighty.Renderable.Renderable2D;
 
+import com.ThirtyNineEighty.Renderable.MeshMode;
+import com.ThirtyNineEighty.Renderable.Renderable;
+
 public class GLLabel
   extends GLSprite
 {
   private static final float TextureCellWidth = 0.0625f;
   private static final float TextureCellHeight = 0.125f;
 
-  public GLLabel(String value, String fontTexture, float charWidth, float charHeight)
+  private float charWidth;
+  private float charHeight;
+
+  public GLLabel(String value, String fontTexture, float charWidth, float charHeight) { this(value, fontTexture, charWidth, charHeight, MeshMode.Static); }
+  public GLLabel(String value, String fontTexture, float charWidth, float charHeight, MeshMode mode)
   {
-    super(fontTexture, String.format("String: %s", value), buildGeometry(value, charWidth, charHeight));
+    super(fontTexture, String.format("String: %s", value), buildGeometry(value, charWidth, charHeight), mode);
+
+    this.charWidth = charWidth;
+    this.charHeight = charHeight;
+  }
+
+  public void setValue(String value)
+  {
+    MeshMode mode = geometryData.getMode();
+
+    float[] bufferData = buildGeometry(value, charWidth, charHeight);
+    geometryData = Renderable.loadGeometry(String.format("String: %s", value), bufferData.length / 12, bufferData, mode);
   }
 
   private static float[] buildGeometry(String value, float charWidth, float charHeight)

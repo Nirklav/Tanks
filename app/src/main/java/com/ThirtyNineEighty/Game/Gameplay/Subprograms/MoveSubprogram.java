@@ -22,4 +22,10 @@ public class MoveSubprogram
     Characteristic c = movedObject.getCharacteristics();
     world.collisionManager.move(movedObject, c.getSpeed() * GameContext.getDelta());
   }
+
+  @Override
+  protected void onLifeTimeEnd()
+  {
+    world.remove(movedObject);
+  }
 }

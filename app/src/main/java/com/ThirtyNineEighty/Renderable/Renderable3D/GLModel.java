@@ -33,7 +33,7 @@ public class GLModel
     position = Vector.getInstance(3);
     angles = Vector.getInstance(3);
 
-    geometryData = Renderable.load3DGeometry(geometryName);
+    geometryData = Renderable.loadGeometry(geometryName);
     textureData = Renderable.loadTexture(textureName, true);
   }
 
@@ -56,6 +56,8 @@ public class GLModel
   @Override
   public void draw(float[] projectionViewMatrix, float[] lightPosition)
   {
+    Shader3D shader = (Shader3D) Shader.getCurrent();
+
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, projectionViewMatrix, 0, modelMatrix, 0);
 
@@ -63,16 +65,14 @@ public class GLModel
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
 
-    // bind data buffer
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.handle);
-
-    Shader3D shader = (Shader3D) Shader.getCurrent();
-
     // send uniform data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
     GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, lightPosition, 0);
+
+    // bind data buffer
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
 
     // set offsets to arrays for buffer
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
@@ -88,7 +88,7 @@ public class GLModel
     shader.validateProgram();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.numOfTriangles * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getNumOfTriangles() * 3);
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);

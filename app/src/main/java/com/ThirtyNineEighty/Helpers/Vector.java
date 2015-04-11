@@ -191,7 +191,7 @@ public abstract class Vector
   public static String getCacheStatus()
   {
     StringBuilder builder = new StringBuilder();
-    builder.append(String.format("\n\n[Cache size: %s]\n", cacheSize.get()));
+    builder.append(String.format("[Cache size: %s]\n", cacheSize.get()));
     synchronized (cache)
     {
       int size = cache.size();

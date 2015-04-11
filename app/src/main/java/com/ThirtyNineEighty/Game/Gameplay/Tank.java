@@ -25,7 +25,10 @@ public class Tank extends GameObject
     bullet.setAngles(bulletAngles);
 
     Vector3 bulletPos = Vector.getInstance(3, position);
-    bulletPos.move(getCollidable().getRadius(), bulletAngles);
+    float tankRadius = getCollidable().getRadius();
+    float bulletRadius = bullet.getCollidable().getRadius();
+
+    bulletPos.move(bulletRadius + tankRadius, bulletAngles);
     bullet.setPosition(bulletPos);
 
     IWorld world = GameContext.getContent().getWorld();

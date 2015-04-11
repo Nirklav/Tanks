@@ -97,16 +97,14 @@ public class CollisionManager
           @Override
           public ResolveResult call() throws Exception
           {
-            ResolveResult result;
             try
             {
-              result = resolve(current);
+              return resolve(current);
             }
             finally
             {
               latch.countDown();
             }
-            return result;
           }
         }
       );

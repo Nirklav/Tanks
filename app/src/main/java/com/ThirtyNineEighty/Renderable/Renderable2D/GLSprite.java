@@ -6,9 +6,12 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Renderable.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
+
+import java.nio.FloatBuffer;
 
 public class GLSprite
   implements I2DRenderable
@@ -36,20 +39,17 @@ public class GLSprite
   protected float width;
   protected float height;
 
-  private Renderable.TextureData textureData;
-  private Renderable.GeometryData geometryData;
+  protected Renderable.TextureData textureData;
+  protected Renderable.GeometryData geometryData;
 
   private boolean disposed;
 
-  public GLSprite(String textureName)
-  {
-    this(textureName, "GLSpriteMesh", quadMeshData);
-  }
-
-  protected GLSprite(String textureName, String meshName, float[] meshData)
+  public GLSprite(String textureName) { this(textureName, "GLSpriteMesh", quadMeshData); }
+  protected GLSprite(String textureName, String meshName, float[] meshData) { this(textureName, meshName, meshData, MeshMode.Static); }
+  protected GLSprite(String textureName, String meshName, float[] meshData, MeshMode mode)
   {
     textureData = Renderable.loadTexture(textureName, false);
-    geometryData = Renderable.load2DGeometry(meshName, meshData);
+    geometryData = Renderable.loadGeometry(meshName, meshData.length / 12, meshData, mode);
 
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];
@@ -83,6 +83,8 @@ public class GLSprite
   {
     tryBuildMatrix();
 
+    Shader2D shader = (Shader2D)Shader.getCurrent();
+
     // build result matrix
     Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
 
@@ -90,17 +92,29 @@ public class GLSprite
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
 
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.handle);
-
-    Shader2D shader = (Shader2D)Shader.getCurrent();
-
     // send data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix3fv(shader.uniformTextureMatrixHandle, 1, false, textureMatrix.getArray(), 0);
     GLES20.glUniformMatrix4fv(shader.uniformModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
 
-    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, 0);
-    GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, 8);
+    // set buffer or reset if dynamic
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
+
+    switch (geometryData.getMode())
+    {
+    case Static:
+      GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, 0);
+      GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, 8);
+      break;
+
+    case Dynamic:
+      FloatBuffer data = geometryData.getData();
+      data.position(0);
+      GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, data);
+      data.position(2);
+      GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, data);
+      break;
+    }
 
     // enable arrays
     GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
@@ -110,7 +124,7 @@ public class GLSprite
     shader.validateProgram();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.numOfTriangles * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getNumOfTriangles() * 3);
 
     // disable arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);

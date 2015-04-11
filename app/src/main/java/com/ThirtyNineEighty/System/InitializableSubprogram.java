@@ -23,6 +23,7 @@ public abstract class InitializableSubprogram implements ISubprogram
     {
       if (lifeTime == 0)
       {
+        onLifeTimeEnd();
         stopProgram();
         return;
       }
@@ -35,6 +36,7 @@ public abstract class InitializableSubprogram implements ISubprogram
 
   protected void onInitialize() { }
   protected abstract void onUpdate();
+  protected void onLifeTimeEnd() { }
   protected void onUninitialize() { }
 
   protected void stopProgram()

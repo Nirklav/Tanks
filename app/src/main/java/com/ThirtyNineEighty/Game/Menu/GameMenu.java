@@ -8,6 +8,7 @@ import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Renderable.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
@@ -16,6 +17,8 @@ public class GameMenu extends BaseMenu
 {
   private Button leftTurretButton;
   private Button rightTurretButton;
+
+  private GLLabel cacheStatusLabel;
 
   private Joystick joystick;
 
@@ -42,7 +45,7 @@ public class GameMenu extends BaseMenu
       @Override
       public void onClick()
       {
-        Log.d("Cache status", Vector.getCacheStatus());
+        cacheStatusLabel.setValue(Vector.getCacheStatus());
       }
     });
 
@@ -53,7 +56,10 @@ public class GameMenu extends BaseMenu
 
     addControl(joystick = new Joystick(-710, -290, 150));
 
-    addRenderable(new GLLabel("test text!\nwith new lines\n\tand tabs...\nKu-ku~", "SimpleFont", 100, 100));
+    cacheStatusLabel = new GLLabel(Vector.getCacheStatus(), "SimpleFont", 50, 60, MeshMode.Dynamic);
+    cacheStatusLabel.setPosition(-940, 290);
+
+    addRenderable(cacheStatusLabel);
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }

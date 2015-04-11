@@ -31,4 +31,10 @@ public class TurnSubprogram extends GameSubprogram
 
     Vector.release(angles);
   }
+
+  @Override
+  protected void onLifeTimeEnd()
+  {
+    world.remove(movedObject);
+  }
 }

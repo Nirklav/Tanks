@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Game.Worlds;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
@@ -11,9 +10,7 @@ import com.ThirtyNineEighty.Game.Gameplay.Subprograms.TurnSubprogram;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
-import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
