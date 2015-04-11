@@ -26,10 +26,10 @@ public class GameMenu extends BaseMenu
   public void initialize(Object args)
   {
     Button fireButton = new Button(810, 440, 300, 200);
-    fireButton.setClickListener(new Button.IClickListener()
+    fireButton.setClickListener(new Runnable()
     {
       @Override
-      public void onClick()
+      public void run()
       {
         IContent content = GameContext.getContent();
         IWorld world = content.getWorld();
@@ -40,10 +40,10 @@ public class GameMenu extends BaseMenu
     });
 
     Button cacheStatusButton = new Button(-810, 440, 300, 200);
-    cacheStatusButton.setClickListener(new Button.IClickListener()
+    cacheStatusButton.setClickListener(new Runnable()
     {
       @Override
-      public void onClick()
+      public void run()
       {
         cacheStatusLabel.setValue(Vector.getCacheStatus());
       }

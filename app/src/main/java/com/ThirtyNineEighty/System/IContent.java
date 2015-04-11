@@ -17,4 +17,6 @@ public interface IContent
   void bindLastProgram(ISubprogram subprogram);
   void unbindProgram(ISubprogram subprogram);
   void unbindLastProgram();
+
+  void execute(Runnable runnable);
 }

@@ -5,9 +5,8 @@ import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
 
 public class Joystick
-  implements IControl
+  extends Control
 {
-  private int pointerId;
   private float radius;
 
   private GLSprite backgroundSprite;
@@ -20,7 +19,6 @@ public class Joystick
 
   public Joystick(float x, float y, float radius)
   {
-    pointerId = -1;
     this.radius = radius;
 
     position = Vector.getInstance(2);
@@ -51,31 +49,28 @@ public class Joystick
   }
 
   @Override
-  public void processDown(int pointerId, float x, float y)
+  public void onDown(float x, float y)
+  {
+    setStick(x, y);
+  }
+
+  @Override
+  public void onMove(float x, float y)
+  {
+    setStick(x, y);
+  }
+
+  @Override
+  public void onUp(float x, float y)
+  {
+    resetStick();
+  }
+
+  @Override
+  protected boolean canProcess(float x, float y)
   {
     float length = getLength(x, y);
-    if (length < radius && this.pointerId == -1)
-    {
-      this.pointerId = pointerId;
-      setStick(x, y);
-    }
-  }
-
-  @Override
-  public void processMove(int pointerId, float x, float y)
-  {
-    if (this.pointerId == pointerId)
-      setStick(x, y);
-  }
-
-  @Override
-  public void processUp(int pointerId, float x, float y)
-  {
-    if (this.pointerId == pointerId)
-    {
-      this.pointerId = -1;
-      resetStick();
-    }
+    return length < radius;
   }
 
   @Override

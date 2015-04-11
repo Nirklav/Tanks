@@ -23,7 +23,6 @@ public class GameActivity
 
   private GLSurfaceView glView;
 
-  private Runnable touchRunnable;
   private Runnable updateRunnable;
   private Runnable drawRunnable;
 
@@ -87,18 +86,9 @@ public class GameActivity
   }
 
   @Override
-  public boolean onTouch(View view, final MotionEvent motionEvent)
+  public boolean onTouch(View view, MotionEvent motionEvent)
   {
-    if (touchRunnable == null)
-    {
-      touchRunnable = new Runnable()
-      {
-        @Override
-        public void run() { content.onTouch(motionEvent); }
-      };
-    }
-
-    glView.queueEvent(touchRunnable);
+    content.onTouch(motionEvent);
     return true;
   }
 

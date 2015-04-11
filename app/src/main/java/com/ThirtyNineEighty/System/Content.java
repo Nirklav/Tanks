@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.System;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -37,7 +38,10 @@ public class Content
 
   private ISubprogram lastSubprogram;
   private final ArrayList<ISubprogram> subprograms;
-  private final ArrayList<SubprogramAction> subprogramActions;
+  private final ArrayList<Action<ISubprogram>> subprogramActions;
+
+  private final ArrayList<Runnable> callbacks;
+  private final ArrayList<Action<Runnable>> callbacksActions;
 
   private final ArrayList<I3DRenderable> renderable3DObjects;
   private final ArrayList<I2DRenderable> renderable2DObjects;
@@ -53,7 +57,9 @@ public class Content
     orthoMatrix = new float[16];
 
     subprograms = new ArrayList<ISubprogram>();
-    subprogramActions = new ArrayList<SubprogramAction>();
+    subprogramActions = new ArrayList<Action<ISubprogram>>();
+    callbacks = new ArrayList<Runnable>();
+    callbacksActions = new ArrayList<Action<Runnable>>();
     renderable3DObjects = new ArrayList<I3DRenderable>();
     renderable2DObjects = new ArrayList<I2DRenderable>();
   }
@@ -93,7 +99,7 @@ public class Content
   @Override
   public void bindProgram(ISubprogram subprogram)
   {
-    subprogramActions.add(new SubprogramAction(subprogram, SubprogramAction.ADD_ACTION));
+    subprogramActions.add(new Action<ISubprogram>(subprogram, Action.ADD_ACTION));
   }
 
   @Override
@@ -108,7 +114,7 @@ public class Content
   @Override
   public void unbindProgram(ISubprogram subprogram)
   {
-    subprogramActions.add(new SubprogramAction(subprogram, SubprogramAction.REMOVE_ACTION));
+    subprogramActions.add(new Action<ISubprogram>(subprogram, Action.REMOVE_ACTION));
   }
 
   @Override
@@ -117,10 +123,20 @@ public class Content
     lastSubprogram = null;
   }
 
+  @Override
+  public void execute(Runnable runnable)
+  {
+    callbacks.add(runnable);
+  }
+
   public void onUpdate()
   {
     if (!initialized)
       return;
+
+    for (Runnable runnable : callbacks)
+      runnable.run();
+    callbacks.clear();
 
     for (ISubprogram subprogram : subprograms)
       subprogram.update();
@@ -128,22 +144,28 @@ public class Content
     if (lastSubprogram != null)
       lastSubprogram.update();
 
-    // update can change subprograms
-    for (SubprogramAction action : subprogramActions)
+    // safe collections change
+    executeActions(subprogramActions, subprograms);
+    executeActions(callbacksActions, callbacks);
+  }
+
+  private static <T> void executeActions(Collection<Action<T>> actions, Collection<T> result)
+  {
+    for (Action<T> action : actions)
     {
       switch (action.type)
       {
-      case SubprogramAction.ADD_ACTION:
-        subprograms.add(action.subprogram);
+      case Action.ADD_ACTION:
+        result.add(action.value);
         break;
 
-      case SubprogramAction.REMOVE_ACTION:
-        subprograms.remove(action.subprogram);
+      case Action.REMOVE_ACTION:
+        result.remove(action.value);
         break;
       }
     }
 
-    subprogramActions.clear();
+    actions.clear();
   }
 
   public void onTouch(MotionEvent event)
@@ -234,17 +256,17 @@ public class Content
 
   }
 
-  private static final class SubprogramAction
+  private static final class Action<T>
   {
     public static final int ADD_ACTION = 0;
     public static final int REMOVE_ACTION = 1;
 
-    public final ISubprogram subprogram;
+    public final T value;
     public final int type;
 
-    public SubprogramAction(ISubprogram subprogram, int type)
+    public Action(T value, int type)
     {
-      this.subprogram = subprogram;
+      this.value = value;
       this.type = type;
     }
   }

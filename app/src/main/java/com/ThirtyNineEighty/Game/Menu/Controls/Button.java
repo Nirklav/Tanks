@@ -3,14 +3,11 @@ package com.ThirtyNineEighty.Game.Menu.Controls;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
 
 public class Button
-  implements IControl
+  extends Control
 {
-  private int pointerId;
   private boolean state;
 
   private GLSprite sprite;
-
-  private IClickListener clickListener;
 
   private float[] pressed;
   private float[] notPressed;
@@ -26,8 +23,6 @@ public class Button
     right = x + width / 2;
     bottom = y - height / 2;
     top = y + height / 2;
-
-    pointerId = -1;
 
     sprite = new GLSprite("button");
     sprite.setPosition(x, y);
@@ -51,6 +46,11 @@ public class Button
     sprite.finalize();
   }
 
+  public boolean getState()
+  {
+    return state;
+  }
+
   public void setPressedTextureCoordinates(float x, float y, float width, float height)
   {
     pressed = new float[] { x, y, width, height };
@@ -65,10 +65,10 @@ public class Button
       setTextureCoordinates(notPressed);
   }
 
-  private void setTextureCoordinates(float[] texCoords) { sprite.setTextureCoordinates(texCoords[0], texCoords[1], texCoords[2], texCoords[3]); }
-
-  public void setClickListener(IClickListener listener) { clickListener = listener; }
-  public boolean getState() { return state; }
+  private void setTextureCoordinates(float[] texCoords)
+  {
+    sprite.setTextureCoordinates(texCoords[0], texCoords[1], texCoords[2], texCoords[3]);
+  }
 
   @Override
   public void draw(float[] orthoViewMatrix)
@@ -77,45 +77,27 @@ public class Button
   }
 
   @Override
-  public void processDown(int pointerId, float x, float y)
+  public void onDown(float x, float y)
   {
-    if (isBetween(x, left, right) && isBetween(y, bottom, top) && this.pointerId == -1)
-    {
-      state = true;
-      this.pointerId = pointerId;
-
-      setTextureCoordinates(pressed);
-    }
+    state = true;
+    setTextureCoordinates(pressed);
   }
 
   @Override
-  public void processMove(int pointerId, float x, float y)
+  public void onUp(float x, float y)
   {
-
+    state = false;
+    setTextureCoordinates(notPressed);
   }
 
   @Override
-  public void processUp(int pointerId, float x, float y)
+  protected boolean canProcess(float x, float y)
   {
-    if (this.pointerId == pointerId)
-    {
-      state = false;
-      this.pointerId = -1;
-
-      setTextureCoordinates(notPressed);
-
-      if (clickListener != null)
-        clickListener.onClick();
-    }
+    return isBetween(x, left, right) && isBetween(y, bottom, top);
   }
 
   private static boolean isBetween(float value, float left, float right)
   {
     return value > left && value < right;
-  }
-
-  public interface IClickListener
-  {
-    void onClick();
   }
 }
