@@ -1,11 +1,17 @@
 package com.ThirtyNineEighty.Game;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
 public class EngineObjectDescription
+  implements Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   public static class VisualModelDescription
+    implements Serializable
   {
+    private static final long serialVersionUID = 1L;
+
     public final String ModelName;
     public final String TextureName;
 
@@ -17,7 +23,10 @@ public class EngineObjectDescription
   }
 
   public static class PhysicalModelDescription
+    implements Serializable
   {
+    private static final long serialVersionUID = 1L;
+
     public final String ModelName;
 
     public PhysicalModelDescription(String modelName)
@@ -26,11 +35,6 @@ public class EngineObjectDescription
     }
   }
 
-  public ArrayList<VisualModelDescription> VisualModels;
+  public VisualModelDescription[] VisualModels;
   public PhysicalModelDescription PhysicalModel;
-
-  public EngineObjectDescription()
-  {
-    VisualModels = new ArrayList<VisualModelDescription>();
-  }
 }

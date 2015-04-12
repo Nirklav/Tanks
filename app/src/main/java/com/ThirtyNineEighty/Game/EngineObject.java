@@ -6,16 +6,13 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public abstract class EngineObject
   implements IEngineObject
 {
   protected Vector3 position;
   protected Vector3 angles;
 
-  private ArrayList<I3DRenderable> visualModels;
+  private I3DRenderable[] visualModels;
   private ICollidable physicalModel;
 
   protected EngineObject(EngineObjectDescription initializer)
@@ -23,12 +20,13 @@ public abstract class EngineObject
     position = new Vector3();
     angles = new Vector3();
 
-    visualModels = new ArrayList<I3DRenderable>();
-    for (EngineObjectDescription.VisualModelDescription vmInit : initializer.VisualModels)
+    int visualModelsCount = initializer.VisualModels.length;
+    visualModels = new I3DRenderable[visualModelsCount];
+    for (int i = 0; i < visualModelsCount; i++)
     {
-      GLModel visualModel = new GLModel(vmInit.ModelName, vmInit.TextureName);
-      visualModel.setGlobal(position, angles);
-      visualModels.add(visualModel);
+      EngineObjectDescription.VisualModelDescription vmInit = initializer.VisualModels[i];
+      visualModels[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
+      visualModels[i].setGlobal(position, angles);
     }
 
     if (initializer.PhysicalModel != null)
@@ -82,7 +80,7 @@ public abstract class EngineObject
   public void setPosition(Vector3 value) { position.setFrom(value); }
 
   @Override
-  public final Collection<I3DRenderable> getRenderables() { return visualModels; }
+  public final I3DRenderable[] getRenderables() { return visualModels; }
 
   @Override
   public final ICollidable getCollidable() { return physicalModel; }

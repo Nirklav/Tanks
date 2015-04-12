@@ -2,8 +2,13 @@ package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
 
 import com.ThirtyNineEighty.Game.EngineObjectDescription;
 
+import java.io.Serializable;
+
 public class Characteristic
+  implements Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   public final EngineObjectDescription initializer;
 
   private float health;

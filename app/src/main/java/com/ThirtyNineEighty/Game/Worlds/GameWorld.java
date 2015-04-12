@@ -4,9 +4,8 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
-import com.ThirtyNineEighty.Game.Gameplay.Land;
-import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Game.Gameplay.Subprograms.TurnSubprogram;
+import com.ThirtyNineEighty.Game.Gameplay.Map;
+import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
@@ -19,6 +18,7 @@ import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class GameWorld
@@ -28,8 +28,6 @@ public class GameWorld
   private Tank player;
   private GameMenu menu;
 
-  private ISubprogram otherTankMoveSubprogram;
-  private ISubprogram otherTankTurnSubprogram;
   private ISubprogram worldSubprogram;
 
   public final CollisionManager collisionManager;
@@ -43,25 +41,18 @@ public class GameWorld
   @Override
   public void initialize(Object args)
   {
+    Map.Player description = MapLoader.load("standard");
+
     player = new Tank(CharacteristicFactory.TANK);
-    player.onMoved(-20);
-
-    Tank movingTank = new Tank(CharacteristicFactory.TANK);
-
-    Land land = new Land();
-    land.onMoved(-0.8f, Vector3.zAxis);
-
+    player.setPosition(description.getPosition());
+    player.setAngles(description.getAngles());
     add(player);
-    add(land);
-    add(movingTank);
 
     IContent content = GameContext.getContent();
 
     menu = new GameMenu();
     content.setMenu(menu);
 
-    content.bindProgram(otherTankMoveSubprogram = new MoveSubprogram(movingTank));
-    content.bindProgram(otherTankTurnSubprogram = new TurnSubprogram(movingTank, -1));
     content.bindProgram(worldSubprogram = new ISubprogram() // TODO: move this code in button callbacks
     {
       @Override
@@ -109,8 +100,6 @@ public class GameWorld
 
     IContent content = GameContext.getContent();
     content.unbindProgram(worldSubprogram);
-    content.unbindProgram(otherTankMoveSubprogram);
-    content.unbindProgram(otherTankTurnSubprogram);
     content.unbindLastProgram();
   }
 
@@ -135,7 +124,7 @@ public class GameWorld
     for (IEngineObject engineObject : objects)
     {
       engineObject.setGlobalRenderablePosition();
-      renderables.addAll(engineObject.getRenderables());
+      Collections.addAll(renderables, engineObject.getRenderables());
     }
   }
 

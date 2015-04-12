@@ -57,7 +57,7 @@ public abstract class Vector
     return vector;
   }
 
-  @SuppressWarnings({ "unchecked" })
+  @SuppressWarnings("unchecked")
   public static <TVector extends Vector> TVector getInstance(int vectorSize)
   {
     if (disableCache)
@@ -85,7 +85,7 @@ public abstract class Vector
     return create(vectorSize);
   }
 
-  @SuppressWarnings({ "unchecked" })
+  @SuppressWarnings("unchecked")
   private static <TVector extends Vector> TVector create(int vectorSize)
   {
     try
