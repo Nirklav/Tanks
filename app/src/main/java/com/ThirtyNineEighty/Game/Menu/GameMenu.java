@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import android.util.Log;
-
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;

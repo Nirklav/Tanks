@@ -35,7 +35,7 @@ public abstract class Vector
     public int getVectorSize() { return size; }
   }
 
-  protected static final float epsilon = 0.0001f;
+  public static final float epsilon = 0.0001f;
 
   private static final int cacheSizeLimit = 500;
   private static final boolean disableCache = false;

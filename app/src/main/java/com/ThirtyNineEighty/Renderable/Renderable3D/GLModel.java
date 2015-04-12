@@ -18,6 +18,7 @@ public class GLModel
   private Renderable.TextureData textureData;
   private Renderable.GeometryData geometryData;
 
+  private boolean globalsInitialized;
   private Vector3 position;
   private Vector3 angles;
   private float scale;
@@ -96,13 +97,14 @@ public class GLModel
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
-  public void setGlobal(Vector3 position, Vector3 angles)
+  public void setGlobal(Vector3 pos, Vector3 ang)
   {
-    if (position.equals(this.position) && angles.equals(this.angles))
+    if (globalsInitialized && pos.equals(position) && ang.equals(angles))
       return;
 
-    this.position.setFrom(position);
-    this.angles.setFrom(angles);
+    globalsInitialized = true;
+    position.setFrom(pos);
+    angles.setFrom(ang);
 
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), position.getZ());

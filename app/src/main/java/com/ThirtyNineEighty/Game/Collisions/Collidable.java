@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -27,9 +26,10 @@ public class Collidable
 
   private ArrayList<Vector3> globalVertices;
   private ArrayList<Vector3> globalNormals;
-
+  private boolean globalsInitialized;
   private Vector3 position;
   private Vector3 angles;
+
   private float radius;
 
   public Collidable(String fileName)
@@ -40,6 +40,7 @@ public class Collidable
 
     position = Vector.getInstance(3);
     angles = Vector.getInstance(3);
+    globalsInitialized = false;
   }
 
   @Override
@@ -130,38 +131,35 @@ public class Collidable
   private static class AngleComparator implements Comparator<Vector2>
   {
     private Vector2 first;
-    private Vector2 lhsVector;
-    private Vector2 rhsVector;
 
     public AngleComparator(Vector2 first)
     {
       this.first = first;
-      lhsVector = new Vector2();
-      rhsVector = new Vector2();
     }
 
     @Override
     public int compare(Vector2 lhs, Vector2 rhs)
     {
-      lhsVector.setFrom(first);
-      lhsVector.subtract(lhs);
+      float firstAngle = first.getAngle(lhs);
+      float secondAngle = first.getAngle(rhs);
 
-      rhsVector.setFrom(first);
-      rhsVector.subtract(rhs);
+      // if angle equals try compare x value
+      if (Math.abs(firstAngle - secondAngle) <= Vector.epsilon)
+        return Float.compare(lhs.getX(), rhs.getX());
 
-      float angle = lhsVector.getAngle(rhsVector);
-      return angle > 180f ? 1 : -1;
+      return Float.compare(firstAngle, secondAngle);
     }
   }
 
   @Override
-  public void setGlobal(Vector3 position, Vector3 angles)
+  public void setGlobal(Vector3 pos, Vector3 ang)
   {
-    if (position.equals(this.position) && angles.equals(this.angles))
+    if (globalsInitialized && pos.equals(position) && ang.equals(angles))
       return;
 
-    this.position.setFrom(position);
-    this.angles.setFrom(angles);
+    globalsInitialized = true;
+    position.setFrom(pos);
+    angles.setFrom(ang);
 
     // vertices
     Matrix.setIdentityM(matrix, 0);
@@ -268,7 +266,7 @@ public class Collidable
     }
     catch(IOException e)
     {
-      Log.e("Error", e.getMessage());
+      throw new RuntimeException(e);
     }
   }
 

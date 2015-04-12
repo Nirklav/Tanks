@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.GLES20;
+import android.opengl.GLException;
 import android.util.Log;
 
 import com.ThirtyNineEighty.System.GameContext;
@@ -62,10 +63,10 @@ public abstract class Shader
     GLES20.glUseProgram(shader2D.programHandle);
   }
 
-  public boolean validateProgram()
+  public void validateProgram()
   {
     if (!GameContext.isDebuggable())
-      return true;
+      return;
 
     int[] result = new int[1];
 
@@ -75,13 +76,12 @@ public abstract class Shader
     boolean validated = result[0] != 0;
     if (!validated)
     {
-      Log.e("Error", "Program do not validated!");
+      String message = !GLES20.glIsProgram(programHandle)
+        ? "Program handle deprecated!"
+        : "Program do not validated!";
 
-      if (!GLES20.glIsProgram(programHandle))
-        Log.e("Error", "Program handle deprecated!");
+      throw new GLException(result[0], message);
     }
-
-    return validated;
   }
 
   protected void compile(String vertexFileName, String fragmentFileName)
@@ -103,24 +103,21 @@ public abstract class Shader
 
   private int compileShader(int type, String path)
   {
-    int shaderHandle = 0;
-
     try
     {
       //load shader source
-      shaderHandle = GLES20.glCreateShader(type);
       InputStream stream = GameContext.getAppContext().getAssets().open(path);
       int size = stream.available();
       byte[] buffer = new byte[size];
       int readCount = stream.read(buffer);
-
       if (readCount != size)
-        Log.e("Error", "file read not fully: " + path);
+        throw new IOException("File has been read not fully: " + path);
 
       String source = new String(buffer);
       stream.close();
 
       //compile shader
+      int shaderHandle = GLES20.glCreateShader(type);
       GLES20.glShaderSource(shaderHandle, source);
       GLES20.glCompileShader(shaderHandle);
 
@@ -129,16 +126,17 @@ public abstract class Shader
       GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compiled, 0);
       if (compiled[0] == 0)
       {
-        Log.e("Error", GLES20.glGetShaderInfoLog(shaderHandle));
+        String error = GLES20.glGetShaderInfoLog(shaderHandle);
         GLES20.glDeleteShader(shaderHandle);
+        throw new GLException(compiled[0], error);
       }
+
+      return shaderHandle;
     }
     catch(IOException e)
     {
-      Log.e("Error", e.getMessage());
+      throw new RuntimeException(e);
     }
-
-    return shaderHandle;
   }
 
   private void deleteProgram()

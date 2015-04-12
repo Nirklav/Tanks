@@ -55,5 +55,4 @@ public abstract class Control implements IControl
   protected abstract boolean canProcess(float x, float y);
 
   public void setClickListener(Runnable listener) { clickListener = listener; }
-
 }

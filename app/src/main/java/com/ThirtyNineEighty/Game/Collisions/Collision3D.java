@@ -38,7 +38,7 @@ public class Collision3D
     Collision2D min = null;
     Plane minPlane = new Plane();
 
-    for(Plane plane : planes)
+    for (Plane plane : planes)
     {
       ArrayList<Vector2> resultOne = firstPh.getConvexHull(plane);
       ArrayList<Vector2> resultTwo = secondPh.getConvexHull(plane);

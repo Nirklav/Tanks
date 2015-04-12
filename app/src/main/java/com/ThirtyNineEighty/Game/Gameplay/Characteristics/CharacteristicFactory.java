@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
 
-import android.util.Log;
-
 import com.ThirtyNineEighty.Game.EngineObjectDescription;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -26,8 +24,6 @@ import java.util.HashMap;
 
 public class CharacteristicFactory
 {
-  private static final String Tag = "CharacteristicFactory";
-
   public static final String TANK = "tank";
   public static final String BULLET = "bullet";
 
@@ -76,8 +72,7 @@ public class CharacteristicFactory
     }
     catch (IOException e)
     {
-      Log.e(Tag, "get method error", e);
-      return null;
+      throw new RuntimeException(e);
     }
   }
 

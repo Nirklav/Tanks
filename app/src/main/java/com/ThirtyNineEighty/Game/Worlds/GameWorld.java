@@ -43,25 +43,25 @@ public class GameWorld
   @Override
   public void initialize(Object args)
   {
-    menu = new GameMenu();
-
     player = new Tank(CharacteristicFactory.TANK);
     player.onMoved(-20);
 
-    Tank otherTank = new Tank(CharacteristicFactory.TANK);
+    Tank movingTank = new Tank(CharacteristicFactory.TANK);
 
     Land land = new Land();
     land.onMoved(-0.8f, Vector3.zAxis);
 
     add(player);
     add(land);
-    add(otherTank);
+    add(movingTank);
 
     IContent content = GameContext.getContent();
 
+    menu = new GameMenu();
     content.setMenu(menu);
-    content.bindProgram(otherTankMoveSubprogram = new MoveSubprogram(otherTank));
-    content.bindProgram(otherTankTurnSubprogram = new TurnSubprogram(otherTank, -1));
+
+    content.bindProgram(otherTankMoveSubprogram = new MoveSubprogram(movingTank));
+    content.bindProgram(otherTankTurnSubprogram = new TurnSubprogram(movingTank, -1));
     content.bindProgram(worldSubprogram = new ISubprogram() // TODO: move this code in button callbacks
     {
       @Override
@@ -72,7 +72,7 @@ public class GameWorld
         float joyAngle = menu.getJoystickAngle();
         float playerAngle = player.getAngles().getZ();
 
-        if (Math.abs(joyAngle - playerAngle) < 30)
+        if (Math.abs(joyAngle - playerAngle) < 90)
           collisionManager.move(player);
 
         if (Math.abs(joyAngle - playerAngle) > 5)

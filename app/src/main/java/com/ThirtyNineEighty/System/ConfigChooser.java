@@ -8,11 +8,11 @@ import android.opengl.GLSurfaceView.EGLConfigChooser;
 
 public class ConfigChooser implements EGLConfigChooser
 {
-  private int[] Value;
+  private int[] value;
 
   public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display)
   {
-    Value = new int[1];
+    value = new int[1];
     int[] configSpec = 
     {
       EGL10.EGL_RED_SIZE,        8,
@@ -24,10 +24,10 @@ public class ConfigChooser implements EGLConfigChooser
       EGL10.EGL_NONE
     };
     
-    if (!egl.eglChooseConfig(display, configSpec, null, 0, Value))
+    if (!egl.eglChooseConfig(display, configSpec, null, 0, value))
       throw new IllegalArgumentException("RGB888 eglChooseConfig failed");
     
-    int numConfigs = Value[0];
+    int numConfigs = value[0];
     if (numConfigs <= 0)
     {
       configSpec = new int[] 
@@ -39,17 +39,16 @@ public class ConfigChooser implements EGLConfigChooser
         EGL10.EGL_NONE
       };
       
-      if (!egl.eglChooseConfig(display, configSpec, null, 0, Value))
+      if (!egl.eglChooseConfig(display, configSpec, null, 0, value))
         throw new IllegalArgumentException("RGB565 eglChooseConfig failed");
 
-      numConfigs = Value[0];
-
+      numConfigs = value[0];
       if (numConfigs <= 0)
         throw new IllegalArgumentException("No configs match configSpec RGB565");
     }
     
     EGLConfig[] configs = new EGLConfig[numConfigs];
-    egl.eglChooseConfig(display, configSpec, configs, numConfigs, Value);
+    egl.eglChooseConfig(display, configSpec, configs, numConfigs, value);
     return configs[0];
   }
 }

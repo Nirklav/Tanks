@@ -8,10 +8,8 @@ public abstract class Collision<T>
 
   public static int compare(Collision first, Collision second)
   {
-    if (first.getMTVLength() < second.getMTVLength())
-      return -1;
-    if (first.getMTVLength() > second.getMTVLength())
-      return 1;
-    return 0;
+    float firstLength = first.getMTVLength();
+    float secondLength = second.getMTVLength();
+    return Float.compare(firstLength, secondLength);
   }
 }

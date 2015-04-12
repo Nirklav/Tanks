@@ -28,10 +28,6 @@ public abstract class BaseMenu
   protected void addRenderable(I2DRenderable control) { renderables.add(control); }
   protected void removeRenderable(I2DRenderable control) { renderables.remove(control); }
 
-
-  @Override
-  public abstract void initialize(Object args);
-
   @Override
   public void uninitialize()
   {

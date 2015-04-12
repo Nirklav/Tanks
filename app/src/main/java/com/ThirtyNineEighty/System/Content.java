@@ -15,9 +15,9 @@ import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 
 import android.opengl.GLES20;
+import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 import android.view.MotionEvent;
 
 public class Content
@@ -217,10 +217,6 @@ public class Content
       for (I2DRenderable renderable : renderable2DObjects)
         renderable.draw(orthoMatrix);
     }
-
-    int error = GLES20.glGetError();
-    if (error != GLES20.GL_NO_ERROR)
-      Log.e("Error", "OpenGL error. Code: " + Integer.toString(error));
   }
   
   @Override
@@ -247,7 +243,7 @@ public class Content
 
     int error = GLES20.glGetError();
     if (error != GLES20.GL_NO_ERROR)
-      Log.e("Error", "OpenGL error. Code: " + Integer.toString(error));
+      throw new GLException(error);
   }
 
   @Override

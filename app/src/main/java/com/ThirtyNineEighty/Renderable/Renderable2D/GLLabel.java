@@ -15,6 +15,7 @@ public class GLLabel
   public GLLabel(String value, String fontTexture, float charWidth, float charHeight) { this(value, fontTexture, charWidth, charHeight, MeshMode.Static); }
   public GLLabel(String value, String fontTexture, float charWidth, float charHeight, MeshMode mode)
   {
+    //TODO generate name for mesh
     super(fontTexture, String.format("String: %s", value), buildGeometry(value, charWidth, charHeight), mode);
 
     this.charWidth = charWidth;

@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.opengl.GLUtils;
-import android.util.Log;
 
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -77,8 +76,7 @@ public final class Renderable
     }
     catch(Exception e)
     {
-      Log.e("Error", e.getMessage());
-      return null;
+      throw new RuntimeException(e);
     }
   }
 
@@ -149,8 +147,7 @@ public final class Renderable
     }
     catch(IOException e)
     {
-      Log.e("Error", e.getMessage());
-      return null;
+      throw new RuntimeException(e);
     }
   }
 
@@ -158,6 +155,30 @@ public final class Renderable
   public static void updateGeometry(GeometryData geometry, int numOfTriangles, float[] bufferData)
   {
     throw new UnsupportedOperationException("not yet implemented");
+  }
+
+  public static void reloadCache()
+  {
+
+  }
+
+  public static void clearCache()
+  {
+    int counter = 0;
+    int[] textures = new int[texturesCache.size()];
+    for(TextureData texture : texturesCache.values())
+      textures[counter++] = texture.handle;
+
+    GLES20.glDeleteTextures(textures.length, textures, 0);
+    texturesCache.clear();
+
+    counter = 0;
+    int[] buffers = new int[geometryCache.size()];
+    for(GeometryData geometry : geometryCache.values())
+      buffers[counter++] = geometry.handle;
+
+    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
+    geometryCache.clear();
   }
 
   private static int getBufferHandle(FloatBuffer buffer)
@@ -188,25 +209,6 @@ public final class Renderable
   private static String getModelFileName(String name)
   {
     return String.format("Models/%s.raw", name);
-  }
-
-  public static void clearCache()
-  {
-    int counter = 0;
-    int[] textures = new int[texturesCache.size()];
-    for(TextureData texture : texturesCache.values())
-      textures[counter++] = texture.handle;
-
-    GLES20.glDeleteTextures(textures.length, textures, 0);
-    texturesCache.clear();
-
-    counter = 0;
-    int[] buffers = new int[geometryCache.size()];
-    for(GeometryData geometry : geometryCache.values())
-      buffers[counter++] = geometry.handle;
-
-    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
-    geometryCache.clear();
   }
 
   private static class GeometryKey
@@ -277,11 +279,12 @@ public final class Renderable
       return data;
     }
 
-    private void updateData(int numOfTriangles)
+    private void updateData(int handle, int numOfTriangles)
     {
       if (mode != MeshMode.Static)
         throw new IllegalStateException("not right mode");
 
+      this.handle = handle;
       this.numOfTriangles = numOfTriangles;
     }
 

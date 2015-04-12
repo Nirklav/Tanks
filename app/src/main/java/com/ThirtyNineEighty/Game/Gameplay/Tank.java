@@ -43,6 +43,7 @@ public class Tank extends GameObject
     turretAngle += delta;
   }
 
+  //TODO implement true interface for multi models objects
   @Override
   protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
   {

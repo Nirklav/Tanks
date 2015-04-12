@@ -31,7 +31,6 @@ public class Collision2D
     Vector2 mtv = null;
     Vector2 normal = new Vector2();
     float mtvLength = 0.0f;
-    boolean IsFirst = true;
     int count = firstVertices.size() + secondVertices.size();
 
     for (int i = 0; i < count; i ++)
@@ -44,21 +43,14 @@ public class Collision2D
       if (firstProjection.getX() < secondProjection.getY() || secondProjection.getX() < firstProjection.getY())
         return null;
 
-      if (IsFirst)
+      if (mtv == null)
       {
         mtv = new Vector2(normal);
-        mtvLength = (secondProjection.getY() - firstProjection.getX() > 0)
-          ? secondProjection.getY() - firstProjection.getX()
-          : firstProjection.getY() - secondProjection.getX();
-
-        IsFirst = false;
+        mtvLength = getIntersectionLength(firstProjection, secondProjection);
       }
       else
       {
-        float tempMTVLength = (secondProjection.getY() - firstProjection.getX() > 0)
-          ? secondProjection.getY() - firstProjection.getX()
-          : firstProjection.getY() - secondProjection.getX();
-
+        float tempMTVLength = getIntersectionLength(firstProjection, secondProjection);
         if (Math.abs(tempMTVLength) < Math.abs(mtvLength))
         {
           mtv = new Vector2(normal);
@@ -68,6 +60,13 @@ public class Collision2D
     }
 
     return new CheckResult(mtv, mtvLength);
+  }
+
+  private static float getIntersectionLength(Vector2 firstProjection, Vector2 secondProjection)
+  {
+    return (secondProjection.getY() - firstProjection.getX() > 0)
+      ? secondProjection.getY() - firstProjection.getX()
+      : firstProjection.getY() - secondProjection.getX();
   }
 
   private static Vector2 getProjection(ArrayList<Vector2> vertices, Vector2 normal)
@@ -109,8 +108,8 @@ public class Collision2D
 
     Vector2 edge = secondPoint.getSubtract(firstPoint);
 
-    normal.setX(edge.getY());
-    normal.setY(-edge.getX());
+    normal.setX(-edge.getY());
+    normal.setY(edge.getX());
 
     normal.normalize();
   }
