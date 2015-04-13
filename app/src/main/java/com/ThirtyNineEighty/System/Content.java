@@ -6,9 +6,11 @@ import java.util.Collection;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
@@ -48,8 +50,7 @@ public class Content
 
   public Content()
   {
-    lightPosition = new float[] { 0.0f, 0.0f, 12.0f };
-
+    lightPosition = new float[] { 0.0f, 0.0f, 20.0f };
     viewMatrix = new float[16];
     projectionMatrix = new float[16];
     projectionViewMatrix = new float[16];
@@ -188,7 +189,14 @@ public class Content
     renderable3DObjects.clear();
 
     if (world != null)
+    {
       world.fillRenderable(renderable3DObjects);
+
+      IEngineObject player = world.getPlayer();
+      Vector3 playerPosition = player.getPosition();
+      lightPosition[0] = playerPosition.getX();
+      lightPosition[1] = playerPosition.getY();
+    }
 
     if (renderable3DObjects.size() != 0)
     {

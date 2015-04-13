@@ -24,7 +24,7 @@ public abstract class EngineObject
     visualModels = new I3DRenderable[visualModelsCount];
     for (int i = 0; i < visualModelsCount; i++)
     {
-      EngineObjectDescription.VisualModelDescription vmInit = initializer.VisualModels[i];
+      EngineObjectDescription.VisualModel vmInit = initializer.VisualModels[i];
       visualModels[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
       visualModels[i].setGlobal(position, angles);
     }
@@ -86,7 +86,7 @@ public abstract class EngineObject
   public final ICollidable getCollidable() { return physicalModel; }
 
   @Override
-  public void setGlobalCollidablePosition()
+  public final void setGlobalCollidablePosition()
   {
     if (physicalModel == null)
       return;
@@ -94,7 +94,7 @@ public abstract class EngineObject
   }
 
   @Override
-  public void setGlobalRenderablePosition()
+  public final void setGlobalRenderablePosition()
   {
     int index = 0;
     for(I3DRenderable vm : visualModels)

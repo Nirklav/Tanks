@@ -33,7 +33,7 @@ public class Bullet extends GameObject
     Characteristic targetCharacteristic = target.getCharacteristics();
     Characteristic bulletCharacteristic = getCharacteristics();
 
-    targetCharacteristic.addHealth(bulletCharacteristic.getDamage());
+    targetCharacteristic.addHealth(-bulletCharacteristic.getDamage());
 
     IWorld world = GameContext.getContent().getWorld();
     if (targetCharacteristic.getHealth() <= 0)

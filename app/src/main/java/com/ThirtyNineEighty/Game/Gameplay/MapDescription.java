@@ -4,7 +4,8 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 
 import java.io.Serializable;
 
-public class Map
+@SuppressWarnings("UnusedDeclaration") // set by serialization
+public class MapDescription
   implements Serializable
 {
   private static final long serialVersionUID = 1L;

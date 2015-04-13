@@ -20,13 +20,13 @@ public final class MapLoader
     objectBindings.put("bullet", Bullet.class);
   }
 
-  public static Map.Player load(String name)
+  public static MapDescription load(String name)
   {
     IContent content = GameContext.getContent();
     IWorld world = content.getWorld();
-    Map map = Serializer.Deserialize(String.format("Maps/%s.map", name));
+    MapDescription map = Serializer.Deserialize(String.format("Maps/%s.map", name));
 
-    for(Map.MapObject obj : map.objects)
+    for(MapDescription.MapObject obj : map.objects)
     {
       IEngineObject object = createObject(obj.name);
       object.setPosition(obj.getPosition());
@@ -35,7 +35,7 @@ public final class MapLoader
       world.add(object);
     }
 
-    return map.player;
+    return map;
   }
 
   private static IEngineObject createObject(String name)

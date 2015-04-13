@@ -4,7 +4,8 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
-import com.ThirtyNineEighty.Game.Gameplay.Map;
+import com.ThirtyNineEighty.Game.Gameplay.Land;
+import com.ThirtyNineEighty.Game.Gameplay.MapDescription;
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
@@ -41,12 +42,13 @@ public class GameWorld
   @Override
   public void initialize(Object args)
   {
-    Map.Player description = MapLoader.load("standard");
+    MapDescription map = MapLoader.load("standard");
 
     player = new Tank(CharacteristicFactory.TANK);
-    player.setPosition(description.getPosition());
-    player.setAngles(description.getAngles());
+    player.setPosition(map.player.getPosition());
+    player.setAngles(map.player.getAngles());
     add(player);
+    add(new Land());
 
     IContent content = GameContext.getContent();
 
