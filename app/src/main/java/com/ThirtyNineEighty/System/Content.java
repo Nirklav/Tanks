@@ -50,7 +50,7 @@ public class Content
 
   public Content()
   {
-    lightPosition = new float[] { 0.0f, 0.0f, 20.0f };
+    lightPosition = new float[] { 0.0f, 0.0f, 30.0f };
     viewMatrix = new float[16];
     projectionMatrix = new float[16];
     projectionViewMatrix = new float[16];
@@ -201,7 +201,7 @@ public class Content
     if (renderable3DObjects.size() != 0)
     {
       world.setViewMatrix(viewMatrix);
-      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 50.0f);
+      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 60.0f);
       Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
       Shader.setShader3D();

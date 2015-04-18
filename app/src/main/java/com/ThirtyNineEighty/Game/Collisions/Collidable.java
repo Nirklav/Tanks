@@ -140,12 +140,26 @@ public class Collidable
     @Override
     public int compare(Vector2 lhs, Vector2 rhs)
     {
-      float firstAngle = first.getAngle(lhs);
-      float secondAngle = first.getAngle(rhs);
+      Vector2 left = Vector.getInstance(2, lhs);
+      Vector2 right = Vector.getInstance(2, rhs);
+      left.subtract(first);
+      right.subtract(first);
+
+      float firstAngle = Vector2.xAxis.getAngle(left);
+      float secondAngle = Vector2.xAxis.getAngle(right);
+
+      Vector.release(left);
+      Vector.release(right);
 
       // if angle equals try compare x value
       if (Math.abs(firstAngle - secondAngle) <= Vector.epsilon)
         return Float.compare(lhs.getX(), rhs.getX());
+
+      if (firstAngle > 90)
+        firstAngle -= 360;
+
+      if (secondAngle > 90)
+        secondAngle -= 360;
 
       return Float.compare(firstAngle, secondAngle);
     }
@@ -218,11 +232,11 @@ public class Collidable
       dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
       dataBuffer.position(0);
 
-      int numOfTriangles = dataBuffer.getInt();
-      vertices = new ArrayList<Vector3>(numOfTriangles);
-      normals = new ArrayList<Vector3>(numOfTriangles);
+      int numOfQuads = dataBuffer.getInt();
+      vertices = new ArrayList<Vector3>(numOfQuads * 4);
+      normals = new ArrayList<Vector3>();
 
-      for (int i = 0; i < numOfTriangles * 3; i++)
+      for (int i = 0; i < numOfQuads * 4; i++)
       {
         float x = dataBuffer.getFloat();
         float y = dataBuffer.getFloat();

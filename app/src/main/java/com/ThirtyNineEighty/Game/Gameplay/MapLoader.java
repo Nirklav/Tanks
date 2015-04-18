@@ -16,8 +16,9 @@ public final class MapLoader
   {
     objectBindings = new HashMap<String, Class>();
     objectBindings.put("tank", Tank.class);
-    objectBindings.put("land", Decor.class);
+    objectBindings.put("land", Land.class);
     objectBindings.put("bullet", Bullet.class);
+    objectBindings.put("building", Decor.class);
   }
 
   public static MapDescription load(String name)
@@ -48,7 +49,7 @@ public final class MapLoader
     }
     catch (Exception e)
     {
-      throw new RuntimeException(e);
+      throw new RuntimeException(String.format("Can't create object with %s name", name), e);
     }
   }
 }

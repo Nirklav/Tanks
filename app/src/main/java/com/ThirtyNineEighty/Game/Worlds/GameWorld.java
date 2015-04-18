@@ -113,7 +113,7 @@ public class GameWorld
 
     eye.addToX(0.0f);
     eye.addToY(14.0f);
-    eye.addToZ(30);
+    eye.addToZ(35);
 
     Matrix.setLookAtM(viewMatrix, 0, eye.getX(), eye.getY(), eye.getZ(), center.getX(), center.getY(), center.getZ(), 0.0f, 0.0f, 1.0f);
 

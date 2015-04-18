@@ -54,7 +54,6 @@ public class Land
     Vector3 renderPos = Vector.getInstance(3);
     renderPos.setX(landsCountX * landSize + shift.getX());
     renderPos.setY(landsCountY * landSize + shift.getY());
-    renderPos.setZ(-0.8f);
 
     renderable.setGlobal(renderPos, angles);
     
