@@ -11,7 +11,8 @@ import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 
-public class GameMenu extends BaseMenu
+public class GameMenu
+  extends BaseMenu
 {
   private Button leftTurretButton;
   private Button rightTurretButton;

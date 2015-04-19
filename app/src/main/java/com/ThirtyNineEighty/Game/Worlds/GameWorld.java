@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.MapDescription;
-import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
@@ -42,7 +41,10 @@ public class GameWorld
   @Override
   public void initialize(Object args)
   {
-    MapDescription map = MapLoader.load("standard");
+    if (!(args instanceof String))
+      throw new IllegalArgumentException("Illegal args type");
+
+    MapDescription map = GameContext.mapLoader.load((String)args);
 
     player = new Tank(CharacteristicFactory.TANK);
     player.setPosition(map.player.getPosition());

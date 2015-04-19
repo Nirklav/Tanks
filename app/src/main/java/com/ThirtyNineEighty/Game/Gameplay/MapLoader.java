@@ -7,21 +7,27 @@ import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public final class MapLoader
 {
-  private static HashMap<String, Class> objectBindings;
-  static
+  private HashMap<String, Class> objectBindings;
+  private ArrayList<String> maps;
+
+  public void initialize()
   {
     objectBindings = new HashMap<String, Class>();
     objectBindings.put("tank", Tank.class);
     objectBindings.put("land", Land.class);
     objectBindings.put("bullet", Bullet.class);
     objectBindings.put("building", Decor.class);
+
+    maps = loadMapNames();
   }
 
-  public static MapDescription load(String name)
+  public MapDescription load(String name)
   {
     IContent content = GameContext.getContent();
     IWorld world = content.getWorld();
@@ -39,7 +45,9 @@ public final class MapLoader
     return map;
   }
 
-  private static IEngineObject createObject(String name)
+  public List<String> getMaps() { return maps; }
+
+  private IEngineObject createObject(String name)
   {
     try
     {
@@ -51,5 +59,13 @@ public final class MapLoader
     {
       throw new RuntimeException(String.format("Can't create object with %s name", name), e);
     }
+  }
+
+  private ArrayList<String> loadMapNames()
+  {
+    // TODO: load map names from dir
+    ArrayList<String> maps = new ArrayList<String>();
+    maps.add("standard");
+    return maps;
   }
 }

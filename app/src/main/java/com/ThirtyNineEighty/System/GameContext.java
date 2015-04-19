@@ -3,6 +3,8 @@ package com.ThirtyNineEighty.System;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
+
 public class GameContext
 {
   public static final float EtalonHeight = 1080f;
@@ -14,17 +16,26 @@ public class GameContext
   public static final float Bottom = EtalonHeight / -2f;
   public static final float Top = EtalonHeight / 2f;
 
+  // Fields
   private static boolean isFirst;
   private static long delta;
   private static long lastTick;
-
-  private static Context appContext;
-  private static IContent content;
 
   private static boolean debuggable;
 
   private static float width;
   private static float height;
+
+  public static boolean isDebuggable() { return debuggable; }
+  public static float getAspect() { return width / height; }
+  public static float getWidth() { return width; }
+  public static void setWidth(float value) { width = value; }
+  public static float getHeight() { return height; }
+  public static void setHeight(float value) { height = value; }
+
+  // System
+  private static Context appContext;
+  private static IContent content;
 
   public static Context getAppContext() { return appContext; }
   public static void setAppContext(Context value)
@@ -38,6 +49,10 @@ public class GameContext
   public static IContent getContent() { return content; }
   public static void setContent(IContent value) { content = value; }
 
+  // Helpers
+  public static final MapLoader mapLoader = new MapLoader();
+
+  // Update
   public static float updateTime()
   {
     long currentTick;
@@ -65,11 +80,4 @@ public class GameContext
 
     return d;
   }
-
-  public static boolean isDebuggable() { return debuggable; }
-  public static float getAspect() { return width / height; }
-  public static float getWidth() { return width; }
-  public static void setWidth(float value) { width = value; }
-  public static float getHeight() { return height; }
-  public static void setHeight(float value) { height = value; }
 }

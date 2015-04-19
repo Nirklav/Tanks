@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Helpers;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.ArrayDeque;
@@ -103,8 +102,7 @@ public abstract class Vector
     }
     catch (Exception e)
     {
-      Log.e("Vector", e.getMessage());
-      return null;
+      throw new RuntimeException(e);
     }
   }
 
