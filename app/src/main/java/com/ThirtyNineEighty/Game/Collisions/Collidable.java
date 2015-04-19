@@ -102,10 +102,24 @@ public class Collidable
         continue;
       }
 
-      if (current.getX() < minVector.getX())
+      int compareX = Float.compare(current.getX(), minVector.getX());
+      if (compareX < 0)
       {
         minVector = current;
         minVectorIndex = i;
+      }
+
+      if (compareX == 0)
+      {
+        int compareY = Float.compare(current.getY(), minVector.getY());
+        if (compareY == 0)
+          throw new IllegalArgumentException("projection has the same points");
+
+        if (compareY > 0)
+        {
+          minVector = current;
+          minVectorIndex = i;
+        }
       }
     }
 
@@ -131,36 +145,54 @@ public class Collidable
   private static class AngleComparator implements Comparator<Vector2>
   {
     private Vector2 first;
+    private Vector2 left;
+    private Vector2 right;
 
     public AngleComparator(Vector2 first)
     {
       this.first = first;
+      left = Vector.getInstance(2);
+      right = Vector.getInstance(2);
     }
 
     @Override
     public int compare(Vector2 lhs, Vector2 rhs)
     {
-      Vector2 left = Vector.getInstance(2, lhs);
-      Vector2 right = Vector.getInstance(2, rhs);
+      // sort angles counterclockwise
+
+      // shift vectors to center
+      left.setFrom(lhs);
       left.subtract(first);
+
+      right.setFrom(rhs);
       right.subtract(first);
 
+      // find angles
       float firstAngle = Vector2.xAxis.getAngle(left);
       float secondAngle = Vector2.xAxis.getAngle(right);
 
-      Vector.release(left);
-      Vector.release(right);
-
-      // if angle equals try compare x value
-      if (Math.abs(firstAngle - secondAngle) <= Vector.epsilon)
-        return Float.compare(lhs.getX(), rhs.getX());
-
+      // normalize angles for correct sorting
+      // Example: 15, 45, 315, 345 => -45, -15, 15, 45
       if (firstAngle > 90)
         firstAngle -= 360;
 
       if (secondAngle > 90)
         secondAngle -= 360;
 
+      // if angles equals compare by length
+      if (Math.abs(firstAngle - secondAngle) <= Vector.epsilon)
+      {
+        float leftLength = left.getLength();
+        float rightLength = right.getLength();
+
+        // if angle > 0 sort by desc
+        if (firstAngle >= 0)
+          return Float.compare(rightLength, leftLength);
+
+        return Float.compare(leftLength, rightLength);
+      }
+
+      // compare angles
       return Float.compare(firstAngle, secondAngle);
     }
   }

@@ -26,6 +26,10 @@ public class Bullet extends GameObject
   {
     super.onCollide(object);
 
+    IContent content = GameContext.getContent();
+    IWorld world = content.getWorld();
+    world.remove(this);
+
     if (!(object instanceof GameObject))
       return;
 
@@ -35,11 +39,8 @@ public class Bullet extends GameObject
 
     targetCharacteristic.addHealth(-bulletCharacteristic.getDamage());
 
-    IWorld world = GameContext.getContent().getWorld();
     if (targetCharacteristic.getHealth() <= 0)
       world.remove(object);
-
-    world.remove(this);
   }
 
   @Override
