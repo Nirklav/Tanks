@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Renderable.Renderable2D;
 
 import com.ThirtyNineEighty.Renderable.MeshMode;
-import com.ThirtyNineEighty.Renderable.Renderable;
+import com.ThirtyNineEighty.System.GameContext;
 
 public class GLLabel
   extends GLSprite
@@ -15,8 +15,7 @@ public class GLLabel
   public GLLabel(String value, String fontTexture, float charWidth, float charHeight) { this(value, fontTexture, charWidth, charHeight, MeshMode.Static); }
   public GLLabel(String value, String fontTexture, float charWidth, float charHeight, MeshMode mode)
   {
-    //TODO generate name for mesh
-    super(fontTexture, String.format("String: %s", value), buildGeometry(value, charWidth, charHeight), mode);
+    super(fontTexture, getGeometryName(value), buildGeometry(value, charWidth, charHeight), mode);
 
     this.charWidth = charWidth;
     this.charHeight = charHeight;
@@ -27,7 +26,13 @@ public class GLLabel
     MeshMode mode = geometryData.getMode();
 
     float[] bufferData = buildGeometry(value, charWidth, charHeight);
-    geometryData = Renderable.loadGeometry(String.format("String: %s", value), bufferData.length / 12, bufferData, mode);
+    String geometryName = getGeometryName(value);
+    geometryData = GameContext.renderableResources.getGeometry(geometryName, bufferData.length / 12, bufferData, mode);
+  }
+
+  private static String getGeometryName(String value)
+  {
+    return String.format("String: %s", value);
   }
 
   private static float[] buildGeometry(String value, float charWidth, float charHeight)

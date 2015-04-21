@@ -15,16 +15,25 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
-public final class Renderable
+public final class RenderableResources
 {
-  private static HashMap<String, TextureData> texturesCache = new HashMap<String, TextureData>();
-  private static HashMap<GeometryKey, GeometryData> geometryCache = new HashMap<GeometryKey, GeometryData>();
+  private HashMap<String, Texture> texturesCache = new HashMap<String, Texture>();
+  private HashMap<String, Image> imagesCache = new HashMap<String, Image>();
+  private HashMap<GeometryKey, Geometry> geometryCache = new HashMap<GeometryKey, Geometry>();
 
-  public static TextureData loadTexture(String name, boolean generateMipmap)
+  public Texture getTexture(String name, boolean generateMipmap)
   {
     if (texturesCache.containsKey(name))
       return texturesCache.get(name);
 
+    int handle = loadTexture(name, generateMipmap);
+    Texture texture = new Texture(handle, generateMipmap);
+    texturesCache.put(name, texture);
+    return texture;
+  }
+
+  private static int loadTexture(String name, boolean generateMipmap)
+  {
     try
     {
       String fileName = getTextureFileName(name);
@@ -69,10 +78,7 @@ public final class Renderable
       }
 
       bitmap.recycle();
-
-      TextureData texture = new TextureData(textures[0]);
-      texturesCache.put(name, texture);
-      return texture;
+      return textures[0];
     }
     catch(Exception e)
     {
@@ -80,8 +86,8 @@ public final class Renderable
     }
   }
 
-  public static GeometryData loadGeometry(String name, int numOfTriangles, float[] bufferData) { return loadGeometry(name, numOfTriangles, bufferData, MeshMode.Static); }
-  public static GeometryData loadGeometry(String name, int numOfTriangles, float[] bufferData, MeshMode mode)
+  public Geometry getGeometry(String name, int numOfTriangles, float[] bufferData) { return getGeometry(name, numOfTriangles, bufferData, MeshMode.Static); }
+  public Geometry getGeometry(String name, int numOfTriangles, float[] bufferData, MeshMode mode)
   {
     GeometryKey key = new GeometryKey(name, mode);
     if (geometryCache.containsKey(key))
@@ -93,16 +99,16 @@ public final class Renderable
                                               .put(bufferData)
                                               .position(0);
 
-    GeometryData geometry;
+    Geometry geometry;
     switch (mode)
     {
     case Static:
-      int handle = getBufferHandle(data);
-      geometry = new GeometryData(handle, numOfTriangles);
+      int handle = loadGeometry(data);
+      geometry = new Geometry(handle, numOfTriangles);
       break;
 
     case Dynamic:
-      geometry = new GeometryData(data, numOfTriangles);
+      geometry = new Geometry(data, numOfTriangles);
       break;
 
     default:
@@ -113,7 +119,7 @@ public final class Renderable
     return geometry;
   }
 
-  public static GeometryData loadGeometry(String name)
+  public Geometry getGeometry(String name)
   {
     GeometryKey key = new GeometryKey(name, MeshMode.Static);
     if (geometryCache.containsKey(key))
@@ -139,9 +145,9 @@ public final class Renderable
       numBuffer.put(data, 0, 4);
 
       int numOfTriangles = numBuffer.getInt(0);
-      int handle = getBufferHandle(dataBuffer.asFloatBuffer());
+      int handle = loadGeometry(dataBuffer.asFloatBuffer());
 
-      GeometryData geometry = new GeometryData(handle, numOfTriangles);
+      Geometry geometry = new Geometry(handle, numOfTriangles);
       geometryCache.put(key, geometry);
       return geometry;
     }
@@ -151,37 +157,7 @@ public final class Renderable
     }
   }
 
-  @Deprecated
-  public static void updateGeometry(GeometryData geometry, int numOfTriangles, float[] bufferData)
-  {
-    throw new UnsupportedOperationException("not yet implemented");
-  }
-
-  public static void reloadCache()
-  {
-
-  }
-
-  public static void clearCache()
-  {
-    int counter = 0;
-    int[] textures = new int[texturesCache.size()];
-    for(TextureData texture : texturesCache.values())
-      textures[counter++] = texture.handle;
-
-    GLES20.glDeleteTextures(textures.length, textures, 0);
-    texturesCache.clear();
-
-    counter = 0;
-    int[] buffers = new int[geometryCache.size()];
-    for(GeometryData geometry : geometryCache.values())
-      buffers[counter++] = geometry.handle;
-
-    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
-    geometryCache.clear();
-  }
-
-  private static int getBufferHandle(FloatBuffer buffer)
+  private static int loadGeometry(FloatBuffer buffer)
   {
     int error;
     int[] buffers = new int[1];
@@ -199,6 +175,66 @@ public final class Renderable
       throw new GLException(error, Integer.toString(error));
 
     return buffers[0];
+  }
+
+  public void reloadCache()
+  {
+    reloadTextures();
+    reloadGeometry();
+  }
+
+  private void reloadTextures()
+  {
+    for (String name : texturesCache.keySet())
+    {
+      Texture texture = texturesCache.get(name);
+      GLES20.glDeleteTextures(1, new int[] { texture.getHandle() }, 0);
+
+      int handle = loadTexture(name, texture.isMipmapsGenerated());
+      texture.setHandle(handle);
+    }
+  }
+
+  private void reloadGeometry()
+  {
+    for (GeometryKey key : geometryCache.keySet())
+    {
+      if (key.mode == MeshMode.Dynamic)
+        continue;
+
+      Geometry geometry = geometryCache.get(key);
+      GLES20.glDeleteBuffers(1, new int[] { geometry.getHandle() }, 0);
+
+
+    }
+  }
+
+  public void clearCache()
+  {
+    clearTexturesCache();
+    clearGeometryCache();
+  }
+
+  private void clearTexturesCache()
+  {
+    int counter = 0;
+    int[] textures = new int[texturesCache.size()];
+    for(Texture texture : texturesCache.values())
+      textures[counter++] = texture.getHandle();
+
+    GLES20.glDeleteTextures(textures.length, textures, 0);
+    texturesCache.clear();
+  }
+
+  private void clearGeometryCache()
+  {
+    int counter = 0;
+    int[] buffers = new int[geometryCache.size()];
+    for(Geometry geometry : geometryCache.values())
+      buffers[counter++] = geometry.getHandle();
+
+    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
+    geometryCache.clear();
   }
 
   private static String getTextureFileName(String name)
@@ -241,70 +277,6 @@ public final class Renderable
       return
         name.equals(other.name) &&
         mode.equals(other.mode);
-    }
-  }
-
-  public static class GeometryData
-  {
-    private MeshMode mode;
-    private int handle;
-    private int numOfTriangles;
-    private FloatBuffer data;
-
-    public GeometryData(int handle, int numOfTriangles)
-    {
-      this.handle = handle;
-      this.numOfTriangles = numOfTriangles;
-      this.mode = MeshMode.Static;
-      this.data = null;
-    }
-
-    public GeometryData(FloatBuffer data, int numOfTriangles)
-    {
-      this.handle = 0;
-      this.numOfTriangles = numOfTriangles;
-      this.mode = MeshMode.Dynamic;
-      this.data = data;
-    }
-
-    public MeshMode getMode() { return mode; }
-
-    public int getNumOfTriangles() { return numOfTriangles; }
-    public int getHandle() { return handle; }
-
-    public FloatBuffer getData()
-    {
-      if (mode != MeshMode.Dynamic)
-        throw new IllegalStateException("not right mode");
-      return data;
-    }
-
-    private void updateData(int handle, int numOfTriangles)
-    {
-      if (mode != MeshMode.Static)
-        throw new IllegalStateException("not right mode");
-
-      this.handle = handle;
-      this.numOfTriangles = numOfTriangles;
-    }
-
-    private void updateData(FloatBuffer data, int numOfTriangles)
-    {
-      if (mode != MeshMode.Dynamic)
-        throw new IllegalStateException("not right mode");
-
-      this.data = data;
-      this.numOfTriangles = numOfTriangles;
-    }
-  }
-
-  public static class TextureData
-  {
-    public final int handle;
-
-    public TextureData(int handle)
-    {
-      this.handle = handle;
     }
   }
 }

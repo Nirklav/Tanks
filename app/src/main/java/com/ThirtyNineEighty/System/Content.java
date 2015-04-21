@@ -9,10 +9,8 @@ import javax.microedition.khronos.opengles.GL10;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
@@ -128,7 +126,7 @@ public class Content
   @Override
   public void execute(Runnable runnable)
   {
-    callbacks.add(runnable);
+    callbacksActions.add(new Action<Runnable>(runnable, Action.ADD_ACTION));
   }
 
   public void onUpdate()
@@ -244,7 +242,7 @@ public class Content
     Shader.initShader3D();
     Shader.initShader2D();
 
-    Renderable.clearCache();
+    GameContext.renderableResources.reloadCache();
     GameContext.mapLoader.initialize();
 
     setMenu(new MainMenu());

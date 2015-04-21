@@ -6,10 +6,12 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Renderable.Geometry;
 import com.ThirtyNineEighty.Renderable.MeshMode;
-import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
+import com.ThirtyNineEighty.Renderable.Texture;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
 
@@ -39,8 +41,8 @@ public class GLSprite
   protected float width;
   protected float height;
 
-  protected Renderable.TextureData textureData;
-  protected Renderable.GeometryData geometryData;
+  protected Texture textureData;
+  protected Geometry geometryData;
 
   private boolean disposed;
 
@@ -48,8 +50,8 @@ public class GLSprite
   protected GLSprite(String textureName, String meshName, float[] meshData) { this(textureName, meshName, meshData, MeshMode.Static); }
   protected GLSprite(String textureName, String meshName, float[] meshData, MeshMode mode)
   {
-    textureData = Renderable.loadTexture(textureName, false);
-    geometryData = Renderable.loadGeometry(meshName, meshData.length / 12, meshData, mode);
+    textureData = GameContext.renderableResources.getTexture(textureName, false);
+    geometryData = GameContext.renderableResources.getGeometry(meshName, meshData.length / 12, meshData, mode);
 
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];
@@ -90,7 +92,7 @@ public class GLSprite
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.getHandle());
 
     // send data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);

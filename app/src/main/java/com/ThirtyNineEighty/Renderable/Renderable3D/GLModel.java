@@ -5,9 +5,11 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable;
+import com.ThirtyNineEighty.Renderable.Geometry;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
+import com.ThirtyNineEighty.Renderable.Texture;
+import com.ThirtyNineEighty.System.GameContext;
 
 public class GLModel
   implements I3DRenderable
@@ -15,8 +17,8 @@ public class GLModel
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
 
-  private Renderable.TextureData textureData;
-  private Renderable.GeometryData geometryData;
+  private Texture textureData;
+  private Geometry geometryData;
 
   private boolean globalsInitialized;
   private Vector3 position;
@@ -34,8 +36,8 @@ public class GLModel
     position = Vector.getInstance(3);
     angles = Vector.getInstance(3);
 
-    geometryData = Renderable.loadGeometry(geometryName);
-    textureData = Renderable.loadTexture(textureName, true);
+    geometryData = GameContext.renderableResources.getGeometry(geometryName);
+    textureData = GameContext.renderableResources.getTexture(textureName, true);
   }
 
   public void dispose()
@@ -64,7 +66,7 @@ public class GLModel
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.handle);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.getHandle());
 
     // send uniform data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);

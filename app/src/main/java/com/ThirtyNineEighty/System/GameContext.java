@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
+import com.ThirtyNineEighty.Renderable.RenderableResources;
 
 public class GameContext
 {
@@ -51,6 +52,7 @@ public class GameContext
 
   // Helpers
   public static final MapLoader mapLoader = new MapLoader();
+  public static final RenderableResources renderableResources = new RenderableResources();
 
   // Update
   public static float updateTime()
