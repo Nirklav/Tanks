@@ -1,4 +1,6 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Resources;
+
+import com.ThirtyNineEighty.Renderable.MeshMode;
 
 import java.nio.FloatBuffer;
 
@@ -37,7 +39,7 @@ public class Geometry
     return data;
   }
 
-  private void updateData(int handle, int numOfTriangles)
+  public void updateData(int handle, int numOfTriangles)
   {
     if (mode != MeshMode.Static)
       throw new IllegalStateException("not right mode");
@@ -46,7 +48,7 @@ public class Geometry
     this.numOfTriangles = numOfTriangles;
   }
 
-  private void updateData(FloatBuffer data, int numOfTriangles)
+  public void updateData(FloatBuffer data, int numOfTriangles)
   {
     if (mode != MeshMode.Dynamic)
       throw new IllegalStateException("not right mode");

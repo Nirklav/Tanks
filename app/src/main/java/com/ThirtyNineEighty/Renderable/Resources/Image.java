@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Resources;
 
 public class Image
 {

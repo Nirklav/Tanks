@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
-import com.ThirtyNineEighty.Renderable.RenderableResources;
+import com.ThirtyNineEighty.Renderable.Resources.RenderableResources;
 
 public class GameContext
 {
