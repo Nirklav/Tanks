@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Renderable.Renderable2D;
 
-import com.ThirtyNineEighty.Renderable.MeshMode;
+import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLLabel

@@ -16,7 +16,6 @@ import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Shader;
 
 import android.opengl.GLES20;
-import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
@@ -243,21 +242,19 @@ public class Content
     Shader.initShader2D();
 
     GameContext.renderableResources.reloadCache();
-    GameContext.mapLoader.initialize();
-
-    setMenu(new MainMenu());
 
     initialized = true;
-
-    int error = GLES20.glGetError();
-    if (error != GLES20.GL_NO_ERROR)
-      throw new GLException(error);
   }
 
   @Override
   public void onSurfaceCreated(GL10 gl, EGLConfig config)
   {
 
+  }
+
+  public void onPause()
+  {
+    initialized = false;
   }
 
   private static final class Action<T>

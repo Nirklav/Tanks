@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.ThirtyNineEighty.Game.Menu.MainMenu;
+
 public class GameActivity
   extends Activity
   implements View.OnTouchListener
@@ -35,7 +37,15 @@ public class GameActivity
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     handler = new Handler();
-    content = new Content();
+
+    // If game resumed content has been already created
+    boolean contentCreated = false;
+    content = (Content)GameContext.getContent();
+    if (content == null)
+    {
+      content = new Content();
+      contentCreated = true;
+    }
 
     // OpenGL init
     glView = new GLSurfaceView(this);
@@ -51,8 +61,14 @@ public class GameActivity
     // Set view
     setContentView(glView);
 
+    // Set game context data
     GameContext.setAppContext(this);
     GameContext.setContent(content);
+    GameContext.mapLoader.initialize();
+
+    // If first load set main menu
+    if (contentCreated)
+      content.setMenu(new MainMenu());
   }
 
   private void requestRenderer()
@@ -97,6 +113,7 @@ public class GameActivity
   {
     super.onPause();
     glView.onPause();
+    content.onPause();
     pause = true;
   }
 

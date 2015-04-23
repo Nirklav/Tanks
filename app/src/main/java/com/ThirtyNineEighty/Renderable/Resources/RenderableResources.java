@@ -2,8 +2,6 @@ package com.ThirtyNineEighty.Renderable.Resources;
 
 import android.opengl.GLES20;
 
-import com.ThirtyNineEighty.Renderable.MeshMode;
-
 import java.util.HashMap;
 
 public final class RenderableResources
@@ -63,7 +61,11 @@ public final class RenderableResources
     for (String name : texturesCache.keySet())
     {
       Container<Texture> container = texturesCache.get(name);
-      GLES20.glDeleteTextures(1, new int[] { container.resource.getHandle() }, 0);
+
+      int oldHandle = container.resource.getHandle();
+      if (GLES20.glIsTexture(oldHandle))
+        GLES20.glDeleteTextures(1, new int[] { oldHandle }, 0);
+
       container.reload();
     }
   }
@@ -76,7 +78,11 @@ public final class RenderableResources
         continue;
 
       Container<Geometry> container = geometryCache.get(key);
-      GLES20.glDeleteBuffers(1, new int[] { container.resource.getHandle() }, 0);
+
+      int oldHandle = container.resource.getHandle();
+      if (GLES20.glIsBuffer(oldHandle))
+        GLES20.glDeleteBuffers(1, new int[] { oldHandle }, 0);
+
       container.reload();
     }
   }
@@ -92,9 +98,15 @@ public final class RenderableResources
     int counter = 0;
     int[] textures = new int[texturesCache.size()];
     for(Container<Texture> container : texturesCache.values())
-      textures[counter++] = container.resource.getHandle();
+    {
+      int handle = container.resource.getHandle();
+      if (GLES20.glIsTexture(handle))
+        textures[counter++] = handle;
+    }
 
-    GLES20.glDeleteTextures(textures.length, textures, 0);
+    if (counter > 0)
+      GLES20.glDeleteTextures(counter, textures, 0);
+
     texturesCache.clear();
   }
 
@@ -104,13 +116,18 @@ public final class RenderableResources
     int[] buffers = new int[geometryCache.size()];
     for(Container<Geometry> geometry : geometryCache.values())
     {
-      if (geometry.resource.getMode() == MeshMode.Dynamic)
+      MeshMode mode = geometry.resource.getMode();
+      if (mode == MeshMode.Dynamic)
         continue;
 
-      buffers[counter++] = geometry.resource.getHandle();
+      int handle = geometry.resource.getHandle();
+      if (GLES20.glIsBuffer(handle))
+        buffers[counter++] = geometry.resource.getHandle();
     }
 
-    GLES20.glDeleteBuffers(counter, buffers, 0);
+    if (counter > 0)
+      GLES20.glDeleteBuffers(counter, buffers, 0);
+
     geometryCache.clear();
   }
 

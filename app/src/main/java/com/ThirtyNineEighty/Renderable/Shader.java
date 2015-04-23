@@ -141,8 +141,13 @@ public abstract class Shader
 
   private void deleteProgram()
   {
-    GLES20.glDeleteShader(vertexShaderHandle);
-    GLES20.glDeleteShader(fragmentShaderHandle);
-    GLES20.glDeleteProgram(programHandle);
+    if (GLES20.glIsShader(vertexShaderHandle))
+      GLES20.glDeleteShader(vertexShaderHandle);
+
+    if (GLES20.glIsShader(fragmentShaderHandle))
+      GLES20.glDeleteShader(fragmentShaderHandle);
+
+    if (GLES20.glIsProgram(programHandle))
+      GLES20.glDeleteProgram(programHandle);
   }
 }

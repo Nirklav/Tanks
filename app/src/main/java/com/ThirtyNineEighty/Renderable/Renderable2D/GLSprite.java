@@ -7,7 +7,7 @@ import android.renderscript.Matrix3f;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Resources.Geometry;
-import com.ThirtyNineEighty.Renderable.MeshMode;
+import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
 import com.ThirtyNineEighty.Renderable.Resources.Texture;

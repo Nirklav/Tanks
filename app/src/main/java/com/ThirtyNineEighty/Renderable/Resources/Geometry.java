@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Renderable.Resources;
 
-import com.ThirtyNineEighty.Renderable.MeshMode;
-
 import java.nio.FloatBuffer;
 
 public class Geometry
