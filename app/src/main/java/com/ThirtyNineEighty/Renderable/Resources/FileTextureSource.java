@@ -10,32 +10,47 @@ import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.InputStream;
 
-public class TextureSource
+public class FileTextureSource
   implements ISource<Texture>
 {
-  private final String fileName;
+  private final String name;
   private final boolean generateMipmap;
 
-  public TextureSource(String name, boolean mipmap)
+  public FileTextureSource(String textureName, boolean mipmap)
   {
-    fileName = getTextureFileName(name);
+    name = textureName;
     generateMipmap = mipmap;
   }
 
+  @Override
+  public String getName() { return name; }
+
+  @Override
   public Texture load()
   {
     return new Texture(loadHandle());
   }
 
+  @Override
   public void reload(Texture texture)
   {
+    release(texture);
     texture.setHandle(loadHandle());
+  }
+
+  @Override
+  public void release(Texture texture)
+  {
+    int handle = texture.getHandle();
+    if (GLES20.glIsTexture(handle))
+      GLES20.glDeleteTextures(1, new int[] { handle }, 0);
   }
 
   private int loadHandle()
   {
     try
     {
+      String fileName = getTextureFileName(name);
       InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
       Bitmap bitmap = BitmapFactory.decodeStream(stream);
       stream.close();

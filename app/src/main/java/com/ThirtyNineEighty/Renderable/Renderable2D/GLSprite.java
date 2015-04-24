@@ -6,8 +6,11 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Renderable.Resources.FileTextureSource;
 import com.ThirtyNineEighty.Renderable.Resources.Geometry;
+import com.ThirtyNineEighty.Renderable.Resources.GeometrySource;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
+import com.ThirtyNineEighty.Renderable.Resources.StaticGeometrySource;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
 import com.ThirtyNineEighty.Renderable.Resources.Texture;
@@ -46,12 +49,12 @@ public class GLSprite
 
   private boolean disposed;
 
-  public GLSprite(String textureName) { this(textureName, "GLSpriteMesh", quadMeshData); }
-  protected GLSprite(String textureName, String meshName, float[] meshData) { this(textureName, meshName, meshData, MeshMode.Static); }
-  protected GLSprite(String textureName, String meshName, float[] meshData, MeshMode mode)
+  public GLSprite(String textureName) { this(textureName, "GLSpriteMesh", quadMeshData, MeshMode.Static); }
+  protected GLSprite(String textureName, String meshName, float[] meshData, MeshMode mode) { this(textureName, new StaticGeometrySource(meshName, meshData, meshData.length / 12, mode)); }
+  protected GLSprite(String textureName, GeometrySource source)
   {
-    textureData = GameContext.renderableResources.getTexture(textureName, false);
-    geometryData = GameContext.renderableResources.getGeometry(meshName, meshData.length / 12, meshData, mode);
+    textureData = GameContext.renderableResources.getTexture(new FileTextureSource(textureName, false));
+    geometryData = GameContext.renderableResources.getGeometry(source);
 
     modelMatrix = new float[16];
     modelViewMatrix = new float[16];

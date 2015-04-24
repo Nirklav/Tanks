@@ -6,38 +6,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 public class FileGeometrySource
   extends GeometrySource
 {
-  private final String fileName;
-
   public FileGeometrySource(String name)
   {
-    fileName = getModelFileName(name);
+    super(name, MeshMode.Static);
   }
 
   @Override
   public Geometry load()
   {
-    LoadResult result = loadFromFile(fileName);
-    int handle = loadGeometry(result.buffer);
-    return new Geometry(handle, result.numOfTriangles);
+    LoadResult result = loadFromFile();
+    return new Geometry(result.handle, result.numOfTriangles);
   }
 
   @Override
   public void reload(Geometry geometry)
   {
-    LoadResult result = loadFromFile(fileName);
-    int handle = loadGeometry(result.buffer);
-    geometry.updateData(handle, result.numOfTriangles);
+    release(geometry);
+
+    LoadResult result = loadFromFile();
+    geometry.updateData(result.handle, result.numOfTriangles);
   }
 
-  private static LoadResult loadFromFile(String fileName)
+  private LoadResult loadFromFile()
   {
     try
     {
+      String fileName = getModelFileName(name);
       InputStream stream = GameContext.getAppContext()
                                       .getAssets()
                                       .open(fileName);
@@ -57,9 +55,9 @@ public class FileGeometrySource
       numBuffer.put(data, 0, 4);
 
       int numOfTriangles = numBuffer.getInt(0);
-      FloatBuffer buffer = dataBuffer.asFloatBuffer();
+      int handle = loadGeometry(dataBuffer.asFloatBuffer());
 
-      return new LoadResult(buffer, numOfTriangles);
+      return new LoadResult(handle, numOfTriangles);
     }
     catch(IOException e)
     {
@@ -74,13 +72,13 @@ public class FileGeometrySource
 
   private static class LoadResult
   {
-    public final FloatBuffer buffer;
+    public final int handle;
     public final int numOfTriangles;
 
-    public LoadResult(FloatBuffer buf, int triangles)
+    public LoadResult(int bufferHandle, int trianglesCount)
     {
-      buffer = buf;
-      numOfTriangles = triangles;
+      handle = bufferHandle;
+      numOfTriangles = trianglesCount;
     }
   }
 }

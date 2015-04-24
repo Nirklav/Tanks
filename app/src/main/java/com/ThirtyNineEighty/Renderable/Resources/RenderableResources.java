@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Renderable.Resources;
 
-import android.opengl.GLES20;
-
 import java.util.HashMap;
 
 public final class RenderableResources
@@ -11,41 +9,25 @@ public final class RenderableResources
 
   private HashMap<String, Image> imagesCache = new HashMap<String, Image>();
 
-  public Texture getTexture(String name, boolean generateMipmap)
+  public Texture getTexture(ISource<Texture> source)
   {
-    if (texturesCache.containsKey(name))
-      return texturesCache.get(name).resource;
+    Container<Texture> container = texturesCache.get(source.getName());
+    if (container != null)
+      return container.resource;
 
-    TextureSource source = new TextureSource(name, generateMipmap);
     Texture texture = source.load();
-
-    texturesCache.put(name, new Container<Texture>(texture, source));
+    texturesCache.put(source.getName(), new Container<Texture>(texture, source));
     return texture;
   }
 
-  public Geometry getGeometry(String name, int numOfTriangles, float[] bufferData) { return getGeometry(name, numOfTriangles, bufferData, MeshMode.Static); }
-  public Geometry getGeometry(String name, int numOfTriangles, float[] bufferData, MeshMode mode)
+  public Geometry getGeometry(GeometrySource source)
   {
-    GeometryKey key = new GeometryKey(name, mode);
-    if (geometryCache.containsKey(key))
-      return geometryCache.get(key).resource;
+    GeometryKey key = new GeometryKey(source.getName(), source.getMode());
+    Container<Geometry> container = geometryCache.get(key);
+    if (container != null)
+      return container.resource;
 
-    StaticGeometrySource source = new StaticGeometrySource(bufferData, numOfTriangles, mode);
     Geometry geometry = source.load();
-
-    geometryCache.put(key, new Container<Geometry>(geometry, source));
-    return geometry;
-  }
-
-  public Geometry getGeometry(String name)
-  {
-    GeometryKey key = new GeometryKey(name, MeshMode.Static);
-    if (geometryCache.containsKey(key))
-      return geometryCache.get(key).resource;
-
-    FileGeometrySource source = new FileGeometrySource(name);
-    Geometry geometry = source.load();
-
     geometryCache.put(key, new Container<Geometry>(geometry, source));
     return geometry;
   }
@@ -61,11 +43,6 @@ public final class RenderableResources
     for (String name : texturesCache.keySet())
     {
       Container<Texture> container = texturesCache.get(name);
-
-      int oldHandle = container.resource.getHandle();
-      if (GLES20.glIsTexture(oldHandle))
-        GLES20.glDeleteTextures(1, new int[] { oldHandle }, 0);
-
       container.reload();
     }
   }
@@ -74,15 +51,7 @@ public final class RenderableResources
   {
     for (GeometryKey key : geometryCache.keySet())
     {
-      if (key.mode == MeshMode.Dynamic)
-        continue;
-
       Container<Geometry> container = geometryCache.get(key);
-
-      int oldHandle = container.resource.getHandle();
-      if (GLES20.glIsBuffer(oldHandle))
-        GLES20.glDeleteBuffers(1, new int[] { oldHandle }, 0);
-
       container.reload();
     }
   }
@@ -95,38 +64,16 @@ public final class RenderableResources
 
   private void clearTexturesCache()
   {
-    int counter = 0;
-    int[] textures = new int[texturesCache.size()];
     for(Container<Texture> container : texturesCache.values())
-    {
-      int handle = container.resource.getHandle();
-      if (GLES20.glIsTexture(handle))
-        textures[counter++] = handle;
-    }
-
-    if (counter > 0)
-      GLES20.glDeleteTextures(counter, textures, 0);
+      container.release();
 
     texturesCache.clear();
   }
 
   private void clearGeometryCache()
   {
-    int counter = 0;
-    int[] buffers = new int[geometryCache.size()];
-    for(Container<Geometry> geometry : geometryCache.values())
-    {
-      MeshMode mode = geometry.resource.getMode();
-      if (mode == MeshMode.Dynamic)
-        continue;
-
-      int handle = geometry.resource.getHandle();
-      if (GLES20.glIsBuffer(handle))
-        buffers[counter++] = geometry.resource.getHandle();
-    }
-
-    if (counter > 0)
-      GLES20.glDeleteBuffers(counter, buffers, 0);
+    for(Container<Geometry> container : geometryCache.values())
+      container.release();
 
     geometryCache.clear();
   }
@@ -178,6 +125,11 @@ public final class RenderableResources
     public void reload()
     {
       source.reload(resource);
+    }
+
+    public void release()
+    {
+      source.release(resource);
     }
   }
 }

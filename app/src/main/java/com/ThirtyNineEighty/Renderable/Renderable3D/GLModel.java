@@ -5,6 +5,8 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Renderable.Resources.FileGeometrySource;
+import com.ThirtyNineEighty.Renderable.Resources.FileTextureSource;
 import com.ThirtyNineEighty.Renderable.Resources.Geometry;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
@@ -36,8 +38,8 @@ public class GLModel
     position = Vector.getInstance(3);
     angles = Vector.getInstance(3);
 
-    geometryData = GameContext.renderableResources.getGeometry(geometryName);
-    textureData = GameContext.renderableResources.getTexture(textureName, true);
+    geometryData = GameContext.renderableResources.getGeometry(new FileGeometrySource(geometryName));
+    textureData = GameContext.renderableResources.getTexture(new FileTextureSource(textureName, true));
   }
 
   public void dispose()

@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Renderable.Resources;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 public class StaticGeometrySource
@@ -9,13 +7,12 @@ public class StaticGeometrySource
 {
   private FloatBuffer source;
   private int numOfTriangles;
-  private MeshMode mode;
 
-  public StaticGeometrySource(float[] src, int triangles, MeshMode md)
+  public StaticGeometrySource(String name, float[] buffer, int trianglesCount, MeshMode mode)
   {
-    source = load(src);
-    numOfTriangles = triangles;
-    mode = md;
+    super(name, mode);
+    source = loadGeometry(buffer);
+    numOfTriangles = trianglesCount;
   }
 
   @Override
@@ -30,12 +27,14 @@ public class StaticGeometrySource
       return new Geometry(source, numOfTriangles);
     }
 
-    throw new IllegalArgumentException("Invalid mode");
+    throw new IllegalArgumentException("Invalid mesh mode");
   }
 
   @Override
   public void reload(Geometry geometry)
   {
+    release(geometry);
+
     switch (mode)
     {
     case Static:
@@ -47,15 +46,6 @@ public class StaticGeometrySource
       return;
     }
 
-    throw new IllegalArgumentException("Invalid mode");
-  }
-
-  private static FloatBuffer load(float[] bufferData)
-  {
-    return (FloatBuffer) ByteBuffer.allocateDirect(bufferData.length * 4)
-                                   .order(ByteOrder.nativeOrder())
-                                   .asFloatBuffer()
-                                   .put(bufferData)
-                                   .position(0);
+    throw new IllegalArgumentException("Invalid mesh mode");
   }
 }
