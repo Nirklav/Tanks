@@ -128,25 +128,25 @@ public class Plane
   public Vector3 getXAxis()
   {
     throwIfReleased();
-    return new Vector3(xAxis);
+    return Vector.getInstance(3, xAxis);
   }
 
   public Vector3 getYAxis()
   {
     throwIfReleased();
-    return new Vector3(yAxis);
+    return Vector.getInstance(3, yAxis);
   }
 
   public Vector3 getZAxis()
   {
     throwIfReleased();
-    return new Vector3(zAxis);
+    return Vector.getInstance(3, zAxis);
   }
 
   public Vector3 getNormal()
   {
     throwIfReleased();
-    return new Vector3(zAxis);
+    return Vector.getInstance(3, zAxis);
   }
 
   private void throwIfReleased()

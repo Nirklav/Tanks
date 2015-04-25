@@ -196,7 +196,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 vector = new Vector3();
+    Vector3 vector = Vector.getInstance(3);
     float[] translateMatrix = new float[16];
     Matrix.setIdentityM(translateMatrix, 0);
 
@@ -217,7 +217,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.normalize();
     return result;
   }
@@ -226,7 +226,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.scale(coefficient);
     return result;
   }
@@ -235,7 +235,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.cross(other);
     return result;
   }
@@ -244,7 +244,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.orthogonal();
     return result;
   }
@@ -253,7 +253,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.add(other);
     return result;
   }
@@ -262,7 +262,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.subtract(other);
     return result;
   }
@@ -271,7 +271,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.multiply(coefficient);
     return result;
   }
@@ -280,7 +280,7 @@ public class Vector3 extends Vector
   {
     throwIfReleased();
 
-    Vector3 result = new Vector3(this);
+    Vector3 result = Vector.getInstance(3, this);
     result.move(length, angles);
     return result;
   }

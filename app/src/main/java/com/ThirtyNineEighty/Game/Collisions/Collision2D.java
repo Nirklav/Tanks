@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class Collision2D
   private static CheckResult check(ArrayList<Vector2> firstVertices, ArrayList<Vector2> secondVertices)
   {
     Vector2 mtv = null;
-    Vector2 normal = new Vector2();
+    Vector2 normal = Vector.getInstance(2);
     float minMTVLength = 0.0f;
     int count = firstVertices.size() + secondVertices.size();
 
@@ -45,7 +46,7 @@ public class Collision2D
 
       if (mtv == null)
       {
-        mtv = new Vector2(normal);
+        mtv = Vector.getInstance(2, normal);
         minMTVLength = getIntersectionLength(firstProjection, secondProjection);
       }
       else
@@ -53,7 +54,7 @@ public class Collision2D
         float mtvLength = getIntersectionLength(firstProjection, secondProjection);
         if (Math.abs(mtvLength) < Math.abs(minMTVLength))
         {
-          mtv = new Vector2(normal);
+          mtv = Vector.getInstance(2, normal);
           minMTVLength = mtvLength;
         }
       }

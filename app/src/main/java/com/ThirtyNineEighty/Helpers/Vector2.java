@@ -121,11 +121,18 @@ public class Vector2 extends Vector
     setFrom(getX() - other.getX(), getY() - other.getY());
   }
 
+  public void add(Vector2 other)
+  {
+    throwIfReleased();
+
+    setFrom(getX() + other.getX(), getY() + other.getY());
+  }
+
   public Vector2 getNormalize()
   {
     throwIfReleased();
 
-    Vector2 result = new Vector2(this);
+    Vector2 result = Vector.getInstance(2, this);
     result.normalize();
     return result;
   }
@@ -134,8 +141,17 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = new Vector2(this);
+    Vector2 result = Vector.getInstance(2, this);
     result.subtract(other);
+    return result;
+  }
+
+  public Vector2 getSum(Vector2 other)
+  {
+    throwIfReleased();
+
+    Vector2 result = Vector.getInstance(2, this);
+    result.add(other);
     return result;
   }
 

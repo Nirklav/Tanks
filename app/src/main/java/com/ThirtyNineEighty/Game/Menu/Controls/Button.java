@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
+import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
 import com.ThirtyNineEighty.Renderable.Resources.FileImageSource;
 import com.ThirtyNineEighty.Renderable.Resources.Image;
@@ -11,27 +12,44 @@ public class Button
   private boolean state;
 
   private GLSprite sprite;
+  private GLLabel label;
 
   private Image pressed;
   private Image notPressed;
 
-  private float left;
-  private float right;
-  private float bottom;
-  private float top;
+  private float x;
+  private float y;
+  private float width;
+  private float height;
 
-  public Button(float x, float y, float width, float height, String pressedName, String notPressedName)
+  public Button(String caption, String pressedName, String notPressedName)
   {
-    left = x - width / 2;
-    right = x + width / 2;
-    bottom = y - height / 2;
-    top = y + height / 2;
-
     pressed = GameContext.renderableResources.getImage(new FileImageSource(pressedName));
     notPressed = GameContext.renderableResources.getImage(new FileImageSource(notPressedName));
 
     sprite = new GLSprite(notPressedName);
+    sprite.setZIndex(0);
+
+    label = new GLLabel(caption, "simpleFont");
+    label.setZIndex(1);
+
+    setSize(200, 100);
+  }
+
+  public void setPosition(float x, float y)
+  {
+    this.x = x;
+    this.y = y;
+
     sprite.setPosition(x, y);
+    label.setPosition(x, y);
+  }
+
+  public void setSize(float width, float height)
+  {
+    this.width = width;
+    this.height = height;
+
     sprite.setSize(width, height);
   }
 
@@ -56,6 +74,7 @@ public class Button
   public void draw(float[] orthoViewMatrix)
   {
     sprite.draw(orthoViewMatrix);
+    label.draw(orthoViewMatrix);
   }
 
   @Override
@@ -73,9 +92,14 @@ public class Button
   }
 
   @Override
-  protected boolean canProcess(float x, float y)
+  protected boolean canProcess(float touchX, float touchY)
   {
-    return isBetween(x, left, right) && isBetween(y, bottom, top);
+    float left = x - width / 2;
+    float right = x + width / 2;
+    float bottom = y - height / 2;
+    float top = y + height / 2;
+
+    return isBetween(touchX, left, right) && isBetween(touchY, bottom, top);
   }
 
   private static boolean isBetween(float value, float left, float right)

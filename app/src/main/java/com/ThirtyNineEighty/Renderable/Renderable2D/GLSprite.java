@@ -25,12 +25,12 @@ public class GLSprite
 {
   private final static float[] quadMeshData = new float[]
   {
-    -1,  1, 0, 0,
-    -1, -1, 0, 1,
-     1,  1, 1, 0,
-    -1, -1, 0, 1,
-     1, -1, 1, 1,
-     1,  1, 1, 0,
+    -0.5f,  0.5f, 0, 0,
+    -0.5f, -0.5f, 0, 1,
+     0.5f,  0.5f, 1, 0,
+    -0.5f, -0.5f, 0, 1,
+     0.5f, -0.5f, 1, 1,
+     0.5f,  0.5f, 1, 0,
   };
 
   private float[] modelMatrix;
@@ -159,8 +159,8 @@ public class GLSprite
 
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), zIndex);
-    Matrix.rotateM(modelMatrix, 0, angle, 0.0f, 0.0f, 1);
-    Matrix.scaleM(modelMatrix, 0, width / 2, height / 2, 1);
+    Matrix.rotateM(modelMatrix, 0, angle, 0, 0, 1);
+    Matrix.scaleM(modelMatrix, 0, width, height, 1);
 
     needBuildMatrix = false;
   }

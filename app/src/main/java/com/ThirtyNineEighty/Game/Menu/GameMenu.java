@@ -24,7 +24,9 @@ public class GameMenu
   @Override
   public void initialize(Object args)
   {
-    Button fireButton = new Button(810, 440, 300, 200, "pressedBtn", "notPressedBtn");
+    Button fireButton = new Button("Fire", "pressedBtn", "notPressedBtn");
+    fireButton.setPosition(810, 440);
+    fireButton.setSize(300, 200);
     fireButton.setClickListener(new Runnable()
     {
       @Override
@@ -37,8 +39,11 @@ public class GameMenu
         player.fire();
       }
     });
+    addControl(fireButton);
 
-    Button cacheStatusButton = new Button(-810, 440, 300, 200, "pressedBtn", "notPressedBtn");
+    Button cacheStatusButton = new Button("Get cache", "pressedBtn", "notPressedBtn");
+    cacheStatusButton.setPosition(-810, 440);
+    cacheStatusButton.setSize(300, 200);
     cacheStatusButton.setClickListener(new Runnable()
     {
       @Override
@@ -47,17 +52,23 @@ public class GameMenu
         cacheStatusLabel.setValue(Vector.getCacheStatus());
       }
     });
-
-    addControl(rightTurretButton = new Button(800, -290, 150, 150, "pressedBtn", "notPressedBtn"));
-    addControl(leftTurretButton = new Button(600, -290, 150, 150, "pressedBtn", "notPressedBtn"));
     addControl(cacheStatusButton);
-    addControl(fireButton);
+
+    rightTurretButton = new Button("Right", "pressedBtn", "notPressedBtn");
+    rightTurretButton.setPosition(800, -290);
+    rightTurretButton.setSize(150, 150);
+    addControl(rightTurretButton);
+
+    leftTurretButton = new Button("Left", "pressedBtn", "notPressedBtn");
+    leftTurretButton.setPosition(600, -290);
+    leftTurretButton.setSize(150, 150);
+    addControl(leftTurretButton);
 
     addControl(joystick = new Joystick(-710, -290, 150));
 
-    cacheStatusLabel = new GLLabel(Vector.getCacheStatus(), "SimpleFont", 50, 60, MeshMode.Dynamic);
-    cacheStatusLabel.setPosition(-940, 290);
-
+    cacheStatusLabel = new GLLabel(Vector.getCacheStatus(), "simpleFont", 25, 40, MeshMode.Dynamic);
+    cacheStatusLabel.setAlign(GLLabel.AlignType.TopLeft);
+    cacheStatusLabel.setPosition(-940, 280);
     addRenderable(cacheStatusLabel);
   }
 

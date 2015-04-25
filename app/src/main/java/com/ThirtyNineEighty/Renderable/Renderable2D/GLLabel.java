@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Renderable.Renderable2D;
 
+import com.ThirtyNineEighty.Helpers.Vector;
+import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Resources.Geometry;
 import com.ThirtyNineEighty.Renderable.Resources.GeometrySource;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
@@ -7,28 +9,168 @@ import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
 
+// Can process only \n and \t spec symbols
 public class GLLabel
   extends GLSprite
 {
+  private static final int tabLength = 3;
+
   private static final float TextureCellWidth = 0.0625f;
   private static final float TextureCellHeight = 0.125f;
 
   private float charWidth;
   private float charHeight;
+  private String value;
 
-  public GLLabel(String value, String fontTexture, float charWidth, float charHeight) { this(value, fontTexture, charWidth, charHeight, MeshMode.Static); }
-  public GLLabel(String value, String fontTexture, float charWidth, float charHeight, MeshMode mode)
+  private AlignType alignType;
+  private Vector2 originalPosition;
+
+  public GLLabel(String value, String fontTexture) { this(value, fontTexture, 30, 40, MeshMode.Static); }
+  public GLLabel(String value, String fontTexture, float charWidth, float chatHeight,  MeshMode mode)
   {
-    super(fontTexture, new LabelGeometrySource(value, mode, charWidth, charHeight));
+    super(fontTexture, new LabelGeometrySource(value, mode, charWidth, chatHeight));
     this.charWidth = charWidth;
-    this.charHeight = charHeight;
+    this.charHeight = chatHeight;
+    this.value = value;
+
+    alignType = AlignType.Center;
+    originalPosition = Vector.getInstance(2, position);
+    setPosition();
   }
 
-  public void setValue(String value) { setValue(value, geometryData.getMode()); }
-  public void setValue(String value, MeshMode mode)
+  public void setValue(String value)
   {
+    this.value = value;
+
+    setPosition();
+    rebuild();
+  }
+
+  public void setCharSize(float width, float height)
+  {
+    charWidth = width;
+    charHeight = height;
+
+    setPosition();
+    rebuild();
+  }
+
+  public void setAlign(AlignType value)
+  {
+    alignType = value;
+    setPosition();
+  }
+
+  @Override
+  public void setPosition(Vector2 value)
+  {
+    originalPosition.setFrom(value);
+    setPosition();
+  }
+
+  @Override
+  public void setPosition(float x, float y)
+  {
+    originalPosition.setFrom(x, y);
+    setPosition();
+  }
+
+  private void setPosition()
+  {
+    Vector2 shift;
+
+    switch (alignType)
+    {
+    case Center:
+      shift = getCenterShift();
+      break;
+
+    case TopRight:
+      shift = getCenterShift();
+      shift.multiplyToX(2);
+      shift.multiplyToY(0);
+      break;
+
+    case BottomRight:
+      shift = getCenterShift();
+      shift.multiplyToX(2);
+      shift.multiplyToY(2);
+      break;
+
+    case BottomLeft:
+      shift = getCenterShift();
+      shift.setX(0);
+      shift.multiplyToY(2);
+      break;
+
+    case TopLeft:
+    default:
+      shift = Vector.getInstance(2);
+      break;
+    }
+
+    shift.addToX(-charWidth / 2);
+    shift.addToY(-charHeight / 2);
+
+    super.setPosition(originalPosition.getSubtract(shift));
+    Vector.release(shift);
+  }
+
+  private Vector2 getCenterShift()
+  {
+    int widthLength = 0;
+    int heightLength = 1;
+
+    int currentLineLength = 0;
+
+    // calculate mesh size
+    int length = value.length();
+    for (int i = 0; i < length; i++)
+    {
+      char ch = value.charAt(i);
+
+      switch (ch)
+      {
+      case '\n':
+        heightLength++;
+
+        if (widthLength < currentLineLength)
+          widthLength = currentLineLength;
+
+        currentLineLength = 0;
+        continue;
+      case '\t':
+        currentLineLength += tabLength;
+        continue;
+      default:
+        currentLineLength++;
+      }
+    }
+
+    // check last line width
+    if (widthLength < currentLineLength)
+      widthLength = currentLineLength;
+
+    Vector2 shifts = Vector2.getInstance(2);
+    shifts.addToX((widthLength * charWidth) / 2);
+    shifts.addToY((heightLength * charHeight) / 2);
+    return shifts;
+  }
+
+  private void rebuild()
+  {
+    MeshMode mode = geometryData.getMode();
     LabelGeometrySource source = new LabelGeometrySource(value, mode, charWidth, charHeight);
     geometryData = GameContext.renderableResources.getGeometry(source);
+  }
+
+  public enum AlignType
+  {
+    Center,
+    TopRight,
+    TopLeft,
+    BottomRight,
+    BottomLeft,
   }
 
   private static class LabelGeometrySource
@@ -124,15 +266,14 @@ public class GLLabel
       {
         char ch = value.charAt(i);
 
-        if (ch == '\n')
+        switch (ch)
         {
+        case '\n':
           lineNumber++;
           carriagePosition = 0;
           continue;
-        }
-        if (ch == '\t')
-        {
-          carriagePosition += 3;
+        case '\t':
+          carriagePosition += tabLength;
           continue;
         }
 

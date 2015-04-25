@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Game.Gameplay;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
@@ -63,9 +66,25 @@ public final class MapLoader
 
   private ArrayList<String> loadMapNames()
   {
-    // TODO: load map names from dir
-    ArrayList<String> maps = new ArrayList<String>();
-    maps.add("standard");
-    return maps;
+    try
+    {
+      ArrayList<String> maps = new ArrayList<String>();
+
+      Context appContext = GameContext.getAppContext();
+      AssetManager manager = appContext.getAssets();
+      String[] files = manager.list("Maps");
+
+      for (String fileName : files)
+      {
+        int pos = fileName.lastIndexOf('.');
+        maps.add(pos > 0 ? fileName.substring(0, pos) : fileName);
+      }
+
+      return maps;
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 }
