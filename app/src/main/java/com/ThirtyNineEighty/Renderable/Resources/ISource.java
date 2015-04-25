@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Renderable.Resources;
 
 public interface ISource<TResource>
 {
-  String getName();
+  String getName(); // name for cache
 
   TResource load();
   void reload(TResource resource);

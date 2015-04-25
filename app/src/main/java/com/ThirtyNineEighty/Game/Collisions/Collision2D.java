@@ -30,7 +30,7 @@ public class Collision2D
   {
     Vector2 mtv = null;
     Vector2 normal = new Vector2();
-    float mtvLength = 0.0f;
+    float minMTVLength = 0.0f;
     int count = firstVertices.size() + secondVertices.size();
 
     for (int i = 0; i < count; i ++)
@@ -46,20 +46,20 @@ public class Collision2D
       if (mtv == null)
       {
         mtv = new Vector2(normal);
-        mtvLength = getIntersectionLength(firstProjection, secondProjection);
+        minMTVLength = getIntersectionLength(firstProjection, secondProjection);
       }
       else
       {
-        float tempMTVLength = getIntersectionLength(firstProjection, secondProjection);
-        if (Math.abs(tempMTVLength) < Math.abs(mtvLength))
+        float mtvLength = getIntersectionLength(firstProjection, secondProjection);
+        if (Math.abs(mtvLength) < Math.abs(minMTVLength))
         {
           mtv = new Vector2(normal);
-          mtvLength = tempMTVLength;
+          minMTVLength = mtvLength;
         }
       }
     }
 
-    return new CheckResult(mtv, mtvLength);
+    return new CheckResult(mtv, minMTVLength);
   }
 
   private static float getIntersectionLength(Vector2 firstProjection, Vector2 secondProjection)

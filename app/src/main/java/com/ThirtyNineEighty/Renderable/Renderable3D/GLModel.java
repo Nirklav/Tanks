@@ -93,7 +93,7 @@ public class GLModel
     shader.validateProgram();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getNumOfTriangles() * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getTrianglesCount() * 3);
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);

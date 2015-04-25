@@ -29,15 +29,13 @@ public class Joystick
 
     vector = Vector.getInstance(2);
 
-    backgroundSprite = new GLSprite("joystick");
+    backgroundSprite = new GLSprite("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);
     backgroundSprite.setPosition(position);
-    backgroundSprite.setTextureCoordinates(0.5f, 0f, 0.5f, 1f);
 
-    stickSprite = new GLSprite("joystick");
+    stickSprite = new GLSprite("joyStick");
     stickSprite.setSize(radius / 2, radius / 2);
     stickSprite.setPosition(stickPosition);
-    stickSprite.setTextureCoordinates(0f, 0f, 0.5f, 1f);
   }
 
   public Vector2 getVector()

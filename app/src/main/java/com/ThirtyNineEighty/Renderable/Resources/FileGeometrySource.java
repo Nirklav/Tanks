@@ -19,7 +19,7 @@ public class FileGeometrySource
   public Geometry load()
   {
     LoadResult result = loadFromFile();
-    return new Geometry(result.handle, result.numOfTriangles);
+    return new Geometry(result.handle, result.trianglesCount);
   }
 
   @Override
@@ -28,7 +28,7 @@ public class FileGeometrySource
     release(geometry);
 
     LoadResult result = loadFromFile();
-    geometry.updateData(result.handle, result.numOfTriangles);
+    geometry.updateData(result.handle, result.trianglesCount);
   }
 
   private LoadResult loadFromFile()
@@ -54,10 +54,10 @@ public class FileGeometrySource
       numBuffer.order(ByteOrder.nativeOrder());
       numBuffer.put(data, 0, 4);
 
-      int numOfTriangles = numBuffer.getInt(0);
+      int trianglesCount = numBuffer.getInt(0);
       int handle = loadGeometry(dataBuffer.asFloatBuffer());
 
-      return new LoadResult(handle, numOfTriangles);
+      return new LoadResult(handle, trianglesCount);
     }
     catch(IOException e)
     {
@@ -73,12 +73,12 @@ public class FileGeometrySource
   private static class LoadResult
   {
     public final int handle;
-    public final int numOfTriangles;
+    public final int trianglesCount;
 
-    public LoadResult(int bufferHandle, int trianglesCount)
+    public LoadResult(int handle, int trianglesCount)
     {
-      handle = bufferHandle;
-      numOfTriangles = trianglesCount;
+      this.handle = handle;
+      this.trianglesCount = trianglesCount;
     }
   }
 }

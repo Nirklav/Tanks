@@ -22,7 +22,7 @@ public class MainMenu
     selectedMapIndex = 0;
     selectedMap = maps.get(selectedMapIndex);
 
-    Button newGameButton = new Button(0, 150, 600, 200);
+    Button newGameButton = new Button(0, 150, 600, 200, "pressedBtn", "notPressedBtn");
     newGameButton.setClickListener(new Runnable()
     {
       @Override
@@ -36,7 +36,7 @@ public class MainMenu
     GLLabel label = new GLLabel(getMapLabel(selectedMap), "SimpleFont", 50, 50, MeshMode.Dynamic);
     label.setPosition(-250, 0);
 
-    Button nextMapButton = new Button(0, -200, 600, 200);
+    Button nextMapButton = new Button(0, -200, 600, 200, "pressedBtn", "notPressedBtn");
     nextMapButton.setClickListener(new Runnable()
     {
       @Override

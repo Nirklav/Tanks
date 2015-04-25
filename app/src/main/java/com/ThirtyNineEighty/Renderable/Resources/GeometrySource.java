@@ -10,8 +10,8 @@ import java.nio.FloatBuffer;
 public abstract class GeometrySource
   implements ISource<Geometry>
 {
-  protected String name;
-  protected MeshMode mode;
+  protected final String name;
+  protected final MeshMode mode;
 
   protected GeometrySource(String geometryName, MeshMode meshMode)
   {
@@ -20,9 +20,7 @@ public abstract class GeometrySource
   }
 
   @Override
-  public String getName() { return name; }
-
-  public MeshMode getMode() { return mode; }
+  public String getName() { return String.format("%s-%s", name, mode.name()); }
 
   @Override
   public void release(Geometry geometry)

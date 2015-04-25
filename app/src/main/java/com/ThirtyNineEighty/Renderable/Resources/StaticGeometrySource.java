@@ -6,13 +6,13 @@ public class StaticGeometrySource
   extends GeometrySource
 {
   private FloatBuffer source;
-  private int numOfTriangles;
+  private int trianglesCount;
 
-  public StaticGeometrySource(String name, float[] buffer, int trianglesCount, MeshMode mode)
+  public StaticGeometrySource(String name, float[] buffer, int triangles, MeshMode mode)
   {
     super(name, mode);
     source = loadGeometry(buffer);
-    numOfTriangles = trianglesCount;
+    trianglesCount = triangles;
   }
 
   @Override
@@ -22,9 +22,9 @@ public class StaticGeometrySource
     {
     case Static:
       int handle = loadGeometry(source);
-      return new Geometry(handle, numOfTriangles);
+      return new Geometry(handle, trianglesCount);
     case Dynamic:
-      return new Geometry(source, numOfTriangles);
+      return new Geometry(source, trianglesCount);
     }
 
     throw new IllegalArgumentException("Invalid mesh mode");
@@ -39,10 +39,10 @@ public class StaticGeometrySource
     {
     case Static:
       int handle = loadGeometry(source);
-      geometry.updateData(handle, numOfTriangles);
+      geometry.updateData(handle, trianglesCount);
       return;
     case Dynamic:
-      geometry.updateData(source, numOfTriangles);
+      geometry.updateData(source, trianglesCount);
       return;
     }
 

@@ -24,7 +24,7 @@ public class GameMenu
   @Override
   public void initialize(Object args)
   {
-    Button fireButton = new Button(810, 440, 300, 200);
+    Button fireButton = new Button(810, 440, 300, 200, "pressedBtn", "notPressedBtn");
     fireButton.setClickListener(new Runnable()
     {
       @Override
@@ -38,7 +38,7 @@ public class GameMenu
       }
     });
 
-    Button cacheStatusButton = new Button(-810, 440, 300, 200);
+    Button cacheStatusButton = new Button(-810, 440, 300, 200, "pressedBtn", "notPressedBtn");
     cacheStatusButton.setClickListener(new Runnable()
     {
       @Override
@@ -48,8 +48,8 @@ public class GameMenu
       }
     });
 
-    addControl(rightTurretButton = new Button(800, -290, 150, 150));
-    addControl(leftTurretButton = new Button(600, -290, 150, 150));
+    addControl(rightTurretButton = new Button(800, -290, 150, 150, "pressedBtn", "notPressedBtn"));
+    addControl(leftTurretButton = new Button(600, -290, 150, 150, "pressedBtn", "notPressedBtn"));
     addControl(cacheStatusButton);
     addControl(fireButton);
 
