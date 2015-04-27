@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Renderable.Resources;
 
 public interface ISource<TResource>
 {
-  String getName(); // name for cache
+  String getName(); // Name for cache. If null cache will not work.
 
   TResource load();
   void reload(TResource resource);

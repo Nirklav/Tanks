@@ -98,7 +98,14 @@ public class Vector3 extends Vector
     Vector2 vecOne = plane.getProjection(this);
     Vector2 vecTwo = plane.getProjection(other);
 
-    return vecOne.getAngle(vecTwo);
+    plane.release();
+
+    float angle = vecOne.getAngle(vecTwo);
+
+    Vector.release(vecOne);
+    Vector.release(vecTwo);
+
+    return angle;
   }
 
   public void normalize()

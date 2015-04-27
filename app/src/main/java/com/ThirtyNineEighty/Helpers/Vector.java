@@ -46,13 +46,7 @@ public abstract class Vector
   public static <TVector extends Vector> TVector getInstance(int vectorSize, TVector copy)
   {
     TVector vector = getInstance(vectorSize);
-
-    for(int i = 0; i < vectorSize; i++)
-    {
-      float value = copy.get(i);
-      vector.set(i, value);
-    }
-
+    vector.setFrom(copy);
     return vector;
   }
 
@@ -210,9 +204,21 @@ public abstract class Vector
   public abstract int getSize();
   public abstract void clear();
 
+  public void setFrom(Vector vector)
+  {
+    throwIfReleased();
+
+    int size = Math.min(getSize(), vector.getSize());
+    for (int i = 0; i < size; i++)
+      set(i, vector.get(i));
+  }
+
   public void correctAngles()
   {
-    for (int i = 0; i < getSize(); i++)
+    throwIfReleased();
+
+    int size = getSize();
+    for (int i = 0; i < size; i++)
     {
       float angle = Angle.correct(get(i));
       set(i, angle);

@@ -74,10 +74,10 @@ public class GameWorld
           collisionManager.rotate(player, joyAngle);
 
         if (menu.getLeftTurretState())
-          player.turnTurret(45f * GameContext.getDelta());
+          player.addTurretAngle(45f * GameContext.getDelta());
 
         if (menu.getRightTurretState())
-          player.turnTurret(-45f * GameContext.getDelta());
+          player.addTurretAngle(-45f * GameContext.getDelta());
 
         Vector.release(vector);
       }

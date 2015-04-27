@@ -9,12 +9,18 @@ public class ResourceCache<TResource>
   public TResource get(ISource<TResource> source)
   {
     String cacheName = source.getName();
-    Container<TResource> container = cache.get(cacheName);
-    if (container != null)
-      return container.resource;
+    if (cacheName != null)
+    {
+      Container<TResource> container = cache.get(cacheName);
+      if (container != null)
+        return container.resource;
+    }
 
     TResource resource = source.load();
-    cache.put(cacheName, new Container<TResource>(resource, source));
+
+    if (cacheName != null)
+      cache.put(cacheName, new Container<TResource>(resource, source));
+
     return resource;
   }
 
@@ -30,6 +36,11 @@ public class ResourceCache<TResource>
       container.release();
 
     cache.clear();
+  }
+
+  public int getSize()
+  {
+    return cache.size();
   }
 
   private static class Container<TResource>

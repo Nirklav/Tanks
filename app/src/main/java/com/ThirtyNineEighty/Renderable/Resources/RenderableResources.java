@@ -23,4 +23,11 @@ public final class RenderableResources
     geometryCache.clear();
     imagesCache.clear();
   }
+
+  public String getCacheStatus()
+  {
+    return String.format("Textures: %d\n", textureCache.getSize())
+         + String.format("Geometries: %d\n", geometryCache.getSize())
+         + String.format("Images: %d", imagesCache.getSize());
+  }
 }

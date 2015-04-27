@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Collisions;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
@@ -14,7 +15,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class CollisionManager
 {
@@ -56,15 +56,8 @@ public class CollisionManager
     float objectAngle = object.getAngles().getZ();
     float addedValue = 0;
 
-    if (objectAngle != targetAngle)
-    {
-      float tempValue = (objectAngle - targetAngle < 0) ? objectAngle - targetAngle + 360 : objectAngle - targetAngle;
-
-      int k = (tempValue < 180) ? -1 : 1;
-
-      if (Math.abs(targetAngle - objectAngle) > speed)
-        addedValue = speed * k;
-    }
+    if (Math.abs(targetAngle - objectAngle) > speed)
+      addedValue = speed * Angle.getDirection(objectAngle, targetAngle);
 
     Vector3 vector = Vector.getInstance(3);
     vector.addToZ(addedValue);
@@ -115,7 +108,7 @@ public class CollisionManager
     try
     {
       // Wait for all tasks will be completed
-      latch.await(10, TimeUnit.SECONDS);
+      latch.await();
 
       // Resolving collisions
       int size = results.size();

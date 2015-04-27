@@ -4,12 +4,12 @@ import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
+import com.ThirtyNineEighty.System.ISubprogram;
 
 public class GameMenu
   extends BaseMenu
@@ -17,13 +17,27 @@ public class GameMenu
   private Button leftTurretButton;
   private Button rightTurretButton;
 
-  private GLLabel cacheStatusLabel;
+  private GLLabel systemLabel;
+  private GLLabel rechargeProgressLabel;
 
   private Joystick joystick;
 
   @Override
   public void initialize(Object args)
   {
+    IContent content = GameContext.getContent();
+    content.bindProgram(new ISubprogram()
+    {
+      @Override
+      public void update()
+      {
+        IContent content = GameContext.getContent();
+        IWorld world = content.getWorld();
+        Tank player = (Tank) world.getPlayer();
+        rechargeProgressLabel.setValue(String.format("Recharge: %d", (int)player.getRechargeProgress()));
+      }
+    });
+
     Button fireButton = new Button("Fire", "pressedBtn", "notPressedBtn");
     fireButton.setPosition(810, 440);
     fireButton.setSize(300, 200);
@@ -41,7 +55,7 @@ public class GameMenu
     });
     addControl(fireButton);
 
-    Button cacheStatusButton = new Button("Get cache", "pressedBtn", "notPressedBtn");
+    Button cacheStatusButton = new Button("System", "pressedBtn", "notPressedBtn");
     cacheStatusButton.setPosition(-810, 440);
     cacheStatusButton.setSize(300, 200);
     cacheStatusButton.setClickListener(new Runnable()
@@ -49,7 +63,7 @@ public class GameMenu
       @Override
       public void run()
       {
-        cacheStatusLabel.setValue(Vector.getCacheStatus());
+        systemLabel.setValue(GameContext.renderableResources.getCacheStatus());
       }
     });
     addControl(cacheStatusButton);
@@ -66,10 +80,15 @@ public class GameMenu
 
     addControl(joystick = new Joystick(-710, -290, 150));
 
-    cacheStatusLabel = new GLLabel(Vector.getCacheStatus(), "simpleFont", 25, 40, MeshMode.Dynamic);
-    cacheStatusLabel.setAlign(GLLabel.AlignType.TopLeft);
-    cacheStatusLabel.setPosition(-940, 280);
-    addRenderable(cacheStatusLabel);
+    systemLabel = new GLLabel(GameContext.renderableResources.getCacheStatus(), "simpleFont", 25, 40, MeshMode.Dynamic);
+    systemLabel.setAlign(GLLabel.AlignType.TopLeft);
+    systemLabel.setPosition(-940, 280);
+    addRenderable(systemLabel);
+
+    rechargeProgressLabel = new GLLabel("Recharge: 0", "simpleFont", 25, 40, MeshMode.Dynamic);
+    rechargeProgressLabel.setAlign(GLLabel.AlignType.TopCenter);
+    rechargeProgressLabel.setPosition(0, 540);
+    addRenderable(rechargeProgressLabel);
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }

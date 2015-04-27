@@ -5,47 +5,20 @@ import java.nio.FloatBuffer;
 public class StaticGeometrySource
   extends GeometrySource
 {
-  private FloatBuffer source;
+  private FloatBuffer buffer;
   private int trianglesCount;
 
-  public StaticGeometrySource(String name, float[] buffer, int triangles, MeshMode mode)
+  public StaticGeometrySource(String name, float[] buffer, int trianglesCount, MeshMode mode) { this(name, loadGeometry(buffer), trianglesCount, mode); }
+  public StaticGeometrySource(String name, FloatBuffer buffer, int trianglesCount, MeshMode mode)
   {
     super(name, mode);
-    source = loadGeometry(buffer);
-    trianglesCount = triangles;
+    this.buffer = buffer;
+    this.trianglesCount = trianglesCount;
   }
 
   @Override
-  public Geometry load()
+  protected LoadResult buildGeometry()
   {
-    switch (mode)
-    {
-    case Static:
-      int handle = loadGeometry(source);
-      return new Geometry(handle, trianglesCount);
-    case Dynamic:
-      return new Geometry(source, trianglesCount);
-    }
-
-    throw new IllegalArgumentException("Invalid mesh mode");
-  }
-
-  @Override
-  public void reload(Geometry geometry)
-  {
-    release(geometry);
-
-    switch (mode)
-    {
-    case Static:
-      int handle = loadGeometry(source);
-      geometry.updateData(handle, trianglesCount);
-      return;
-    case Dynamic:
-      geometry.updateData(source, trianglesCount);
-      return;
-    }
-
-    throw new IllegalArgumentException("Invalid mesh mode");
+    return new LoadResult(buffer, trianglesCount);
   }
 }

@@ -15,4 +15,17 @@ public final class Angle
 
     return angle;
   }
+
+  public static int getDirection(float angle, float targetAngle)
+  {
+    if (Math.abs(angle - targetAngle) > Vector.epsilon)
+    {
+      float tempValue = (angle - targetAngle < 0)
+        ? angle - targetAngle + 360
+        : angle - targetAngle;
+
+      return (tempValue < 180) ? -1 : 1;
+    }
+    return 0;
+  }
 }

@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Renderable.Renderable2D;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Renderable.Resources.Geometry;
 import com.ThirtyNineEighty.Renderable.Resources.GeometrySource;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
@@ -40,6 +39,12 @@ public class GLLabel
 
   public void setValue(String value)
   {
+    if (value == null)
+      value = "";
+
+    if (value.equals(this.value))
+      return;
+
     this.value = value;
 
     setPosition();
@@ -91,6 +96,16 @@ public class GLLabel
       shift.multiplyToY(0);
       break;
 
+    case TopLeft:
+    default:
+      shift = Vector.getInstance(2);
+      break;
+
+    case TopCenter:
+      shift = getCenterShift();
+      shift.multiplyToY(2);
+      break;
+
     case BottomRight:
       shift = getCenterShift();
       shift.multiplyToX(2);
@@ -99,13 +114,13 @@ public class GLLabel
 
     case BottomLeft:
       shift = getCenterShift();
-      shift.setX(0);
+      shift.multiplyToX(0);
       shift.multiplyToY(2);
       break;
 
-    case TopLeft:
-    default:
-      shift = Vector.getInstance(2);
+    case BottomCenter:
+      shift = getCenterShift();
+      shift.setY(0);
       break;
     }
 
@@ -169,8 +184,10 @@ public class GLLabel
     Center,
     TopRight,
     TopLeft,
+    TopCenter,
     BottomRight,
     BottomLeft,
+    BottomCenter
   }
 
   private static class LabelGeometrySource
@@ -182,7 +199,7 @@ public class GLLabel
 
     public LabelGeometrySource(String value, MeshMode mode, float charWidth, float charHeight)
     {
-      super(getGeometryName(value), mode);
+      super(String.format("String: %s", value), mode);
 
       this.value = value;
       this.charWidth = charWidth;
@@ -190,53 +207,16 @@ public class GLLabel
     }
 
     @Override
-    public Geometry load()
+    public String getName() // Disable cache for dynamic label.
     {
-      float[] bufferData = buildGeometry(value, charWidth, charHeight);
-      FloatBuffer buffer = loadGeometry(bufferData);
+      if (mode == MeshMode.Dynamic)
+        return null;
 
-      switch (mode)
-      {
-      case Dynamic:
-        return new Geometry(buffer, bufferData.length / 12);
-
-      case Static:
-        int handle = loadGeometry(buffer);
-        return new Geometry(handle, bufferData.length / 12);
-      }
-
-      throw new IllegalArgumentException("Invalid mesh mode");
+      return super.getName();
     }
 
     @Override
-    public void reload(Geometry geometry)
-    {
-      release(geometry);
-
-      float[] bufferData = buildGeometry(value, charWidth, charHeight);
-      FloatBuffer buffer = loadGeometry(bufferData);
-
-      switch (mode)
-      {
-      case Dynamic:
-        geometry.updateData(buffer, bufferData.length / 12);
-        return;
-
-      case Static:
-        int handle = loadGeometry(buffer);
-        geometry.updateData(handle, bufferData.length / 12);
-        return;
-      }
-
-      throw new IllegalArgumentException("Invalid mesh mode");
-    }
-
-    private static String getGeometryName(String value)
-    {
-      return String.format("String: %s", value);
-    }
-
-    private static float[] buildGeometry(String value, float charWidth, float charHeight)
+    protected LoadResult buildGeometry()
     {
       int carriagePosition = 0;
       int lineNumber = 0;
@@ -335,7 +315,8 @@ public class GLLabel
         carriagePosition++;
       }
 
-      return geometry;
+      FloatBuffer buffer = loadGeometry(geometry);
+      return new LoadResult(buffer, geometry.length / 12);
     }
   }
 }

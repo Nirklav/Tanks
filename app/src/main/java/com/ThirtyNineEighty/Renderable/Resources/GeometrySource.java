@@ -23,6 +23,44 @@ public abstract class GeometrySource
   public String getName() { return String.format("%s-%s", name, mode.name()); }
 
   @Override
+  public Geometry load()
+  {
+    LoadResult result = buildGeometry();
+    switch (mode)
+    {
+    case Dynamic:
+      return new Geometry(result.buffer, result.trianglesCount);
+
+    case Static:
+      int handle = loadGeometry(result.buffer);
+      return new Geometry(handle, result.trianglesCount);
+    }
+
+    throw new IllegalArgumentException("Invalid mesh mode");
+  }
+
+  @Override
+  public void reload(Geometry geometry)
+  {
+    release(geometry);
+
+    LoadResult result = buildGeometry();
+    switch (mode)
+    {
+    case Dynamic:
+      geometry.updateData(result.buffer, result.trianglesCount);
+      return;
+
+    case Static:
+      int handle = loadGeometry(result.buffer);
+      geometry.updateData(handle, result.trianglesCount);
+      return;
+    }
+
+    throw new IllegalArgumentException("Invalid mesh mode");
+  }
+
+  @Override
   public void release(Geometry geometry)
   {
     switch (mode)
@@ -41,7 +79,9 @@ public abstract class GeometrySource
     }
   }
 
-  protected static int loadGeometry(FloatBuffer buffer)
+  protected abstract LoadResult buildGeometry();
+
+  private static int loadGeometry(FloatBuffer buffer)
   {
     int error;
     int[] buffers = new int[1];
@@ -68,5 +108,17 @@ public abstract class GeometrySource
                                    .asFloatBuffer()
                                    .put(bufferData)
                                    .position(0);
+  }
+
+  protected static class LoadResult
+  {
+    public final FloatBuffer buffer;
+    public final int trianglesCount;
+
+    public LoadResult(FloatBuffer buffer, int trianglesCount)
+    {
+      this.buffer = buffer;
+      this.trianglesCount = trianglesCount;
+    }
   }
 }

@@ -16,26 +16,11 @@ public class FileGeometrySource
   }
 
   @Override
-  public Geometry load()
-  {
-    LoadResult result = loadFromFile();
-    return new Geometry(result.handle, result.trianglesCount);
-  }
-
-  @Override
-  public void reload(Geometry geometry)
-  {
-    release(geometry);
-
-    LoadResult result = loadFromFile();
-    geometry.updateData(result.handle, result.trianglesCount);
-  }
-
-  private LoadResult loadFromFile()
+  protected LoadResult buildGeometry()
   {
     try
     {
-      String fileName = getModelFileName(name);
+      String fileName = String.format("Models/%s.raw", name);
       InputStream stream = GameContext.getAppContext()
                                       .getAssets()
                                       .open(fileName);
@@ -55,30 +40,11 @@ public class FileGeometrySource
       numBuffer.put(data, 0, 4);
 
       int trianglesCount = numBuffer.getInt(0);
-      int handle = loadGeometry(dataBuffer.asFloatBuffer());
-
-      return new LoadResult(handle, trianglesCount);
+      return new LoadResult(dataBuffer.asFloatBuffer(), trianglesCount);
     }
     catch(IOException e)
     {
       throw new RuntimeException(e);
-    }
-  }
-
-  private static String getModelFileName(String name)
-  {
-    return String.format("Models/%s.raw", name);
-  }
-
-  private static class LoadResult
-  {
-    public final int handle;
-    public final int trianglesCount;
-
-    public LoadResult(int handle, int trianglesCount)
-    {
-      this.handle = handle;
-      this.trianglesCount = trianglesCount;
     }
   }
 }
