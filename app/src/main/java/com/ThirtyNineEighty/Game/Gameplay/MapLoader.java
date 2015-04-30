@@ -26,6 +26,7 @@ public final class MapLoader
   {
     objectBindings = new HashMap<String, Class>();
     objectBindings.put("tank", Tank.class);
+    objectBindings.put("botTank", Tank.class);
     objectBindings.put("land", Land.class);
     objectBindings.put("bullet", Bullet.class);
     objectBindings.put("building", Decor.class);

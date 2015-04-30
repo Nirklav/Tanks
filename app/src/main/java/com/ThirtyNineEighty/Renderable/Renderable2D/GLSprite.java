@@ -214,6 +214,16 @@ public class GLSprite
     return angle;
   }
 
+  public float getWidth()
+  {
+    return width;
+  }
+
+  public float getHeight()
+  {
+    return height;
+  }
+
   public void setZIndex(float value)
   {
     zIndex = value;

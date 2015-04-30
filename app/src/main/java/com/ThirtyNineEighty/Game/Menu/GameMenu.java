@@ -1,8 +1,10 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
+import com.ThirtyNineEighty.Game.Menu.Controls.ProgressBar;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
@@ -18,7 +20,8 @@ public class GameMenu
   private Button rightTurretButton;
 
   private GLLabel systemLabel;
-  private GLLabel rechargeProgressLabel;
+  private ProgressBar recharge;
+  private ProgressBar health;
 
   private Joystick joystick;
 
@@ -34,7 +37,10 @@ public class GameMenu
         IContent content = GameContext.getContent();
         IWorld world = content.getWorld();
         Tank player = (Tank) world.getPlayer();
-        rechargeProgressLabel.setValue(String.format("Recharge: %d", (int)player.getRechargeProgress()));
+        Characteristic characteristic = player.getCharacteristics();
+
+        health.setProgress(characteristic.getHealth());
+        recharge.setProgress(player.getRechargeProgress());
       }
     });
 
@@ -85,10 +91,13 @@ public class GameMenu
     systemLabel.setPosition(-940, 280);
     addRenderable(systemLabel);
 
-    rechargeProgressLabel = new GLLabel("Recharge: 0", "simpleFont", 25, 40, MeshMode.Dynamic);
-    rechargeProgressLabel.setAlign(GLLabel.AlignType.TopCenter);
-    rechargeProgressLabel.setPosition(0, 540);
-    addRenderable(rechargeProgressLabel);
+    recharge = new ProgressBar();
+    recharge.setPosition(220, 520);
+    addRenderable(recharge);
+
+    health = new ProgressBar();
+    health.setPosition(-220, 520);
+    addRenderable(health);
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }
