@@ -87,7 +87,7 @@ public class GameActivity
       updateRunnable = new Runnable()
       {
         @Override
-        public void run() { content.onUpdate(); }
+        public void run() { content.update(); }
       };
     }
 
@@ -95,7 +95,7 @@ public class GameActivity
     if (!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
-      GameContext.updateTime();
+
       glView.queueEvent(updateRunnable);
       glView.requestRender();
     }

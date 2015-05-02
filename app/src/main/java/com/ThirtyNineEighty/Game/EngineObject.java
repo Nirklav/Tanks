@@ -5,6 +5,11 @@ import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
+import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.IContent;
+import com.ThirtyNineEighty.System.ISubprogram;
+
+import java.util.ArrayList;
 
 public abstract class EngineObject
   implements IEngineObject
@@ -15,10 +20,13 @@ public abstract class EngineObject
   private I3DRenderable[] visualModels;
   private ICollidable physicalModel;
 
+  private ArrayList<ISubprogram> subprograms;
+
   protected EngineObject(EngineObjectDescription initializer)
   {
     position = new Vector3();
     angles = new Vector3();
+    subprograms = new ArrayList<>();
 
     int visualModelsCount = initializer.VisualModels.length;
     visualModels = new I3DRenderable[visualModelsCount];
@@ -37,10 +45,47 @@ public abstract class EngineObject
   }
 
   @Override
-  public void onCollide(IEngineObject object) { }
+  public void dispose()
+  {
+    IContent content = GameContext.getContent();
+    for (ISubprogram subprogram : subprograms)
+      content.unbindProgram(subprogram);
+  }
 
   @Override
-  public void onRemoved() { }
+  public void enable()
+  {
+    for (ISubprogram subprogram : subprograms)
+      subprogram.enable();
+  }
+
+  @Override
+  public void disable()
+  {
+    for (ISubprogram subprogram : subprograms)
+      subprogram.disable();
+  }
+
+  @Override
+  public void bindProgram(ISubprogram subprogram)
+  {
+    IContent content = GameContext.getContent();
+    content.bindProgram(subprogram);
+
+    subprograms.add(subprogram);
+  }
+
+  @Override
+  public void unbindProgram(ISubprogram subprogram)
+  {
+    IContent content = GameContext.getContent();
+    content.unbindProgram(subprogram);
+
+    subprograms.remove(subprogram);
+  }
+
+  @Override
+  public void onCollide(IEngineObject object) { }
 
   @Override
   public void onRotates(Vector3 value)
@@ -67,6 +112,9 @@ public abstract class EngineObject
   public Vector3 getPosition() { return position; }
 
   @Override
+  public void setPosition(Vector3 value) { position.setFrom(value); }
+
+  @Override
   public Vector3 getAngles() { return angles; }
 
   @Override
@@ -75,9 +123,6 @@ public abstract class EngineObject
     angles.setFrom(value);
     angles.correctAngles();
   }
-
-  @Override
-  public void setPosition(Vector3 value) { position.setFrom(value); }
 
   @Override
   public final I3DRenderable[] getRenderables() { return visualModels; }
@@ -97,7 +142,7 @@ public abstract class EngineObject
   public final void setGlobalRenderablePosition()
   {
     int index = 0;
-    for(I3DRenderable vm : visualModels)
+    for (I3DRenderable vm : visualModels)
       setGlobalRenderablePosition(index++, vm);
   }
 

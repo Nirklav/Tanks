@@ -17,7 +17,7 @@ public abstract class GameObject
   {
     super(characteristics.initializer);
 
-    upgrades = new ArrayList<Upgrade>();
+    upgrades = new ArrayList<>();
 
     baseCharacteristics = characteristics;
     setCurrentCharacteristics();

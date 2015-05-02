@@ -9,12 +9,9 @@ import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 
 public class Tank extends GameObject
 {
-  private GameSubprogram updateProgram;
-
   private float turretAngle;
   private float rechargeProgress;
 
@@ -22,7 +19,7 @@ public class Tank extends GameObject
   {
     super(CharacteristicFactory.get(type));
 
-    updateProgram = new GameSubprogram()
+    bindProgram(new GameSubprogram()
     {
       @Override
       protected void onUpdate()
@@ -34,17 +31,7 @@ public class Tank extends GameObject
         else
           rechargeProgress += characteristic.getRechargeSpeed() * GameContext.getDelta();
       }
-    };
-
-    IContent content = GameContext.getContent();
-    content.bindProgram(updateProgram);
-  }
-
-  @Override
-  public void onRemoved()
-  {
-    IContent content = GameContext.getContent();
-    content.unbindProgram(updateProgram);
+    });
   }
 
   public void fire()

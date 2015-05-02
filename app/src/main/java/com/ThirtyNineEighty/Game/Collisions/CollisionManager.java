@@ -26,7 +26,7 @@ public class CollisionManager
   public CollisionManager(Iterable<IEngineObject> objects)
   {
     worldObjects = objects;
-    resolvingObjects = new ArrayList<IEngineObject>();
+    resolvingObjects = new ArrayList<>();
   }
 
   public void move(GameObject object)
@@ -79,7 +79,7 @@ public class CollisionManager
       current.setGlobalCollidablePosition();
 
     // Parallel collision search (should not change world or objects)
-    ArrayList<Future<ResolveResult>> results = new ArrayList<Future<ResolveResult>>(resolvingObjects.size());
+    ArrayList<Future<ResolveResult>> results = new ArrayList<>(resolvingObjects.size());
 
     final CountDownLatch latch = new CountDownLatch(resolvingObjects.size());
     for (final IEngineObject current : resolvingObjects)
@@ -195,7 +195,7 @@ public class CollisionManager
     public ResolveResult(IEngineObject obj)
     {
       checkedObject = obj;
-      collisions = new LinkedList<CollisionResult>();
+      collisions = new LinkedList<>();
     }
   }
 

@@ -12,6 +12,7 @@ import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 import com.ThirtyNineEighty.System.ISubprogram;
+import com.ThirtyNineEighty.System.Subprogram;
 
 public class GameMenu
   extends BaseMenu
@@ -25,14 +26,16 @@ public class GameMenu
 
   private Joystick joystick;
 
+  private ISubprogram menuProgram;
+
   @Override
   public void initialize(Object args)
   {
     IContent content = GameContext.getContent();
-    content.bindProgram(new ISubprogram()
+    content.bindProgram(menuProgram = new Subprogram()
     {
       @Override
-      public void update()
+      public void onUpdate()
       {
         IContent content = GameContext.getContent();
         IWorld world = content.getWorld();
@@ -98,6 +101,15 @@ public class GameMenu
     health = new ProgressBar();
     health.setPosition(-220, 520);
     addRenderable(health);
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    IContent content = GameContext.getContent();
+    content.unbindProgram(menuProgram);
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }

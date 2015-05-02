@@ -2,20 +2,23 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 14
-    buildToolsVersion '19.1.0'
-
+    buildToolsVersion '21.1.2'
     defaultConfig {
+        applicationId "com.thirtynineeighty.tanks"
         minSdkVersion 14
         targetSdkVersion 14
+        versionCode 1
+        versionName "1.0"
     }
-
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-}
-
-dependencies {
-    compile 'com.android.support:support-v4:22.0.0'
+    productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }

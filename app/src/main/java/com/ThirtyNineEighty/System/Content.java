@@ -8,7 +8,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
-import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
@@ -55,12 +54,12 @@ public class Content
 
     orthoMatrix = new float[16];
 
-    subprograms = new ArrayList<ISubprogram>();
-    subprogramActions = new ArrayList<Action<ISubprogram>>();
-    callbacks = new ArrayList<Runnable>();
-    callbacksActions = new ArrayList<Action<Runnable>>();
-    renderable3DObjects = new ArrayList<I3DRenderable>();
-    renderable2DObjects = new ArrayList<I2DRenderable>();
+    subprograms = new ArrayList<>();
+    subprogramActions = new ArrayList<>();
+    callbacks = new ArrayList<>();
+    callbacksActions = new ArrayList<>();
+    renderable3DObjects = new ArrayList<>();
+    renderable2DObjects = new ArrayList<>();
   }
 
   @Override
@@ -98,7 +97,7 @@ public class Content
   @Override
   public void bindProgram(ISubprogram subprogram)
   {
-    subprogramActions.add(new Action<ISubprogram>(subprogram, Action.ADD_ACTION));
+    subprogramActions.add(new Action<>(subprogram, Action.ADD_ACTION));
   }
 
   @Override
@@ -113,7 +112,7 @@ public class Content
   @Override
   public void unbindProgram(ISubprogram subprogram)
   {
-    subprogramActions.add(new Action<ISubprogram>(subprogram, Action.REMOVE_ACTION));
+    subprogramActions.add(new Action<>(subprogram, Action.REMOVE_ACTION));
   }
 
   @Override
@@ -125,13 +124,15 @@ public class Content
   @Override
   public void execute(Runnable runnable)
   {
-    callbacksActions.add(new Action<Runnable>(runnable, Action.ADD_ACTION));
+    callbacksActions.add(new Action<>(runnable, Action.ADD_ACTION));
   }
 
-  public void onUpdate()
+  public void update()
   {
     if (!initialized)
       return;
+
+    GameContext.updateTime();
 
     for (Runnable runnable : callbacks)
       runnable.run();

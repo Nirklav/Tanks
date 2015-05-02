@@ -15,9 +15,9 @@ import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
 import com.ThirtyNineEighty.System.ISubprogram;
+import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,13 +28,14 @@ public class GameWorld
   private Tank player;
   private GameMenu menu;
 
-  private ISubprogram worldSubprogram;
+  private ISubprogram worldProgram;
+  private ISubprogram collideProgram;
 
   public final CollisionManager collisionManager;
 
   public GameWorld()
   {
-    objects = new ArrayList<IEngineObject>();
+    objects = new ArrayList<>();
     collisionManager = new CollisionManager(objects);
   }
 
@@ -57,10 +58,10 @@ public class GameWorld
     menu = new GameMenu();
     content.setMenu(menu);
 
-    content.bindProgram(worldSubprogram = new ISubprogram() // TODO: move this code in button callbacks
+    content.bindProgram(worldProgram = new Subprogram() // TODO: move this code in button callbacks
     {
       @Override
-      public void update()
+      public void onUpdate()
       {
         Vector3 vector = Vector.getInstance(3);
 
@@ -83,10 +84,10 @@ public class GameWorld
       }
     });
 
-    content.bindLastProgram(new ISubprogram()
+    content.bindLastProgram(collideProgram = new Subprogram()
     {
       @Override
-      public void update()
+      public void onUpdate()
       {
         // resolve all collisions
         collisionManager.resolve();
@@ -98,13 +99,33 @@ public class GameWorld
   public void uninitialize()
   {
     for(IEngineObject object : objects)
-      object.onRemoved();
+      object.dispose();
 
     objects.clear();
 
     IContent content = GameContext.getContent();
-    content.unbindProgram(worldSubprogram);
+    content.unbindProgram(worldProgram);
     content.unbindLastProgram();
+  }
+
+  @Override
+  public void enable()
+  {
+    worldProgram.enable();
+    collideProgram.enable();
+
+    for (IEngineObject object : objects)
+      object.enable();
+  }
+
+  @Override
+  public void disable()
+  {
+    worldProgram.disable();
+    collideProgram.disable();
+
+    for (IEngineObject object : objects)
+      object.disable();
   }
 
   @Override
@@ -136,9 +157,6 @@ public class GameWorld
   public IEngineObject getPlayer() { return player; }
 
   @Override
-  public Collection<IEngineObject> getObjects() { return objects; }
-
-  @Override
   public void add(IEngineObject engineObject)
   {
     objects.add(engineObject);
@@ -148,6 +166,6 @@ public class GameWorld
   public void remove(IEngineObject engineObject)
   {
     objects.remove(engineObject);
-    engineObject.onRemoved();
+    engineObject.dispose();
   }
 }

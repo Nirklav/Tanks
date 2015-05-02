@@ -7,18 +7,14 @@ import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IContent;
-import com.ThirtyNineEighty.System.ISubprogram;
 
 public class Bullet extends GameObject
 {
-  private ISubprogram subprogram;
-
   protected Bullet(String type)
   {
     super(CharacteristicFactory.get(type));
 
-    IContent content = GameContext.getContent();
-    content.bindProgram(subprogram = new MoveSubprogram(this).setLifeTime(150));
+    bindProgram(new MoveSubprogram(this, 100));
   }
 
   @Override
@@ -39,16 +35,7 @@ public class Bullet extends GameObject
 
     targetCharacteristic.addHealth(-bulletCharacteristic.getDamage());
 
-    if (targetCharacteristic.getHealth() <= 0)
-      world.remove(object);
-  }
-
-  @Override
-  public void onRemoved()
-  {
-    super.onRemoved();
-
-    IContent content = GameContext.getContent();
-    content.unbindProgram(subprogram);
+    //if (targetCharacteristic.getHealth() <= 0)
+    //  world.remove(object);
   }
 }

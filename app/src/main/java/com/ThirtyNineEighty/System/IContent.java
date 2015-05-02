@@ -14,8 +14,9 @@ public interface IContent
   IMenu getMenu();
 
   void bindProgram(ISubprogram subprogram);
-  void bindLastProgram(ISubprogram subprogram);
   void unbindProgram(ISubprogram subprogram);
+
+  void bindLastProgram(ISubprogram subprogram);
   void unbindLastProgram();
 
   void execute(Runnable runnable);
