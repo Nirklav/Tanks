@@ -5,7 +5,6 @@ import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 
 import java.util.List;
 
@@ -29,11 +28,9 @@ public class MainMenu
     newGameButton.setSize(600, 200);
     newGameButton.setClickListener(new Runnable()
     {
-      @Override
-      public void run()
+      @Override public void run()
       {
-        IContent content = GameContext.getContent();
-        content.setWorld(new GameWorld(), selectedMap);
+        GameContext.content.setWorld(new GameWorld(), selectedMap);
       }
     });
     addControl(newGameButton);
@@ -46,10 +43,9 @@ public class MainMenu
     nextMapButton.setSize(600, 200);
     nextMapButton.setClickListener(new Runnable()
     {
-      @Override
-      public void run()
+      @Override public void run()
       {
-        selectedMapIndex ++;
+        selectedMapIndex++;
 
         List<String> maps = GameContext.mapLoader.getMaps();
         if (selectedMapIndex >= maps.size())
@@ -60,6 +56,8 @@ public class MainMenu
       }
     });
     addControl(nextMapButton);
+
+    super.initialize(args);
   }
 
   private static String getMapLabel(String mapName)

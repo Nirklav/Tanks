@@ -10,7 +10,6 @@ import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 
 public class Land
   extends EngineObject
@@ -36,8 +35,7 @@ public class Land
   @Override
   protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
   {
-    IContent content = GameContext.getContent();
-    IWorld world = content.getWorld();
+    IWorld world = GameContext.content.getWorld();
     IEngineObject player = world.getPlayer();
 
     Vector3 position = player.getPosition();
@@ -48,15 +46,15 @@ public class Land
     shift.addToX(landSize * Math.signum(position.getX()) / 2);
     shift.addToY(landSize * Math.signum(position.getY()) / 2);
 
-    int landsCountX = (int)(position.getX() / landSize);
-    int landsCountY = (int)(position.getY() / landSize);
+    int landsCountX = (int) (position.getX() / landSize);
+    int landsCountY = (int) (position.getY() / landSize);
 
     Vector3 renderPos = Vector.getInstance(3);
     renderPos.setX(landsCountX * landSize + shift.getX());
     renderPos.setY(landsCountY * landSize + shift.getY());
 
     renderable.setGlobal(renderPos, angles);
-    
+
     Vector.release(renderPos);
     Vector.release(shift);
   }

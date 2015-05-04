@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Gameplay;
 
-import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.ThirtyNineEighty.Game.Gameplay.Subprograms.BotSubprogram;
@@ -8,7 +7,6 @@ import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.lang.reflect.Constructor;
@@ -24,14 +22,14 @@ public final class MapLoader
 
   public void initialize()
   {
-    objectBindings = new HashMap<String, Class>();
+    objectBindings = new HashMap<>();
     objectBindings.put("tank", Tank.class);
     objectBindings.put("botTank", Tank.class);
     objectBindings.put("land", Land.class);
     objectBindings.put("bullet", Bullet.class);
     objectBindings.put("building", Decor.class);
 
-    subprogramBindings = new HashMap<String, Class>();
+    subprogramBindings = new HashMap<>();
     subprogramBindings.put("bot", BotSubprogram.class);
 
     maps = loadMapNames();
@@ -39,11 +37,10 @@ public final class MapLoader
 
   public MapDescription load(String name)
   {
-    IContent content = GameContext.getContent();
-    IWorld world = content.getWorld();
+    IWorld world = GameContext.content.getWorld();
     MapDescription map = Serializer.Deserialize(String.format("Maps/%s.map", name));
 
-    for(MapDescription.MapObject obj : map.objects)
+    for (MapDescription.MapObject obj : map.objects)
     {
       IEngineObject object = createObject(obj.name);
       object.setPosition(obj.getPosition());
@@ -53,7 +50,7 @@ public final class MapLoader
         for (String subprogramName : obj.subprograms)
         {
           ISubprogram subprogram = createSubprogram(subprogramName, object);
-          content.bindProgram(subprogram);
+          GameContext.content.bindProgram(subprogram);
         }
 
       world.add(object);
@@ -97,10 +94,9 @@ public final class MapLoader
   {
     try
     {
-      ArrayList<String> maps = new ArrayList<String>();
+      ArrayList<String> maps = new ArrayList<>();
 
-      Context appContext = GameContext.getAppContext();
-      AssetManager manager = appContext.getAssets();
+      AssetManager manager = GameContext.activity.getAssets();
       String[] files = manager.list("Maps");
 
       for (String fileName : files)

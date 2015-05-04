@@ -1,13 +1,15 @@
 package com.ThirtyNineEighty.System;
 
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.os.Looper;
 
+import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
 import com.ThirtyNineEighty.Renderable.Resources.RenderableResources;
 
 public class GameContext
 {
+  // Width / Height
   public static final float EtalonHeight = 1080f;
   public static final float EtalonWidth  = 1920f;
   public static final float EtalonAspect = EtalonWidth / EtalonHeight;
@@ -17,44 +19,52 @@ public class GameContext
   public static final float Bottom = EtalonHeight / -2f;
   public static final float Top = EtalonHeight / 2f;
 
-  // Fields
-  private static boolean isFirst;
-  private static long delta;
-  private static long lastTick;
-
-  private static boolean debuggable;
-
   private static float width;
   private static float height;
 
-  public static boolean isDebuggable() { return debuggable; }
   public static float getAspect() { return width / height; }
   public static float getWidth() { return width; }
   public static void setWidth(float value) { width = value; }
   public static float getHeight() { return height; }
   public static void setHeight(float value) { height = value; }
 
+  // Debuggable
+  private static boolean debuggable;
+  public static boolean isDebuggable() { return debuggable; }
+
   // System
-  private static Context appContext;
-  private static IContent content;
+  private static long mainThreadId;
+  public static void setMainThread() { mainThreadId = Thread.currentThread().getId(); }
+  public static boolean isMainThread() { return mainThreadId == Thread.currentThread().getId(); }
 
-  public static Context getAppContext() { return appContext; }
-  public static void setAppContext(Context value)
+  private static long glThreadId;
+  public static void setGLThread() { glThreadId = Thread.currentThread().getId(); }
+  public static boolean isGLThread() { return glThreadId == Thread.currentThread().getId(); }
+
+  public static GameActivity activity;
+  public static Content content;
+
+  public static void setActivity(GameActivity value)
   {
-    appContext = value;
+    activity = value;
 
-    int flags = appContext.getApplicationInfo().flags;
-    debuggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    if (activity != null)
+    {
+      int flags = activity.getApplicationInfo().flags;
+      debuggable = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
   }
-
-  public static IContent getContent() { return content; }
-  public static void setContent(IContent value) { content = value; }
 
   // Helpers
   public static final MapLoader mapLoader = new MapLoader();
   public static final RenderableResources renderableResources = new RenderableResources();
+  public static final CollisionManager collisionManager = new CollisionManager();
 
-  // Update
+  // Delta time
+  private static boolean isFirst;
+  private static long delta;
+  private static long lastTick;
+
   public static float updateTime()
   {
     long currentTick;

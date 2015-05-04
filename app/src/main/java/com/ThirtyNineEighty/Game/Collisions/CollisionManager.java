@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Collisions;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -18,15 +19,15 @@ import java.util.concurrent.Future;
 
 public class CollisionManager
 {
-  private final Iterable<IEngineObject> worldObjects;
   private final ArrayList<IEngineObject> resolvingObjects;
+  private final ArrayList<IEngineObject> worldObjects;
 
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
-  public CollisionManager(Iterable<IEngineObject> objects)
+  public CollisionManager()
   {
-    worldObjects = objects;
     resolvingObjects = new ArrayList<>();
+    worldObjects = new ArrayList<>();
   }
 
   public void move(GameObject object)
@@ -74,6 +75,12 @@ public class CollisionManager
 
   public void resolve()
   {
+    IWorld world = GameContext.content.getWorld();
+
+    // Copy all world objects
+    worldObjects.clear();
+    world.fillObjects(worldObjects);
+
     // Set current global positions for all objects
     for (IEngineObject current : worldObjects)
       current.setGlobalCollidablePosition();

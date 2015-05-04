@@ -12,7 +12,7 @@ public final class Serializer
   {
     try
     {
-      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
+      InputStream stream = GameContext.activity.getAssets().open(fileName);
       ObjectInputStream objectStream = new ObjectInputStream(stream);
       T result = (T) objectStream.readObject();
       objectStream.close();

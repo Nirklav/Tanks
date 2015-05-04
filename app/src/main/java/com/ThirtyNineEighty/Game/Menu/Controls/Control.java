@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 
 public abstract class Control implements IControl
 {
@@ -41,9 +40,8 @@ public abstract class Control implements IControl
 
       if (clickListener != null)
       {
-        // execute on GL thread
-        IContent content = GameContext.getContent();
-        content.execute(clickListener);
+        // execute on Update thread
+        GameContext.content.postEvent(clickListener);
       }
     }
   }

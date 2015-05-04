@@ -21,9 +21,7 @@ public class FileGeometrySource
     try
     {
       String fileName = String.format("Models/%s.raw", name);
-      InputStream stream = GameContext.getAppContext()
-                                      .getAssets()
-                                      .open(fileName);
+      InputStream stream = GameContext.activity.getAssets().open(fileName);
 
       int size = stream.available();
       byte[] data = new byte[size];

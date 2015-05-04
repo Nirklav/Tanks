@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 
 public class Bullet extends GameObject
 {
@@ -22,20 +21,19 @@ public class Bullet extends GameObject
   {
     super.onCollide(object);
 
-    IContent content = GameContext.getContent();
-    IWorld world = content.getWorld();
+    IWorld world = GameContext.content.getWorld();
     world.remove(this);
 
     if (!(object instanceof GameObject))
       return;
 
-    GameObject target = (GameObject)object;
+    GameObject target = (GameObject) object;
     Characteristic targetCharacteristic = target.getCharacteristics();
     Characteristic bulletCharacteristic = getCharacteristics();
 
     targetCharacteristic.addHealth(-bulletCharacteristic.getDamage());
 
-    //if (targetCharacteristic.getHealth() <= 0)
-    //  world.remove(object);
+    if (targetCharacteristic.getHealth() <= 0)
+      world.remove(object);
   }
 }

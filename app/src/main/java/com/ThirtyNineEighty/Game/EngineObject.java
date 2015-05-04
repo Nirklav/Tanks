@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.util.ArrayList;
@@ -47,9 +46,8 @@ public abstract class EngineObject
   @Override
   public void dispose()
   {
-    IContent content = GameContext.getContent();
     for (ISubprogram subprogram : subprograms)
-      content.unbindProgram(subprogram);
+      GameContext.content.unbindProgram(subprogram);
   }
 
   @Override
@@ -69,18 +67,14 @@ public abstract class EngineObject
   @Override
   public void bindProgram(ISubprogram subprogram)
   {
-    IContent content = GameContext.getContent();
-    content.bindProgram(subprogram);
-
+    GameContext.content.bindProgram(subprogram);
     subprograms.add(subprogram);
   }
 
   @Override
   public void unbindProgram(ISubprogram subprogram)
   {
-    IContent content = GameContext.getContent();
-    content.unbindProgram(subprogram);
-
+    GameContext.content.unbindProgram(subprogram);
     subprograms.remove(subprogram);
   }
 

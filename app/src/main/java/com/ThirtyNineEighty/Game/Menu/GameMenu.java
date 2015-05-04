@@ -10,7 +10,6 @@ import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IContent;
 import com.ThirtyNineEighty.System.ISubprogram;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -31,14 +30,11 @@ public class GameMenu
   @Override
   public void initialize(Object args)
   {
-    IContent content = GameContext.getContent();
-    content.bindProgram(menuProgram = new Subprogram()
+    GameContext.content.bindProgram(menuProgram = new Subprogram()
     {
-      @Override
-      public void onUpdate()
+      @Override public void onUpdate()
       {
-        IContent content = GameContext.getContent();
-        IWorld world = content.getWorld();
+        IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
         Characteristic characteristic = player.getCharacteristics();
 
@@ -52,12 +48,9 @@ public class GameMenu
     fireButton.setSize(300, 200);
     fireButton.setClickListener(new Runnable()
     {
-      @Override
-      public void run()
+      @Override public void run()
       {
-        IContent content = GameContext.getContent();
-        IWorld world = content.getWorld();
-
+        IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
         player.fire();
       }
@@ -69,8 +62,7 @@ public class GameMenu
     cacheStatusButton.setSize(300, 200);
     cacheStatusButton.setClickListener(new Runnable()
     {
-      @Override
-      public void run()
+      @Override public void run()
       {
         systemLabel.setValue(GameContext.renderableResources.getCacheStatus());
       }
@@ -101,6 +93,8 @@ public class GameMenu
     health = new ProgressBar();
     health.setPosition(-220, 520);
     addRenderable(health);
+
+    super.initialize(args);
   }
 
   @Override
@@ -108,8 +102,7 @@ public class GameMenu
   {
     super.uninitialize();
 
-    IContent content = GameContext.getContent();
-    content.unbindProgram(menuProgram);
+    GameContext.content.unbindProgram(menuProgram);
   }
 
   public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }

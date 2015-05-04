@@ -10,49 +10,37 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
 
 public class GameActivity
   extends Activity
   implements View.OnTouchListener
 {
-  private static final int FPS = 30;
+  public static final int FPS = 30;
 
   private boolean pause;
   private Handler handler;
-
-  private Content content;
-
   private GLSurfaceView glView;
-
-  private Runnable updateRunnable;
   private Runnable drawRunnable;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    GameContext.setMainThread();
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     handler = new Handler();
 
-    // If game resumed content has been already created
-    boolean contentCreated = false;
-    content = (Content)GameContext.getContent();
-    if (content == null)
-    {
-      content = new Content();
-      contentCreated = true;
-    }
-
     // OpenGL init
     glView = new GLSurfaceView(this);
     glView.getHolder().setFormat(PixelFormat.RGBA_8888);
     glView.setEGLContextClientVersion(2);
     glView.setEGLConfigChooser(new ConfigChooser());
-    glView.setRenderer(content);
+    glView.setRenderer(new Renderer());
     glView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
     // Bind listener
@@ -61,14 +49,57 @@ public class GameActivity
     // Set view
     setContentView(glView);
 
-    // Set game context data
-    GameContext.setAppContext(this);
-    GameContext.setContent(content);
+    // Initialize game context
+    GameContext.setActivity(this);
     GameContext.mapLoader.initialize();
 
-    // If first load set main menu
-    if (contentCreated)
-      content.setMenu(new MainMenu());
+    if (GameContext.content == null)
+    {
+      GameContext.content = new Content();
+      GameContext.content.setMenuAsync(new MainMenu(), null);
+    }
+  }
+
+  public void postEvent(final Runnable r)
+  {
+    glView.queueEvent(r);
+  }
+
+  public void sendEvent(final Runnable r)
+  {
+    if (GameContext.isMainThread())
+      throw new IllegalStateException("can't stop main thread (use post)");
+
+    if (GameContext.isGLThread())
+    {
+      r.run();
+      return;
+    }
+
+    try
+    {
+      final Object waitObj = new Object();
+      synchronized (waitObj)
+      {
+        glView.queueEvent(new Runnable()
+        {
+          @Override public void run()
+          {
+            r.run();
+            synchronized (waitObj)
+            {
+              waitObj.notifyAll();
+            }
+          }
+        });
+
+        waitObj.wait();
+      }
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
   private void requestRenderer()
@@ -82,21 +113,10 @@ public class GameActivity
       };
     }
 
-    if (updateRunnable == null)
-    {
-      updateRunnable = new Runnable()
-      {
-        @Override
-        public void run() { content.update(); }
-      };
-    }
-
     handler.removeCallbacks(drawRunnable);
     if (!pause)
     {
       handler.postDelayed(drawRunnable, 1000 / FPS);
-
-      glView.queueEvent(updateRunnable);
       glView.requestRender();
     }
   }
@@ -104,7 +124,11 @@ public class GameActivity
   @Override
   public boolean onTouch(View view, MotionEvent motionEvent)
   {
-    content.onTouch(motionEvent);
+    IMenu menu = GameContext.content.getMenu();
+    if (menu == null)
+      return false;
+
+    menu.processEvent(motionEvent);
     return true;
   }
 
@@ -113,8 +137,11 @@ public class GameActivity
   {
     super.onPause();
     glView.onPause();
-    content.onPause();
+    GameContext.content.stop();
     pause = true;
+
+    // reset current activity
+    GameContext.setActivity(null);
   }
 
   @Override

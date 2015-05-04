@@ -6,6 +6,7 @@ import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.opengl.GLUtils;
 
+import com.ThirtyNineEighty.Helpers.ResultRunnable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.InputStream;
@@ -48,56 +49,66 @@ public class FileTextureSource
 
   private int loadHandle()
   {
-    try
+    ResultRunnable<Integer> runnable = new ResultRunnable<Integer>()
     {
-      String fileName = getTextureFileName(name);
-      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
-      Bitmap bitmap = BitmapFactory.decodeStream(stream);
-      stream.close();
-
-      int type = GLUtils.getType(bitmap);
-      int format = GLUtils.getInternalFormat(bitmap);
-      int error;
-
-      int[] textures = new int[1];
-
-      GLES20.glGenTextures(1, textures, 0);
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        throw new GLException(error);
-
-      GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        throw new GLException(error);
-
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        throw new GLException(error);
-
-      GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, format, bitmap, type, 0);
-      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        throw new GLException(error);
-
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-      GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-
-      if (generateMipmap)
+      @Override
+      protected Integer onRun()
       {
-        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+        try
+        {
+          String fileName = getTextureFileName(name);
+          InputStream stream = GameContext.activity.getAssets().open(fileName);
+          Bitmap bitmap = BitmapFactory.decodeStream(stream);
+          stream.close();
 
-        if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-          throw new GLException(error, Integer.toString(error));
+          int type = GLUtils.getType(bitmap);
+          int format = GLUtils.getInternalFormat(bitmap);
+          int error;
+
+          int[] textures = new int[1];
+
+          GLES20.glGenTextures(1, textures, 0);
+          if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+            throw new GLException(error);
+
+          GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+          if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+            throw new GLException(error);
+
+          GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+          if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+            throw new GLException(error);
+
+          GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, format, bitmap, type, 0);
+          if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+            throw new GLException(error);
+
+          GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+          GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+          GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+          GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+
+          if (generateMipmap)
+          {
+            GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+
+            if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+              throw new GLException(error, Integer.toString(error));
+          }
+
+          bitmap.recycle();
+          return textures[0];
+        }
+        catch(Exception e)
+        {
+          throw new RuntimeException(e);
+        }
       }
+    };
 
-      bitmap.recycle();
-      return textures[0];
-    }
-    catch(Exception e)
-    {
-      throw new RuntimeException(e);
-    }
+    GameContext.activity.sendEvent(runnable);
+    return runnable.getResult();
   }
 
   private static String getTextureFileName(String name)

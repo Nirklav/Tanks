@@ -2,10 +2,12 @@ package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.Subprogram;
 
 public class MoveSubprogram
-  extends GameSubprogram
+  extends Subprogram
 {
   protected GameObject movedObject;
   protected float length;
@@ -22,10 +24,11 @@ public class MoveSubprogram
   @Override
   public void onUpdate()
   {
+    IWorld world = GameContext.content.getWorld();
     Characteristic c = movedObject.getCharacteristics();
 
     float stepLength = c.getSpeed() * GameContext.getDelta();
-    world.collisionManager.move(movedObject, stepLength);
+    GameContext.collisionManager.move(movedObject, stepLength);
 
     length -= stepLength;
     if (length < 0)

@@ -106,7 +106,7 @@ public abstract class Shader
     try
     {
       //load shader source
-      InputStream stream = GameContext.getAppContext().getAssets().open(path);
+      InputStream stream = GameContext.activity.getAssets().open(path);
       int size = stream.available();
       byte[] buffer = new byte[size];
       int readCount = stream.read(buffer);

@@ -2,9 +2,9 @@ package com.ThirtyNineEighty.Renderable.Resources;
 
 public final class RenderableResources
 {
-  private ResourceCache<Texture> textureCache = new ResourceCache<Texture>();
-  private ResourceCache<Geometry> geometryCache = new ResourceCache<Geometry>();
-  private ResourceCache<Image> imagesCache = new ResourceCache<Image>();
+  private ResourceCache<Texture> textureCache = new ResourceCache<>();
+  private ResourceCache<Geometry> geometryCache = new ResourceCache<>();
+  private ResourceCache<Image> imagesCache = new ResourceCache<>();
 
   public Texture getTexture(ISource<Texture> source) { return textureCache.get(source); }
   public Geometry getGeometry(ISource<Geometry> source) { return geometryCache.get(source); }

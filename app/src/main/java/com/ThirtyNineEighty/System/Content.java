@@ -1,106 +1,149 @@
 package com.ThirtyNineEighty.System;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
-import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Renderable.Shader;
-
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
-import android.view.MotionEvent;
+import com.ThirtyNineEighty.Helpers.EventTimer;
 
 public class Content
-  implements IContent,
-             GLSurfaceView.Renderer
 {
-  private boolean initialized = false;
+  private volatile IWorld world;
+  private volatile IMenu menu;
 
-  private float[] viewMatrix;
-  private float[] projectionMatrix;
-  private float[] projectionViewMatrix;
-  private float[] lightPosition;
-
-  private float[] orthoMatrix;
-
-  private IWorld world;
-  private IMenu menu;
+  private final EventTimer updateTimer;
 
   private ISubprogram lastSubprogram;
   private final ArrayList<ISubprogram> subprograms;
-  private final ArrayList<Action<ISubprogram>> subprogramActions;
-
-  private final ArrayList<Runnable> callbacks;
-  private final ArrayList<Action<Runnable>> callbacksActions;
-
-  private final ArrayList<I3DRenderable> renderable3DObjects;
-  private final ArrayList<I2DRenderable> renderable2DObjects;
+  private final ArrayList<Action> subprogramActions;
 
   public Content()
   {
-    lightPosition = new float[] { 0.0f, 0.0f, 30.0f };
-    viewMatrix = new float[16];
-    projectionMatrix = new float[16];
-    projectionViewMatrix = new float[16];
-
-    orthoMatrix = new float[16];
-
     subprograms = new ArrayList<>();
     subprogramActions = new ArrayList<>();
-    callbacks = new ArrayList<>();
-    callbacksActions = new ArrayList<>();
-    renderable3DObjects = new ArrayList<>();
-    renderable2DObjects = new ArrayList<>();
+
+    updateTimer = new EventTimer(
+      "update"
+      , 25
+      , new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          GameContext.updateTime();
+
+          for (ISubprogram subprogram : subprograms)
+            subprogram.update();
+
+          if (lastSubprogram != null)
+            lastSubprogram.update();
+
+          for (Action action : subprogramActions)
+          {
+            switch (action.type)
+            {
+            case Action.ADD: subprograms.add(action.subprogram); break;
+            case Action.REMOVE: subprograms.remove(action.subprogram); break;
+            }
+          }
+          subprogramActions.clear();
+        }
+      }
+    );
   }
 
   @Override
-  public void setWorld(IWorld value) { setWorld(value, null); }
-
-  @Override
-  public void setWorld(IWorld value, Object args)
+  protected void finalize() throws Throwable
   {
-    if (world != null)
-      world.uninitialize();
-
-    world = value;
-    world.initialize(args);
+    super.finalize();
+    updateTimer.stop();
   }
 
-  @Override
   public IWorld getWorld() { return world; }
-
-  @Override
-  public void setMenu(IMenu value) { setMenu(value, null); }
-
-  @Override
-  public void setMenu(IMenu value, Object args)
+  public void setWorld(IWorld value) { setWorld(value, null, false); }
+  public void setWorld(IWorld value, Object args) { setWorld(value, args, false); }
+  public void setWorldAsync(IWorld value, Object args) { setWorld(value, args, true); }
+  public void setWorld(final IWorld value, final Object args, boolean async)
   {
-    if (menu != null)
-      menu.uninitialize();
+    Runnable r = new Runnable()
+    {
+      @Override public void run()
+      {
+        if (world != null)
+          world.uninitialize();
 
-    menu = value;
-    menu.initialize(args);
+        world = value;
+        world.initialize(args);
+      }
+    };
+
+    if (async)
+    {
+      updateTimer.postEvent(r);
+    }
+    else
+    {
+      if (GameContext.isMainThread())
+        throw new IllegalStateException("can't stop main thread (use post)");
+
+      updateTimer.sendEvent(r);
+    }
   }
 
-  @Override
+
   public IMenu getMenu() { return menu; }
-
-  @Override
-  public void bindProgram(ISubprogram subprogram)
+  public void setMenu(IMenu value) { setMenu(value, null, false); }
+  public void setMenu(IMenu value, Object args) { setMenu(value, args, false); }
+  public void setMenuAsync(IMenu value, Object args) { setMenu(value, args, true); }
+  public void setMenu(final IMenu value, final Object args, boolean async)
   {
-    subprogramActions.add(new Action<>(subprogram, Action.ADD_ACTION));
+    Runnable r = new Runnable()
+    {
+      @Override public void run()
+      {
+        if (menu != null)
+          menu.uninitialize();
+
+        menu = value;
+        menu.initialize(args);
+      }
+    };
+
+    if (async)
+    {
+      updateTimer.postEvent(r);
+    }
+    else
+    {
+      if (GameContext.isMainThread())
+        throw new IllegalStateException("can't stop main thread (use post)");
+
+      updateTimer.sendEvent(r);
+    }
   }
 
-  @Override
+  public void bindProgram(final ISubprogram subprogram)
+  {
+    updateTimer.postEvent(new Runnable()
+    {
+      @Override public void run()
+      {
+        subprogramActions.add(new Action(subprogram, Action.ADD));
+      }
+    });
+  }
+
+  public void unbindProgram(final ISubprogram subprogram)
+  {
+    updateTimer.postEvent(new Runnable()
+    {
+      @Override public void run()
+      {
+        subprogramActions.add(new Action(subprogram, Action.REMOVE));
+      }
+    });
+  }
+
   public void bindLastProgram(ISubprogram subprogram)
   {
     if (lastSubprogram != null)
@@ -109,166 +152,34 @@ public class Content
     lastSubprogram = subprogram;
   }
 
-  @Override
-  public void unbindProgram(ISubprogram subprogram)
-  {
-    subprogramActions.add(new Action<>(subprogram, Action.REMOVE_ACTION));
-  }
-
-  @Override
   public void unbindLastProgram()
   {
     lastSubprogram = null;
   }
 
-  @Override
-  public void execute(Runnable runnable)
+  public void postEvent(Runnable r) { updateTimer.postEvent(r); }
+  public void sendEvent(Runnable r)
   {
-    callbacksActions.add(new Action<>(runnable, Action.ADD_ACTION));
+    if (GameContext.isMainThread())
+      throw new IllegalStateException("can't stop main thread (use post)");
+
+    updateTimer.sendEvent(r);
   }
 
-  public void update()
+  public void start() { updateTimer.start(); }
+  public void stop() { updateTimer.stop(); }
+
+  private static class Action
   {
-    if (!initialized)
-      return;
+    public static final int ADD = 0;
+    public static final int REMOVE = 1;
 
-    GameContext.updateTime();
-
-    for (Runnable runnable : callbacks)
-      runnable.run();
-    callbacks.clear();
-
-    for (ISubprogram subprogram : subprograms)
-      subprogram.update();
-
-    if (lastSubprogram != null)
-      lastSubprogram.update();
-
-    // safe collections change
-    executeActions(subprogramActions, subprograms);
-    executeActions(callbacksActions, callbacks);
-  }
-
-  private static <T> void executeActions(Collection<Action<T>> actions, Collection<T> result)
-  {
-    for (Action<T> action : actions)
-    {
-      switch (action.type)
-      {
-      case Action.ADD_ACTION:
-        result.add(action.value);
-        break;
-
-      case Action.REMOVE_ACTION:
-        result.remove(action.value);
-        break;
-      }
-    }
-
-    actions.clear();
-  }
-
-  public void onTouch(MotionEvent event)
-  {
-    if (!initialized)
-       return;
-
-    menu.processEvent(event);
-  }
-
-  @Override
-  public void onDrawFrame(GL10 gl)
-  {
-    if (!initialized)
-      return;
-
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-    renderable3DObjects.clear();
-
-    if (world != null)
-    {
-      world.fillRenderable(renderable3DObjects);
-
-      IEngineObject player = world.getPlayer();
-      Vector3 playerPosition = player.getPosition();
-      lightPosition[0] = playerPosition.getX();
-      lightPosition[1] = playerPosition.getY();
-    }
-
-    if (renderable3DObjects.size() != 0)
-    {
-      world.setViewMatrix(viewMatrix);
-      Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 60.0f);
-      Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
-      Shader.setShader3D();
-
-      for (I3DRenderable renderable : renderable3DObjects)
-        renderable.draw(projectionViewMatrix, lightPosition);
-    }
-
-    renderable2DObjects.clear();
-
-    if (menu != null)
-      menu.fillRenderable(renderable2DObjects);
-
-    if (renderable2DObjects.size() != 0)
-    {
-      Matrix.setIdentityM(orthoMatrix, 0);
-      Matrix.orthoM(orthoMatrix, 0, GameContext.Left, GameContext.Right, GameContext.Bottom, GameContext.Top, -1, 1);
-
-      Shader.setShader2D();
-
-      for (I2DRenderable renderable : renderable2DObjects)
-        renderable.draw(orthoMatrix);
-    }
-  }
-  
-  @Override
-  public void onSurfaceChanged(GL10 gl, int width, int height)
-  {
-    GameContext.setWidth(width);
-    GameContext.setHeight(height);
-
-    GLES20.glEnable(GLES20.GL_CULL_FACE);
-    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-    GLES20.glEnable(GLES20.GL_BLEND);
-    GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-    GLES20.glViewport(0, 0, width, height);
-
-    Shader.initShader3D();
-    Shader.initShader2D();
-
-    GameContext.renderableResources.reloadCache();
-
-    initialized = true;
-  }
-
-  @Override
-  public void onSurfaceCreated(GL10 gl, EGLConfig config)
-  {
-
-  }
-
-  public void onPause()
-  {
-    initialized = false;
-  }
-
-  private static final class Action<T>
-  {
-    public static final int ADD_ACTION = 0;
-    public static final int REMOVE_ACTION = 1;
-
-    public final T value;
+    public final ISubprogram subprogram;
     public final int type;
 
-    public Action(T value, int type)
+    public Action(ISubprogram subprogram, int type)
     {
-      this.value = value;
+      this.subprogram = subprogram;
       this.type = type;
     }
   }

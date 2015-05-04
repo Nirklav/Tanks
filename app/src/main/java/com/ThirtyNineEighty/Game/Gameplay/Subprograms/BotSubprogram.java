@@ -2,12 +2,15 @@ package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.Subprogram;
 
 public class BotSubprogram
-  extends GameSubprogram
+  extends Subprogram
 {
   private final static float minDistance = 30;
   private final static float maxDistance = 150;
@@ -23,7 +26,8 @@ public class BotSubprogram
   @Override
   protected void onUpdate()
   {
-    Tank player = (Tank)world.getPlayer();
+    IWorld world = GameContext.content.getWorld();
+    Tank player = (Tank) world.getPlayer();
 
     Vector3 playerPosition = player.getPosition();
     Vector3 botPosition = bot.getPosition();
@@ -41,10 +45,10 @@ public class BotSubprogram
 
     if (distance > minDistance)
     {
-      world.collisionManager.rotate(bot, targetAngle);
+      GameContext.collisionManager.rotate(bot, targetAngle);
 
       if (Math.abs(botAngle - targetAngle) < 30)
-        world.collisionManager.move(bot);
+        GameContext.collisionManager.move(bot);
     }
 
     if (Math.abs(bot.getTurretAngle() - targetAngle) < 3)

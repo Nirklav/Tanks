@@ -252,7 +252,7 @@ public class Collidable
   {
     try
     {
-      InputStream stream = GameContext.getAppContext().getAssets().open(fileName);
+      InputStream stream = GameContext.activity.getAssets().open(fileName);
 
       int size = stream.available();
       byte[] data = new byte[size];

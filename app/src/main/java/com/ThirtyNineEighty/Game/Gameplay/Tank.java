@@ -2,13 +2,13 @@ package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
-import com.ThirtyNineEighty.Game.Gameplay.Subprograms.GameSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.Subprogram;
 
 public class Tank extends GameObject
 {
@@ -19,7 +19,7 @@ public class Tank extends GameObject
   {
     super(CharacteristicFactory.get(type));
 
-    bindProgram(new GameSubprogram()
+    bindProgram(new Subprogram()
     {
       @Override
       protected void onUpdate()
@@ -39,6 +39,7 @@ public class Tank extends GameObject
     if (rechargeProgress < Characteristic.maxRechargeLevel)
       return;
 
+    IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
     Bullet bullet = new Bullet(CharacteristicFactory.BULLET);
@@ -54,7 +55,6 @@ public class Tank extends GameObject
     bulletPos.move(bulletRadius + tankRadius, bulletAngles);
     bullet.setPosition(bulletPos);
 
-    IWorld world = GameContext.getContent().getWorld();
     world.add(bullet);
 
     Vector.release(bulletPos);

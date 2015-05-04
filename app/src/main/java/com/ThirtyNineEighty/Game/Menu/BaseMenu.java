@@ -12,13 +12,15 @@ import java.util.List;
 public abstract class BaseMenu
   implements IMenu
 {
+  private volatile boolean initialized;
+
   private ArrayList<IControl> controls;
   private ArrayList<I2DRenderable> renderables;
 
   protected BaseMenu()
   {
-    controls = new ArrayList<IControl>();
-    renderables = new ArrayList<I2DRenderable>();
+    controls = new ArrayList<>();
+    renderables = new ArrayList<>();
   }
 
   protected void addControl(IControl control) { controls.add(control); }
@@ -27,6 +29,18 @@ public abstract class BaseMenu
 
   protected void addRenderable(I2DRenderable control) { renderables.add(control); }
   protected void removeRenderable(I2DRenderable control) { renderables.remove(control); }
+
+  @Override
+  public boolean isInitialized()
+  {
+    return initialized;
+  }
+
+  @Override
+  public void initialize(Object args)
+  {
+    initialized = true;
+  }
 
   @Override
   public void uninitialize()
