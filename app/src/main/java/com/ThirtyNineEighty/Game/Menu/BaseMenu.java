@@ -65,8 +65,15 @@ public abstract class BaseMenu
     int action = event.getActionMasked();
     int pointerIndex = event.getActionIndex();
 
-    float x = event.getX(pointerIndex) - GameContext.EtalonWidth / 2;
-    float y = - (event.getY(pointerIndex) - GameContext.EtalonHeight / 2);
+    float widthRatio = GameContext.EtalonWidth / GameContext.getWidth();
+    float heightRatio = GameContext.EtalonHeight / GameContext.getHeight();
+
+    float x = event.getX(pointerIndex) - GameContext.getWidth() / 2;
+    float y = - (event.getY(pointerIndex) - GameContext.getHeight() / 2);
+
+    x *= widthRatio;
+    y *= heightRatio;
+
     int id = event.getPointerId(pointerIndex);
 
     switch (action)

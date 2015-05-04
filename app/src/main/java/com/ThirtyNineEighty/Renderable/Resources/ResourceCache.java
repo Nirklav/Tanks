@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class ResourceCache<TResource>
 {
-  private HashMap<String, Container<TResource>> cache = new HashMap<String, Container<TResource>>();
+  private HashMap<String, Container<TResource>> cache = new HashMap<>();
 
   public TResource get(ISource<TResource> source)
   {
@@ -19,7 +19,7 @@ public class ResourceCache<TResource>
     TResource resource = source.load();
 
     if (cacheName != null)
-      cache.put(cacheName, new Container<TResource>(resource, source));
+      cache.put(cacheName, new Container<>(resource, source));
 
     return resource;
   }

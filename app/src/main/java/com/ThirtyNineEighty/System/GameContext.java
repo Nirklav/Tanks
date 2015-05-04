@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.System;
 
 import android.content.pm.ApplicationInfo;
-import android.os.Looper;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;

@@ -115,8 +115,8 @@ public class EventTimer
       stopping = true;
       synchronized (syncObject)
       {
+        events.clear(); //TODO: need clear?
         syncObject.notifyAll();
-        events.clear();
       }
 
       thread.join();

@@ -105,7 +105,7 @@ public abstract class Shader
   {
     try
     {
-      //load shader source
+      // Load shader source
       InputStream stream = GameContext.activity.getAssets().open(path);
       int size = stream.available();
       byte[] buffer = new byte[size];
@@ -116,12 +116,12 @@ public abstract class Shader
       String source = new String(buffer);
       stream.close();
 
-      //compile shader
+      // Compile shader
       int shaderHandle = GLES20.glCreateShader(type);
       GLES20.glShaderSource(shaderHandle, source);
       GLES20.glCompileShader(shaderHandle);
 
-      //check for errors
+      // Check for errors
       int[] compiled = new int[1];
       GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compiled, 0);
       if (compiled[0] == 0)

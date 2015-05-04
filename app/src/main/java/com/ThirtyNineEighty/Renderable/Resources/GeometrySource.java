@@ -9,7 +9,6 @@ import com.ThirtyNineEighty.System.GameContext;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.sql.ResultSet;
 
 public abstract class GeometrySource
   implements ISource<Geometry>
