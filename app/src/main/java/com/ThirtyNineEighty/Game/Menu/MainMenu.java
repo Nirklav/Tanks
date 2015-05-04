@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
@@ -23,8 +24,25 @@ public class MainMenu
     selectedMapIndex = 0;
     selectedMap = maps.get(selectedMapIndex);
 
+    Button continueButton = new Button("Continue", "pressedBtn", "notPressedBtn");
+    continueButton.setPosition(0, 400);
+    continueButton.setSize(600, 200);
+    continueButton.setClickListener(new Runnable()
+    {
+      @Override public void run()
+      {
+        IWorld world = GameContext.content.getWorld();
+        if (world != null)
+        {
+          GameContext.content.setMenu(new GameMenu());
+          world.enable();
+        }
+      }
+    });
+    addControl(continueButton);
+
     Button newGameButton = new Button("New game", "pressedBtn", "notPressedBtn");
-    newGameButton.setPosition(0, 200);
+    newGameButton.setPosition(0, 150);
     newGameButton.setSize(600, 200);
     newGameButton.setClickListener(new Runnable()
     {
@@ -39,7 +57,7 @@ public class MainMenu
     addRenderable(label);
 
     Button nextMapButton = new Button("Next map", "pressedBtn", "notPressedBtn");
-    nextMapButton.setPosition(0, -200);
+    nextMapButton.setPosition(0, -150);
     nextMapButton.setSize(600, 200);
     nextMapButton.setClickListener(new Runnable()
     {

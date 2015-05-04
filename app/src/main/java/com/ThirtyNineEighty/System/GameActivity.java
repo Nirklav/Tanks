@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 
 public class GameActivity
   extends Activity
@@ -56,6 +57,13 @@ public class GameActivity
     if (GameContext.content == null)
     {
       GameContext.content = new Content();
+      GameContext.content.setMenuAsync(new MainMenu(), null);
+    }
+    else
+    {
+      IWorld world = GameContext.content.getWorld();
+      world.disable();
+
       GameContext.content.setMenuAsync(new MainMenu(), null);
     }
   }

@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Game.Worlds;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface IWorld

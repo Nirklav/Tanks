@@ -19,7 +19,6 @@ public class GameMenu
   private Button leftTurretButton;
   private Button rightTurretButton;
 
-  private GLLabel systemLabel;
   private ProgressBar recharge;
   private ProgressBar health;
 
@@ -57,14 +56,16 @@ public class GameMenu
     });
     addControl(fireButton);
 
-    Button cacheStatusButton = new Button("System", "pressedBtn", "notPressedBtn");
+    Button cacheStatusButton = new Button("Menu", "pressedBtn", "notPressedBtn");
     cacheStatusButton.setPosition(-810, 440);
     cacheStatusButton.setSize(300, 200);
     cacheStatusButton.setClickListener(new Runnable()
     {
       @Override public void run()
       {
-        systemLabel.setValue(GameContext.renderableResources.getCacheStatus());
+        IWorld world = GameContext.content.getWorld();
+        world.disable();
+        GameContext.content.setMenu(new MainMenu());
       }
     });
     addControl(cacheStatusButton);
@@ -80,11 +81,6 @@ public class GameMenu
     addControl(leftTurretButton);
 
     addControl(joystick = new Joystick(-710, -290, 150));
-
-    systemLabel = new GLLabel(GameContext.renderableResources.getCacheStatus(), "simpleFont", 25, 40, MeshMode.Dynamic);
-    systemLabel.setAlign(GLLabel.AlignType.TopLeft);
-    systemLabel.setPosition(-940, 280);
-    addRenderable(systemLabel);
 
     recharge = new ProgressBar();
     recharge.setPosition(220, 520);
