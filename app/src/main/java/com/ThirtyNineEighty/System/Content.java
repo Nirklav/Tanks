@@ -63,7 +63,7 @@ public class Content
   public void setWorld(IWorld value) { setWorld(value, null, false); }
   public void setWorld(IWorld value, Object args) { setWorld(value, args, false); }
   public void setWorldAsync(IWorld value, Object args) { setWorld(value, args, true); }
-  public void setWorld(final IWorld value, final Object args, boolean async)
+  private void setWorld(final IWorld value, final Object args, boolean async)
   {
     Runnable r = new Runnable()
     {
@@ -95,7 +95,7 @@ public class Content
   public void setMenu(IMenu value) { setMenu(value, null, false); }
   public void setMenu(IMenu value, Object args) { setMenu(value, args, false); }
   public void setMenuAsync(IMenu value, Object args) { setMenu(value, args, true); }
-  public void setMenu(final IMenu value, final Object args, boolean async)
+  private void setMenu(final IMenu value, final Object args, boolean async)
   {
     Runnable r = new Runnable()
     {

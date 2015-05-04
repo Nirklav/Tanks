@@ -137,10 +137,10 @@ public class GameActivity
   {
     super.onPause();
     glView.onPause();
-    GameContext.content.stop();
     pause = true;
 
-    // reset current activity
+    // reset
+    GameContext.content.stop();
     GameContext.setActivity(null);
   }
 

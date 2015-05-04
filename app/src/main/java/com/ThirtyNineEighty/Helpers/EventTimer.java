@@ -67,13 +67,13 @@ public class EventTimer
 
             } // end of sleep cycle
 
-            userRunnable.run();
             lastExecute = System.currentTimeMillis();
+            userRunnable.run();
           } // end of runnable cycle
         }
         catch (Exception e)
         {
-          e.printStackTrace();
+          throw new RuntimeException(e);
         }
       }
     };
