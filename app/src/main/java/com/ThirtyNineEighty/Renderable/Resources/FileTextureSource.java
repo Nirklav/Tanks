@@ -29,14 +29,14 @@ public class FileTextureSource
   @Override
   public Texture load()
   {
-    return new Texture(loadHandle());
+    return new Texture(loadTexture());
   }
 
   @Override
   public void reload(Texture texture)
   {
     release(texture);
-    texture.setHandle(loadHandle());
+    texture.setHandle(loadTexture());
   }
 
   @Override
@@ -47,7 +47,7 @@ public class FileTextureSource
       GLES20.glDeleteTextures(1, new int[] { handle }, 0);
   }
 
-  private int loadHandle()
+  private int loadTexture()
   {
     ResultRunnable<Integer> runnable = new ResultRunnable<Integer>()
     {
@@ -92,7 +92,6 @@ public class FileTextureSource
           if (generateMipmap)
           {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-
             if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
               throw new GLException(error, Integer.toString(error));
           }

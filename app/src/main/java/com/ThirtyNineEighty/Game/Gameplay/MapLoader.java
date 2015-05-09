@@ -50,7 +50,7 @@ public final class MapLoader
         for (String subprogramName : obj.subprograms)
         {
           ISubprogram subprogram = createSubprogram(subprogramName, object);
-          GameContext.content.bindProgram(subprogram);
+          object.bindProgram(subprogram);
         }
 
       world.add(object);

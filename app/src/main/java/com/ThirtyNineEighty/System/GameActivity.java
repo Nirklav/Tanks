@@ -55,21 +55,25 @@ public class GameActivity
     GameContext.mapLoader.initialize();
 
     if (GameContext.content == null)
-    {
       GameContext.content = new Content();
-      GameContext.content.setMenuAsync(new MainMenu(), null);
-    }
     else
     {
       IWorld world = GameContext.content.getWorld();
-      world.disable();
-
-      GameContext.content.setMenuAsync(new MainMenu(), null);
+      if (world != null)
+        world.disable();
     }
+
+    GameContext.content.setMenuAsync(new MainMenu(), null);
   }
 
   public void postEvent(final Runnable r)
   {
+    if (GameContext.isGLThread())
+    {
+      r.run();
+      return;
+    }
+
     glView.queueEvent(r);
   }
 
