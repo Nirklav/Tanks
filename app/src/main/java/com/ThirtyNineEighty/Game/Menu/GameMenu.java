@@ -54,10 +54,10 @@ public class GameMenu
     });
     addControl(fireButton);
 
-    Button cacheStatusButton = new Button("Menu", "pressedBtn", "notPressedBtn");
-    cacheStatusButton.setPosition(-810, 440);
-    cacheStatusButton.setSize(300, 200);
-    cacheStatusButton.setClickListener(new Runnable()
+    Button menuButton = new Button("Menu", "pressedBtn", "notPressedBtn");
+    menuButton.setPosition(-810, 440);
+    menuButton.setSize(300, 200);
+    menuButton.setClickListener(new Runnable()
     {
       @Override public void run()
       {
@@ -66,7 +66,7 @@ public class GameMenu
         GameContext.content.setMenu(new MainMenu());
       }
     });
-    addControl(cacheStatusButton);
+    addControl(menuButton);
 
     rightTurretButton = new Button("Right", "pressedBtn", "notPressedBtn");
     rightTurretButton.setPosition(800, -290);

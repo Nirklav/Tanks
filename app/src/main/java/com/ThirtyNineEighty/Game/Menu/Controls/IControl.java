@@ -7,6 +7,4 @@ public interface IControl extends I2DRenderable
   void processDown(int pointerId, float x, float y);
   void processMove(int pointerId, float x, float y);
   void processUp(int pointerId, float x, float y);
-
-  void dispose();
 }

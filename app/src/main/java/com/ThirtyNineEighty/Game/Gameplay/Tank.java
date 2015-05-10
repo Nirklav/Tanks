@@ -42,7 +42,7 @@ public class Tank extends GameObject
     IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
-    Bullet bullet = new Bullet(CharacteristicFactory.BULLET);
+    Bullet bullet = new Bullet(CharacteristicFactory.Bullet);
 
     Vector3 bulletAngles = Vector.getInstance(3, angles);
     bulletAngles.addToZ(turretAngle);

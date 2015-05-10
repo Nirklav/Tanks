@@ -72,13 +72,6 @@ public class Joystick
   }
 
   @Override
-  public void dispose()
-  {
-    backgroundSprite.dispose();
-    stickSprite.dispose();
-  }
-
-  @Override
   public void draw(float[] orthoViewMatrix)
   {
     backgroundSprite.draw(orthoViewMatrix);

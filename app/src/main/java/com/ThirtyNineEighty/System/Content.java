@@ -73,14 +73,13 @@ public class Content
           world.uninitialize();
 
         world = value;
-        world.initialize(args);
+        if (world != null)
+          world.initialize(args);
       }
     };
 
     if (async)
-    {
       updateTimer.postEvent(r);
-    }
     else
     {
       if (GameContext.isMainThread())
@@ -105,14 +104,13 @@ public class Content
           menu.uninitialize();
 
         menu = value;
-        menu.initialize(args);
+        if (menu != null)
+          menu.initialize(args);
       }
     };
 
     if (async)
-    {
       updateTimer.postEvent(r);
-    }
     else
     {
       if (GameContext.isMainThread())

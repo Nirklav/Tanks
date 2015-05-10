@@ -28,6 +28,8 @@ public class Renderer
   private float[] lightPosition;
   private float[] orthoMatrix;
 
+  private Camera camera;
+
   private final ArrayList<I3DRenderable> renderable3DObjects;
   private final ArrayList<I2DRenderable> renderable2DObjects;
 
@@ -42,6 +44,8 @@ public class Renderer
 
     renderable3DObjects = new ArrayList<>();
     renderable2DObjects = new ArrayList<>();
+
+    camera = new Camera();
   }
 
   @Override
@@ -67,7 +71,17 @@ public class Renderer
 
       if (renderable3DObjects.size() != 0)
       {
-        world.setViewMatrix(viewMatrix);
+        world.setCamera(camera);
+
+        float eyeX = camera.eye.getX();
+        float eyeY = camera.eye.getY();
+        float eyeZ = camera.eye.getZ();
+
+        float targetX = camera.target.getX();
+        float targetY = camera.target.getY();
+        float targetZ = camera.target.getZ();
+
+        Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0.0f, 0.0f, 1.0f);
         Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 60.0f);
         Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 

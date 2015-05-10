@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
+import com.ThirtyNineEighty.System.Camera;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface IWorld
 
   // view support
   void fillRenderable(List<I3DRenderable> renderables);
-  void setViewMatrix(float[] viewMatrix);
+  void setCamera(Camera camera);
 
   // world
   IEngineObject getPlayer();

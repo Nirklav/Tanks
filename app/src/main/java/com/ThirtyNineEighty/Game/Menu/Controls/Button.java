@@ -53,18 +53,6 @@ public class Button
     sprite.setSize(width, height);
   }
 
-  public void dispose()
-  {
-    sprite.dispose();
-  }
-
-  @Override
-  protected void finalize() throws Throwable
-  {
-    super.finalize();
-    sprite.finalize();
-  }
-
   public boolean getState()
   {
     return state;

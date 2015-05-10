@@ -25,7 +25,6 @@ public abstract class BaseMenu
 
   protected void addControl(IControl control) { controls.add(control); }
   protected void removeControl(IControl control) { controls.remove(control); }
-  protected Iterable<IControl> getControls() { return controls; }
 
   protected void addRenderable(I2DRenderable control) { renderables.add(control); }
   protected void removeRenderable(I2DRenderable control) { renderables.remove(control); }
@@ -45,8 +44,7 @@ public abstract class BaseMenu
   @Override
   public void uninitialize()
   {
-    for(IControl control : controls)
-      control.dispose();
+    initialized = false;
   }
 
   @Override

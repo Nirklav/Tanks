@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
+import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
@@ -48,7 +48,10 @@ public class MainMenu
     {
       @Override public void run()
       {
-        GameContext.content.setWorld(new GameWorld(), selectedMap);
+        GameStartArgs args = new GameStartArgs();
+        args.setMapName(selectedMap);
+
+        GameContext.content.setMenu(new TankSelectMenu(), args);
       }
     });
     addControl(newGameButton);

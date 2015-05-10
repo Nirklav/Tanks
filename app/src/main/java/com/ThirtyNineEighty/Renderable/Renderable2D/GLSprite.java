@@ -49,8 +49,6 @@ public class GLSprite
   protected Texture textureData;
   protected Geometry geometryData;
 
-  private boolean disposed;
-
   public GLSprite(String imageName)
   {
     this();
@@ -81,22 +79,6 @@ public class GLSprite
     position = Vector.getInstance(2);
 
     setSize(1, 1);
-  }
-
-  public void dispose()
-  {
-    if (disposed)
-      return;
-
-    disposed = true;
-  }
-
-  @Override
-  public void finalize() throws Throwable
-  {
-    super.finalize();
-
-    dispose();
   }
 
   @Override

@@ -6,11 +6,11 @@ import java.util.HashMap;
 
 public class CharacteristicFactory
 {
-  public static final String TANK = "tank";
-  public static final String BULLET = "bullet";
-  public static final String LAND = "land";
+  public static final String Tank = "tank";
+  public static final String SpeedTank = "speedtank";
+  public static final String Bullet = "bullet";
 
-  private static final HashMap<String, Characteristic> cache = new HashMap<String, Characteristic>();
+  private static final HashMap<String, Characteristic> cache = new HashMap<>();
 
   public static Characteristic get(String type)
   {
