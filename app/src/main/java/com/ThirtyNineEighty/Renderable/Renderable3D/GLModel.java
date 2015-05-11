@@ -59,7 +59,7 @@ public class GLModel
   }
 
   @Override
-  public void draw(float[] projectionViewMatrix, float[] lightPosition)
+  public void draw(float[] projectionViewMatrix, Vector3 lightPosition)
   {
     Shader3D shader = (Shader3D) Shader.getCurrent();
 
@@ -74,7 +74,7 @@ public class GLModel
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
-    GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, lightPosition, 0);
+    GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, lightPosition.getRaw(), 0);
 
     // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());

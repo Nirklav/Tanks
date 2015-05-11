@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.MapDescription;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
@@ -112,5 +111,12 @@ public class GameWorld
 
     camera.eye.addToY(14);
     camera.eye.addToZ(35);
+  }
+
+  @Override
+  public void setLight(Vector3 lightPosition)
+  {
+    lightPosition.setFrom(player.getPosition());
+    lightPosition.setZ(30);
   }
 }

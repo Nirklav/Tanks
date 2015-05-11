@@ -14,20 +14,50 @@ public abstract class BaseMenu
 {
   private volatile boolean initialized;
 
-  private ArrayList<IControl> controls;
-  private ArrayList<I2DRenderable> renderables;
+  private final Object syncObject;
+  private final ArrayList<IControl> controls;
+  private final ArrayList<IControl> controlsCopy;
+  private final ArrayList<I2DRenderable> renderables;
 
   protected BaseMenu()
   {
+    syncObject = new Object();
     controls = new ArrayList<>();
+    controlsCopy = new ArrayList<>();
     renderables = new ArrayList<>();
   }
 
-  protected void addControl(IControl control) { controls.add(control); }
-  protected void removeControl(IControl control) { controls.remove(control); }
+  protected void addControl(IControl control)
+  {
+    synchronized (syncObject)
+    {
+      controls.add(control);
+    }
+  }
 
-  protected void addRenderable(I2DRenderable control) { renderables.add(control); }
-  protected void removeRenderable(I2DRenderable control) { renderables.remove(control); }
+  protected void removeControl(IControl control)
+  {
+    synchronized (syncObject)
+    {
+      controls.remove(control);
+    }
+  }
+
+  protected void addRenderable(I2DRenderable control)
+  {
+    synchronized (syncObject)
+    {
+      renderables.add(control);
+    }
+  }
+
+  protected void removeRenderable(I2DRenderable control)
+  {
+    synchronized (syncObject)
+    {
+      renderables.remove(control);
+    }
+  }
 
   @Override
   public boolean isInitialized()
@@ -50,11 +80,14 @@ public abstract class BaseMenu
   @Override
   public final void fillRenderable(List<I2DRenderable> filled)
   {
-    for(I2DRenderable renderable : controls)
-      filled.add(renderable);
+    synchronized (syncObject)
+    {
+      for (I2DRenderable renderable : controls)
+        filled.add(renderable);
 
-    for(I2DRenderable renderable : renderables)
-      filled.add(renderable);
+      for (I2DRenderable renderable : renderables)
+        filled.add(renderable);
+    }
   }
 
   @Override
@@ -74,23 +107,29 @@ public abstract class BaseMenu
 
     int id = event.getPointerId(pointerIndex);
 
+    synchronized (syncObject)
+    {
+      controlsCopy.clear();
+      controlsCopy.addAll(controls);
+    }
+
     switch (action)
     {
     case MotionEvent.ACTION_DOWN:
     case MotionEvent.ACTION_POINTER_DOWN:
-      for(IControl control : controls)
+      for (IControl control : controlsCopy)
         control.processDown(id, x, y);
       break;
 
     case MotionEvent.ACTION_MOVE:
-      for(IControl control : controls)
+      for (IControl control : controlsCopy)
         control.processMove(id, x, y);
       break;
 
     case MotionEvent.ACTION_UP:
     case MotionEvent.ACTION_POINTER_UP:
     case MotionEvent.ACTION_CANCEL:
-      for(IControl control : controls)
+      for (IControl control : controlsCopy)
         control.processUp(id, x, y);
       break;
     }

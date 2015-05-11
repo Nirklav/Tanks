@@ -7,6 +7,8 @@ import com.ThirtyNineEighty.System.GameContext;
 public class Gesture
   extends Control
 {
+  private final Object syncObject = new Object();
+
   private Runnable gestureListener;
 
   private Vector2 startPoint;
@@ -18,20 +20,32 @@ public class Gesture
     endPoint = Vector.getInstance(2);
   }
 
-  public Vector2 get() { return startPoint.getSubtract(endPoint); }
+  public Vector2 get()
+  {
+    synchronized (syncObject)
+    {
+      return startPoint.getSubtract(endPoint);
+    }
+  }
 
   @Override
   protected void onDown(float x, float y)
   {
-    startPoint.setFrom(0, 0);
-    endPoint.setFrom(x, y);
+    synchronized (syncObject)
+    {
+      startPoint.setFrom(0, 0);
+      endPoint.setFrom(x, y);
+    }
   }
 
   @Override
   protected void onMove(float x, float y)
   {
-    startPoint.setFrom(endPoint);
-    endPoint.setFrom(x, y);
+    synchronized (syncObject)
+    {
+      startPoint.setFrom(endPoint);
+      endPoint.setFrom(x, y);
+    }
 
     GameContext.content.postEvent(gestureListener);
   }
@@ -39,7 +53,10 @@ public class Gesture
   @Override
   protected void onUp(float x, float y)
   {
-    endPoint.setFrom(x, y);
+    synchronized (syncObject)
+    {
+      endPoint.setFrom(x, y);
+    }
 
     GameContext.content.postEvent(gestureListener);
   }

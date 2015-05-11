@@ -46,12 +46,13 @@ public class Land
     shift.addToX(landSize * Math.signum(position.getX()) / 2);
     shift.addToY(landSize * Math.signum(position.getY()) / 2);
 
-    int landsCountX = (int) (position.getX() / landSize);
-    int landsCountY = (int) (position.getY() / landSize);
+    int landNumX = (int) (position.getX() / landSize);
+    int landNumY = (int) (position.getY() / landSize);
 
     Vector3 renderPos = Vector.getInstance(3);
-    renderPos.setX(landsCountX * landSize + shift.getX());
-    renderPos.setY(landsCountY * landSize + shift.getY());
+    renderPos.setX(landNumX * landSize + shift.getX());
+    renderPos.setY(landNumY * landSize + shift.getY());
+    renderPos.setZ(-0.1f);
 
     renderable.setGlobal(renderPos, angles);
 

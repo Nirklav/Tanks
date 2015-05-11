@@ -4,6 +4,7 @@ import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Land;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Helpers.Angle;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.Camera;
 
 public class TankSelectWorld
@@ -31,8 +32,8 @@ public class TankSelectWorld
   {
     length += value;
 
-    if (length < 2)
-      length = 2;
+    if (length < 4)
+      length = 4;
 
     if (length > 10)
       length = 10;
@@ -54,10 +55,20 @@ public class TankSelectWorld
   {
     camera.target.setFrom(player.getPosition());
 
-    float height = 3 + length / 4;
+    float height = length / 2;
     float x = length * (float)Math.cos(Math.toRadians(angle));
     float y = length * (float)Math.sin(Math.toRadians(angle));
 
     camera.eye.setFrom(x, y, height);
+  }
+
+  @Override
+  public void setLight(Vector3 lightPosition)
+  {
+    float height = 10 + length / 2;
+    float x = length * (float)Math.cos(Math.toRadians(angle));
+    float y = length * (float)Math.sin(Math.toRadians(angle));
+
+    lightPosition.setFrom(x, y, height);
   }
 }

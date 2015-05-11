@@ -4,7 +4,6 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -25,9 +24,10 @@ public class Renderer
   private float[] viewMatrix;
   private float[] projectionMatrix;
   private float[] projectionViewMatrix;
-  private float[] lightPosition;
+
   private float[] orthoMatrix;
 
+  private Vector3 lightPosition;
   private Camera camera;
 
   private final ArrayList<I3DRenderable> renderable3DObjects;
@@ -35,7 +35,7 @@ public class Renderer
 
   public Renderer()
   {
-    lightPosition = new float[] { 0.0f, 0.0f, 30.0f };
+    lightPosition = new Vector3();
     viewMatrix = new float[16];
     projectionMatrix = new float[16];
     projectionViewMatrix = new float[16];
@@ -57,21 +57,16 @@ public class Renderer
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-    renderable3DObjects.clear();
-
     IWorld world = GameContext.content.getWorld();
     if (world != null && world.isInitialized())
     {
+      renderable3DObjects.clear();
       world.fillRenderable(renderable3DObjects);
-
-      IEngineObject player = world.getPlayer();
-      Vector3 playerPosition = player.getPosition();
-      lightPosition[0] = playerPosition.getX();
-      lightPosition[1] = playerPosition.getY();
 
       if (renderable3DObjects.size() != 0)
       {
         world.setCamera(camera);
+        world.setLight(lightPosition);
 
         float eyeX = camera.eye.getX();
         float eyeY = camera.eye.getY();
@@ -92,11 +87,10 @@ public class Renderer
       }
     }
 
-    renderable2DObjects.clear();
-
     IMenu menu = GameContext.content.getMenu();
     if (menu != null && menu.isInitialized())
     {
+      renderable2DObjects.clear();
       menu.fillRenderable(renderable2DObjects);
 
       if (renderable2DObjects.size() != 0)

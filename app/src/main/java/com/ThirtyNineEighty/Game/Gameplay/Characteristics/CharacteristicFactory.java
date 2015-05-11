@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class CharacteristicFactory
 {
   public static final String Tank = "tank";
-  public static final String SpeedTank = "speedtank";
+  public static final String SpeedTank = "speedTank";
   public static final String Bullet = "bullet";
 
   private static final HashMap<String, Characteristic> cache = new HashMap<>();

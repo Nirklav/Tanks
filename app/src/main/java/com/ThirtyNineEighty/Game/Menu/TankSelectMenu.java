@@ -6,6 +6,7 @@ import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
+import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -37,6 +38,8 @@ public class TankSelectMenu
 
         world.addAngle(vec.getX() / 10);
         world.addLength(vec.getY() / 50);
+
+        Vector.release(vec);
       }
     });
     addControl(gesture);
@@ -63,7 +66,15 @@ public class TankSelectMenu
       @Override
       public void run()
       {
+        TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
+        String tankName = args.getTankName();
 
+        tankName = CharacteristicFactory.Tank.equals(tankName)
+          ? CharacteristicFactory.SpeedTank
+          : CharacteristicFactory.Tank;
+
+        args.setTankName(tankName);
+        world.setPlayer(tankName);
       }
     });
     addControl(nextTankButton);
