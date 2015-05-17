@@ -19,6 +19,7 @@ public class Vector3 extends Vector
   public Vector3()
   {
     value = new float[4];
+    value[3] = 1.0f;
   }
 
   public Vector3(float x, float y, float z)
@@ -90,7 +91,7 @@ public class Vector3 extends Vector
 
     Vector3 normal = getCross(other);
 
-    if (normal.equals(Vector3.zero))
+    if (normal.isZero())
       return getScalar(other) > 0 ? 0 : 180;
 
     Plane plane = new Plane(normal);
@@ -168,7 +169,7 @@ public class Vector3 extends Vector
 
     setFrom(-y, x, 0);
 
-    if (equals(Vector3.zero))
+    if (isZero())
       setFrom(0, z, -y);
   }
 

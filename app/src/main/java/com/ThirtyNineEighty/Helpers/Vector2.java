@@ -9,8 +9,6 @@ public class Vector2 extends Vector
 {
   public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
-  public final static Vector2 invertXAxis = new Vector2(-1.0f,  0.0f);
-  public final static Vector2 invertYAxis = new Vector2( 0.0f, -1.0f);
 
   protected float[] value;
 

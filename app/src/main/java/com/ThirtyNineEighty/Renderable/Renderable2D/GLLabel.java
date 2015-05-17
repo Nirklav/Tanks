@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Renderable.Renderable2D;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Resources.GeometrySource;
 import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
@@ -316,7 +317,7 @@ public class GLLabel
       }
 
       FloatBuffer buffer = loadGeometry(geometry);
-      return new LoadResult(buffer, geometry.length / 12);
+      return new LoadResult(buffer, geometry.length / 12, Vector3.zero, Vector3.zero);
     }
   }
 }

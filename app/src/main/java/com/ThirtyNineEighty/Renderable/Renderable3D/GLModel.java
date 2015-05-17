@@ -18,13 +18,17 @@ public class GLModel
 {
   private float[] modelProjectionViewMatrix;
   private float[] modelMatrix;
+  private boolean matrixInitialized;
 
   private Texture textureData;
   private Geometry geometryData;
 
-  private boolean globalsInitialized;
-  private Vector3 position;
-  private Vector3 angles;
+  private Vector3 globalPosition;
+  private Vector3 globalAngles;
+
+  private Vector3 localPosition;
+  private Vector3 localAngles;
+
   private float scale;
 
   private boolean disposed;
@@ -35,8 +39,11 @@ public class GLModel
     modelProjectionViewMatrix = new float[16];
     scale = 1f;
 
-    position = Vector.getInstance(3);
-    angles = Vector.getInstance(3);
+    globalPosition = Vector.getInstance(3);
+    globalAngles = Vector.getInstance(3);
+
+    localPosition = Vector.getInstance(3);
+    localAngles = Vector.getInstance(3);
 
     geometryData = GameContext.renderableResources.getGeometry(new FileGeometrySource(geometryName));
     textureData = GameContext.renderableResources.getTexture(new FileTextureSource(textureName, true));
@@ -62,6 +69,12 @@ public class GLModel
   public void draw(float[] projectionViewMatrix, Vector3 lightPosition)
   {
     Shader3D shader = (Shader3D) Shader.getCurrent();
+
+    if (!matrixInitialized)
+    {
+      setModelMatrix();
+      matrixInitialized = true;
+    }
 
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, projectionViewMatrix, 0, modelMatrix, 0);
@@ -101,23 +114,58 @@ public class GLModel
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
-  public void setGlobal(Vector3 pos, Vector3 ang)
+  public void setGlobal(Vector3 position, Vector3 angles)
   {
-    if (globalsInitialized && pos.equals(position) && ang.equals(angles))
+    if (globalPosition.equals(position) && globalAngles.equals(angles))
       return;
 
-    globalsInitialized = true;
-    position.setFrom(pos);
-    angles.setFrom(ang);
+    globalPosition.setFrom(position);
+    globalAngles.setFrom(angles);
+    setModelMatrix();
+  }
 
+  public void setLocal(Vector3 position, Vector3 angles)
+  {
+    if (localPosition.equals(position) && localAngles.equals(angles))
+      return;
+
+    localPosition.setFrom(position);
+    localAngles.setFrom(angles);
+    setModelMatrix();
+  }
+
+  private void setModelMatrix()
+  {
+    // calculate local
+    Vector3 resultLocalPosition = Vector.getInstance(3, localPosition);
+    resultLocalPosition.add(geometryData.getPosition());
+
+    Vector3 resultLocalAngles = Vector.getInstance(3, localAngles);
+    resultLocalAngles.add(geometryData.getAngles());
+
+    // reset matrix
     Matrix.setIdentityM(modelMatrix, 0);
-    Matrix.translateM(modelMatrix, 0, position.getX(), position.getY(), position.getZ());
 
-    Matrix.rotateM(modelMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(modelMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(modelMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
+    // set global
+    Matrix.translateM(modelMatrix, 0, globalPosition.getX(), globalPosition.getY(), globalPosition.getZ());
 
+    Matrix.rotateM(modelMatrix, 0, globalAngles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, globalAngles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, globalAngles.getZ(), 0.0f, 0.0f, 1.0f);
+
+    // set local
+    Matrix.translateM(modelMatrix, 0, resultLocalPosition.getX(), resultLocalPosition.getY(), resultLocalPosition.getZ());
+
+    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getZ(), 0.0f, 0.0f, 1.0f);
+
+    // set scale
     Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
+
+    // release vectors
+    Vector.release(resultLocalPosition);
+    Vector.release(resultLocalAngles);
   }
 
   public void setScale(float value)

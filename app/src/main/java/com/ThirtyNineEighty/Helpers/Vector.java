@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Helpers;
 
 import android.util.SparseArray;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +17,7 @@ public abstract class Vector
 
     public Vectors(int size)
     {
-      vectors = new ArrayDeque<Vector>();
+      vectors = new ArrayDeque<>();
       this.size = size;
     }
 
@@ -38,7 +39,7 @@ public abstract class Vector
 
   private static final int cacheSizeLimit = 500;
   private static final boolean disableCache = false;
-  private static final SparseArray<Vectors> cache = new SparseArray<Vectors>();
+  private static final SparseArray<Vectors> cache = new SparseArray<>();
   private static final AtomicInteger cacheSize = new AtomicInteger();
 
   protected boolean released;
@@ -47,6 +48,15 @@ public abstract class Vector
   {
     TVector vector = getInstance(vectorSize);
     vector.setFrom(copy);
+    return vector;
+  }
+
+  public static <TVector extends Vector> TVector getInstance(int vectorSize, ByteBuffer dataBuffer)
+  {
+    TVector vector = getInstance(vectorSize);
+    for (int i = 0; i < vectorSize; i++)
+      vector.set(i, dataBuffer.getFloat());
+
     return vector;
   }
 
@@ -223,6 +233,18 @@ public abstract class Vector
       float angle = Angle.correct(get(i));
       set(i, angle);
     }
+  }
+
+  public boolean isZero()
+  {
+    int size = getSize();
+    for (int i = 0; i < size; i++)
+    {
+      if (Math.abs(get(i)) > epsilon)
+        return false;
+    }
+
+    return true;
   }
 
   protected void throwIfReleased()

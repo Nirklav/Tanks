@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Renderable.Resources;
 
+import com.ThirtyNineEighty.Helpers.Vector3;
+
 import java.nio.FloatBuffer;
 
 public class StaticGeometrySource
@@ -19,6 +21,6 @@ public class StaticGeometrySource
   @Override
   protected LoadResult buildGeometry()
   {
-    return new LoadResult(buffer, trianglesCount);
+    return new LoadResult(buffer, trianglesCount, Vector3.zero, Vector3.zero);
   }
 }

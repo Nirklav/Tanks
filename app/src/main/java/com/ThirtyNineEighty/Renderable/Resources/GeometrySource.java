@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLException;
 
 import com.ThirtyNineEighty.Helpers.ResultRunnable;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.ByteBuffer;
@@ -32,11 +33,11 @@ public abstract class GeometrySource
     switch (mode)
     {
     case Dynamic:
-      return new Geometry(result.buffer, result.trianglesCount);
+      return new Geometry(result.buffer, result.trianglesCount, result.position, result.angles);
 
     case Static:
       int handle = loadGeometry(result.buffer);
-      return new Geometry(handle, result.trianglesCount);
+      return new Geometry(handle, result.trianglesCount, result.position, result.angles);
     }
 
     throw new IllegalArgumentException("Invalid mesh mode");
@@ -51,12 +52,12 @@ public abstract class GeometrySource
     switch (mode)
     {
     case Dynamic:
-      geometry.updateData(result.buffer, result.trianglesCount);
+      geometry.updateData(result.buffer, result.trianglesCount, result.position, result.angles);
       return;
 
     case Static:
       int handle = loadGeometry(result.buffer);
-      geometry.updateData(handle, result.trianglesCount);
+      geometry.updateData(handle, result.trianglesCount, result.position, result.angles);
       return;
     }
 
@@ -69,7 +70,7 @@ public abstract class GeometrySource
     switch (mode)
     {
     case Dynamic:
-      geometry.updateData(null, 0);
+      geometry.updateData(null, 0, null, null);
       break;
 
     case Static:
@@ -77,7 +78,7 @@ public abstract class GeometrySource
       if (GLES20.glIsBuffer(handle))
         GLES20.glDeleteBuffers(1, new int[] { handle }, 0);
 
-      geometry.updateData(0, 0);
+      geometry.updateData(0, 0, null, null);
       break;
     }
   }
@@ -127,11 +128,15 @@ public abstract class GeometrySource
   {
     public final FloatBuffer buffer;
     public final int trianglesCount;
+    public final Vector3 position;
+    public final Vector3 angles;
 
-    public LoadResult(FloatBuffer buffer, int trianglesCount)
+    public LoadResult(FloatBuffer buffer, int trianglesCount, Vector3 position, Vector3 angles)
     {
       this.buffer = buffer;
       this.trianglesCount = trianglesCount;
+      this.position = position;
+      this.angles = angles;
     }
   }
 }

@@ -27,8 +27,12 @@ public class Collidable
   private ArrayList<Vector3> globalVertices;
   private ArrayList<Vector3> globalNormals;
   private boolean globalsInitialized;
-  private Vector3 position;
-  private Vector3 angles;
+
+  private Vector3 localPosition;
+  private Vector3 localAngles;
+
+  private Vector3 globalPosition;
+  private Vector3 globalAngles;
 
   private float radius;
 
@@ -38,16 +42,15 @@ public class Collidable
 
     matrix = new float[16];
 
-    position = Vector.getInstance(3);
-    angles = Vector.getInstance(3);
-    globalsInitialized = false;
+    globalPosition = Vector.getInstance(3);
+    globalAngles = Vector.getInstance(3);
   }
 
   @Override
   public ArrayList<Vector2> getConvexHull(Plane plane)
   {
     ArrayList<Vector2> projection = getDistinctProjection(plane);
-    ArrayList<Vector2> convexHull = new ArrayList<Vector2>(projection.size());
+    ArrayList<Vector2> convexHull = new ArrayList<>(projection.size());
 
     int firstIndex = getFirstPointIndex(projection);
 
@@ -129,7 +132,7 @@ public class Collidable
   private ArrayList<Vector2> getDistinctProjection(Plane plane)
   {
     Vector2 vector = Vector.getInstance(2);
-    ArrayList<Vector2> result = new ArrayList<Vector2>();
+    ArrayList<Vector2> result = new ArrayList<>();
 
     for(Vector3 current : globalVertices)
     {
@@ -198,21 +201,24 @@ public class Collidable
   }
 
   @Override
-  public void setGlobal(Vector3 pos, Vector3 ang)
+  public void setGlobal(Vector3 position, Vector3 angles)
   {
-    if (globalsInitialized && pos.equals(position) && ang.equals(angles))
+    if (globalsInitialized && position.equals(globalPosition) && angles.equals(globalAngles))
       return;
 
     globalsInitialized = true;
-    position.setFrom(pos);
-    angles.setFrom(ang);
+    globalPosition.setFrom(position);
+    globalAngles.setFrom(angles);
+
+    Vector3 resultPos = globalPosition.getSum(localPosition);
+    Vector3 resultAngles = globalAngles.getSum(localAngles);
 
     // vertices
     Matrix.setIdentityM(matrix, 0);
-    Matrix.translateM(matrix, 0, position.getX(), position.getY(), position.getZ());
-    Matrix.rotateM(matrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
+    Matrix.translateM(matrix, 0, resultPos.getX(), resultPos.getY(), resultPos.getZ());
+    Matrix.rotateM(matrix, 0, resultAngles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
 
     int size = vertices.size();
     for (int i = 0; i < size; i++)
@@ -224,9 +230,9 @@ public class Collidable
 
     // normals
     Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
+    Matrix.rotateM(matrix, 0, resultAngles.getX(), 1.0f, 0.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
+    Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
 
     size = normals.size();
     for(int i = 0; i < size; i++)
@@ -237,16 +243,14 @@ public class Collidable
 
       global.normalize();
     }
+
+    Vector.release(resultPos);
+    Vector.release(resultAngles);
   }
 
-  @Override
-  public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
-
-  @Override
-  public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
-
-  @Override
-  public float getRadius() { return radius; }
+  @Override public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
+  @Override public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
+  @Override public float getRadius() { return radius; }
 
   private void loadGeometry(String fileName)
   {
@@ -265,30 +269,25 @@ public class Collidable
       dataBuffer.position(0);
 
       int numOfQuads = dataBuffer.getInt();
-      vertices = new ArrayList<Vector3>(numOfQuads * 4);
-      normals = new ArrayList<Vector3>();
+      vertices = new ArrayList<>(numOfQuads * 4);
+      normals = new ArrayList<>();
+
+      localPosition = Vector.getInstance(3, dataBuffer);
+      localAngles = Vector.getInstance(3, dataBuffer);
 
       for (int i = 0; i < numOfQuads * 4; i++)
       {
-        float x = dataBuffer.getFloat();
-        float y = dataBuffer.getFloat();
-        float z = dataBuffer.getFloat();
-
-        Vector3 point = new Vector3(x, y, z);
+        Vector3 point = Vector.getInstance(3, dataBuffer);
         if (!vertices.contains(point))
           vertices.add(point);
 
-        x = dataBuffer.getFloat();
-        y = dataBuffer.getFloat();
-        z = dataBuffer.getFloat();
-
-        Vector3 normal = new Vector3(x, y, z);
+        Vector3 normal = Vector.getInstance(3, dataBuffer);
         normal.normalize();
 
         boolean needAdd = true;
         for(Vector3 current : normals)
         {
-          needAdd = !current.getCross(normal).equals(Vector3.zero);
+          needAdd = !current.getCross(normal).isZero();
           if (!needAdd)
             break;
         }
@@ -318,7 +317,7 @@ public class Collidable
 
   private ArrayList<Vector3> createAndFill(int count)
   {
-    ArrayList<Vector3> result = new ArrayList<Vector3>(count);
+    ArrayList<Vector3> result = new ArrayList<>(count);
 
     for(int i = 0; i < count; i++)
       result.add(new Vector3());

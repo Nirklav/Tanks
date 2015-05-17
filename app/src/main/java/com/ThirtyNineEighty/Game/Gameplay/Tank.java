@@ -82,11 +82,9 @@ public class Tank extends GameObject
   {
     if (index == 1) // turret model
     {
-      Vector3 vec = Vector.getInstance(3, angles);
-      vec.addToZ(turretAngle);
-      renderable.setGlobal(position, vec);
-      Vector.release(vec);
-      return;
+      Vector3 turretAngles = Vector.getInstance(3);
+      turretAngles.addToZ(turretAngle);
+      renderable.setLocal(Vector3.zero, turretAngles);
     }
 
     super.setGlobalRenderablePosition(index, renderable);

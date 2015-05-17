@@ -99,7 +99,11 @@ public class GameMenu
     GameContext.content.unbindProgram(menuProgram);
   }
 
-  public float getJoystickAngle() { return joystick.getVector().getAngle(Vector2.xAxis); }
+  public float getJoystickAngle()
+  {
+    Vector2 vector = joystick.getVector();
+    return vector.getAngle(Vector2.xAxis);
+  }
 
   public boolean getLeftTurretState() { return leftTurretButton.getState(); }
   public boolean getRightTurretState() { return rightTurretButton.getState(); }
