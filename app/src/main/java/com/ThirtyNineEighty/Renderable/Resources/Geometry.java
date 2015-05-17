@@ -58,8 +58,9 @@ public class Geometry
 
     this.handle = handle;
     this.trianglesCount = trianglesCount;
-    this.position = new Vector3(position);
-    this.angles = new Vector3(angles);
+
+    this.position = position == null ? null : new Vector3(position);
+    this.angles = angles == null ? null : new Vector3(angles);
   }
 
   public void updateData(FloatBuffer data, int trianglesCount, Vector3 position, Vector3 angles)
@@ -69,7 +70,7 @@ public class Geometry
 
     this.data = data;
     this.trianglesCount = trianglesCount;
-    this.position = new Vector3(position);
-    this.angles = new Vector3(angles);
+    this.position = position == null ? null : new Vector3(position);
+    this.angles = angles == null ? null : new Vector3(angles);
   }
 }
