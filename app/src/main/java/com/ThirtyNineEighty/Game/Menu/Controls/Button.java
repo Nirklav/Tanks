@@ -2,8 +2,8 @@ package com.ThirtyNineEighty.Game.Menu.Controls;
 
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
-import com.ThirtyNineEighty.Renderable.Resources.FileImageSource;
-import com.ThirtyNineEighty.Renderable.Resources.Image;
+import com.ThirtyNineEighty.Resources.FileImageSource;
+import com.ThirtyNineEighty.Resources.Image;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Button
@@ -24,8 +24,8 @@ public class Button
 
   public Button(String caption, String pressedName, String notPressedName)
   {
-    pressed = GameContext.renderableResources.getImage(new FileImageSource(pressedName));
-    notPressed = GameContext.renderableResources.getImage(new FileImageSource(notPressedName));
+    pressed = GameContext.resources.getImage(new FileImageSource(pressedName));
+    notPressed = GameContext.resources.getImage(new FileImageSource(notPressedName));
 
     sprite = new GLSprite(notPressedName);
     sprite.setZIndex(0);

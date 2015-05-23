@@ -13,6 +13,8 @@ import android.view.WindowManager;
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Renderable.ConfigChooser;
+import com.ThirtyNineEighty.Renderable.Renderer;
 
 public class GameActivity
   extends Activity

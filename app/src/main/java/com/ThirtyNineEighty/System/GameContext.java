@@ -4,7 +4,7 @@ import android.content.pm.ApplicationInfo;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Gameplay.MapLoader;
-import com.ThirtyNineEighty.Renderable.Resources.RenderableResources;
+import com.ThirtyNineEighty.Resources.Resources;
 
 public class GameContext
 {
@@ -56,7 +56,7 @@ public class GameContext
 
   // Helpers
   public static final MapLoader mapLoader = new MapLoader();
-  public static final RenderableResources renderableResources = new RenderableResources();
+  public static final Resources resources = new Resources();
   public static final CollisionManager collisionManager = new CollisionManager();
 
   // Delta time

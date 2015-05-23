@@ -5,12 +5,12 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Resources.FileGeometrySource;
-import com.ThirtyNineEighty.Renderable.Resources.FileTextureSource;
-import com.ThirtyNineEighty.Renderable.Resources.Geometry;
+import com.ThirtyNineEighty.Resources.FileGeometrySource;
+import com.ThirtyNineEighty.Resources.FileTextureSource;
+import com.ThirtyNineEighty.Resources.Geometry;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
-import com.ThirtyNineEighty.Renderable.Resources.Texture;
+import com.ThirtyNineEighty.Resources.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLModel
@@ -31,8 +31,6 @@ public class GLModel
 
   private float scale;
 
-  private boolean disposed;
-
   public GLModel(String geometryName, String textureName)
   {
     modelMatrix = new float[16];
@@ -45,24 +43,8 @@ public class GLModel
     localPosition = Vector.getInstance(3);
     localAngles = Vector.getInstance(3);
 
-    geometryData = GameContext.renderableResources.getGeometry(new FileGeometrySource(geometryName));
-    textureData = GameContext.renderableResources.getTexture(new FileTextureSource(textureName, true));
-  }
-
-  public void dispose()
-  {
-    if (disposed)
-      return;
-
-    disposed = true;
-  }
-
-  @Override
-  public void finalize() throws Throwable
-  {
-    super.finalize();
-
-    dispose();
+    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(geometryName));
+    textureData = GameContext.resources.getTexture(new FileTextureSource(textureName, true));
   }
 
   @Override
@@ -103,7 +85,9 @@ public class GLModel
     GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
     // validating if debug
-    shader.validateProgram();
+    shader.validate();
+    geometryData.validate();
+    textureData.validate();
 
     // draw
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getTrianglesCount() * 3);

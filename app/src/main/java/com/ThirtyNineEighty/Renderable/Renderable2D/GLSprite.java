@@ -6,16 +6,16 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Renderable.Resources.FileImageSource;
-import com.ThirtyNineEighty.Renderable.Resources.FileTextureSource;
-import com.ThirtyNineEighty.Renderable.Resources.Geometry;
-import com.ThirtyNineEighty.Renderable.Resources.ISource;
-import com.ThirtyNineEighty.Renderable.Resources.Image;
-import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
-import com.ThirtyNineEighty.Renderable.Resources.StaticGeometrySource;
+import com.ThirtyNineEighty.Resources.FileImageSource;
+import com.ThirtyNineEighty.Resources.FileTextureSource;
+import com.ThirtyNineEighty.Resources.Geometry;
+import com.ThirtyNineEighty.Resources.ISource;
+import com.ThirtyNineEighty.Resources.Image;
+import com.ThirtyNineEighty.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.StaticGeometrySource;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
-import com.ThirtyNineEighty.Renderable.Resources.Texture;
+import com.ThirtyNineEighty.Resources.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
@@ -53,8 +53,8 @@ public class GLSprite
   {
     this();
 
-    Image imageData = GameContext.renderableResources.getImage(new FileImageSource(imageName));
-    geometryData = GameContext.renderableResources.getGeometry(new StaticGeometrySource("GLSpriteMesh", quadMeshData, quadMeshData.length / 12, MeshMode.Static));
+    Image imageData = GameContext.resources.getImage(new FileImageSource(imageName));
+    geometryData = GameContext.resources.getGeometry(new StaticGeometrySource("GLSpriteMesh", quadMeshData, quadMeshData.length / 12, MeshMode.Static));
 
     setImage(imageData);
     needBuildMatrix = true;
@@ -64,8 +64,8 @@ public class GLSprite
   {
     this();
 
-    textureData = GameContext.renderableResources.getTexture(new FileTextureSource(textureName, false));
-    geometryData = GameContext.renderableResources.getGeometry(geometrySource);
+    textureData = GameContext.resources.getTexture(new FileTextureSource(textureName, false));
+    geometryData = GameContext.resources.getGeometry(geometrySource);
 
     setTextureCoordinates(0, 0, 1, 1);
     needBuildMatrix = true;
@@ -124,7 +124,9 @@ public class GLSprite
     GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
     // validating if debug
-    shader.validateProgram();
+    shader.validate();
+    geometryData.validate();
+    textureData.validate();
 
     // draw
     GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getTrianglesCount() * 3);

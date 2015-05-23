@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.System;
+package com.ThirtyNineEighty.Renderable;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;

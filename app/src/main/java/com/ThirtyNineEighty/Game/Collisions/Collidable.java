@@ -6,12 +6,10 @@ import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Resources.FilePhGeometrySource;
+import com.ThirtyNineEighty.Resources.PhGeometry;
 import com.ThirtyNineEighty.System.GameContext;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,29 +19,26 @@ public class Collidable
 {
   private float[] matrix;
 
-  private ArrayList<Vector3> vertices;
-  private ArrayList<Vector3> normals;
-
   private ArrayList<Vector3> globalVertices;
   private ArrayList<Vector3> globalNormals;
   private boolean globalsInitialized;
 
-  private Vector3 localPosition;
-  private Vector3 localAngles;
-
   private Vector3 globalPosition;
   private Vector3 globalAngles;
 
-  private float radius;
+  private PhGeometry geometryData;
 
-  public Collidable(String fileName)
+  public Collidable(String name)
   {
-    loadGeometry(String.format("Models/%s.ph", fileName));
-
     matrix = new float[16];
 
     globalPosition = Vector.getInstance(3);
     globalAngles = Vector.getInstance(3);
+
+    geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
+
+    globalVertices = createAndFill(geometryData.vertices.size());
+    globalNormals = createAndFill(geometryData.normals.size());
   }
 
   @Override
@@ -210,8 +205,8 @@ public class Collidable
     globalPosition.setFrom(position);
     globalAngles.setFrom(angles);
 
-    Vector3 resultPos = globalPosition.getSum(localPosition);
-    Vector3 resultAngles = globalAngles.getSum(localAngles);
+    Vector3 resultPos = globalPosition.getSum(geometryData.position);
+    Vector3 resultAngles = globalAngles.getSum(geometryData.angles);
 
     // vertices
     Matrix.setIdentityM(matrix, 0);
@@ -220,10 +215,10 @@ public class Collidable
     Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
 
-    int size = vertices.size();
+    int size = geometryData.vertices.size();
     for (int i = 0; i < size; i++)
     {
-      Vector3 local = vertices.get(i);
+      Vector3 local = geometryData.vertices.get(i);
       Vector3 global = globalVertices.get(i);
       Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
     }
@@ -234,10 +229,10 @@ public class Collidable
     Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
     Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
 
-    size = normals.size();
+    size = geometryData.normals.size();
     for(int i = 0; i < size; i++)
     {
-      Vector3 local = normals.get(i);
+      Vector3 local = geometryData.normals.get(i);
       Vector3 global = globalNormals.get(i);
       Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
 
@@ -250,70 +245,7 @@ public class Collidable
 
   @Override public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
   @Override public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
-  @Override public float getRadius() { return radius; }
-
-  private void loadGeometry(String fileName)
-  {
-    try
-    {
-      InputStream stream = GameContext.activity.getAssets().open(fileName);
-
-      int size = stream.available();
-      byte[] data = new byte[size];
-      stream.read(data);
-      stream.close();
-
-      ByteBuffer dataBuffer = ByteBuffer.allocateDirect(size);
-      dataBuffer.put(data, 0, size);
-      dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-      dataBuffer.position(0);
-
-      int numOfQuads = dataBuffer.getInt();
-      vertices = new ArrayList<>(numOfQuads * 4);
-      normals = new ArrayList<>();
-
-      localPosition = Vector.getInstance(3, dataBuffer);
-      localAngles = Vector.getInstance(3, dataBuffer);
-
-      for (int i = 0; i < numOfQuads * 4; i++)
-      {
-        Vector3 point = Vector.getInstance(3, dataBuffer);
-        if (!vertices.contains(point))
-          vertices.add(point);
-
-        Vector3 normal = Vector.getInstance(3, dataBuffer);
-        normal.normalize();
-
-        boolean needAdd = true;
-        for(Vector3 current : normals)
-        {
-          needAdd = !current.getCross(normal).isZero();
-          if (!needAdd)
-            break;
-        }
-
-        if (needAdd)
-          normals.add(normal);
-      }
-
-      radius = 0.0f;
-      for(Vector3 current : vertices)
-      {
-        float currentLength = current.getLength();
-        if (currentLength > radius)
-          radius = currentLength;
-      }
-
-      globalVertices = createAndFill(vertices.size());
-      globalNormals = createAndFill(normals.size());
-
-      dataBuffer.clear();
-    }
-    catch(IOException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
+  @Override public float getRadius() { return geometryData.radius; }
 
   private ArrayList<Vector3> createAndFill(int count)
   {

@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.System;
+package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -9,7 +9,7 @@ import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Renderable.Shader;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 
@@ -123,7 +123,7 @@ public class Renderer
     Shader.initShader3D();
     Shader.initShader2D();
 
-    GameContext.renderableResources.reloadCache();
+    GameContext.resources.reloadCache();
     initialized = true;
 
     GameContext.content.start();

@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.System.Camera;
+import com.ThirtyNineEighty.Renderable.Camera;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.ISubprogram;
 import com.ThirtyNineEighty.System.Subprogram;

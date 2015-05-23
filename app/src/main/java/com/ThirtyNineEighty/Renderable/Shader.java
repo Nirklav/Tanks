@@ -63,7 +63,7 @@ public abstract class Shader
     GLES20.glUseProgram(shader2D.programHandle);
   }
 
-  public void validateProgram()
+  public void validate()
   {
     if (!GameContext.isDebuggable())
       return;

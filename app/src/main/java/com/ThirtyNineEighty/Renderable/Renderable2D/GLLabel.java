@@ -3,8 +3,8 @@ package com.ThirtyNineEighty.Renderable.Renderable2D;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Resources.GeometrySource;
-import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.GeometrySource;
+import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
@@ -177,7 +177,7 @@ public class GLLabel
   {
     MeshMode mode = geometryData.getMode();
     LabelGeometrySource source = new LabelGeometrySource(value, mode, charWidth, charHeight);
-    geometryData = GameContext.renderableResources.getGeometry(source);
+    geometryData = GameContext.resources.getGeometry(source);
   }
 
   public enum AlignType

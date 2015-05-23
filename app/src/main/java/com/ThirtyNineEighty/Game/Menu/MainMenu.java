@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Renderable.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.System.GameContext;
 

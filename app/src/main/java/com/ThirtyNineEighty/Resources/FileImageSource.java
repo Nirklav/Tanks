@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable.Resources;
+package com.ThirtyNineEighty.Resources;
 
 import com.ThirtyNineEighty.Helpers.Serializer;
 import com.ThirtyNineEighty.System.GameContext;
@@ -21,7 +21,7 @@ public class FileImageSource
   {
     String fileName = getImageFileName(name);
     ImageDescription description = Serializer.Deserialize(fileName);
-    Texture texture = GameContext.renderableResources.getTexture(new FileTextureSource(description.textureName, false));
+    Texture texture = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
 
     return new Image(texture, description.coordinates);
   }
@@ -31,7 +31,7 @@ public class FileImageSource
   {
     String fileName = getImageFileName(name);
     ImageDescription description = Serializer.Deserialize(fileName);
-    Texture texture = GameContext.renderableResources.getTexture(new FileTextureSource(description.textureName, false));
+    Texture texture = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
 
     image.setTexture(texture);
     image.setCoordinates(description.coordinates);

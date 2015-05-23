@@ -1,6 +1,9 @@
-package com.ThirtyNineEighty.Renderable.Resources;
+package com.ThirtyNineEighty.Resources;
+
+import android.opengl.GLES20;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
 
@@ -72,5 +75,14 @@ public class Geometry
     this.trianglesCount = trianglesCount;
     this.position = position == null ? null : new Vector3(position);
     this.angles = angles == null ? null : new Vector3(angles);
+  }
+
+  public void validate()
+  {
+    if (!GameContext.isDebuggable() || mode != MeshMode.Static)
+      return;
+
+    if (!GLES20.glIsBuffer(handle))
+      throw new IllegalStateException("Buffer handle deprecated");
   }
 }
