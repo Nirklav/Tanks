@@ -5,12 +5,12 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Resources.FileGeometrySource;
-import com.ThirtyNineEighty.Resources.FileTextureSource;
-import com.ThirtyNineEighty.Resources.Geometry;
+import com.ThirtyNineEighty.Resources.Sources.FileGeometrySource;
+import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
+import com.ThirtyNineEighty.Resources.Entities.Geometry;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader3D;
-import com.ThirtyNineEighty.Resources.Texture;
+import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLModel

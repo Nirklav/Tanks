@@ -25,7 +25,8 @@ public class GameWorld
 
     GameStartArgs args = (GameStartArgs) obj;
 
-    MapDescription map = GameContext.mapLoader.load(args.getMapName());
+    GameContext.mapManager.load(args.getMapName());
+    MapDescription map = GameContext.mapManager.getDescription();
 
     player = new Tank(args.getTankName());
     player.setPosition(map.player.getPosition());

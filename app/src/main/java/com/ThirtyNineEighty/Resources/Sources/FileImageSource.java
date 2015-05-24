@@ -1,6 +1,9 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Sources;
 
 import com.ThirtyNineEighty.Helpers.Serializer;
+import com.ThirtyNineEighty.Resources.Entities.Image;
+import com.ThirtyNineEighty.Resources.Entities.Texture;
+import com.ThirtyNineEighty.Resources.ImageDescription;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class FileImageSource

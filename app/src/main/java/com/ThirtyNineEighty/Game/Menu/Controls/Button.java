@@ -2,8 +2,8 @@ package com.ThirtyNineEighty.Game.Menu.Controls;
 
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
-import com.ThirtyNineEighty.Resources.FileImageSource;
-import com.ThirtyNineEighty.Resources.Image;
+import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
+import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Button

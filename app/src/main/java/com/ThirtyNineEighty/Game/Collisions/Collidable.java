@@ -6,8 +6,8 @@ import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Resources.FilePhGeometrySource;
-import com.ThirtyNineEighty.Resources.PhGeometry;
+import com.ThirtyNineEighty.Resources.Sources.FilePhGeometrySource;
+import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;

@@ -6,16 +6,16 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Resources.FileImageSource;
-import com.ThirtyNineEighty.Resources.FileTextureSource;
-import com.ThirtyNineEighty.Resources.Geometry;
-import com.ThirtyNineEighty.Resources.ISource;
-import com.ThirtyNineEighty.Resources.Image;
+import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
+import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
+import com.ThirtyNineEighty.Resources.Entities.Geometry;
+import com.ThirtyNineEighty.Resources.Sources.ISource;
+import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.StaticGeometrySource;
+import com.ThirtyNineEighty.Resources.Sources.StaticGeometrySource;
 import com.ThirtyNineEighty.Renderable.Shader;
 import com.ThirtyNineEighty.Renderable.Shader2D;
-import com.ThirtyNineEighty.Resources.Texture;
+import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;

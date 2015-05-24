@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Entities;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
 

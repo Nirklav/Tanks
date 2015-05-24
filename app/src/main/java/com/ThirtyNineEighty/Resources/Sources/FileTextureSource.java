@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Sources;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +7,7 @@ import android.opengl.GLException;
 import android.opengl.GLUtils;
 
 import com.ThirtyNineEighty.Helpers.ResultRunnable;
+import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.InputStream;

@@ -1,7 +1,8 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Sources;
 
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;

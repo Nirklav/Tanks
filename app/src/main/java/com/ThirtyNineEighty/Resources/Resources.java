@@ -1,5 +1,11 @@
 package com.ThirtyNineEighty.Resources;
 
+import com.ThirtyNineEighty.Resources.Entities.Geometry;
+import com.ThirtyNineEighty.Resources.Entities.Image;
+import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
+import com.ThirtyNineEighty.Resources.Entities.Texture;
+import com.ThirtyNineEighty.Resources.Sources.ISource;
+
 public final class Resources
 {
   private ResourceCache<Texture> textureCache = new ResourceCache<>();
@@ -25,7 +31,7 @@ public final class Resources
     textureCache.clear();
     geometryCache.clear();
     imagesCache.clear();
-    imagesCache.reload();
+    imagesCache.clear();
   }
 
   public String getCacheStatus()

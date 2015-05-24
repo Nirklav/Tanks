@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Resources;
 
+import com.ThirtyNineEighty.Resources.Sources.ISource;
+
 import java.util.HashMap;
 
 public class ResourceCache<TResource>

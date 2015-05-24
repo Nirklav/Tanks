@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Sources;
 
 public interface ISource<TResource>
 {

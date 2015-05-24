@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
+import com.ThirtyNineEighty.Game.Gameplay.Map;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
@@ -149,6 +150,17 @@ public class CollisionManager
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);
+
+    Map map = GameContext.mapManager.getMap();
+    Vector3 position = object.getPosition();
+
+    float x = position.getX();
+    if (Math.abs(x) >= map.size)
+      position.setX(map.size * Math.signum(x));
+
+    float y = position.getY();
+    if (Math.abs(y) >= map.size)
+      position.setY(map.size * Math.signum(y));
   }
 
   private ResolveResult resolve(IEngineObject object)
@@ -172,7 +184,6 @@ public class CollisionManager
         continue;
 
       Collision3D collision = new Collision3D(objectPh, currentPh);
-
       if (collision.isCollide())
       {
         if (result == null)

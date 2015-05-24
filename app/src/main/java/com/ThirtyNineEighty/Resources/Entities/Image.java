@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Entities;
 
 public class Image
 {

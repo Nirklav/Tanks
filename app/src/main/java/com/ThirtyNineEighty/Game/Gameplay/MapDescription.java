@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 
 import java.io.Serializable;
 
-@SuppressWarnings("UnusedDeclaration") // set by serialization
+@SuppressWarnings("UnusedDeclaration") // fields set by serialization
 public class MapDescription
   implements Serializable
 {
@@ -47,6 +47,7 @@ public class MapDescription
     public Vector3 getAngles() { return new Vector3(xAng, yAng, zAng); }
   }
 
+  public float size;
   public MapObject[] objects;
   public Player player;
 }

@@ -1,8 +1,9 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Entities;
 
 import android.opengl.GLES20;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;

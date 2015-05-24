@@ -54,7 +54,7 @@ public class GameActivity
 
     // Initialize game context
     GameContext.setActivity(this);
-    GameContext.mapLoader.initialize();
+    GameContext.mapManager.initialize();
 
     if (GameContext.content == null)
       GameContext.content = new Content();

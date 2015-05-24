@@ -14,11 +14,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public final class MapLoader
+public final class MapManager
 {
   private HashMap<String, Class> objectBindings;
   private HashMap<String, Class> subprogramBindings;
   private ArrayList<String> maps;
+
+  private MapDescription description;
+  private Map map;
 
   public void initialize()
   {
@@ -35,12 +38,18 @@ public final class MapLoader
     maps = loadMapNames();
   }
 
-  public MapDescription load(String name)
-  {
-    IWorld world = GameContext.content.getWorld();
-    MapDescription map = Serializer.Deserialize(String.format("Maps/%s.map", name));
+  public MapDescription getDescription() { return description; }
+  public Map getMap() { return map; }
 
-    for (MapDescription.MapObject obj : map.objects)
+  public void load(String name)
+  {
+    if (!maps.contains(name))
+      throw new IllegalArgumentException("name");
+
+    IWorld world = GameContext.content.getWorld();
+    MapDescription description = Serializer.Deserialize(String.format("Maps/%s.map", name));
+
+    for (MapDescription.MapObject obj : description.objects)
     {
       IEngineObject object = createObject(obj.name);
       object.setPosition(obj.getPosition());
@@ -56,7 +65,8 @@ public final class MapLoader
       world.add(object);
     }
 
-    return map;
+    this.description = description;
+    this.map = new Map(description.size);
   }
 
   public List<String> getMaps() { return maps; }

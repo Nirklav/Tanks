@@ -20,7 +20,7 @@ public class MainMenu
   @Override
   public void initialize(Object args)
   {
-    List<String> maps = GameContext.mapLoader.getMaps();
+    List<String> maps = GameContext.mapManager.getMaps();
     selectedMapIndex = 0;
     selectedMap = maps.get(selectedMapIndex);
 
@@ -68,7 +68,7 @@ public class MainMenu
       {
         selectedMapIndex++;
 
-        List<String> maps = GameContext.mapLoader.getMaps();
+        List<String> maps = GameContext.mapManager.getMaps();
         if (selectedMapIndex >= maps.size())
           selectedMapIndex = 0;
 
