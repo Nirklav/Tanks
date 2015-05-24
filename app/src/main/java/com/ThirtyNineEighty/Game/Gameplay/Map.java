@@ -1,7 +1,9 @@
 package com.ThirtyNineEighty.Game.Gameplay;
 
+import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Rectangle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
@@ -26,22 +28,67 @@ public class Map
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
   public final float size;
-  public final ArrayList<IEngineObject> objects;
 
   public Map(float size)
   {
     this.size = size;
-    this.objects = new ArrayList<>();
   }
 
   public ArrayList<Vector2> findPath(Vector2 start, Vector2 end)
   {
+    Rectangle rect = new Rectangle(start, end);
+    PolygonPredicate polygonPredicate = new PolygonPredicate(start, end);
+    ArrayList<Polygon> polygons = getPolygons(rect);
+    ArrayList<PathNode> closedSet = new ArrayList<>();
+    ArrayList<PathNode> openSet = new ArrayList<>();
+    openSet.add(new PathNode(start, 0, getPathLength(start, end)));
+
+    while (openSet.size() > 0)
+    {
+      PathNode currentNode = Collections.min(openSet, pathLengthComparator);
+      if (currentNode.position.equals(end))
+        return getPath(currentNode);
+
+      openSet.remove(currentNode);
+      closedSet.add(currentNode);
+
+      for (int i = 0; i < 4; i++)
+      {
+        Vector2 nextPoint = getNextPoint(currentNode.position, i);
+
+        if (any(polygons, polygonPredicate))
+          continue;
+
+        PathNode nextNode = new PathNode(currentNode, nextPoint, currentNode.lengthFromStart + stepSize, getPathLength(currentNode.position, end));
+
+        if (any(closedSet, new PositionEqualsPredicate(nextNode.position)))
+          continue;
+
+        PathNode openNode = find(openSet, new PositionEqualsPredicate(nextNode.position));
+
+        if (openNode == null)
+          openSet.add(nextNode);
+        else
+          if (openNode.lengthFromStart > nextNode.lengthFromStart)
+          {
+            openNode.from = currentNode;
+            openNode.lengthFromStart = nextNode.lengthFromStart;
+          }
+      }
+    }
+
+    return null;
+  }
+
+  private ArrayList<Polygon> getPolygons(Rectangle rect)
+  {
     IWorld world = GameContext.content.getWorld();
 
-    objects.clear();
+    ArrayList<IEngineObject> objects = new ArrayList<>();
+    ArrayList<Polygon> polygons = new ArrayList<>();
+
     world.fillObjects(objects);
 
-    Rectangle rect = new Rectangle(start, end);
     Vector2 position = Vector.getInstance(2);
 
     int size = objects.size();
@@ -52,49 +99,16 @@ public class Map
       position.setFrom(objPosition);
 
       if (!rect.contains(position))
-        objects.remove(i);
+        continue;
+
+      Polygon polygon = Polygon.FromObject(object);
+      if (polygon == null)
+        continue;
+
+      polygons.add(polygon);
     }
 
-    ArrayList<PathNode> closedSet = new ArrayList<>();
-    ArrayList<PathNode> openSet = new ArrayList<>();
-    openSet.add(new PathNode(start, 0, getPathLength(start, end)));
-
-    while (openSet.size() > 0)
-    {
-      PathNode currentNode = Collections.min(openSet, pathLengthComparator);
-      if (currentNode.position.equals(end))
-        return getPathForNode(currentNode);
-
-      openSet.remove(currentNode);
-      closedSet.add(currentNode);
-
-      for (int i = 0; i < 4; i++)
-      {
-        Vector2 nextPoint = getNextPoint(currentNode.position, i);
-
-        // TODO: check all objects
-        //if (objects.Any(obj => obj.Position == nextPoint && obj.Position != end))
-        //  continue;
-
-        PathNode neighbourNode = new PathNode(currentNode, nextPoint, currentNode.lengthFromStart + stepSize, getPathLength(currentNode.position, end));
-
-        if (any(closedSet, new PositionEqualsPredicate(neighbourNode.position)))
-          continue;
-
-        PathNode openNode = find(openSet, new PositionEqualsPredicate(neighbourNode.position));
-
-        if (openNode == null)
-          openSet.add(neighbourNode);
-        else
-          if (openNode.lengthFromStart > neighbourNode.lengthFromStart)
-          {
-            openNode.from = currentNode;
-            openNode.lengthFromStart = neighbourNode.lengthFromStart;
-          }
-      }
-    }
-
-    return null;
+    return polygons;
   }
 
   private static Vector2 getNextPoint(Vector2 current, int direction)
@@ -111,10 +125,10 @@ public class Map
     return result;
   }
 
-  private static ArrayList<Vector2> getPathForNode(PathNode pathNode)
+  private static ArrayList<Vector2> getPath(PathNode node)
   {
     ArrayList<Vector2> result = new ArrayList<>();
-    PathNode currentNode = pathNode;
+    PathNode currentNode = node;
 
     while (currentNode != null)
     {
@@ -145,55 +159,99 @@ public class Map
         return current;
     return null;
   }
+}
 
-  private static class PositionEqualsPredicate implements Predicate<PathNode>
+class PositionEqualsPredicate implements Predicate<PathNode>
+{
+  private final Vector2 position;
+
+  public PositionEqualsPredicate(Vector2 value)
   {
-    private final Vector2 position;
-
-    public PositionEqualsPredicate(Vector2 value)
-    {
-      position = value;
-    }
-
-    @Override
-    public boolean apply(PathNode pathNode)
-    {
-      return pathNode.position.equals(position);
-    }
+    position = value;
   }
 
-  private static class PathLengthComparator
-    implements Comparator<PathNode>
+  @Override
+  public boolean apply(PathNode pathNode)
   {
-    @Override
-    public int compare(PathNode first, PathNode second)
-    {
-      float firstLength = first.getFullLength();
-      float secondLength = second.getFullLength();
-      return Float.compare(firstLength, secondLength);
-    }
+    return pathNode.position.equals(position);
+  }
+}
+
+class PolygonPredicate implements Predicate<Polygon>
+{
+  private final Vector2 start;
+  private final Vector2 end;
+
+  public PolygonPredicate(Vector2 start, Vector2 end)
+  {
+    this.start = start;
+    this.end = end;
   }
 
-  private static class PathNode
+  @Override
+  public boolean apply(Polygon polygon)
   {
-    public PathNode from;
-    public Vector2 position;
-    public float lengthFromStart;
-    public float estimateLeftLength;
+    return polygon.contains(start) && !polygon.contains(end);
+  }
+}
 
-    public PathNode(Vector2 position, float lengthFromStart, float estimateLeftLength)
-    {
-      this(null, position, lengthFromStart, estimateLeftLength);
-    }
+class PathLengthComparator
+  implements Comparator<PathNode>
+{
+  @Override
+  public int compare(PathNode first, PathNode second)
+  {
+    float firstLength = first.getFullLength();
+    float secondLength = second.getFullLength();
+    return Float.compare(firstLength, secondLength);
+  }
+}
 
-    public PathNode(PathNode from, Vector2 position, float lengthFromStart, float estimateLeftLength)
-    {
-      this.from = from;
-      this.position = position;
-      this.lengthFromStart = lengthFromStart;
-      this.estimateLeftLength = estimateLeftLength;
-    }
+class PathNode
+{
+  public PathNode from;
+  public Vector2 position;
+  public float lengthFromStart;
+  public float estimateLeftLength;
 
-    public float getFullLength() { return lengthFromStart + estimateLeftLength; }
+  public PathNode(Vector2 position, float lengthFromStart, float estimateLeftLength)
+  {
+    this(null, position, lengthFromStart, estimateLeftLength);
+  }
+
+  public PathNode(PathNode from, Vector2 position, float lengthFromStart, float estimateLeftLength)
+  {
+    this.from = from;
+    this.position = position;
+    this.lengthFromStart = lengthFromStart;
+    this.estimateLeftLength = estimateLeftLength;
+  }
+
+  public float getFullLength() { return lengthFromStart + estimateLeftLength; }
+}
+
+class Polygon
+{
+  private static final Plane plane = new Plane(Vector3.zAxis);
+  private final ArrayList<Vector2> vertices;
+
+  public static Polygon FromObject(IEngineObject object)
+  {
+    ICollidable collidable = object.getCollidable();
+    if (collidable == null)
+      return null;
+
+    ArrayList<Vector2> vertices = collidable.getConvexHull(plane);
+    return new Polygon(vertices);
+  }
+
+  private Polygon(ArrayList<Vector2> vertices)
+  {
+    this.vertices = vertices;
+  }
+
+  public boolean contains(Vector2 vector)
+  {
+    throw new RuntimeException("not implemented");
   }
 }
