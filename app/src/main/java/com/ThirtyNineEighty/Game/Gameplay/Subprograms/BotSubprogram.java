@@ -1,21 +1,26 @@
 package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
+import com.ThirtyNineEighty.Game.Gameplay.Map;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
+
+import java.util.ArrayList;
 
 public class BotSubprogram
   extends Subprogram
 {
   private final static float minDistance = 30;
   private final static float maxDistance = 150;
+  private final static float stepCompletion = Map.stepSize / 10f;
 
   private Tank bot;
+  private ArrayList<Vector2> path;
+  private int currentPathStep;
 
   public BotSubprogram(GameObject bot)
   {
@@ -28,35 +33,70 @@ public class BotSubprogram
   {
     IWorld world = GameContext.content.getWorld();
     Tank player = (Tank) world.getPlayer();
+    Map map = GameContext.mapManager.getMap();
 
-    Vector3 playerPosition = player.getPosition();
-    Vector3 botPosition = bot.getPosition();
+    Vector2 playerPosition = Vector.getInstance(2);
+    playerPosition.setFrom(player.getPosition());
 
-    Vector3 resultVec3 = playerPosition.getSubtract(botPosition);
-    Vector2 resultVec2 = Vector.getInstance(2);
-    resultVec2.setFrom(resultVec3); // Set without z coordinate
+    Vector2 botPosition = Vector.getInstance(2);
+    botPosition.setFrom(bot.getPosition());
 
-    float distance = resultVec2.getLength();
+    Vector2 targetVector = playerPosition.getSubtract(botPosition);
+    float distance = targetVector.getLength();
     if (distance > maxDistance)
       return;
 
-    float targetAngle = Vector2.xAxis.getAngle(resultVec2);
+    if (path == null)
+    {
+      path = map.findPath(botPosition, playerPosition, null);
+      if (path == null)
+        return;
+
+      currentPathStep = 0;
+    }
+
+    Vector2 nextStepVector = Vector.getInstance(2);
+    while (true)
+    {
+      if (currentPathStep >= path.size())
+      {
+        Vector.release(path);
+        path = null;
+        return; // skip update (wait next)
+      }
+
+      Vector2 nextStep = path.get(currentPathStep);
+      nextStepVector.setFrom(nextStep);
+      nextStepVector.subtract(botPosition);
+
+      if (nextStepVector.getLength() <= stepCompletion)
+        currentPathStep++;
+      else
+        break;
+    }
+
+    float targetAngle = Vector2.xAxis.getAngle(targetVector); // For turret
+    float nextStepAngle = Vector2.xAxis.getAngle(nextStepVector); // For body
     float botAngle = bot.getAngles().getZ();
 
+    // Move/Turn body
     if (distance > minDistance)
     {
-      GameContext.collisionManager.rotate(bot, targetAngle);
+      GameContext.collisionManager.rotate(bot, nextStepAngle);
 
-      if (Math.abs(botAngle - targetAngle) < 30)
+      if (Math.abs(botAngle - nextStepAngle) < 30)
         GameContext.collisionManager.move(bot);
     }
 
+    // Turn turret (or fire)
     if (Math.abs(bot.getTurretAngle() - targetAngle) < 3)
       bot.fire();
     else
       bot.turnTurret(targetAngle);
 
-    Vector.release(resultVec3);
-    Vector.release(resultVec2);
+    Vector.release(playerPosition);
+    Vector.release(botPosition);
+    Vector.release(targetVector);
+    Vector.release(nextStepVector);
   }
 }

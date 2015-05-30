@@ -18,12 +18,17 @@ import java.util.Comparator;
 
 public class Map
 {
+  private final static int DirectionsCount = 8;
   private final static int Top = 0;
-  private final static int Bottom = 1;
-  private final static int Left = 2;
-  private final static int Right = 3;
+  private final static int TopLeft = 1;
+  private final static int TopRight = 2;
+  private final static int Left = 3;
+  private final static int Right = 4;
+  private final static int Bottom = 5;
+  private final static int BottomLeft = 6;
+  private final static int BottomRight = 7;
 
-  private final static float stepSize = 1;
+  public final static float stepSize = 10;
 
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
@@ -34,11 +39,25 @@ public class Map
     this.size = size;
   }
 
-  public ArrayList<Vector2> findPath(Vector2 start, Vector2 end)
+  public ArrayList<Vector2> findPath(IEngineObject finder, IEngineObject target)
   {
-    Rectangle rect = new Rectangle(start, end);
-    PolygonPredicate polygonPredicate = new PolygonPredicate(start, end);
-    ArrayList<Polygon> polygons = getPolygons(rect);
+    Vector2 finderPosition = Vector.getInstance(2);
+    finderPosition.setFrom(finder.getPosition());
+
+    Vector2 targetPosition = Vector.getInstance(2);
+    targetPosition.setFrom(target.getPosition());
+
+    Rectangle rect = new Rectangle(finderPosition, targetPosition); // TODO : build right rectangle
+    ArrayList<Projection> projections = getProjections(rect);
+    return findPath(finderPosition, targetPosition, projections);
+  }
+
+  public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, ArrayList<Projection> projections)
+  {
+    normalizePoint(start);
+    normalizePoint(end);
+
+    ProjectionPredicate projectionsPredicate = new ProjectionPredicate(start, end);
     ArrayList<PathNode> closedSet = new ArrayList<>();
     ArrayList<PathNode> openSet = new ArrayList<>();
     openSet.add(new PathNode(start, 0, getPathLength(start, end)));
@@ -52,14 +71,15 @@ public class Map
       openSet.remove(currentNode);
       closedSet.add(currentNode);
 
-      for (int i = 0; i < 4; i++)
+      for (int i = 0; i < DirectionsCount; i++)
       {
         Vector2 nextPoint = getNextPoint(currentNode.position, i);
 
-        if (any(polygons, polygonPredicate))
+        if (projections != null && any(projections, projectionsPredicate))
           continue;
 
-        PathNode nextNode = new PathNode(currentNode, nextPoint, currentNode.lengthFromStart + stepSize, getPathLength(currentNode.position, end));
+        float estimatedLength = getPathLength(nextPoint, end);
+        PathNode nextNode = new PathNode(currentNode, nextPoint, currentNode.lengthFromStart + stepSize, estimatedLength);
 
         if (any(closedSet, new PositionEqualsPredicate(nextNode.position)))
           continue;
@@ -80,12 +100,13 @@ public class Map
     return null;
   }
 
-  private ArrayList<Polygon> getPolygons(Rectangle rect)
+  private ArrayList<Projection> getProjections(Rectangle rect)
   {
     IWorld world = GameContext.content.getWorld();
+    IEngineObject player = world.getPlayer();
 
     ArrayList<IEngineObject> objects = new ArrayList<>();
-    ArrayList<Polygon> polygons = new ArrayList<>();
+    ArrayList<Projection> projections = new ArrayList<>();
 
     world.fillObjects(objects);
 
@@ -95,31 +116,64 @@ public class Map
     for (int i = 0; i < size; i++)
     {
       IEngineObject object = objects.get(i);
+      if (player == object)
+        continue;
+
       Vector3 objPosition = object.getPosition();
       position.setFrom(objPosition);
 
       if (!rect.contains(position))
         continue;
 
-      Polygon polygon = Polygon.FromObject(object);
-      if (polygon == null)
+      Projection projection = Projection.FromObject(object);
+      if (projection == null)
         continue;
 
-      polygons.add(polygon);
+      projections.add(projection);
     }
 
-    return polygons;
+    return projections;
   }
 
-  private static Vector2 getNextPoint(Vector2 current, int direction)
+  private void normalizePoint(Vector point)
+  {
+    int size = point.getSize();
+    for (int i = 0; i < size; i++)
+    {
+      float value = point.get(i);
+      float modulo = value % stepSize;
+      value -= modulo;
+
+      if (modulo >= stepSize / 2)
+        value += stepSize;
+
+      point.set(i, value);
+    }
+  }
+
+  private Vector2 getNextPoint(Vector2 current, int direction)
   {
     Vector2 result = Vector.getInstance(2);
+    float x = current.getX();
+    float y = current.getY();
+
     switch (direction)
     {
-    case Top: result.setFrom(current.getX(), current.getY() + stepSize); break;
-    case Left: result.setFrom(current.getX() - stepSize, current.getY()); break;
-    case Right: result.setFrom(current.getX() + stepSize, current.getY()); break;
-    case Bottom: result.setFrom(current.getX(), current.getY() - stepSize); break;
+    case Top:         result.setFrom(x           , y + stepSize); break;
+    case TopLeft:     result.setFrom(x - stepSize, y + stepSize); break;
+    case TopRight:    result.setFrom(x + stepSize, y + stepSize); break;
+    case Left:        result.setFrom(x - stepSize, y           ); break;
+    case Right:       result.setFrom(x + stepSize, y           ); break;
+    case Bottom:      result.setFrom(x           , y - stepSize); break;
+    case BottomLeft:  result.setFrom(x - stepSize, y - stepSize); break;
+    case BottomRight: result.setFrom(x + stepSize, y - stepSize); break;
+    }
+
+    for (int i = 0; i < result.getSize(); i++)
+    {
+      float value = result.get(i);
+      if (Math.abs(value) > size)
+        result.set(i, Math.signum(value) * size);
     }
 
     return result;
@@ -143,7 +197,7 @@ public class Map
   private static float getPathLength(Vector2 start, Vector2 end)
   {
     float x = Math.abs(start.getX() - end.getX());
-    float y = Math.abs(start.getX() - end.getY());
+    float y = Math.abs(start.getY() - end.getY());
     return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
   }
 
@@ -177,21 +231,21 @@ class PositionEqualsPredicate implements Predicate<PathNode>
   }
 }
 
-class PolygonPredicate implements Predicate<Polygon>
+class ProjectionPredicate implements Predicate<Projection>
 {
   private final Vector2 start;
   private final Vector2 end;
 
-  public PolygonPredicate(Vector2 start, Vector2 end)
+  public ProjectionPredicate(Vector2 start, Vector2 end)
   {
     this.start = start;
     this.end = end;
   }
 
   @Override
-  public boolean apply(Polygon polygon)
+  public boolean apply(Projection projection)
   {
-    return polygon.contains(start) && !polygon.contains(end);
+    return projection.contains(start) && !projection.contains(end);
   }
 }
 
@@ -230,28 +284,51 @@ class PathNode
   public float getFullLength() { return lengthFromStart + estimateLeftLength; }
 }
 
-class Polygon
+class Projection
 {
   private static final Plane plane = new Plane(Vector3.zAxis);
-  private final ArrayList<Vector2> vertices;
+  private final float radius;
+  private final Vector2 position;
 
-  public static Polygon FromObject(IEngineObject object)
+  public static Projection FromObject(IEngineObject object)
   {
     ICollidable collidable = object.getCollidable();
     if (collidable == null)
       return null;
 
+    Vector3 objPos = object.getPosition();
+    Vector2 position = Vector.getInstance(2);
+    position.setFrom(objPos);
+
     ArrayList<Vector2> vertices = collidable.getConvexHull(plane);
-    return new Polygon(vertices);
+
+    float radius = 0.0f;
+    Vector2 tempVector = Vector.getInstance(2);
+
+    for (Vector2 vec : vertices)
+    {
+      tempVector.setFrom(vec);
+      tempVector.subtract(position);
+
+      float length = tempVector.getLength();
+      if (length > radius)
+        radius = length;
+    }
+
+    Vector.release(tempVector);
+    return new Projection(radius, position);
   }
 
-  private Polygon(ArrayList<Vector2> vertices)
+  private Projection(float radius, Vector2 position)
   {
-    this.vertices = vertices;
+    this.radius = radius;
+    this.position = position;
   }
 
   public boolean contains(Vector2 vector)
   {
-    throw new RuntimeException("not implemented");
+    Vector2 tempVector = Vector.getInstance(2, vector);
+    tempVector.subtract(position);
+    return radius > tempVector.getLength();
   }
 }
