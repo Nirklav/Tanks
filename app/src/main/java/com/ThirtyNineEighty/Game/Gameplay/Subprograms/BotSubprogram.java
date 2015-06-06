@@ -35,20 +35,17 @@ public class BotSubprogram
     Tank player = (Tank) world.getPlayer();
     Map map = GameContext.mapManager.getMap();
 
-    Vector2 playerPosition = Vector.getInstance(2);
-    playerPosition.setFrom(player.getPosition());
-
-    Vector2 botPosition = Vector.getInstance(2);
-    botPosition.setFrom(bot.getPosition());
-
+    Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
+    Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
     Vector2 targetVector = playerPosition.getSubtract(botPosition);
+
     float distance = targetVector.getLength();
     if (distance > maxDistance)
       return;
 
     if (path == null)
     {
-      path = map.findPath(botPosition, playerPosition, null);
+      path = map.findPath(bot, player);
       if (path == null)
         return;
 

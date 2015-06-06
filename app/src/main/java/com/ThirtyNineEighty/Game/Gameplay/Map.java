@@ -7,7 +7,6 @@ import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Rectangle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 import com.android.internal.util.Predicate;
 
@@ -28,7 +27,7 @@ public class Map
   private final static int BottomLeft = 6;
   private final static int BottomRight = 7;
 
-  public final static float stepSize = 10;
+  public final static float stepSize = 1;
 
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
@@ -41,15 +40,15 @@ public class Map
 
   public ArrayList<Vector2> findPath(IEngineObject finder, IEngineObject target)
   {
-    Vector2 finderPosition = Vector.getInstance(2);
-    finderPosition.setFrom(finder.getPosition());
+    Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
+    Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
 
-    Vector2 targetPosition = Vector.getInstance(2);
-    targetPosition.setFrom(target.getPosition());
+    ICollidable finderCollidable = finder.getCollidable();
+    ICollidable targetCollidable = target.getCollidable();
 
-    Rectangle rect = new Rectangle(finderPosition, targetPosition); // TODO : build right rectangle
-    ArrayList<Projection> projections = getProjections(rect);
-    return findPath(finderPosition, targetPosition, projections);
+    float radius = Math.max(finderCollidable.getRadius(), targetCollidable.getRadius());
+    Rectangle rect = new Rectangle(finderPosition, targetPosition, radius);
+    return findPath(finderPosition, targetPosition, getProjections(rect, target));
   }
 
   public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, ArrayList<Projection> projections)
@@ -57,7 +56,6 @@ public class Map
     normalizePoint(start);
     normalizePoint(end);
 
-    ProjectionPredicate projectionsPredicate = new ProjectionPredicate(start, end);
     ArrayList<PathNode> closedSet = new ArrayList<>();
     ArrayList<PathNode> openSet = new ArrayList<>();
     openSet.add(new PathNode(start, 0, getPathLength(start, end)));
@@ -75,7 +73,7 @@ public class Map
       {
         Vector2 nextPoint = getNextPoint(currentNode.position, i);
 
-        if (projections != null && any(projections, projectionsPredicate))
+        if (projections != null && any(projections, new ProjectionPredicate(nextPoint, end)))
           continue;
 
         float estimatedLength = getPathLength(nextPoint, end);
@@ -100,10 +98,9 @@ public class Map
     return null;
   }
 
-  private ArrayList<Projection> getProjections(Rectangle rect)
+  private ArrayList<Projection> getProjections(Rectangle rect, IEngineObject target)
   {
     IWorld world = GameContext.content.getWorld();
-    IEngineObject player = world.getPlayer();
 
     ArrayList<IEngineObject> objects = new ArrayList<>();
     ArrayList<Projection> projections = new ArrayList<>();
@@ -112,16 +109,12 @@ public class Map
 
     Vector2 position = Vector.getInstance(2);
 
-    int size = objects.size();
-    for (int i = 0; i < size; i++)
+    for (IEngineObject object : objects)
     {
-      IEngineObject object = objects.get(i);
-      if (player == object)
+      if (target == object)
         continue;
 
-      Vector3 objPosition = object.getPosition();
-      position.setFrom(objPosition);
-
+      position.setFrom(object.getPosition());
       if (!rect.contains(position))
         continue;
 
@@ -132,6 +125,7 @@ public class Map
       projections.add(projection);
     }
 
+    Vector.release(position);
     return projections;
   }
 
@@ -184,11 +178,32 @@ public class Map
     ArrayList<Vector2> result = new ArrayList<>();
     PathNode currentNode = node;
 
+    Vector2 prevPosition = null;
+    Vector2 lastDirection = Vector.getInstance(2);
+    Vector2 direction = Vector2.getInstance(2);
+
     while (currentNode != null)
     {
+      if (prevPosition != null)
+      {
+        lastDirection.setFrom(direction);
+
+        direction.setFrom(currentNode.position);
+        direction.subtract(prevPosition);
+        direction.normalize();
+
+        if (direction.equals(lastDirection))
+          result.remove(result.size() - 1);
+      }
+
       result.add(currentNode.position);
+
+      prevPosition = currentNode.position;
       currentNode = currentNode.from;
     }
+
+    Vector.release(lastDirection);
+    Vector.release(direction);
 
     Collections.reverse(result);
     return result;
@@ -233,19 +248,19 @@ class PositionEqualsPredicate implements Predicate<PathNode>
 
 class ProjectionPredicate implements Predicate<Projection>
 {
-  private final Vector2 start;
+  private final Vector2 point;
   private final Vector2 end;
 
-  public ProjectionPredicate(Vector2 start, Vector2 end)
+  public ProjectionPredicate(Vector2 point, Vector2 end)
   {
-    this.start = start;
+    this.point = point;
     this.end = end;
   }
 
   @Override
   public boolean apply(Projection projection)
   {
-    return projection.contains(start) && !projection.contains(end);
+    return projection.contains(point) && !projection.contains(end);
   }
 }
 
@@ -286,7 +301,7 @@ class PathNode
 
 class Projection
 {
-  private static final Plane plane = new Plane(Vector3.zAxis);
+  private static final Plane plane = new Plane();
   private final float radius;
   private final Vector2 position;
 
@@ -296,10 +311,7 @@ class Projection
     if (collidable == null)
       return null;
 
-    Vector3 objPos = object.getPosition();
-    Vector2 position = Vector.getInstance(2);
-    position.setFrom(objPos);
-
+    Vector2 position = Vector.getInstance(2, object.getPosition());
     ArrayList<Vector2> vertices = collidable.getConvexHull(plane);
 
     float radius = 0.0f;

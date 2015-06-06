@@ -79,14 +79,9 @@ public class Content
     };
 
     if (async)
-      updateTimer.postEvent(r);
+      postEvent(r);
     else
-    {
-      if (GameContext.isMainThread())
-        throw new IllegalStateException("can't stop main thread (use post)");
-
-      updateTimer.sendEvent(r);
-    }
+      sendEvent(r);
   }
 
 
@@ -110,14 +105,9 @@ public class Content
     };
 
     if (async)
-      updateTimer.postEvent(r);
+      postEvent(r);
     else
-    {
-      if (GameContext.isMainThread())
-        throw new IllegalStateException("can't stop main thread (use post)");
-
-      updateTimer.sendEvent(r);
-    }
+      sendEvent(r);
   }
 
   public void bindProgram(final ISubprogram subprogram)

@@ -44,7 +44,7 @@ public abstract class Vector
 
   protected boolean released;
 
-  public static <TVector extends Vector> TVector getInstance(int vectorSize, TVector copy)
+  public static <TVector extends Vector> TVector getInstance(int vectorSize, Vector copy)
   {
     TVector vector = getInstance(vectorSize);
     vector.setFrom(copy);

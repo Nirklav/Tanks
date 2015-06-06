@@ -24,9 +24,7 @@ public class GameWorld
       throw new IllegalArgumentException("Illegal args type");
 
     GameStartArgs args = (GameStartArgs) obj;
-
-    GameContext.mapManager.load(args.getMapName());
-    MapDescription map = GameContext.mapManager.getDescription();
+    MapDescription map = GameContext.mapManager.load(args.getMapName());
 
     player = new Tank(args.getTankName());
     player.setPosition(map.player.getPosition());

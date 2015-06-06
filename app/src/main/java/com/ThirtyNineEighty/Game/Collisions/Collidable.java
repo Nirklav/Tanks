@@ -133,7 +133,10 @@ public class Collidable
     {
       plane.getProjection(vector, current);
       if (!result.contains(vector))
-        result.add(Vector.getInstance(2, vector));
+      {
+        Vector2 copy = Vector.getInstance(2, vector);
+        result.add(copy);
+      }
     }
 
     Vector.release(vector);

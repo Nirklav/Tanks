@@ -41,7 +41,7 @@ public final class MapManager
   public MapDescription getDescription() { return description; }
   public Map getMap() { return map; }
 
-  public void load(String name)
+  public MapDescription load(String name)
   {
     if (!maps.contains(name))
       throw new IllegalArgumentException("name");
@@ -67,6 +67,7 @@ public final class MapManager
 
     this.description = description;
     this.map = new Map(description.size);
+    return description;
   }
 
   public List<String> getMaps() { return maps; }
