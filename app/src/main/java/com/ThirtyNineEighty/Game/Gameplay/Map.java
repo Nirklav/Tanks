@@ -4,7 +4,6 @@ import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Plane;
-import com.ThirtyNineEighty.Helpers.Rectangle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
@@ -27,8 +26,7 @@ public class Map
   private final static int BottomLeft = 6;
   private final static int BottomRight = 7;
 
-  public final static float stepSize = 1;
-
+  private final static float stepSize = 3;
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
   public final float size;
@@ -38,17 +36,33 @@ public class Map
     this.size = size;
   }
 
+  public boolean checkPath(ArrayList<Vector2> path, IEngineObject finder, IEngineObject target)
+  {
+    return checkPath(path, getProjections(finder, target));
+  }
+
+  public boolean checkPath(ArrayList<Vector2> path, ArrayList<Projection> projections)
+  {
+    Vector2 end = path.get(path.size() - 1);
+
+    for (Vector2 point : path)
+    {
+      if (point == end)
+        return true;
+
+      if (projections != null && any(projections, new ProjectionPredicate(point, end)))
+        return false;
+    }
+
+    return true;
+  }
+
   public ArrayList<Vector2> findPath(IEngineObject finder, IEngineObject target)
   {
     Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
     Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
 
-    ICollidable finderCollidable = finder.getCollidable();
-    ICollidable targetCollidable = target.getCollidable();
-
-    float radius = Math.max(finderCollidable.getRadius(), targetCollidable.getRadius());
-    Rectangle rect = new Rectangle(finderPosition, targetPosition, radius);
-    return findPath(finderPosition, targetPosition, getProjections(rect, target));
+    return findPath(finderPosition, targetPosition, getProjections(finder, target));
   }
 
   public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, ArrayList<Projection> projections)
@@ -98,35 +112,30 @@ public class Map
     return null;
   }
 
-  private ArrayList<Projection> getProjections(Rectangle rect, IEngineObject target)
+  private ArrayList<Projection> getProjections(IEngineObject finder, IEngineObject target)
   {
-    IWorld world = GameContext.content.getWorld();
+    ArrayList<Projection> result = new ArrayList<>();
+
+    ICollidable c = finder.getCollidable();
+    float finderRadius = c.getRadius();
 
     ArrayList<IEngineObject> objects = new ArrayList<>();
-    ArrayList<Projection> projections = new ArrayList<>();
 
+    IWorld world = GameContext.content.getWorld();
     world.fillObjects(objects);
-
-    Vector2 position = Vector.getInstance(2);
 
     for (IEngineObject object : objects)
     {
-      if (target == object)
+      if (target == object || finder == object)
         continue;
 
-      position.setFrom(object.getPosition());
-      if (!rect.contains(position))
-        continue;
-
-      Projection projection = Projection.FromObject(object);
+      Projection projection = Projection.FromObject(object, finderRadius);
       if (projection == null)
         continue;
 
-      projections.add(projection);
+      result.add(projection);
     }
-
-    Vector.release(position);
-    return projections;
+    return result;
   }
 
   private void normalizePoint(Vector point)
@@ -302,10 +311,12 @@ class PathNode
 class Projection
 {
   private static final Plane plane = new Plane();
+
   private final float radius;
+  private final float finderRadius;
   private final Vector2 position;
 
-  public static Projection FromObject(IEngineObject object)
+  public static Projection FromObject(IEngineObject object, float finderRadius)
   {
     ICollidable collidable = object.getCollidable();
     if (collidable == null)
@@ -327,13 +338,15 @@ class Projection
         radius = length;
     }
 
+    Vector.release(vertices);
     Vector.release(tempVector);
-    return new Projection(radius, position);
+    return new Projection(radius, finderRadius, position);
   }
 
-  private Projection(float radius, Vector2 position)
+  private Projection(float radius, float finderRadius, Vector2 position)
   {
     this.radius = radius;
+    this.finderRadius = finderRadius;
     this.position = position;
   }
 
@@ -341,6 +354,6 @@ class Projection
   {
     Vector2 tempVector = Vector.getInstance(2, vector);
     tempVector.subtract(position);
-    return radius > tempVector.getLength();
+    return radius + finderRadius > tempVector.getLength();
   }
 }

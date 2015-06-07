@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
+import android.util.Log;
+
+import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
@@ -16,16 +19,19 @@ public class BotSubprogram
 {
   private final static float minDistance = 30;
   private final static float maxDistance = 150;
-  private final static float stepCompletion = Map.stepSize / 10f;
 
   private Tank bot;
   private ArrayList<Vector2> path;
   private int currentPathStep;
+  private float stepCompletion;
 
   public BotSubprogram(GameObject bot)
   {
     super();
     this.bot = (Tank)bot;
+
+    ICollidable collidable = bot.getCollidable();
+    stepCompletion = collidable.getRadius();
   }
 
   @Override
@@ -50,6 +56,15 @@ public class BotSubprogram
         return;
 
       currentPathStep = 0;
+    }
+    else
+    {
+      if (!map.checkPath(path, bot, player))
+      {
+        Vector.release(path);
+        path = null;
+        return; // skip update (wait next)
+      }
     }
 
     Vector2 nextStepVector = Vector.getInstance(2);
