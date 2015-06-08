@@ -1,7 +1,5 @@
 package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
-import android.util.Log;
-
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
@@ -17,7 +15,7 @@ import java.util.ArrayList;
 public class BotSubprogram
   extends Subprogram
 {
-  private final static float minDistance = 30;
+  private final static float minDistance = 10;
   private final static float maxDistance = 150;
 
   private Tank bot;
@@ -57,15 +55,6 @@ public class BotSubprogram
 
       currentPathStep = 0;
     }
-    else
-    {
-      if (!map.checkPath(path, bot, player))
-      {
-        Vector.release(path);
-        path = null;
-        return; // skip update (wait next)
-      }
-    }
 
     Vector2 nextStepVector = Vector.getInstance(2);
     while (true)
@@ -96,8 +85,17 @@ public class BotSubprogram
     {
       GameContext.collisionManager.rotate(bot, nextStepAngle);
 
-      if (Math.abs(botAngle - nextStepAngle) < 30)
+      if (Math.abs(botAngle - nextStepAngle) < 15)
+      {
+        if (!map.canMove(bot))
+        {
+          Vector.release(path);
+          path = null;
+          return; // skip update (wait next)
+        }
+
         GameContext.collisionManager.move(bot);
+      }
     }
 
     // Turn turret (or fire)

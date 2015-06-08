@@ -135,6 +135,14 @@ public class Vector2 extends Vector
     return result;
   }
 
+  public void move(float length, float angle)
+  {
+    throwIfReleased();
+
+    value[0] += length * Math.cos(Math.toRadians(angle));
+    value[1] += length * Math.sin(Math.toRadians(angle));
+  }
+
   public Vector2 getSubtract(Vector2 other)
   {
     throwIfReleased();
@@ -150,6 +158,15 @@ public class Vector2 extends Vector
 
     Vector2 result = Vector.getInstance(2, this);
     result.add(other);
+    return result;
+  }
+
+  public Vector2 getMove(float length, float angle)
+  {
+    throwIfReleased();
+
+    Vector2 result = Vector.getInstance(2, this);
+    result.move(length, angle);
     return result;
   }
 

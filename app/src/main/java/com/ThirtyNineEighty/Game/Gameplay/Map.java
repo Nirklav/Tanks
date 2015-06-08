@@ -1,11 +1,13 @@
 package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 import com.android.internal.util.Predicate;
 
@@ -36,23 +38,23 @@ public class Map
     this.size = size;
   }
 
-  public boolean checkPath(ArrayList<Vector2> path, IEngineObject finder, IEngineObject target)
+  public boolean canMove(GameObject object)
   {
-    return checkPath(path, getProjections(finder, target));
-  }
+    Vector2 position = Vector.getInstance(2, object.getPosition());
+    Vector3 angles = object.getAngles();
+    Characteristic characteristic = object.getCharacteristics();
 
-  public boolean checkPath(ArrayList<Vector2> path, ArrayList<Projection> projections)
-  {
-    Vector2 end = path.get(path.size() - 1);
+    Projection projection = Projection.FromObject(object);
+    if (projection == null)
+      return true;
 
-    for (Vector2 point : path)
-    {
-      if (point == end)
-        return true;
+    float distance = projection.getRadius() + characteristic.getSpeed() * GameContext.getDelta();
+    Vector2 checkPoint = position.getMove(distance, angles.getZ());
+    ArrayList<Projection> projections = getProjections(object);
 
-      if (projections != null && any(projections, new ProjectionPredicate(point, end)))
+    for (Projection current : projections)
+      if (current.contains(checkPoint))
         return false;
-    }
 
     return true;
   }
@@ -112,6 +114,8 @@ public class Map
     return null;
   }
 
+  // TODO: add cache
+  private ArrayList<Projection> getProjections(IEngineObject finder) { return getProjections(finder, null); }
   private ArrayList<Projection> getProjections(IEngineObject finder, IEngineObject target)
   {
     ArrayList<Projection> result = new ArrayList<>();
@@ -316,6 +320,7 @@ class Projection
   private final float finderRadius;
   private final Vector2 position;
 
+  public static Projection FromObject(IEngineObject object) { return FromObject(object, 0); }
   public static Projection FromObject(IEngineObject object, float finderRadius)
   {
     ICollidable collidable = object.getCollidable();
@@ -356,4 +361,6 @@ class Projection
     tempVector.subtract(position);
     return radius + finderRadius > tempVector.getLength();
   }
+
+  public float getRadius() { return radius; }
 }
