@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.EngineObjectDescription;
-import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Spiral;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -36,7 +35,7 @@ public class Land
   protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
   {
     IWorld world = GameContext.content.getWorld();
-    IEngineObject player = world.getPlayer();
+    EngineObject player = world.getPlayer();
 
     Vector3 position = player.getPosition();
 

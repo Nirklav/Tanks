@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Camera;
@@ -24,9 +24,9 @@ public interface IWorld
   void setLight(Vector3 lightPosition);
 
   // world
-  IEngineObject getPlayer();
-  void fillObjects(List<IEngineObject> objects);
+  EngineObject getPlayer();
+  void fillObjects(List<EngineObject> objects);
 
-  void add(IEngineObject engineObject);
-  void remove(IEngineObject engineObject);
+  void add(EngineObject engineObject);
+  void remove(EngineObject engineObject);
 }

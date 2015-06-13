@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Gameplay;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -17,7 +17,7 @@ public class Bullet extends GameObject
   }
 
   @Override
-  public void onCollide(IEngineObject object)
+  public void onCollide(EngineObject object)
   {
     super.onCollide(object);
 

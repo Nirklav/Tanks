@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ public abstract class BaseWorld
 {
   private volatile boolean initialized;
 
-  protected final ArrayList<IEngineObject> objects;
-  protected IEngineObject player;
+  protected final ArrayList<EngineObject> objects;
+  protected EngineObject player;
 
   protected BaseWorld()
   {
@@ -32,15 +32,15 @@ public abstract class BaseWorld
   @Override
   public void uninitialize()
   {
-    ArrayList<IEngineObject> disposed = new ArrayList<>();
+    ArrayList<EngineObject> disposed = new ArrayList<>();
     synchronized (objects)
     {
-      for (IEngineObject object : objects)
+      for (EngineObject object : objects)
         disposed.add(object);
       objects.clear();
     }
 
-    for (IEngineObject object : disposed)
+    for (EngineObject object : disposed)
       object.dispose();
 
     initialized = false;
@@ -49,18 +49,18 @@ public abstract class BaseWorld
   @Override
   public void enable()
   {
-    ArrayList<IEngineObject> enabling = new ArrayList<>();
+    ArrayList<EngineObject> enabling = new ArrayList<>();
     fillObjects(enabling);
-    for (IEngineObject object : enabling)
+    for (EngineObject object : enabling)
       object.enable();
   }
 
   @Override
   public void disable()
   {
-    ArrayList<IEngineObject> enabling = new ArrayList<>();
+    ArrayList<EngineObject> enabling = new ArrayList<>();
     fillObjects(enabling);
-    for (IEngineObject object : enabling)
+    for (EngineObject object : enabling)
       object.disable();
   }
 
@@ -69,7 +69,7 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      for (IEngineObject engineObject : objects)
+      for (EngineObject engineObject : objects)
       {
         engineObject.setGlobalRenderablePosition();
         Collections.addAll(filled, engineObject.getRenderables());
@@ -78,20 +78,20 @@ public abstract class BaseWorld
   }
 
   @Override
-  public void fillObjects(List<IEngineObject> filled)
+  public void fillObjects(List<EngineObject> filled)
   {
     synchronized (objects)
     {
-      for (IEngineObject object : objects)
+      for (EngineObject object : objects)
         filled.add(object);
     }
   }
 
   @Override
-  public IEngineObject getPlayer() { return player; }
+  public EngineObject getPlayer() { return player; }
 
   @Override
-  public void add(IEngineObject engineObject)
+  public void add(EngineObject engineObject)
   {
     synchronized (objects)
     {
@@ -100,7 +100,7 @@ public abstract class BaseWorld
   }
 
   @Override
-  public void remove(IEngineObject engineObject)
+  public void remove(EngineObject engineObject)
   {
     synchronized (objects)
     {

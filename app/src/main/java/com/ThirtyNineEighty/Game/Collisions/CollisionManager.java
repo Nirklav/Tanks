@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
-import com.ThirtyNineEighty.Game.IEngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -20,8 +20,8 @@ import java.util.concurrent.Future;
 
 public class CollisionManager
 {
-  private final ArrayList<IEngineObject> resolvingObjects;
-  private final ArrayList<IEngineObject> worldObjects;
+  private final ArrayList<EngineObject> resolvingObjects;
+  private final ArrayList<EngineObject> worldObjects;
 
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
@@ -38,13 +38,13 @@ public class CollisionManager
     addToResolving(object);
   }
 
-  public void move(IEngineObject object, float length)
+  public void move(EngineObject object, float length)
   {
     object.onMoved(length);
     addToResolving(object);
   }
 
-  public void move(IEngineObject object, Vector3 vector, float length)
+  public void move(EngineObject object, Vector3 vector, float length)
   {
     object.onMoved(length, vector);
     addToResolving(object);
@@ -68,7 +68,7 @@ public class CollisionManager
     Vector.release(vector);
   }
 
-  public void rotate(IEngineObject object, Vector3 angles)
+  public void rotate(EngineObject object, Vector3 angles)
   {
     object.onRotates(angles);
     addToResolving(object);
@@ -83,14 +83,14 @@ public class CollisionManager
     world.fillObjects(worldObjects);
 
     // Set current global positions for all objects
-    for (IEngineObject current : worldObjects)
+    for (EngineObject current : worldObjects)
       current.setGlobalCollidablePosition();
 
     // Parallel collision search (should not change world or objects)
     ArrayList<Future<ResolveResult>> results = new ArrayList<>(resolvingObjects.size());
 
     final CountDownLatch latch = new CountDownLatch(resolvingObjects.size());
-    for (final IEngineObject current : resolvingObjects)
+    for (final EngineObject current : resolvingObjects)
     {
       Future<ResolveResult> futureResult = threadPool.submit(
         new Callable<ResolveResult>()
@@ -128,7 +128,7 @@ public class CollisionManager
         if (result == null)
           continue;
 
-        IEngineObject object = result.checkedObject;
+        EngineObject object = result.checkedObject;
         for (CollisionResult collResult : result.collisions)
         {
           Collision3D collision = collResult.collision;
@@ -146,7 +146,7 @@ public class CollisionManager
     resolvingObjects.clear();
   }
 
-  private void addToResolving(IEngineObject object)
+  private void addToResolving(EngineObject object)
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);
@@ -163,7 +163,7 @@ public class CollisionManager
       position.setY(map.size * Math.signum(y));
   }
 
-  private ResolveResult resolve(IEngineObject object)
+  private ResolveResult resolve(EngineObject object)
   {
     ICollidable objectPh = object.getCollidable();
     if (objectPh == null)
@@ -171,7 +171,7 @@ public class CollisionManager
 
     ResolveResult result = null;
 
-    for (IEngineObject current : worldObjects)
+    for (EngineObject current : worldObjects)
     {
       if (object == current)
         continue;
@@ -196,7 +196,7 @@ public class CollisionManager
     return result;
   }
 
-  private float getLength(IEngineObject one, IEngineObject two)
+  private float getLength(EngineObject one, EngineObject two)
   {
     Vector3 positionOne = one.getPosition();
     Vector3 positionTwo = two.getPosition();
@@ -207,10 +207,10 @@ public class CollisionManager
 
   private static class ResolveResult
   {
-    public final IEngineObject checkedObject;
+    public final EngineObject checkedObject;
     public final LinkedList<CollisionResult> collisions;
 
-    public ResolveResult(IEngineObject obj)
+    public ResolveResult(EngineObject obj)
     {
       checkedObject = obj;
       collisions = new LinkedList<>();
@@ -219,10 +219,10 @@ public class CollisionManager
 
   private static class CollisionResult
   {
-    public final IEngineObject collidedObject;
+    public final EngineObject collidedObject;
     public final Collision3D collision;
 
-    public CollisionResult(IEngineObject obj, Collision3D coll)
+    public CollisionResult(EngineObject obj, Collision3D coll)
     {
       collidedObject = obj;
       collision = coll;

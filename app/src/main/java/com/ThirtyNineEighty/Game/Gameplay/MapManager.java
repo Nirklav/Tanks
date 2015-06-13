@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Gameplay;
 import android.content.res.AssetManager;
 
 import com.ThirtyNineEighty.Game.Gameplay.Subprograms.BotSubprogram;
-import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
 import com.ThirtyNineEighty.System.GameContext;
@@ -51,7 +51,7 @@ public final class MapManager
 
     for (MapDescription.MapObject obj : description.objects)
     {
-      IEngineObject object = createObject(obj.name);
+      EngineObject object = createObject(obj.name);
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
 
@@ -72,13 +72,13 @@ public final class MapManager
 
   public List<String> getMaps() { return maps; }
 
-  private IEngineObject createObject(String name)
+  private EngineObject createObject(String name)
   {
     try
     {
       Class<?> objectClass = objectBindings.get(name);
       Constructor<?> constructor = objectClass.getConstructor(String.class);
-      return (IEngineObject) constructor.newInstance(name);
+      return (EngineObject) constructor.newInstance(name);
     }
     catch (Exception e)
     {
@@ -87,7 +87,7 @@ public final class MapManager
   }
 
   // TODO: for now only for GameObject
-  private ISubprogram createSubprogram(String name, IEngineObject bindObject)
+  private ISubprogram createSubprogram(String name, EngineObject bindObject)
   {
     try
     {

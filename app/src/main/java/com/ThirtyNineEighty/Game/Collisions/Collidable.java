@@ -49,12 +49,12 @@ public class Collidable
 
     int firstIndex = getFirstPointIndex(projection);
 
-    final Vector2 first = projection.remove(firstIndex);
+    Vector2 first = projection.remove(firstIndex);
     convexHull.add(first);
 
     Collections.sort(projection, new AngleComparator(first));
 
-    final Vector2 second = projection.remove(0);
+    Vector2 second = projection.remove(0);
     convexHull.add(second);
 
     Vector2 prevVector = Vector.getInstance(2);

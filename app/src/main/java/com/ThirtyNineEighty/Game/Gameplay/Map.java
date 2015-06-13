@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Gameplay;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.IEngineObject;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -59,7 +59,7 @@ public class Map
     return true;
   }
 
-  public ArrayList<Vector2> findPath(IEngineObject finder, IEngineObject target)
+  public ArrayList<Vector2> findPath(EngineObject finder, EngineObject target)
   {
     Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
     Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
@@ -115,20 +115,20 @@ public class Map
   }
 
   // TODO: add cache
-  private ArrayList<Projection> getProjections(IEngineObject finder) { return getProjections(finder, null); }
-  private ArrayList<Projection> getProjections(IEngineObject finder, IEngineObject target)
+  private ArrayList<Projection> getProjections(EngineObject finder) { return getProjections(finder, null); }
+  private ArrayList<Projection> getProjections(EngineObject finder, EngineObject target)
   {
     ArrayList<Projection> result = new ArrayList<>();
 
     ICollidable c = finder.getCollidable();
     float finderRadius = c.getRadius();
 
-    ArrayList<IEngineObject> objects = new ArrayList<>();
+    ArrayList<EngineObject> objects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
     world.fillObjects(objects);
 
-    for (IEngineObject object : objects)
+    for (EngineObject object : objects)
     {
       if (target == object || finder == object)
         continue;
@@ -320,8 +320,8 @@ class Projection
   private final float finderRadius;
   private final Vector2 position;
 
-  public static Projection FromObject(IEngineObject object) { return FromObject(object, 0); }
-  public static Projection FromObject(IEngineObject object, float finderRadius)
+  public static Projection FromObject(EngineObject object) { return FromObject(object, 0); }
+  public static Projection FromObject(EngineObject object, float finderRadius)
   {
     ICollidable collidable = object.getCollidable();
     if (collidable == null)
