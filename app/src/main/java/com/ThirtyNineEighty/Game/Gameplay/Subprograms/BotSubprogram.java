@@ -15,13 +15,15 @@ import java.util.ArrayList;
 public class BotSubprogram
   extends Subprogram
 {
-  private final static float minDistance = 10;
+  private final static float minDistance = 20;
   private final static float maxDistance = 150;
+  private final static float maxPathTimeMissedSec = 5;
 
   private Tank bot;
   private ArrayList<Vector2> path;
   private int currentPathStep;
   private float stepCompletion;
+  private float pathTimeMissedSec;
 
   public BotSubprogram(GameObject bot)
   {
@@ -47,6 +49,16 @@ public class BotSubprogram
     if (distance > maxDistance)
       return;
 
+    // FIRE
+    // Turn turret (or fire)
+    float targetAngle = Vector2.xAxis.getAngle(targetVector); // For turret
+    if (Math.abs(bot.getTurretAngle() - targetAngle) < 3)
+      bot.fire();
+    else
+      bot.turnTurret(targetAngle);
+
+    // PATH
+    // Find path
     if (path == null)
     {
       path = map.findPath(bot, player);
@@ -56,14 +68,16 @@ public class BotSubprogram
       currentPathStep = 0;
     }
 
+    // Select next step from path
     Vector2 nextStepVector = Vector.getInstance(2);
     while (true)
     {
+      // If we arrived, reset path
       if (currentPathStep >= path.size())
       {
         Vector.release(path);
         path = null;
-        return; // skip update (wait next)
+        return; // Skip update (wait next)
       }
 
       Vector2 nextStep = path.get(currentPathStep);
@@ -76,7 +90,6 @@ public class BotSubprogram
         break;
     }
 
-    float targetAngle = Vector2.xAxis.getAngle(targetVector); // For turret
     float nextStepAngle = Vector2.xAxis.getAngle(nextStepVector); // For body
     float botAngle = bot.getAngles().getZ();
 
@@ -87,22 +100,28 @@ public class BotSubprogram
 
       if (Math.abs(botAngle - nextStepAngle) < 15)
       {
-        if (!map.canMove(bot))
+        // Try move
+        if (map.canMove(bot))
         {
-          Vector.release(path);
-          path = null;
-          return; // skip update (wait next)
+          pathTimeMissedSec = 0.0f;
+          GameContext.collisionManager.move(bot);
         }
+        else
+        {
+          // Sum pass time
+          pathTimeMissedSec += GameContext.getDelta();
 
-        GameContext.collisionManager.move(bot);
+          // Reset path, if we waiting pass too long
+          if (pathTimeMissedSec > maxPathTimeMissedSec)
+          {
+            pathTimeMissedSec = 0.0f;
+            Vector.release(path);
+            path = null;
+            return; // Skip update (wait next)
+          }
+        }
       }
     }
-
-    // Turn turret (or fire)
-    if (Math.abs(bot.getTurretAngle() - targetAngle) < 3)
-      bot.fire();
-    else
-      bot.turnTurret(targetAngle);
 
     Vector.release(playerPosition);
     Vector.release(botPosition);
