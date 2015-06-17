@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Helpers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -167,6 +168,29 @@ public class Vector2 extends Vector
 
     Vector2 result = Vector.getInstance(2, this);
     result.move(length, angle);
+    return result;
+  }
+
+  public Vector2 getProjection(ArrayList<Vector2> vertices)
+  {
+    Vector2 result = null;
+
+    for (Vector2 current : vertices)
+    {
+      float projection = getScalar(current);
+
+      if (result == null)
+        result = new Vector2(projection, projection);
+
+      // x - max
+      if (projection > result.getX())
+        result.setX(projection);
+
+      // y - min
+      if (projection < result.getY())
+        result.setY(projection);
+    }
+
     return result;
   }
 

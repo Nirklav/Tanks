@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
+import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
 import com.ThirtyNineEighty.Game.Gameplay.Tank;
@@ -52,10 +53,13 @@ public class BotSubprogram
     // FIRE
     // Turn turret (or fire)
     float targetAngle = Vector2.xAxis.getAngle(targetVector); // For turret
-    if (Math.abs(bot.getTurretAngle() - targetAngle) < 3)
-      bot.fire();
-    else
+    if (Math.abs(bot.getTurretAngle() - targetAngle) >= 3)
       bot.turnTurret(targetAngle);
+    else if (bot.getRechargeProgress() >= Characteristic.maxRechargeLevel)
+    {
+      if (GameContext.collisionManager.isVisible(bot, player))
+        bot.fire();
+    }
 
     // PATH
     // Find path
@@ -104,7 +108,7 @@ public class BotSubprogram
         if (map.canMove(bot))
         {
           pathTimeMissedSec = 0.0f;
-          GameContext.collisionManager.move(bot);
+          //GameContext.collisionManager.move(bot);
         }
         else
         {

@@ -176,8 +176,7 @@ public class GLLabel
   private void rebuild()
   {
     MeshMode mode = geometryData.getMode();
-    LabelGeometrySource source = new LabelGeometrySource(value, mode, charWidth, charHeight);
-    geometryData = GameContext.resources.getGeometry(source);
+    geometryData = GameContext.resources.getGeometry(new LabelGeometrySource(value, mode, charWidth, charHeight));
   }
 
   public enum AlignType

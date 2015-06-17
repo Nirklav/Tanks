@@ -6,7 +6,9 @@ import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
+import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
+import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -29,6 +31,91 @@ public class CollisionManager
   {
     resolvingObjects = new ArrayList<>();
     worldObjects = new ArrayList<>();
+  }
+
+  //TODO: rename (something like "trace" or ...)
+  public boolean isVisible(EngineObject watcher, EngineObject target)
+  {
+    IWorld world = GameContext.content.getWorld();
+    world.fillObjects(worldObjects);
+
+    Vector3 start = watcher.getPosition();
+    Vector3 end = target.getPosition();
+
+    Vector3 vector = end.getSubtract(start);
+    Plane plane = new Plane(vector);
+    Vector2 lineProjection = plane.getProjection(start);
+    float fullLength = vector.getLength();
+
+    for (EngineObject object : worldObjects)
+    {
+      if (object == watcher || object == target)
+        continue;
+
+      ICollidable collidable = object.getCollidable();
+      if (collidable == null)
+        continue;
+
+      Vector3 position = object.getPosition();
+      Vector3 projection = position.getLineProjection(start, end);
+
+      vector.setFrom(projection);
+      vector.subtract(start);
+      float firstLength = vector.getLength();
+
+      vector.setFrom(end);
+      vector.subtract(projection);
+      float secondLength = vector.getLength();
+
+      Vector.release(projection);
+
+      if (secondLength + firstLength > fullLength)
+        continue;
+
+      Vector2 lengthVector = plane.getProjection(position);
+      lengthVector.subtract(lineProjection);
+      if (lengthVector.getLength() > collidable.getRadius())
+        continue;
+
+      ArrayList<Vector2> convexHull = collidable.getConvexHull(plane);
+      if (contain(convexHull, lineProjection))
+        return false;
+    }
+
+    Vector.release(vector);
+    return true;
+  }
+
+  private boolean contain(ArrayList<Vector2> convexHull, Vector2 point)
+  {
+    Vector2 normal = Vector.getInstance(2);
+    int count = convexHull.size();
+
+    for (int i = 0; i < count; i ++)
+    {
+      setNormal(normal, convexHull, i);
+
+      Vector2 projection = normal.getProjection(convexHull);
+      float pointProjection = point.getScalar(normal);
+
+      if (projection.getX() < pointProjection || projection.getY() > pointProjection)
+        return false;
+    }
+
+    return true;
+  }
+
+  private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
+  {
+    Vector2 firstPoint = vertices.get(num);
+    Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
+
+    Vector2 edge = secondPoint.getSubtract(firstPoint);
+
+    normal.setX(-edge.getY());
+    normal.setY(edge.getX());
+
+    normal.normalize();
   }
 
   public void move(GameObject object)

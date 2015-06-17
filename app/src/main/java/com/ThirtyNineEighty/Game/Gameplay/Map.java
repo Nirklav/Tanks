@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class Map
 {
@@ -31,11 +32,13 @@ public class Map
   private final static float stepSize = 3;
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
+  private final HashMap<String, Projection> projectionsCache;
   public final float size;
 
   public Map(float size)
   {
     this.size = size;
+    projectionsCache = new HashMap<>();
   }
 
   public boolean canMove(GameObject object)
@@ -44,7 +47,7 @@ public class Map
     Vector3 angles = object.getAngles();
     Characteristic characteristic = object.getCharacteristics();
 
-    Projection projection = Projection.FromObject(object);
+    Projection projection = getProjection(object);
     if (projection == null)
       return true;
 
@@ -53,7 +56,7 @@ public class Map
     ArrayList<Projection> projections = getProjections(object);
 
     for (Projection current : projections)
-      if (current.contains(checkPoint))
+      if (current.contains(checkPoint, projection.getRadius()))
         return false;
 
     return true;
@@ -64,10 +67,15 @@ public class Map
     Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
     Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
 
-    return findPath(finderPosition, targetPosition, getProjections(finder, target));
+    float finderRadius = 0;
+    Projection finderProjection = getProjection(finder);
+    if (finderProjection != null)
+      finderRadius = finderProjection.getRadius();
+
+    return findPath(finderPosition, targetPosition, finderRadius, getProjections(finder, target));
   }
 
-  public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, ArrayList<Projection> projections)
+  public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, float finderRadius, ArrayList<Projection> projections)
   {
     normalizePoint(start);
     normalizePoint(end);
@@ -89,7 +97,7 @@ public class Map
       {
         Vector2 nextPoint = getNextPoint(currentNode.position, i);
 
-        if (projections != null && any(projections, new ProjectionPredicate(nextPoint, end)))
+        if (projections != null && any(projections, new ProjectionPredicate(finderRadius, nextPoint, end)))
           continue;
 
         float estimatedLength = getPathLength(nextPoint, end);
@@ -114,15 +122,10 @@ public class Map
     return null;
   }
 
-  // TODO: add cache
   private ArrayList<Projection> getProjections(EngineObject finder) { return getProjections(finder, null); }
   private ArrayList<Projection> getProjections(EngineObject finder, EngineObject target)
   {
     ArrayList<Projection> result = new ArrayList<>();
-
-    ICollidable c = finder.getCollidable();
-    float finderRadius = c.getRadius();
-
     ArrayList<EngineObject> objects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
@@ -133,13 +136,32 @@ public class Map
       if (target == object || finder == object)
         continue;
 
-      Projection projection = Projection.FromObject(object, finderRadius);
+      Projection projection = getProjection(object);
       if (projection == null)
         continue;
 
       result.add(projection);
     }
     return result;
+  }
+
+  private Projection getProjection(EngineObject object)
+  {
+    Vector2 position = Vector.getInstance(2, object.getPosition());
+    Projection projection = projectionsCache.get(object.getName());
+    if (projection != null)
+    {
+      projection.setPosition(position);
+      return projection;
+    }
+
+    projection = Projection.FromObject(object);
+    if (projection == null)
+      return null;
+
+    projectionsCache.put(object.getName(), projection);
+    projection.setPosition(position);
+    return projection;
   }
 
   private void normalizePoint(Vector point)
@@ -263,17 +285,20 @@ class ProjectionPredicate implements Predicate<Projection>
 {
   private final Vector2 point;
   private final Vector2 end;
+  private final float finderRadius;
 
-  public ProjectionPredicate(Vector2 point, Vector2 end)
+  public ProjectionPredicate(float finderRadius, Vector2 point, Vector2 end)
   {
     this.point = point;
     this.end = end;
+    this.finderRadius = finderRadius;
   }
 
   @Override
   public boolean apply(Projection projection)
   {
-    return projection.contains(point) && !projection.contains(end);
+    return projection.contains(point, finderRadius)
+       && !projection.contains(end, finderRadius);
   }
 }
 
@@ -317,11 +342,9 @@ class Projection
   private static final Plane plane = new Plane();
 
   private final float radius;
-  private final float finderRadius;
-  private final Vector2 position;
+  private Vector2 position;
 
-  public static Projection FromObject(EngineObject object) { return FromObject(object, 0); }
-  public static Projection FromObject(EngineObject object, float finderRadius)
+  public static Projection FromObject(EngineObject object)
   {
     ICollidable collidable = object.getCollidable();
     if (collidable == null)
@@ -345,17 +368,21 @@ class Projection
 
     Vector.release(vertices);
     Vector.release(tempVector);
-    return new Projection(radius, finderRadius, position);
+    return new Projection(radius);
   }
 
-  private Projection(float radius, float finderRadius, Vector2 position)
+  private Projection(float radius)
   {
     this.radius = radius;
-    this.finderRadius = finderRadius;
-    this.position = position;
+    this.position = Vector.getInstance(2);
   }
 
-  public boolean contains(Vector2 vector)
+  public void setPosition(Vector2 value)
+  {
+    position.setFrom(value);
+  }
+
+  public boolean contains(Vector2 vector, float finderRadius)
   {
     Vector2 tempVector = Vector.getInstance(2, vector);
     tempVector.subtract(position);

@@ -123,17 +123,6 @@ public class Vector3 extends Vector
     value[2] /= length;
   }
 
-  public float getScalar(Vector3 other)
-  {
-    throwIfReleased();
-
-    float multOne   = getX() * other.getX();
-    float multTwo   = getY() * other.getY();
-    float multThree = getZ() * other.getZ();
-
-    return multOne + multTwo + multThree;
-  }
-
   public void scale(float coefficient)
   {
     throwIfReleased();
@@ -221,6 +210,34 @@ public class Vector3 extends Vector
     value[2] += vector.getZ() * length;
   }
 
+  public void lineProjection(Vector3 start, Vector3 end)
+  {
+    // a * dot(a, b) / dot(a,a)
+    Vector3 lineVector = end.getSubtract(start);
+    lineVector.normalize();
+    subtract(start);
+
+    float first = lineVector.getScalar(this);
+    float second = lineVector.getScalar(lineVector);
+
+    setFrom(lineVector);
+    multiply(first / second);
+    add(start);
+
+    Vector.release(lineVector);
+  }
+
+  public float getScalar(Vector3 other)
+  {
+    throwIfReleased();
+
+    float multOne   = getX() * other.getX();
+    float multTwo   = getY() * other.getY();
+    float multThree = getZ() * other.getZ();
+
+    return multOne + multTwo + multThree;
+  }
+
   public Vector3 getNormalize()
   {
     throwIfReleased();
@@ -290,6 +307,15 @@ public class Vector3 extends Vector
 
     Vector3 result = Vector.getInstance(3, this);
     result.move(length, angles);
+    return result;
+  }
+
+  public Vector3 getLineProjection(Vector3 start, Vector3 end)
+  {
+    throwIfReleased();
+
+    Vector3 result = Vector.getInstance(3, this);
+    result.lineProjection(start, end);
     return result;
   }
 

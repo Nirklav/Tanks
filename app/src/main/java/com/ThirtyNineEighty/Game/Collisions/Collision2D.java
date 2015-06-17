@@ -38,8 +38,8 @@ public class Collision2D
     {
       setNormal(normal, firstVertices, secondVertices, i);
 
-      Vector2 firstProjection = getProjection(firstVertices, normal);
-      Vector2 secondProjection = getProjection(secondVertices, normal);
+      Vector2 firstProjection = normal.getProjection(firstVertices);
+      Vector2 secondProjection = normal.getProjection(secondVertices);
 
       if (firstProjection.getX() < secondProjection.getY() || secondProjection.getX() < firstProjection.getY())
         return null;
@@ -68,27 +68,6 @@ public class Collision2D
     return (secondProjection.getY() - firstProjection.getX() > 0)
       ? secondProjection.getY() - firstProjection.getX()
       : firstProjection.getY() - secondProjection.getX();
-  }
-
-  private static Vector2 getProjection(ArrayList<Vector2> vertices, Vector2 normal)
-  {
-    Vector2 result = null;
-
-    for (Vector2 current : vertices)
-    {
-      float scalar = current.getScalar(normal);
-
-      if (result == null)
-        result = new Vector2(scalar, scalar);
-
-      if (scalar > result.getX())
-        result.setX(scalar);
-
-      if (scalar < result.getY())
-        result.setY(scalar);
-    }
-
-    return result;
   }
 
   private static void setNormal(Vector2 normal, ArrayList<Vector2> firstVertices, ArrayList<Vector2> secondVertices, int num)

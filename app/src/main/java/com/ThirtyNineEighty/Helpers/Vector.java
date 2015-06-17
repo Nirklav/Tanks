@@ -51,6 +51,14 @@ public abstract class Vector
     return vector;
   }
 
+  public static <TVector extends Vector> TVector getInstance(int vectorSize, float ...values)
+  {
+    TVector vector = getInstance(vectorSize);
+    for (int i = 0; i < values.length; i++)
+      vector.set(i, values[i]);
+    return vector;
+  }
+
   public static <TVector extends Vector> TVector getInstance(int vectorSize, ByteBuffer dataBuffer)
   {
     TVector vector = getInstance(vectorSize);

@@ -12,34 +12,44 @@ import java.util.ArrayList;
 
 public abstract class EngineObject
 {
+  private static int lastId = 1;
+  private static final String generatedNameTemplate = "object_";
+
+  protected final String name;
+
   protected Vector3 position;
   protected Vector3 angles;
-
-  protected String name;
 
   private I3DRenderable[] visualModels;
   private ICollidable physicalModel;
 
   private ArrayList<ISubprogram> subprograms;
 
-  protected EngineObject(EngineObjectDescription initializer)
+  protected EngineObject(EngineObjectDescription description)
   {
+    this(generatedNameTemplate + Integer.toString(lastId++), description);
+  }
+
+  protected EngineObject(String objectName, EngineObjectDescription description)
+  {
+    name = objectName;
+
     position = new Vector3();
     angles = new Vector3();
     subprograms = new ArrayList<>();
 
-    int visualModelsCount = initializer.VisualModels.length;
+    int visualModelsCount = description.VisualModels.length;
     visualModels = new I3DRenderable[visualModelsCount];
     for (int i = 0; i < visualModelsCount; i++)
     {
-      EngineObjectDescription.VisualModel vmInit = initializer.VisualModels[i];
+      EngineObjectDescription.VisualModel vmInit = description.VisualModels[i];
       visualModels[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
       visualModels[i].setGlobal(position, angles);
     }
 
-    if (initializer.PhysicalModel != null)
+    if (description.PhysicalModel != null)
     {
-      physicalModel = new Collidable(initializer.PhysicalModel.ModelName);
+      physicalModel = new Collidable(description.PhysicalModel.ModelName);
       physicalModel.setGlobal(position, angles);
     }
   }
