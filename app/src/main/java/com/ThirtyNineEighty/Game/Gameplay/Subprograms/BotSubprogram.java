@@ -108,7 +108,7 @@ public class BotSubprogram
         if (map.canMove(bot))
         {
           pathTimeMissedSec = 0.0f;
-          //GameContext.collisionManager.move(bot);
+          GameContext.collisionManager.move(bot);
         }
         else
         {
