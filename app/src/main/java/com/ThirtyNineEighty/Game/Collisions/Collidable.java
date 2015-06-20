@@ -198,6 +198,9 @@ public class Collidable
     }
   }
 
+  @Override public Vector3 getPosition() { return globalPosition.getSum(geometryData.position); }
+  @Override public Vector3 getAngles() { return globalAngles.getSum(geometryData.angles); }
+
   @Override
   public void setGlobal(Vector3 position, Vector3 angles)
   {
@@ -246,8 +249,8 @@ public class Collidable
     Vector.release(resultAngles);
   }
 
-  @Override public ArrayList<Vector3> getGlobalVertices() { return globalVertices; }
-  @Override public ArrayList<Vector3> getGlobalNormals() { return globalNormals; }
+  @Override public ArrayList<Vector3> getVertices() { return globalVertices; }
+  @Override public ArrayList<Vector3> getNormals() { return globalNormals; }
   @Override public float getRadius() { return geometryData.radius; }
 
   private ArrayList<Vector3> createAndFill(int count)

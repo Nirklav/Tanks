@@ -13,7 +13,7 @@
         <activity
             android:name="com.ThirtyNineEighty.System.GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="landscape"
+            android:screenOrientation="reverseLandscape"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme"
             android:launchMode="singleInstance">

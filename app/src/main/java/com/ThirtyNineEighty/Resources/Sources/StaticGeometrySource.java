@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Resources.Sources;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.Sources.GeometrySource;
 
 import java.nio.FloatBuffer;
 

@@ -38,7 +38,7 @@ public final class Resources
   {
     return String.format("Textures: %d\n", textureCache.getSize())
          + String.format("Geometries: %d\n", geometryCache.getSize())
-         + String.format("Images: %d", imagesCache.getSize())
+         + String.format("Images: %d\n", imagesCache.getSize())
          + String.format("PhGeometry: %d", phGeometryCache.getSize());
   }
 }

@@ -1,6 +1,8 @@
 package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
+import com.ThirtyNineEighty.Game.Collisions.Tracer;
+import com.ThirtyNineEighty.Game.EngineObject;
 import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
 import com.ThirtyNineEighty.Game.Gameplay.GameObject;
 import com.ThirtyNineEighty.Game.Gameplay.Map;
@@ -39,35 +41,58 @@ public class BotSubprogram
   protected void onUpdate()
   {
     IWorld world = GameContext.content.getWorld();
-    Tank player = (Tank) world.getPlayer();
-    Map map = GameContext.mapManager.getMap();
+    EngineObject player = world.getPlayer();
 
     Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
     Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
     Vector2 targetVector = playerPosition.getSubtract(botPosition);
 
     float distance = targetVector.getLength();
-    if (distance > maxDistance)
-      return;
-
-    // FIRE
-    // Turn turret (or fire)
-    float targetAngle = Vector2.xAxis.getAngle(targetVector); // For turret
-    if (Math.abs(bot.getTurretAngle() - targetAngle) >= 3)
-      bot.turnTurret(targetAngle);
-    else if (bot.getRechargeProgress() >= Characteristic.maxRechargeLevel)
+    if (distance < maxDistance)
     {
-      if (GameContext.collisionManager.isVisible(bot, player))
-        bot.fire();
+      tryFire(player, targetVector);
+
+      Vector2 movingVector = getMovingVector(player);
+      if (movingVector != null && distance > minDistance)
+        move(movingVector);
+
+      Vector.release(movingVector);
     }
 
-    // PATH
+    Vector.release(playerPosition);
+    Vector.release(botPosition);
+    Vector.release(targetVector);
+  }
+
+  private void tryFire(EngineObject target, Vector2 targetVector)
+  {
+    float targetAngle = Vector2.xAxis.getAngle(targetVector);
+
+    if (Math.abs(bot.getTurretAngle() - targetAngle) >= 3)
+    {
+      bot.turnTurret(targetAngle);
+      return;
+    }
+
+    if (bot.getRechargeProgress() >= Characteristic.maxRechargeLevel)
+    {
+      Tracer tracer = new Tracer(bot, target);
+      if (!tracer.intersect())
+        bot.fire();
+    }
+  }
+
+  private Vector2 getMovingVector(EngineObject target)
+  {
+    Map map = GameContext.mapManager.getMap();
+    Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
+
     // Find path
     if (path == null)
     {
-      path = map.findPath(bot, player);
+      path = map.findPath(bot, target);
       if (path == null)
-        return;
+        return null;
 
       currentPathStep = 0;
     }
@@ -81,55 +106,50 @@ public class BotSubprogram
       {
         Vector.release(path);
         path = null;
-        return; // Skip update (wait next)
+        return null;
       }
 
       Vector2 nextStep = path.get(currentPathStep);
       nextStepVector.setFrom(nextStep);
       nextStepVector.subtract(botPosition);
 
-      if (nextStepVector.getLength() <= stepCompletion)
-        currentPathStep++;
-      else
-        break;
-    }
+      if (nextStepVector.getLength() > stepCompletion)
+        return nextStepVector;
 
-    float nextStepAngle = Vector2.xAxis.getAngle(nextStepVector); // For body
+      currentPathStep++;
+    }
+  }
+
+  private void move(Vector2 movingVector)
+  {
+    Map map = GameContext.mapManager.getMap();
+    float movingAngle = Vector2.xAxis.getAngle(movingVector);
     float botAngle = bot.getAngles().getZ();
 
-    // Move/Turn body
-    if (distance > minDistance)
+    GameContext.collisionManager.rotate(bot, movingAngle);
+
+    if (Math.abs(botAngle - movingAngle) >= 15)
+      return;
+
+    // Try move
+    if (map.canMove(bot))
     {
-      GameContext.collisionManager.rotate(bot, nextStepAngle);
+      pathTimeMissedSec = 0.0f;
+      GameContext.collisionManager.move(bot);
+    }
+    else
+    {
+      // Sum pass time
+      pathTimeMissedSec += GameContext.getDelta();
 
-      if (Math.abs(botAngle - nextStepAngle) < 15)
+      // Reset path, if we waiting pass too long
+      if (pathTimeMissedSec > maxPathTimeMissedSec)
       {
-        // Try move
-        if (map.canMove(bot))
-        {
-          pathTimeMissedSec = 0.0f;
-          GameContext.collisionManager.move(bot);
-        }
-        else
-        {
-          // Sum pass time
-          pathTimeMissedSec += GameContext.getDelta();
-
-          // Reset path, if we waiting pass too long
-          if (pathTimeMissedSec > maxPathTimeMissedSec)
-          {
-            pathTimeMissedSec = 0.0f;
-            Vector.release(path);
-            path = null;
-            return; // Skip update (wait next)
-          }
-        }
+        pathTimeMissedSec = 0.0f;
+        Vector.release(path);
+        path = null;
       }
     }
-
-    Vector.release(playerPosition);
-    Vector.release(botPosition);
-    Vector.release(targetVector);
-    Vector.release(nextStepVector);
   }
+
 }

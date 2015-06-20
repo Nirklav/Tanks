@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Resources.Sources;
 
 public interface ISource<TResource>
 {
-  String getName(); // Name for cache. If null cache will not work.
+  String getName(); // Name for cache. If field equals null cache will not work.
 
   TResource load();
   void reload(TResource resource);

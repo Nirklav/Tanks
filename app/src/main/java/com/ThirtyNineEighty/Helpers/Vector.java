@@ -120,6 +120,9 @@ public abstract class Vector
 
   public static <TVector extends Vector> void release(Collection<TVector> vectorsCollection)
   {
+    if (vectorsCollection == null)
+      return;
+
     if (disableCache)
       return;
 
@@ -161,6 +164,9 @@ public abstract class Vector
 
   public static void release(Vector vector)
   {
+    if (vector == null)
+      return;
+
     if (disableCache)
       return;
 

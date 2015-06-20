@@ -65,9 +65,9 @@ public class Collision3D
 
   private static ArrayList<Plane> getPlanes(ICollidable firstPh, ICollidable secondPh)
   {
-    ArrayList<Plane> planes = new ArrayList<Plane>();
-    ArrayList<Vector3> firstNormals = firstPh.getGlobalNormals();
-    ArrayList<Vector3> secondNormals = secondPh.getGlobalNormals();
+    ArrayList<Plane> planes = new ArrayList<>();
+    ArrayList<Vector3> firstNormals = firstPh.getNormals();
+    ArrayList<Vector3> secondNormals = secondPh.getNormals();
 
     int size = firstNormals.size() + secondNormals.size();
 

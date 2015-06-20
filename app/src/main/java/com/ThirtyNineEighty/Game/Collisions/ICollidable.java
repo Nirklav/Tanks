@@ -8,11 +8,13 @@ import java.util.ArrayList;
 
 public interface ICollidable
 {
+  Vector3 getPosition();
+  Vector3 getAngles();
   void setGlobal(Vector3 position, Vector3 angles);
 
   float getRadius();
 
   ArrayList<Vector2> getConvexHull(Plane plane);
-  ArrayList<Vector3> getGlobalVertices();
-  ArrayList<Vector3> getGlobalNormals();
+  ArrayList<Vector3> getVertices();
+  ArrayList<Vector3> getNormals();
 }
