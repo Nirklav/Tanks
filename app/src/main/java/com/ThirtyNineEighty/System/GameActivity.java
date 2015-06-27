@@ -55,6 +55,7 @@ public class GameActivity
     // Initialize game context
     GameContext.setActivity(this);
     GameContext.mapManager.initialize();
+    GameContext.gameProgress.initialize(this);
 
     if (GameContext.content == null)
       GameContext.content = new Content();
@@ -79,6 +80,7 @@ public class GameActivity
     glView.queueEvent(r);
   }
 
+  @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
   public void sendEvent(final Runnable r)
   {
     if (GameContext.isMainThread())

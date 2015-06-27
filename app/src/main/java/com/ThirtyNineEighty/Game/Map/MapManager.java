@@ -1,9 +1,15 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Map;
 
 import android.content.res.AssetManager;
 
-import com.ThirtyNineEighty.Game.Gameplay.Subprograms.BotSubprogram;
-import com.ThirtyNineEighty.Game.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.AidKit;
+import com.ThirtyNineEighty.Game.Objects.Bullet;
+import com.ThirtyNineEighty.Game.Objects.Decor;
+import com.ThirtyNineEighty.Game.Objects.GameObject;
+import com.ThirtyNineEighty.Game.Objects.Land;
+import com.ThirtyNineEighty.Game.Objects.Tank;
+import com.ThirtyNineEighty.Game.Subprograms.BotSubprogram;
+import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
 import com.ThirtyNineEighty.System.GameContext;
@@ -31,6 +37,7 @@ public final class MapManager
     objectBindings.put("land", Land.class);
     objectBindings.put("bullet", Bullet.class);
     objectBindings.put("building", Decor.class);
+    objectBindings.put("aidkit", AidKit.class);
 
     subprogramBindings = new HashMap<>();
     subprogramBindings.put("bot", BotSubprogram.class);
@@ -78,7 +85,10 @@ public final class MapManager
     {
       Class<?> objectClass = objectBindings.get(name);
       Constructor<?> constructor = objectClass.getConstructor(String.class);
-      return (EngineObject) constructor.newInstance(name);
+      if (constructor != null)
+        return (EngineObject) constructor.newInstance(name);
+
+      throw new IllegalStateException("Object not contains constructor with string parameter");
     }
     catch (Exception e)
     {
@@ -86,14 +96,24 @@ public final class MapManager
     }
   }
 
-  // TODO: for now only for GameObject
   private ISubprogram createSubprogram(String name, EngineObject bindObject)
   {
     try
     {
       Class<?> subprogramClass = subprogramBindings.get(name);
-      Constructor<?> constructor = subprogramClass.getConstructor(GameObject.class);
-      return (ISubprogram) constructor.newInstance((GameObject) bindObject);
+      Constructor<?> gameObjectCtor = subprogramClass.getConstructor(GameObject.class);
+      if (gameObjectCtor != null)
+        return (ISubprogram) gameObjectCtor.newInstance((GameObject) bindObject);
+
+      Constructor<?> engineObjectCtor = subprogramClass.getConstructor(EngineObject.class);
+      if (engineObjectCtor != null)
+        return (ISubprogram) engineObjectCtor.newInstance(bindObject);
+
+      Constructor<?> emptyCtor = subprogramClass.getConstructor();
+      if (emptyCtor != null)
+        return (ISubprogram) emptyCtor.newInstance();
+
+      throw new IllegalArgumentException("Object not contains right constructor with one of parameter: GameObject, EngineObject. Or it may be empty.");
     }
     catch (Exception e)
     {

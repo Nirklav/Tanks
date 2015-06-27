@@ -1,7 +1,7 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;

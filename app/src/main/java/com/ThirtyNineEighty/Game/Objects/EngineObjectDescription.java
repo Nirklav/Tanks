@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game;
+package com.ThirtyNineEighty.Game.Objects;
 
 import java.io.Serializable;
 

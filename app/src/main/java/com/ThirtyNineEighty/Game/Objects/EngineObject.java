@@ -1,5 +1,6 @@
-package com.ThirtyNineEighty.Game;
+package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Game.Collisions.Collision;
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -89,20 +90,23 @@ public abstract class EngineObject
     subprograms.remove(subprogram);
   }
 
-  public void onCollide(EngineObject object) { }
+  public void collide(EngineObject object, Collision<Vector3> collision)
+  {
+    move(collision.getMTVLength(), collision.getMTV());
+  }
 
-  public void onRotates(Vector3 value)
+  public void rotate(Vector3 value)
   {
     angles.add(value);
     angles.correctAngles();
   }
 
-  public void onMoved(float length)
+  public void move(float length)
   {
     position.move(length, angles);
   }
 
-  public void onMoved( float length, Vector3 vector)
+  public void move(float length, Vector3 vector)
   {
     vector.normalize();
     vector.multiply(length);
@@ -118,7 +122,6 @@ public abstract class EngineObject
     angles.setFrom(value);
     angles.correctAngles();
   }
-
 
   public final I3DRenderable[] getRenderables() { return visualModels; }
   public final ICollidable getCollidable() { return physicalModel; }

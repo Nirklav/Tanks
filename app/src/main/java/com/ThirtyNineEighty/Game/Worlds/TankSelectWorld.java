@@ -1,8 +1,8 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
-import com.ThirtyNineEighty.Game.Gameplay.Land;
-import com.ThirtyNineEighty.Game.Gameplay.Tank;
+import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Objects.Land;
+import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Camera;

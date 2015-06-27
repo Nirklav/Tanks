@@ -1,6 +1,6 @@
-package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
+package com.ThirtyNineEighty.Game.Characteristics;
 
-import com.ThirtyNineEighty.Game.EngineObjectDescription;
+import com.ThirtyNineEighty.Game.Objects.EngineObjectDescription;
 
 import java.io.Serializable;
 

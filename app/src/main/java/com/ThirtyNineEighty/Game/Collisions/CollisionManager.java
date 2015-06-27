@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Game.EngineObject;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.GameObject;
-import com.ThirtyNineEighty.Game.Gameplay.Map;
+import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.GameObject;
+import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -34,19 +34,19 @@ public class CollisionManager
   public void move(GameObject object)
   {
     Characteristic c = object.getCharacteristics();
-    object.onMoved(c.getSpeed() * GameContext.getDelta());
+    object.move(c.getSpeed() * GameContext.getDelta());
     addToResolving(object);
   }
 
   public void move(EngineObject object, float length)
   {
-    object.onMoved(length);
+    object.move(length);
     addToResolving(object);
   }
 
   public void move(EngineObject object, Vector3 vector, float length)
   {
-    object.onMoved(length, vector);
+    object.move(length, vector);
     addToResolving(object);
   }
 
@@ -63,14 +63,14 @@ public class CollisionManager
 
     Vector3 vector = Vector.getInstance(3);
     vector.addToZ(addedValue);
-    object.onRotates(vector);
+    object.rotate(vector);
     addToResolving(object);
     Vector.release(vector);
   }
 
   public void rotate(EngineObject object, Vector3 angles)
   {
-    object.onRotates(angles);
+    object.rotate(angles);
     addToResolving(object);
   }
 
@@ -130,12 +130,7 @@ public class CollisionManager
 
         EngineObject object = result.checkedObject;
         for (CollisionResult collResult : result.collisions)
-        {
-          Collision3D collision = collResult.collision;
-
-          object.onMoved(collision.getMTVLength(), collision.getMTV());
-          object.onCollide(collResult.collidedObject);
-        }
+          object.collide(collResult.collidedObject, collResult.collision);
       }
     }
     catch (Exception e)

@@ -1,10 +1,11 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
-import com.ThirtyNineEighty.Game.Gameplay.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Game.EngineObject;
+import com.ThirtyNineEighty.Game.Collisions.Collision;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Bullet extends GameObject
@@ -17,10 +18,8 @@ public class Bullet extends GameObject
   }
 
   @Override
-  public void onCollide(EngineObject object)
+  public void collide(EngineObject object, Collision<Vector3> collision)
   {
-    super.onCollide(object);
-
     IWorld world = GameContext.content.getWorld();
     world.remove(this);
 

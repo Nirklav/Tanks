@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 
 import java.util.ArrayList;

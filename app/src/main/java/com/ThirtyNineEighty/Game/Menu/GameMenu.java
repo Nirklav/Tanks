@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Tank;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
 import com.ThirtyNineEighty.Game.Menu.Controls.ProgressBar;
@@ -41,7 +41,7 @@ public class GameMenu
     });
 
     Button fireButton = new Button("Fire", "pressedBtn", "notPressedBtn");
-    fireButton.setPosition(810, 440);
+    fireButton.setPosition(725, -50);
     fireButton.setSize(300, 200);
     fireButton.setClickListener(new Runnable()
     {

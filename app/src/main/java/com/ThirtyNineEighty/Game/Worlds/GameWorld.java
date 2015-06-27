@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Land;
-import com.ThirtyNineEighty.Game.Gameplay.MapDescription;
-import com.ThirtyNineEighty.Game.Gameplay.Tank;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Land;
+import com.ThirtyNineEighty.Game.Map.MapDescription;
+import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -49,10 +49,10 @@ public class GameWorld
         float playerAngle = playerTank.getAngles().getZ();
 
         if (Math.abs(joyAngle - playerAngle) < 90)
-          GameContext.collisionManager.move(playerTank);
+          GameContext.collisions.move(playerTank);
 
         if (Math.abs(joyAngle - playerAngle) > 3)
-          GameContext.collisionManager.rotate(playerTank, joyAngle);
+          GameContext.collisions.rotate(playerTank, joyAngle);
 
         Characteristic playerCh = playerTank.getCharacteristics();
         if (menu.getLeftTurretState())
@@ -71,7 +71,7 @@ public class GameWorld
       public void onUpdate()
       {
         // resolve all collisions
-        GameContext.collisionManager.resolve();
+        GameContext.collisions.resolve();
       }
     });
 

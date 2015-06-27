@@ -1,12 +1,12 @@
-package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
+package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
-import com.ThirtyNineEighty.Game.EngineObject;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.GameObject;
-import com.ThirtyNineEighty.Game.Gameplay.Map;
-import com.ThirtyNineEighty.Game.Gameplay.Tank;
+import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.GameObject;
+import com.ThirtyNineEighty.Game.Map.Map;
+import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
@@ -126,7 +126,7 @@ public class BotSubprogram
     float movingAngle = Vector2.xAxis.getAngle(movingVector);
     float botAngle = bot.getAngles().getZ();
 
-    GameContext.collisionManager.rotate(bot, movingAngle);
+    GameContext.collisions.rotate(bot, movingAngle);
 
     if (Math.abs(botAngle - movingAngle) >= 15)
       return;
@@ -135,7 +135,7 @@ public class BotSubprogram
     if (map.canMove(bot))
     {
       pathTimeMissedSec = 0.0f;
-      GameContext.collisionManager.move(bot);
+      GameContext.collisions.move(bot);
     }
     else
     {

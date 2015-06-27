@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Gameplay.Characteristics;
+package com.ThirtyNineEighty.Game.Characteristics;
 
 import com.ThirtyNineEighty.Helpers.Serializer;
 

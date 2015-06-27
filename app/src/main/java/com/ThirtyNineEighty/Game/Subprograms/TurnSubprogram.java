@@ -1,8 +1,7 @@
-package com.ThirtyNineEighty.Game.Gameplay.Subprograms;
+package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.GameObject;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
@@ -29,7 +28,7 @@ public class TurnSubprogram extends Subprogram
     Vector3 angles = Vector.getInstance(3);
     angles.addToZ(coefficient * c.getRotationSpeed() * GameContext.getDelta());
 
-    GameContext.collisionManager.rotate(movedObject, angles);
+    GameContext.collisions.rotate(movedObject, angles);
 
     Vector.release(angles);
   }

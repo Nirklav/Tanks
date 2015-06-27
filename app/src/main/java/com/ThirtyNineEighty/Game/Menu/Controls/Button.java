@@ -90,8 +90,8 @@ public class Button
     return isBetween(touchX, left, right) && isBetween(touchY, bottom, top);
   }
 
-  private static boolean isBetween(float value, float left, float right)
+  private static boolean isBetween(float value, float min, float  max)
   {
-    return value > left && value < right;
+    return value > min && value < max;
   }
 }

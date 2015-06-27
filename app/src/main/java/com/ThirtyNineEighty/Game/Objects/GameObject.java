@@ -1,8 +1,7 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.Upgrade;
-import com.ThirtyNineEighty.Game.EngineObject;
+import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Game.Characteristics.Upgrade;
 
 import java.util.ArrayList;
 

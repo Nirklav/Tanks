@@ -1,7 +1,5 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.EngineObject;
-import com.ThirtyNineEighty.Game.EngineObjectDescription;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Spiral;
 import com.ThirtyNineEighty.Helpers.Vector;

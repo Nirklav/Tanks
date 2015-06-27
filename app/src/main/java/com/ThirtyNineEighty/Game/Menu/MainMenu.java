@@ -14,13 +14,14 @@ public class MainMenu
 {
   private GLLabel label;
 
+  private List<String> maps;
   private String selectedMap;
   private int selectedMapIndex;
 
   @Override
   public void initialize(Object args)
   {
-    List<String> maps = GameContext.mapManager.getMaps();
+    maps = GameContext.mapManager.getMaps();
     selectedMapIndex = 0;
     selectedMap = maps.get(selectedMapIndex);
 
@@ -48,9 +49,11 @@ public class MainMenu
     {
       @Override public void run()
       {
+        if (!GameContext.gameProgress.isMapOpen(selectedMap))
+          return;
+
         GameStartArgs args = new GameStartArgs();
         args.setMapName(selectedMap);
-
         GameContext.content.setMenu(new TankSelectMenu(), args);
       }
     });
@@ -68,7 +71,6 @@ public class MainMenu
       {
         selectedMapIndex++;
 
-        List<String> maps = GameContext.mapManager.getMaps();
         if (selectedMapIndex >= maps.size())
           selectedMapIndex = 0;
 
@@ -83,6 +85,9 @@ public class MainMenu
 
   private static String getMapLabel(String mapName)
   {
-    return String.format("Selected map: %s", mapName);
+    if (GameContext.gameProgress.isMapOpen(mapName))
+      return String.format("Selected map: %s", mapName);
+
+    return String.format("Selected map: %s (Closed)", mapName);
   }
 }

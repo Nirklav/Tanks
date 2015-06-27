@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Gameplay;
+package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Helpers.Vector3;
 

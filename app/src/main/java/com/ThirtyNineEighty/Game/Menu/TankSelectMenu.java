@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Gameplay.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;

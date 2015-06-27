@@ -3,7 +3,8 @@ package com.ThirtyNineEighty.System;
 import android.content.pm.ApplicationInfo;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
-import com.ThirtyNineEighty.Game.Gameplay.MapManager;
+import com.ThirtyNineEighty.Game.Data.GameProgressManager;
+import com.ThirtyNineEighty.Game.Map.MapManager;
 import com.ThirtyNineEighty.Resources.Resources;
 
 public class GameContext
@@ -57,7 +58,8 @@ public class GameContext
   // Helpers
   public static final MapManager mapManager = new MapManager();
   public static final Resources resources = new Resources();
-  public static final CollisionManager collisionManager = new CollisionManager();
+  public static final CollisionManager collisions = new CollisionManager();
+  public static final GameProgressManager gameProgress = new GameProgressManager();
 
   // Delta time
   private static boolean isFirst;
