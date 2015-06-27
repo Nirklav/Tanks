@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Subprograms;
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;

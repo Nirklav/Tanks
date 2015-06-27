@@ -1,12 +1,13 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
+import com.ThirtyNineEighty.System.GameContext;
 
 public class Decor
   extends EngineObject
 {
   public Decor(String type)
   {
-    super(CharacteristicFactory.get(type).initializer);
+    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)).initializer);
   }
 }

@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
@@ -23,7 +23,7 @@ public class TankSelectMenu
       throw new IllegalArgumentException("Illegal args type");
 
     args = (GameStartArgs) obj;
-    args.setTankName(CharacteristicFactory.Tank);
+    args.setTankName(Characteristic.Tank);
 
     GameContext.content.setWorld(new TankSelectWorld());
 
@@ -44,7 +44,7 @@ public class TankSelectMenu
     });
     addControl(gesture);
 
-    Button menuButton = new Button("Menu", "pressedBtn", "notPressedBtn");
+    Button menuButton = new Button("Menu");
     menuButton.setPosition(-810, -440);
     menuButton.setSize(300, 200);
     menuButton.setClickListener(new Runnable()
@@ -58,7 +58,7 @@ public class TankSelectMenu
     });
     addControl(menuButton);
 
-    Button nextTankButton = new Button("Next", "pressedBtn", "notPressedBtn");
+    Button nextTankButton = new Button("Next");
     nextTankButton.setPosition(490, -440);
     nextTankButton.setSize(300, 200);
     nextTankButton.setClickListener(new Runnable()
@@ -69,9 +69,9 @@ public class TankSelectMenu
         TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
         String tankName = args.getTankName();
 
-        tankName = CharacteristicFactory.Tank.equals(tankName)
-          ? CharacteristicFactory.SpeedTank
-          : CharacteristicFactory.Tank;
+        tankName = Characteristic.Tank.equals(tankName)
+          ? Characteristic.SpeedTank
+          : Characteristic.Tank;
 
         args.setTankName(tankName);
         world.setPlayer(tankName);
@@ -79,7 +79,7 @@ public class TankSelectMenu
     });
     addControl(nextTankButton);
 
-    Button gameButton = new Button("Game", "pressedBtn", "notPressedBtn");
+    Button gameButton = new Button("Game");
     gameButton.setPosition(810, -440);
     gameButton.setSize(300, 200);
     gameButton.setClickListener(new Runnable()

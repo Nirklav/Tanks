@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
@@ -25,7 +25,7 @@ public class MoveSubprogram
   public void onUpdate()
   {
     IWorld world = GameContext.content.getWorld();
-    Characteristic c = movedObject.getCharacteristics();
+    Characteristic c = movedObject.getCharacteristic();
 
     float stepLength = c.getSpeed() * GameContext.getDelta();
     GameContext.collisions.move(movedObject, stepLength);

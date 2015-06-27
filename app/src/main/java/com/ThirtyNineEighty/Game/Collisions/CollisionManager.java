@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -33,7 +33,7 @@ public class CollisionManager
 
   public void move(GameObject object)
   {
-    Characteristic c = object.getCharacteristics();
+    Characteristic c = object.getCharacteristic();
     object.move(c.getSpeed() * GameContext.getDelta());
     addToResolving(object);
   }
@@ -52,7 +52,7 @@ public class CollisionManager
 
   public void rotate(GameObject object, float targetAngle)
   {
-    Characteristic c = object.getCharacteristics();
+    Characteristic c = object.getCharacteristic();
 
     float speed = c.getRotationSpeed() * GameContext.getDelta();
     float objectAngle = object.getAngles().getZ();

@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -46,7 +46,7 @@ public class Map
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
     Vector3 angles = object.getAngles();
-    Characteristic characteristic = object.getCharacteristics();
+    Characteristic characteristic = object.getCharacteristic();
 
     Projection projection = getProjection(object);
     if (projection == null)

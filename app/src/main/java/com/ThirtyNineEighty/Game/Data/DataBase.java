@@ -9,7 +9,7 @@ import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
 
-class DataBase extends SQLiteOpenHelper
+public class DataBase extends SQLiteOpenHelper
 {
   public final Table<MapEntity> maps;
   public final Table<TankEntity> tanks;

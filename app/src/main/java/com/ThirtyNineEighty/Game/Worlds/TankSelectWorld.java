@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Helpers.Angle;
@@ -17,7 +17,7 @@ public class TankSelectWorld
   public void initialize(Object args)
   {
     add(new Land());
-    add(player = new Tank(CharacteristicFactory.Tank));
+    add(player = new Tank(Characteristic.Tank));
 
     super.initialize(args);
   }

@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Resources;
+package com.ThirtyNineEighty.Resources.Entities;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
@@ -33,14 +33,14 @@ public class GameMenu
       {
         IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
-        Characteristic characteristic = player.getCharacteristics();
+        Characteristic characteristic = player.getCharacteristic();
 
         health.setProgress(characteristic.getHealth());
         recharge.setProgress(player.getRechargeProgress());
       }
     });
 
-    Button fireButton = new Button("Fire", "pressedBtn", "notPressedBtn");
+    Button fireButton = new Button("Fire");
     fireButton.setPosition(725, -50);
     fireButton.setSize(300, 200);
     fireButton.setClickListener(new Runnable()
@@ -54,7 +54,7 @@ public class GameMenu
     });
     addControl(fireButton);
 
-    Button menuButton = new Button("Menu", "pressedBtn", "notPressedBtn");
+    Button menuButton = new Button("Menu");
     menuButton.setPosition(-810, 440);
     menuButton.setSize(300, 200);
     menuButton.setClickListener(new Runnable()
@@ -68,12 +68,12 @@ public class GameMenu
     });
     addControl(menuButton);
 
-    rightTurretButton = new Button("Right", "pressedBtn", "notPressedBtn");
+    rightTurretButton = new Button("Right");
     rightTurretButton.setPosition(800, -290);
     rightTurretButton.setSize(150, 150);
     addControl(rightTurretButton);
 
-    leftTurretButton = new Button("Left", "pressedBtn", "notPressedBtn");
+    leftTurretButton = new Button("Left");
     leftTurretButton.setPosition(600, -290);
     leftTurretButton.setSize(150, 150);
     addControl(leftTurretButton);

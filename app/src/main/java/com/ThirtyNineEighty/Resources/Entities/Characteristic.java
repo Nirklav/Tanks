@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Characteristics;
+package com.ThirtyNineEighty.Resources.Entities;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObjectDescription;
 
@@ -10,14 +10,15 @@ public class Characteristic
   private static final long serialVersionUID = 1L;
 
   public static final float maxRechargeLevel = 100;
+  public static final String Tank = "tank";
+  public static final String SpeedTank = "speedTank";
+  public static final String Bullet = "bullet";
+  public static final String AidKit = "aidkit";
 
   public final EngineObjectDescription initializer;
-
   private float health;
-
   private float damage;
   private float rechargeSpeed; // points per seconds (max 100)
-
   private float speed; // meters per seconds
   private float rotationSpeed; // degree per seconds
   private float turretRotationSpeed; // degree per seconds

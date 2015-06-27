@@ -1,10 +1,10 @@
 package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Collisions.Collision;
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class AidKit
@@ -12,7 +12,7 @@ public class AidKit
 {
   protected AidKit(String type)
   {
-    super(CharacteristicFactory.get(type));
+    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
   }
 
   @Override
@@ -26,8 +26,8 @@ public class AidKit
 
     GameObject gameObject = (GameObject) object;
 
-    Characteristic objectCh = gameObject.getCharacteristics();
-    Characteristic aidKitCh = getCharacteristics();
+    Characteristic objectCh = gameObject.getCharacteristic();
+    Characteristic aidKitCh = getCharacteristic();
 
     objectCh.addHealth(aidKitCh.getHealth());
   }

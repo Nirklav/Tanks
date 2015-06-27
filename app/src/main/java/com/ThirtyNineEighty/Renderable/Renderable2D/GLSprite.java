@@ -49,14 +49,12 @@ public class GLSprite
   protected Texture textureData;
   protected Geometry geometryData;
 
-  public GLSprite(String imageName)
+  public GLSprite(String imageName) { this(GameContext.resources.getImage(new FileImageSource(imageName))); }
+  public GLSprite(Image image)
   {
     this();
-
-    Image imageData = GameContext.resources.getImage(new FileImageSource(imageName));
     geometryData = GameContext.resources.getGeometry(new StaticGeometrySource("GLSpriteMesh", quadMeshData, quadMeshData.length / 12, MeshMode.Static));
-
-    setImage(imageData);
+    setImage(image);
     needBuildMatrix = true;
   }
 

@@ -1,37 +1,44 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Characteristics.Upgrade;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 
 import java.util.ArrayList;
 
 public abstract class GameObject
   extends EngineObject
 {
-  private Characteristic baseCharacteristics;
-  private Characteristic characteristics;
-  private ArrayList<Upgrade> upgrades;
+  private Characteristic baseCharacteristic;
+  private Characteristic characteristic;
+  private ArrayList<IUpgrade> upgrades;
 
-  protected GameObject(Characteristic characteristics)
+  protected GameObject(Characteristic characteristic)
   {
-    super(characteristics.initializer);
+    super(characteristic.initializer);
 
-    upgrades = new ArrayList<>();
-
-    baseCharacteristics = characteristics;
-    setCurrentCharacteristics();
+    this.upgrades = new ArrayList<>();
+    this.baseCharacteristic = new Characteristic(characteristic);
+    this.characteristic = new Characteristic(characteristic);
   }
 
   protected void setCurrentCharacteristics()
   {
-    characteristics = new Characteristic(baseCharacteristics);
+    characteristic = new Characteristic(baseCharacteristic);
 
-    for (Upgrade upgrade : upgrades)
-      upgrade.doUpgrade(characteristics);
+    for (IUpgrade upgrade : upgrades)
+      upgrade.doUpgrade(characteristic);
   }
 
-  public void addUpgrade(Upgrade upgrade) { upgrades.add(upgrade); }
-  public void removeUpgrade(Upgrade upgrade) { upgrades.remove(upgrade); }
+  public void addUpgrade(IUpgrade upgrade)
+  {
+    upgrades.add(upgrade);
+    setCurrentCharacteristics();
+  }
 
-  public Characteristic getCharacteristics() { return characteristics; }
+  public void removeUpgrade(IUpgrade upgrade)
+  {
+    upgrades.remove(upgrade);
+    setCurrentCharacteristics();
+  }
+
+  public Characteristic getCharacteristic() { return characteristic; }
 }

@@ -22,12 +22,13 @@ public class Button
   private float width;
   private float height;
 
+  public Button(String caption) { this(caption, "pressedBtn", "notPressedBtn"); }
   public Button(String caption, String pressedName, String notPressedName)
   {
     pressed = GameContext.resources.getImage(new FileImageSource(pressedName));
     notPressed = GameContext.resources.getImage(new FileImageSource(notPressedName));
 
-    sprite = new GLSprite(notPressedName);
+    sprite = new GLSprite(notPressed);
     sprite.setZIndex(0);
 
     label = new GLLabel(caption, "simpleFont");

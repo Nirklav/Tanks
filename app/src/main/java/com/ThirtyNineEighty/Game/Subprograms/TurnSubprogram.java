@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -23,7 +23,7 @@ public class TurnSubprogram extends Subprogram
   @Override
   public void onUpdate()
   {
-    Characteristic c = movedObject.getCharacteristics();
+    Characteristic c = movedObject.getCharacteristic();
 
     Vector3 angles = Vector.getInstance(3);
     angles.addToZ(coefficient * c.getRotationSpeed() * GameContext.getDelta());

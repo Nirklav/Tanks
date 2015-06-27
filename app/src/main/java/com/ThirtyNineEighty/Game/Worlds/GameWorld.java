@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Map.MapDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
@@ -54,7 +54,7 @@ public class GameWorld
         if (Math.abs(joyAngle - playerAngle) > 3)
           GameContext.collisions.rotate(playerTank, joyAngle);
 
-        Characteristic playerCh = playerTank.getCharacteristics();
+        Characteristic playerCh = playerTank.getCharacteristic();
         if (menu.getLeftTurretState())
           playerTank.addTurretAngle(playerCh.getTurretRotationSpeed() * GameContext.getDelta());
 

@@ -1,12 +1,12 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Characteristics.Characteristic;
-import com.ThirtyNineEighty.Game.Characteristics.CharacteristicFactory;
+import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
+import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -17,14 +17,14 @@ public class Tank extends GameObject
 
   public Tank(String type)
   {
-    super(CharacteristicFactory.get(type));
+    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
 
     bindProgram(new Subprogram()
     {
       @Override
       protected void onUpdate()
       {
-        Characteristic characteristic = getCharacteristics();
+        Characteristic characteristic = getCharacteristic();
 
         if (rechargeProgress >= Characteristic.maxRechargeLevel)
           rechargeProgress = Characteristic.maxRechargeLevel;
@@ -42,7 +42,7 @@ public class Tank extends GameObject
     IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
-    Bullet bullet = new Bullet(CharacteristicFactory.Bullet);
+    Bullet bullet = new Bullet(Characteristic.Bullet);
 
     Vector3 bulletAngles = Vector.getInstance(3, angles);
     bulletAngles.addToZ(turretAngle);
@@ -67,7 +67,7 @@ public class Tank extends GameObject
 
   public void turnTurret(float targetAngle)
   {
-    Characteristic characteristic = getCharacteristics();
+    Characteristic characteristic = getCharacteristic();
     turretAngle += Angle.getDirection(getTurretAngle(), targetAngle) * characteristic.getTurretRotationSpeed() * GameContext.getDelta();
   }
 

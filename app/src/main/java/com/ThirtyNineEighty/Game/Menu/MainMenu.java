@@ -25,7 +25,7 @@ public class MainMenu
     selectedMapIndex = 0;
     selectedMap = maps.get(selectedMapIndex);
 
-    Button continueButton = new Button("Continue", "pressedBtn", "notPressedBtn");
+    Button continueButton = new Button("Continue");
     continueButton.setPosition(0, 400);
     continueButton.setSize(600, 200);
     continueButton.setClickListener(new Runnable()
@@ -42,7 +42,7 @@ public class MainMenu
     });
     addControl(continueButton);
 
-    Button newGameButton = new Button("New game", "pressedBtn", "notPressedBtn");
+    Button newGameButton = new Button("New game");
     newGameButton.setPosition(0, 150);
     newGameButton.setSize(600, 200);
     newGameButton.setClickListener(new Runnable()
@@ -62,7 +62,7 @@ public class MainMenu
     label = new GLLabel(getMapLabel(selectedMap), "simpleFont", 40, 60, MeshMode.Dynamic);
     addRenderable(label);
 
-    Button nextMapButton = new Button("Next map", "pressedBtn", "notPressedBtn");
+    Button nextMapButton = new Button("Next map");
     nextMapButton.setPosition(0, -150);
     nextMapButton.setSize(600, 200);
     nextMapButton.setClickListener(new Runnable()
