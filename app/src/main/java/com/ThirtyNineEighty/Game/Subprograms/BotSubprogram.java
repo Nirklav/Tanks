@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
@@ -33,8 +32,7 @@ public class BotSubprogram
     super();
     this.bot = (Tank)bot;
 
-    ICollidable collidable = bot.getCollidable();
-    stepCompletion = collidable.getRadius();
+    stepCompletion = bot.collidable.getRadius();
   }
 
   @Override

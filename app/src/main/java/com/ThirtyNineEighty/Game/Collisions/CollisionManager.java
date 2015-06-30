@@ -128,9 +128,29 @@ public class CollisionManager
         if (result == null)
           continue;
 
-        EngineObject object = result.checkedObject;
+        boolean removeChecked = false;
+        EngineObject checked = result.checkedObject;
+
         for (CollisionResult collResult : result.collisions)
-          object.collide(collResult.collidedObject, collResult.collision);
+        {
+          EngineObject collided = collResult.collidedObject;
+          Collision3D collision = collResult.collision;
+
+          checked.collide(collided);
+          collided.collide(checked);
+
+          if (collided.properties.removeOnCollide)
+            world.remove(collided);
+
+          if (checked.properties.removeOnCollide)
+            removeChecked = true;
+
+          if (!collided.properties.removeOnCollide && !checked.properties.removeOnCollide)
+            checked.move(collision.getMTVLength(), collision.getMTV());
+        }
+
+        if (removeChecked)
+          world.remove(checked);
       }
     }
     catch (Exception e)
@@ -163,8 +183,7 @@ public class CollisionManager
 
   private ResolveResult resolve(EngineObject object)
   {
-    ICollidable objectPh = object.getCollidable();
-    if (objectPh == null)
+    if (object.collidable == null)
       return null;
 
     ResolveResult result = null;
@@ -174,14 +193,13 @@ public class CollisionManager
       if (object == current)
         continue;
 
-      ICollidable currentPh = current.getCollidable();
-      if (currentPh == null)
+      if (current.collidable == null)
         continue;
 
-      if (objectPh.getRadius() + currentPh.getRadius() < getLength(objectPh, currentPh))
+      if (object.collidable.getRadius() + current.collidable.getRadius() < getLength(object, current))
         continue;
 
-      Collision3D collision = new Collision3D(objectPh, currentPh);
+      Collision3D collision = new Collision3D(object.collidable, current.collidable);
       if (collision.isCollide())
       {
         if (result == null)
@@ -194,10 +212,10 @@ public class CollisionManager
     return result;
   }
 
-  private float getLength(ICollidable one, ICollidable two)
+  private float getLength(EngineObject one, EngineObject two)
   {
-    Vector3 positionOne = one.getPosition();
-    Vector3 positionTwo = two.getPosition();
+    Vector3 positionOne = one.collidable.getPosition();
+    Vector3 positionTwo = two.collidable.getPosition();
 
     Vector3 lengthVector = positionOne.getSubtract(positionTwo);
     return lengthVector.getLength();

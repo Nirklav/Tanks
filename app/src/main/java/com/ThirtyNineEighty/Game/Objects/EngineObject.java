@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Collisions.Collision;
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -17,14 +16,14 @@ public abstract class EngineObject
   private static final String generatedNameTemplate = "object_";
 
   protected final String name;
-
   protected Vector3 position;
   protected Vector3 angles;
 
-  private I3DRenderable[] visualModels;
-  private ICollidable physicalModel;
-
   private ArrayList<ISubprogram> subprograms;
+
+  public final I3DRenderable[] renderables;
+  public final ICollidable collidable;
+  public final EngineObjectProperties properties;
 
   protected EngineObject(EngineObjectDescription description)
   {
@@ -35,23 +34,28 @@ public abstract class EngineObject
   {
     name = objectName;
 
+    properties = new EngineObjectProperties(description);
     position = new Vector3();
     angles = new Vector3();
     subprograms = new ArrayList<>();
 
+    // Build visual models
     int visualModelsCount = description.VisualModels.length;
-    visualModels = new I3DRenderable[visualModelsCount];
+    renderables = new I3DRenderable[visualModelsCount];
     for (int i = 0; i < visualModelsCount; i++)
     {
       EngineObjectDescription.VisualModel vmInit = description.VisualModels[i];
-      visualModels[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
-      visualModels[i].setGlobal(position, angles);
+      renderables[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
+      renderables[i].setGlobal(position, angles);
     }
 
-    if (description.PhysicalModel != null)
+    // Build physical model
+    if (description.PhysicalModel == null)
+      collidable = null;
+    else
     {
-      physicalModel = new Collidable(description.PhysicalModel.ModelName);
-      physicalModel.setGlobal(position, angles);
+      collidable = new Collidable(description.PhysicalModel.ModelName);
+      collidable.setGlobal(position, angles);
     }
   }
 
@@ -90,10 +94,7 @@ public abstract class EngineObject
     subprograms.remove(subprogram);
   }
 
-  public void collide(EngineObject object, Collision<Vector3> collision)
-  {
-    move(collision.getMTVLength(), collision.getMTV());
-  }
+  public void collide(EngineObject object) { }
 
   public void rotate(Vector3 value)
   {
@@ -114,7 +115,8 @@ public abstract class EngineObject
   }
 
   public Vector3 getPosition() { return position; }
-  public void setPosition(Vector3 value) { position.setFrom(value); }
+  public void setPosition(Vector3 value) { position.setFrom(value);
+  }
 
   public Vector3 getAngles() { return angles; }
   public void setAngles(Vector3 value)
@@ -123,20 +125,17 @@ public abstract class EngineObject
     angles.correctAngles();
   }
 
-  public final I3DRenderable[] getRenderables() { return visualModels; }
-  public final ICollidable getCollidable() { return physicalModel; }
-
   public final void setGlobalCollidablePosition()
   {
-    if (physicalModel == null)
+    if (collidable == null)
       return;
-    physicalModel.setGlobal(position, angles);
+    collidable.setGlobal(position, angles);
   }
 
   public final void setGlobalRenderablePosition()
   {
     int index = 0;
-    for (I3DRenderable vm : visualModels)
+    for (I3DRenderable vm : renderables)
       setGlobalRenderablePosition(index++, vm);
   }
 

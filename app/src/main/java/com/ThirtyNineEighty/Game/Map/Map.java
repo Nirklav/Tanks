@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
@@ -347,12 +346,11 @@ class Projection
 
   public static Projection FromObject(EngineObject object)
   {
-    ICollidable collidable = object.getCollidable();
-    if (collidable == null)
+    if (object.collidable == null)
       return null;
 
     Vector2 position = Vector.getInstance(2, object.getPosition());
-    ArrayList<Vector2> vertices = collidable.getConvexHull(plane);
+    ArrayList<Vector2> vertices = object.collidable.getConvexHull(plane);
 
     float radius = 0.0f;
     Vector2 tempVector = Vector.getInstance(2);

@@ -35,9 +35,8 @@ public class Tracer
 
   private static Vector3 getPosition(EngineObject object)
   {
-    ICollidable targetCollidable = object.getCollidable();
-    if (targetCollidable != null)
-      return targetCollidable.getPosition();
+    if (object.collidable != null)
+      return object.collidable.getPosition();
     return object.getPosition();
   }
 
@@ -67,8 +66,7 @@ public class Tracer
       if (contains(ignoring, object))
         continue;
 
-      ICollidable collidable = object.getCollidable();
-      if (collidable == null)
+      if (object.collidable == null)
         continue;
 
       Vector3 position = object.getPosition();
@@ -89,10 +87,10 @@ public class Tracer
 
       Vector2 lengthVector = plane.getProjection(position);
       lengthVector.subtract(lineProjection);
-      if (lengthVector.getLength() > collidable.getRadius())
+      if (lengthVector.getLength() > object.collidable.getRadius())
         continue;
 
-      ArrayList<Vector2> convexHull = collidable.getConvexHull(plane);
+      ArrayList<Vector2> convexHull = object.collidable.getConvexHull(plane);
       if (contain(convexHull, lineProjection))
         return true;
     }

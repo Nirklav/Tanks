@@ -69,10 +69,10 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      for (EngineObject engineObject : objects)
+      for (EngineObject object : objects)
       {
-        engineObject.setGlobalRenderablePosition();
-        Collections.addAll(filled, engineObject.getRenderables());
+        object.setGlobalRenderablePosition();
+        Collections.addAll(filled, object.renderables);
       }
     }
   }

@@ -37,4 +37,6 @@ public class EngineObjectDescription
 
   public VisualModel[] VisualModels;
   public PhysicalModel PhysicalModel;
+
+  public boolean removeOnCollide;
 }

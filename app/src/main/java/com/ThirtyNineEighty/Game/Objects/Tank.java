@@ -10,7 +10,8 @@ import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
-public class Tank extends GameObject
+public class Tank
+  extends GameObject
 {
   private float turretAngle;
   private float rechargeProgress;
@@ -48,16 +49,11 @@ public class Tank extends GameObject
     bulletAngles.addToZ(turretAngle);
     bullet.setAngles(bulletAngles);
 
-    Vector3 bulletPos = Vector.getInstance(3, position);
-    float tankRadius = getCollidable().getRadius();
-    float bulletRadius = bullet.getCollidable().getRadius();
-
-    bulletPos.move(bulletRadius + tankRadius, bulletAngles);
-    bullet.setPosition(bulletPos);
+    bullet.setPosition(position);
+    bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
 
     world.add(bullet);
 
-    Vector.release(bulletPos);
     Vector.release(bulletAngles);
   }
 
