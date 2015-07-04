@@ -2,14 +2,13 @@ package com.ThirtyNineEighty.Game.Map;
 
 import android.content.res.AssetManager;
 
-import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
+import com.ThirtyNineEighty.System.IBindable;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,19 +45,14 @@ public final class MapManager
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
 
-      if (obj.subprograms != null)
-        for (String subprogramName : obj.subprograms)
-        {
-          ISubprogram subprogram = factory.createSubprogram(subprogramName, object);
-          object.bindProgram(subprogram);
-        }
+      // Create object subprograms
+      createSubprograms(object, obj.subprograms, object);
 
       world.add(object);
     }
 
-    // Create subprograms
-    for (String subprogramName : description.subprograms)
-      world.bindProgram(factory.createSubprogram(subprogramName));
+    // Create map subprograms
+    createSubprograms(world, description.subprograms, null);
 
     // Create player
     Tank player = new Tank(args.getTankName());
@@ -66,10 +60,16 @@ public final class MapManager
     player.setAngles(description.player.getAngles());
     world.add(player);
 
-    // Create land
-    world.add(new Land());
-
     return player;
+  }
+
+  private void createSubprograms(IBindable bindable, String[] subprograms, Object parameter)
+  {
+    if (subprograms == null)
+      return;
+
+    for (String subprogramName : subprograms)
+      bindable.bindProgram(factory.createSubprogram(subprogramName, parameter));
   }
 
   public List<String> getMaps() { return maps; }

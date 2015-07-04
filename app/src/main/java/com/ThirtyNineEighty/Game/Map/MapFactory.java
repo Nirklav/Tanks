@@ -39,9 +39,13 @@ public class MapFactory
     try
     {
       Class<?> objectClass = objectBindings.get(name);
-      Constructor<?> constructor = getConstructor(objectClass, String.class);
-      if (constructor != null)
-        return (EngineObject) constructor.newInstance(name);
+      Constructor<?> stringCtor = getConstructor(objectClass, String.class);
+      if (stringCtor != null)
+        return (EngineObject) stringCtor.newInstance(name);
+
+      Constructor<?> emptyCtor = getConstructor(objectClass);
+      if (emptyCtor != null)
+        return (EngineObject) emptyCtor.newInstance();
 
       throw new IllegalStateException("Object not contains constructor with string parameter");
     }
@@ -51,7 +55,6 @@ public class MapFactory
     }
   }
 
-  public ISubprogram createSubprogram(String name) { return createSubprogram(name, null); }
   public ISubprogram createSubprogram(String name, Object parameter)
   {
     try
