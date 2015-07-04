@@ -94,10 +94,4 @@ public class TankSelectMenu
 
     super.initialize(args);
   }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-  }
 }

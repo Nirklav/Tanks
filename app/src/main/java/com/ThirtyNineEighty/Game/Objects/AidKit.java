@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
 import com.ThirtyNineEighty.System.GameContext;
 

@@ -128,13 +128,14 @@ public class CollisionManager
         if (result == null)
           continue;
 
-        boolean removeChecked = false;
         EngineObject checked = result.checkedObject;
+
+        if (checked.properties.removeOnCollide)
+          world.remove(checked);
 
         for (CollisionResult collResult : result.collisions)
         {
           EngineObject collided = collResult.collidedObject;
-          Collision3D collision = collResult.collision;
 
           checked.collide(collided);
           collided.collide(checked);
@@ -142,15 +143,10 @@ public class CollisionManager
           if (collided.properties.removeOnCollide)
             world.remove(collided);
 
-          if (checked.properties.removeOnCollide)
-            removeChecked = true;
-
+          Collision3D collision = collResult.collision;
           if (!collided.properties.removeOnCollide && !checked.properties.removeOnCollide)
             checked.move(collision.getMTVLength(), collision.getMTV());
         }
-
-        if (removeChecked)
-          world.remove(checked);
       }
     }
     catch (Exception e)

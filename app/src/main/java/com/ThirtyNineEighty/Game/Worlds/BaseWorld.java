@@ -2,16 +2,16 @@ package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
+import com.ThirtyNineEighty.System.Bindable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseWorld
+  extends Bindable
   implements IWorld
 {
-  private volatile boolean initialized;
-
   protected final ArrayList<EngineObject> objects;
   protected EngineObject player;
 
@@ -21,17 +21,10 @@ public abstract class BaseWorld
   }
 
   @Override
-  public boolean isInitialized() { return initialized; }
-
-  @Override
-  public void initialize(Object args)
-  {
-    initialized = true;
-  }
-
-  @Override
   public void uninitialize()
   {
+    super.uninitialize();
+
     ArrayList<EngineObject> disposed = new ArrayList<>();
     synchronized (objects)
     {
@@ -41,14 +34,14 @@ public abstract class BaseWorld
     }
 
     for (EngineObject object : disposed)
-      object.dispose();
-
-    initialized = false;
+      object.uninitialize();
   }
 
   @Override
   public void enable()
   {
+    super.enable();
+
     ArrayList<EngineObject> enabling = new ArrayList<>();
     fillObjects(enabling);
     for (EngineObject object : enabling)
@@ -58,6 +51,8 @@ public abstract class BaseWorld
   @Override
   public void disable()
   {
+    super.disable();
+
     ArrayList<EngineObject> enabling = new ArrayList<>();
     fillObjects(enabling);
     for (EngineObject object : enabling)
@@ -93,10 +88,17 @@ public abstract class BaseWorld
   @Override
   public void add(EngineObject engineObject)
   {
+    add(engineObject, null);
+  }
+
+  @Override
+  public void add(EngineObject engineObject, Object args)
+  {
     synchronized (objects)
     {
       objects.add(engineObject);
     }
+    engineObject.initialize(args);
   }
 
   @Override
@@ -106,6 +108,6 @@ public abstract class BaseWorld
     {
       objects.remove(engineObject);
     }
-    engineObject.dispose();
+    engineObject.uninitialize();
   }
 }

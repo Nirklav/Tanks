@@ -5,12 +5,10 @@ import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
-import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.ISubprogram;
-
-import java.util.ArrayList;
+import com.ThirtyNineEighty.System.Bindable;
 
 public abstract class EngineObject
+  extends Bindable
 {
   private static int lastId = 1;
   private static final String generatedNameTemplate = "object_";
@@ -18,8 +16,6 @@ public abstract class EngineObject
   protected final String name;
   protected Vector3 position;
   protected Vector3 angles;
-
-  private ArrayList<ISubprogram> subprograms;
 
   public final I3DRenderable[] renderables;
   public final ICollidable collidable;
@@ -37,7 +33,6 @@ public abstract class EngineObject
     properties = new EngineObjectProperties(description);
     position = new Vector3();
     angles = new Vector3();
-    subprograms = new ArrayList<>();
 
     // Build visual models
     int visualModelsCount = description.VisualModels.length;
@@ -64,36 +59,6 @@ public abstract class EngineObject
     return name;
   }
 
-  public void dispose()
-  {
-    for (ISubprogram subprogram : subprograms)
-      GameContext.content.unbindProgram(subprogram);
-  }
-
-  public void enable()
-  {
-    for (ISubprogram subprogram : subprograms)
-      subprogram.enable();
-  }
-
-  public void disable()
-  {
-    for (ISubprogram subprogram : subprograms)
-      subprogram.disable();
-  }
-
-  public void bindProgram(ISubprogram subprogram)
-  {
-    GameContext.content.bindProgram(subprogram);
-    subprograms.add(subprogram);
-  }
-
-  public void unbindProgram(ISubprogram subprogram)
-  {
-    GameContext.content.unbindProgram(subprogram);
-    subprograms.remove(subprogram);
-  }
-
   public void collide(EngineObject object) { }
 
   public void rotate(Vector3 value)
@@ -115,8 +80,7 @@ public abstract class EngineObject
   }
 
   public Vector3 getPosition() { return position; }
-  public void setPosition(Vector3 value) { position.setFrom(value);
-  }
+  public void setPosition(Vector3 value) { position.setFrom(value); }
 
   public Vector3 getAngles() { return angles; }
   public void setAngles(Vector3 value)

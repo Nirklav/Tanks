@@ -19,6 +19,12 @@ public class Tank
   public Tank(String type)
   {
     super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
+  }
+
+  @Override
+  public void initialize(Object args)
+  {
+    super.initialize(args);
 
     bindProgram(new Subprogram()
     {

@@ -10,7 +10,7 @@ public class MapDescription
 {
   private static final long serialVersionUID = 1L;
 
-  public static class MapObject
+  public static class Object
     implements Serializable
   {
     private static final long serialVersionUID = 1L;
@@ -48,6 +48,7 @@ public class MapDescription
   }
 
   public float size;
-  public MapObject[] objects;
+  public Object[] objects;
   public Player player;
+  public String[] subprograms;
 }

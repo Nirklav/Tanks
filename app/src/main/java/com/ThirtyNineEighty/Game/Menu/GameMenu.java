@@ -8,7 +8,6 @@ import com.ThirtyNineEighty.Game.Menu.Controls.ProgressBar;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.ISubprogram;
 import com.ThirtyNineEighty.System.Subprogram;
 
 public class GameMenu
@@ -22,12 +21,10 @@ public class GameMenu
 
   private Joystick joystick;
 
-  private ISubprogram menuProgram;
-
   @Override
   public void initialize(Object args)
   {
-    GameContext.content.bindProgram(menuProgram = new Subprogram()
+    bindProgram(new Subprogram()
     {
       @Override public void onUpdate()
       {
@@ -89,14 +86,6 @@ public class GameMenu
     addRenderable(health);
 
     super.initialize(args);
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-
-    GameContext.content.unbindProgram(menuProgram);
   }
 
   public float getJoystickAngle()

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class Tracer
 {
-  private static final float extension = 1.0f;
+  private static final float extension = 0.5f;
 
   private final Vector3 start;
   private final Vector3 end;

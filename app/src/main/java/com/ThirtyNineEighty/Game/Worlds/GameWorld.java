@@ -1,23 +1,17 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
-import com.ThirtyNineEighty.Game.Objects.Land;
-import com.ThirtyNineEighty.Game.Map.MapDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Camera;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.ISubprogram;
 import com.ThirtyNineEighty.System.Subprogram;
 
 public class GameWorld
   extends BaseWorld
 {
-  private ISubprogram worldProgram;
-  private ISubprogram collideProgram;
-
   @Override
   public void initialize(Object obj)
   {
@@ -25,17 +19,10 @@ public class GameWorld
       throw new IllegalArgumentException("Illegal args type");
 
     GameStartArgs args = (GameStartArgs) obj;
-    MapDescription map = GameContext.mapManager.load(args.getMapName());
-
-    player = new Tank(args.getTankName());
-    player.setPosition(map.player.getPosition());
-    player.setAngles(map.player.getAngles());
-
-    add(player);
-    add(new Land());
+    player = GameContext.mapManager.load(args);
 
     GameContext.content.setMenu(new GameMenu());
-    GameContext.content.bindProgram(worldProgram = new Subprogram() // TODO: move this code in button callbacks
+    bindProgram(new Subprogram() // TODO: move this code in button callbacks
     {
       @Override
       public void onUpdate()
@@ -65,7 +52,7 @@ public class GameWorld
       }
     });
 
-    GameContext.content.bindLastProgram(collideProgram = new Subprogram()
+    GameContext.content.bindLastProgram(new Subprogram()
     {
       @Override
       public void onUpdate()
@@ -81,28 +68,8 @@ public class GameWorld
   @Override
   public void uninitialize()
   {
-    GameContext.content.unbindProgram(worldProgram);
     GameContext.content.unbindLastProgram();
-
     super.uninitialize();
-  }
-
-  @Override
-  public void enable()
-  {
-    worldProgram.enable();
-    collideProgram.enable();
-
-    super.enable();
-  }
-
-  @Override
-  public void disable()
-  {
-    worldProgram.disable();
-    collideProgram.disable();
-
-    super.disable();
   }
 
   @Override

@@ -4,16 +4,16 @@ import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
 import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseMenu
+  extends Bindable
   implements IMenu
 {
-  private volatile boolean initialized;
-
   private final Object syncObject;
   private final ArrayList<IControl> controls;
   private final ArrayList<IControl> controlsCopy;
@@ -57,24 +57,6 @@ public abstract class BaseMenu
     {
       renderables.remove(control);
     }
-  }
-
-  @Override
-  public boolean isInitialized()
-  {
-    return initialized;
-  }
-
-  @Override
-  public void initialize(Object args)
-  {
-    initialized = true;
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    initialized = false;
   }
 
   @Override

@@ -33,12 +33,13 @@ public class Map
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
   private final HashMap<String, Projection> projectionsCache;
+
   public final float size;
 
   public Map(float size)
   {
     this.size = size;
-    projectionsCache = new HashMap<>();
+    this.projectionsCache = new HashMap<>();
   }
 
   public boolean canMove(GameObject object)

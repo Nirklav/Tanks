@@ -22,12 +22,6 @@ public class TankSelectWorld
     super.initialize(args);
   }
 
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-  }
-
   public void addLength(float value)
   {
     length += value;
