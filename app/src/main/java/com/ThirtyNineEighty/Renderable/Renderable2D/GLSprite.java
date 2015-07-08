@@ -45,6 +45,7 @@ public class GLSprite
   protected float zIndex;
   protected float width;
   protected float height;
+  protected boolean visible;
 
   protected Texture textureData;
   protected Geometry geometryData;
@@ -75,6 +76,7 @@ public class GLSprite
     modelViewMatrix = new float[16];
     textureMatrix = new Matrix3f();
     position = Vector.getInstance(2);
+    visible = true;
 
     setSize(1, 1);
   }
@@ -82,6 +84,9 @@ public class GLSprite
   @Override
   public void draw(float[] viewMatrix)
   {
+    if (!visible)
+      return;
+
     tryBuildMatrix();
 
     Shader2D shader = (Shader2D)Shader.getCurrent();
@@ -161,6 +166,18 @@ public class GLSprite
     setTextureCoordinates(imageData.getCoordinates());
   }
 
+  @Override
+  public void setVisible(boolean value)
+  {
+    visible = value;
+  }
+
+  @Override
+  public boolean isVisible()
+  {
+    return visible;
+  }
+
   public void setSize(float width, float height)
   {
     this.width = width;
@@ -179,6 +196,7 @@ public class GLSprite
     position.setFrom(value);
     needBuildMatrix = true;
   }
+
 
   public Vector2 getPosition()
   {

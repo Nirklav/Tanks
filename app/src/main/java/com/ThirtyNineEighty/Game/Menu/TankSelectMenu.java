@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
@@ -14,6 +15,7 @@ public class TankSelectMenu
   extends BaseMenu
 {
   private Gesture gesture;
+  private GLLabel closedTankLabel;
   private GameStartArgs args;
 
   @Override
@@ -68,10 +70,17 @@ public class TankSelectMenu
       {
         TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
         String tankName = args.getTankName();
+        String lastTankName = tankName;
 
         tankName = Characteristic.Tank.equals(tankName)
           ? Characteristic.SpeedTank
           : Characteristic.Tank;
+
+        if (GameContext.gameProgress.isTankOpen(tankName) && !GameContext.gameProgress.isTankOpen(lastTankName))
+          removeRenderable(closedTankLabel);
+
+        if (!GameContext.gameProgress.isTankOpen(tankName) && GameContext.gameProgress.isTankOpen(lastTankName))
+          addRenderable(closedTankLabel);
 
         args.setTankName(tankName);
         world.setPlayer(tankName);
@@ -87,10 +96,17 @@ public class TankSelectMenu
       @Override
       public void run()
       {
+        if (!GameContext.gameProgress.isTankOpen(args.getTankName()))
+          return;
+
         GameContext.content.setWorld(new GameWorld(), args);
       }
     });
     addControl(gameButton);
+
+    closedTankLabel = new GLLabel("Tank closed");
+    closedTankLabel.setAlign(GLLabel.AlignType.TopCenter);
+    closedTankLabel.setPosition(0, 440);
 
     super.initialize(args);
   }

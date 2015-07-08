@@ -30,9 +30,11 @@ public class Button
 
     sprite = new GLSprite(notPressed);
     sprite.setZIndex(0);
+    addRenderable(sprite);
 
-    label = new GLLabel(caption, "simpleFont");
+    label = new GLLabel(caption);
     label.setZIndex(1);
+    addRenderable(label);
 
     setSize(200, 100);
   }
@@ -57,13 +59,6 @@ public class Button
   public boolean getState()
   {
     return state;
-  }
-
-  @Override
-  public void draw(float[] orthoViewMatrix)
-  {
-    sprite.draw(orthoViewMatrix);
-    label.draw(orthoViewMatrix);
   }
 
   @Override

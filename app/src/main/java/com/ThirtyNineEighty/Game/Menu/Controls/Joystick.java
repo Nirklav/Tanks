@@ -9,7 +9,6 @@ public class Joystick
 {
   private float radius;
 
-  private GLSprite backgroundSprite;
   private GLSprite stickSprite;
 
   private Vector2 position;
@@ -29,13 +28,15 @@ public class Joystick
 
     vector = Vector.getInstance(2);
 
-    backgroundSprite = new GLSprite("joyBackground");
+    GLSprite backgroundSprite = new GLSprite("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);
     backgroundSprite.setPosition(position);
+    addRenderable(backgroundSprite);
 
     stickSprite = new GLSprite("joyStick");
     stickSprite.setSize(radius / 2, radius / 2);
     stickSprite.setPosition(stickPosition);
+    addRenderable(stickSprite);
   }
 
   public Vector2 getVector()
@@ -69,13 +70,6 @@ public class Joystick
   {
     float length = getLength(x, y);
     return length < radius;
-  }
-
-  @Override
-  public void draw(float[] orthoViewMatrix)
-  {
-    backgroundSprite.draw(orthoViewMatrix);
-    stickSprite.draw(orthoViewMatrix);
   }
 
   private void setStick(float x, float y)

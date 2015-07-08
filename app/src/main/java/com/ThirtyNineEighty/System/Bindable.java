@@ -20,6 +20,7 @@ public class Bindable
   public void initialize(Object args)
   {
     initialized = true;
+    enable();
   }
 
   @Override
@@ -48,7 +49,11 @@ public class Bindable
   @Override
   public void bindProgram(ISubprogram subprogram)
   {
+    if (!initialized)
+      subprogram.disable();
+
     GameContext.content.bindProgram(subprogram);
+    subprogram.setBindable(this);
     subprograms.add(subprogram);
   }
 
@@ -56,6 +61,7 @@ public class Bindable
   public void unbindProgram(ISubprogram subprogram)
   {
     GameContext.content.unbindProgram(subprogram);
+    subprogram.setBindable(null);
     subprograms.remove(subprogram);
   }
 }

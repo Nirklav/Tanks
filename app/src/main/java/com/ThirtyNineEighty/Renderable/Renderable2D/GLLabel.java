@@ -25,7 +25,7 @@ public class GLLabel
   private AlignType alignType;
   private Vector2 originalPosition;
 
-  public GLLabel(String value, String fontTexture) { this(value, fontTexture, 30, 40, MeshMode.Static); }
+  public GLLabel(String value) { this(value, "simpleFont", 30, 40, MeshMode.Static); }
   public GLLabel(String value, String fontTexture, float charWidth, float chatHeight,  MeshMode mode)
   {
     super(fontTexture, new LabelGeometrySource(value, mode, charWidth, chatHeight));
@@ -199,7 +199,7 @@ public class GLLabel
 
     public LabelGeometrySource(String value, MeshMode mode, float charWidth, float charHeight)
     {
-      super(String.format("String: %s", value), mode);
+      super(String.format("String: %s Width: %d Height %d", value, (int)charWidth, (int)charHeight), mode);
 
       this.value = value;
       this.charWidth = charWidth;

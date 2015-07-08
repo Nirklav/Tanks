@@ -13,7 +13,6 @@ public class Content
 
   private final EventTimer updateTimer;
 
-  private ISubprogram lastSubprogram;
   private final ArrayList<ISubprogram> subprograms;
   private final ArrayList<Action> subprogramActions;
 
@@ -35,9 +34,6 @@ public class Content
           for (ISubprogram subprogram : subprograms)
             subprogram.update();
 
-          if (lastSubprogram != null)
-            lastSubprogram.update();
-
           for (Action action : subprogramActions)
           {
             switch (action.type)
@@ -47,6 +43,8 @@ public class Content
             }
           }
           subprogramActions.clear();
+
+          GameContext.collisions.resolve();
         }
       }
     );
@@ -130,19 +128,6 @@ public class Content
         subprogramActions.add(new Action(subprogram, Action.REMOVE));
       }
     });
-  }
-
-  public void bindLastProgram(ISubprogram subprogram)
-  {
-    if (lastSubprogram != null)
-      throw new IllegalStateException("last subprogram already set!");
-
-    lastSubprogram = subprogram;
-  }
-
-  public void unbindLastProgram()
-  {
-    lastSubprogram = null;
   }
 
   public void postEvent(Runnable r) { updateTimer.postEvent(r); }

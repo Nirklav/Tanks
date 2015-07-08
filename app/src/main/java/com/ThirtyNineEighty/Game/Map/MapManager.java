@@ -36,14 +36,16 @@ public final class MapManager
 
     IWorld world = GameContext.content.getWorld();
     MapDescription description = Serializer.Deserialize(String.format("Maps/%s.map", name));
-    map = new Map(description.size);
+    map = new Map(description);
 
     // Create objects
     for (MapDescription.Object obj : description.objects)
     {
       EngineObject object = factory.createObject(obj.name);
+
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
+      object.properties.needKill = obj.needKill;
 
       // Create object subprograms
       createSubprograms(object, obj.subprograms, object);

@@ -8,7 +8,7 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Subprograms.BotSubprogram;
-import com.ThirtyNineEighty.Game.Subprograms.KillAllSubprogram;
+import com.ThirtyNineEighty.Game.Subprograms.KillMarkedSubprogram;
 import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.lang.reflect.Constructor;
@@ -31,7 +31,7 @@ public class MapFactory
 
     subprogramBindings = new HashMap<>();
     subprogramBindings.put("bot", BotSubprogram.class);
-    subprogramBindings.put("killAllCompletion", KillAllSubprogram.class);
+    subprogramBindings.put("killMarkedCompletion", KillMarkedSubprogram.class);
   }
 
   public EngineObject createObject(String name)
@@ -39,6 +39,7 @@ public class MapFactory
     try
     {
       Class<?> objectClass = objectBindings.get(name);
+
       Constructor<?> stringCtor = getConstructor(objectClass, String.class);
       if (stringCtor != null)
         return (EngineObject) stringCtor.newInstance(name);
@@ -60,6 +61,7 @@ public class MapFactory
     try
     {
       Class<?> subprogramClass = subprogramBindings.get(name);
+
       Constructor<?> gameObjectCtor = getConstructor(subprogramClass, GameObject.class);
       if (gameObjectCtor != null && parameter instanceof GameObject)
         return (ISubprogram) gameObjectCtor.newInstance(parameter);

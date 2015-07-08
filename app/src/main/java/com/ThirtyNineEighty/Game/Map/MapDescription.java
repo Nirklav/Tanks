@@ -17,6 +17,7 @@ public class MapDescription
 
     public String name;
     public String[] subprograms;
+    public boolean needKill;
 
     private float xPos;
     private float yPos;
@@ -51,4 +52,8 @@ public class MapDescription
   public Object[] objects;
   public Player player;
   public String[] subprograms;
+
+  public String[] openingMaps;
+  public String[] openingTanks;
+  public String[] openingUpgrades;
 }

@@ -4,7 +4,6 @@ import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Plane;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
 import com.ThirtyNineEighty.Helpers.Vector3;
@@ -19,6 +18,10 @@ import java.util.HashMap;
 
 public class Map
 {
+  public final static int StateInProgress = 0;
+  public final static int StateWin = 1;
+  public final static int StateLose = 2;
+
   private final static int DirectionsCount = 8;
   private final static int Top = 0;
   private final static int TopLeft = 1;
@@ -33,13 +36,37 @@ public class Map
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
   private final HashMap<String, Projection> projectionsCache;
+  private MapDescription description;
+  private int state;
 
   public final float size;
 
-  public Map(float size)
+  public Map(MapDescription description)
   {
-    this.size = size;
+    this.description = description;
+    this.size = description.size;
     this.projectionsCache = new HashMap<>();
+    this.state = 0;
+  }
+
+  public int getState() { return state; }
+  public void setState(int value)
+  {
+    state = value;
+    if (state == StateWin)
+    {
+      if (description.openingMaps != null)
+        for (String name : description.openingMaps)
+          GameContext.gameProgress.openMap(name);
+
+      if (description.openingTanks != null)
+        for (String name : description.openingTanks)
+          GameContext.gameProgress.openTank(name);
+
+      if (description.openingUpgrades != null)
+        for (String name : description.openingUpgrades)
+          GameContext.gameProgress.openUpgrade(name);
+    }
   }
 
   public boolean canMove(GameObject object)
@@ -315,79 +342,3 @@ class PathLengthComparator
   }
 }
 
-class PathNode
-{
-  public PathNode from;
-  public Vector2 position;
-  public float lengthFromStart;
-  public float estimateLeftLength;
-
-  public PathNode(Vector2 position, float lengthFromStart, float estimateLeftLength)
-  {
-    this(null, position, lengthFromStart, estimateLeftLength);
-  }
-
-  public PathNode(PathNode from, Vector2 position, float lengthFromStart, float estimateLeftLength)
-  {
-    this.from = from;
-    this.position = position;
-    this.lengthFromStart = lengthFromStart;
-    this.estimateLeftLength = estimateLeftLength;
-  }
-
-  public float getFullLength() { return lengthFromStart + estimateLeftLength; }
-}
-
-class Projection
-{
-  private static final Plane plane = new Plane();
-
-  private final float radius;
-  private Vector2 position;
-
-  public static Projection FromObject(EngineObject object)
-  {
-    if (object.collidable == null)
-      return null;
-
-    Vector2 position = Vector.getInstance(2, object.getPosition());
-    ArrayList<Vector2> vertices = object.collidable.getConvexHull(plane);
-
-    float radius = 0.0f;
-    Vector2 tempVector = Vector.getInstance(2);
-
-    for (Vector2 vec : vertices)
-    {
-      tempVector.setFrom(vec);
-      tempVector.subtract(position);
-
-      float length = tempVector.getLength();
-      if (length > radius)
-        radius = length;
-    }
-
-    Vector.release(vertices);
-    Vector.release(tempVector);
-    return new Projection(radius);
-  }
-
-  private Projection(float radius)
-  {
-    this.radius = radius;
-    this.position = Vector.getInstance(2);
-  }
-
-  public void setPosition(Vector2 value)
-  {
-    position.setFrom(value);
-  }
-
-  public boolean contains(Vector2 vector, float finderRadius)
-  {
-    Vector2 tempVector = Vector.getInstance(2, vector);
-    tempVector.subtract(position);
-    return radius + finderRadius > tempVector.getLength();
-  }
-
-  public float getRadius() { return radius; }
-}

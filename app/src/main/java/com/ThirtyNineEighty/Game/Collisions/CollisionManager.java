@@ -77,6 +77,8 @@ public class CollisionManager
   public void resolve()
   {
     IWorld world = GameContext.content.getWorld();
+    if (world == null)
+      return;
 
     // Copy all world objects
     worldObjects.clear();
@@ -85,6 +87,9 @@ public class CollisionManager
     // Set current global positions for all objects
     for (EngineObject current : worldObjects)
       current.setGlobalCollidablePosition();
+
+    if (resolvingObjects.size() == 0)
+      return;
 
     // Parallel collision search (should not change world or objects)
     ArrayList<Future<ResolveResult>> results = new ArrayList<>(resolvingObjects.size());

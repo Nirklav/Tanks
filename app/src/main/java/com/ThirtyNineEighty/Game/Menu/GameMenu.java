@@ -1,5 +1,9 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Game.Map.Map;
+import com.ThirtyNineEighty.Helpers.Vector;
+import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
@@ -21,19 +25,57 @@ public class GameMenu
 
   private Joystick joystick;
 
+  private GLLabel winLabel;
+  private GLLabel loseLabel;
+
   @Override
   public void initialize(Object args)
   {
     bindProgram(new Subprogram()
     {
-      @Override public void onUpdate()
+      @Override
+      public void onUpdate()
       {
+        Map map = GameContext.mapManager.getMap();
         IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
         Characteristic characteristic = player.getCharacteristic();
 
+        // Player state
         health.setProgress(characteristic.getHealth());
         recharge.setProgress(player.getRechargeProgress());
+
+        // Player control
+        Vector3 vector = Vector.getInstance(3);
+
+        float joyAngle = getJoystickAngle();
+        float playerAngle = player.getAngles().getZ();
+
+        if (Math.abs(joyAngle - playerAngle) < 90)
+          GameContext.collisions.move(player);
+
+        if (Math.abs(joyAngle - playerAngle) > 3)
+          GameContext.collisions.rotate(player, joyAngle);
+
+        Characteristic playerCh = player.getCharacteristic();
+        if (leftTurretButton.getState())
+          player.addTurretAngle(playerCh.getTurretRotationSpeed() * GameContext.getDelta());
+
+        if (rightTurretButton.getState())
+          player.addTurretAngle(-playerCh.getTurretRotationSpeed() * GameContext.getDelta());
+
+        Vector.release(vector);
+
+        // Map state
+        switch (map.getState())
+        {
+        case Map.StateWin:
+          winLabel.setVisible(true);
+          break;
+        case Map.StateLose:
+          loseLabel.setVisible(true);
+          break;
+        }
       }
     });
 
@@ -42,7 +84,8 @@ public class GameMenu
     fireButton.setSize(300, 200);
     fireButton.setClickListener(new Runnable()
     {
-      @Override public void run()
+      @Override
+      public void run()
       {
         IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
@@ -56,7 +99,8 @@ public class GameMenu
     menuButton.setSize(300, 200);
     menuButton.setClickListener(new Runnable()
     {
-      @Override public void run()
+      @Override
+      public void run()
       {
         IWorld world = GameContext.content.getWorld();
         world.disable();
@@ -85,6 +129,16 @@ public class GameMenu
     health.setPosition(-220, 520);
     addRenderable(health);
 
+    winLabel = new GLLabel("WIN");
+    winLabel.setCharSize(60, 80);
+    winLabel.setVisible(false);
+    addRenderable(winLabel);
+
+    loseLabel = new GLLabel("LOSE");
+    loseLabel.setCharSize(60, 80);
+    loseLabel.setVisible(false);
+    addRenderable(loseLabel);
+
     super.initialize(args);
   }
 
@@ -93,7 +147,4 @@ public class GameMenu
     Vector2 vector = joystick.getVector();
     return vector.getAngle(Vector2.xAxis);
   }
-
-  public boolean getLeftTurretState() { return leftTurretButton.getState(); }
-  public boolean getRightTurretState() { return rightTurretButton.getState(); }
 }

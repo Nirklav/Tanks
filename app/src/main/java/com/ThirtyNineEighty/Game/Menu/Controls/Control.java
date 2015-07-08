@@ -1,15 +1,49 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
+import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
+
+import java.util.ArrayList;
 
 public abstract class Control implements IControl
 {
   private int pointerId;
   private Runnable clickListener;
 
+  private ArrayList<I2DRenderable> renderables;
+
   protected Control()
   {
     pointerId = -1;
+    renderables = new ArrayList<>();
+  }
+
+  protected void addRenderable(I2DRenderable renderable)
+  {
+    renderables.add(renderable);
+  }
+
+  @Override
+  public void draw(float[] orthoViewMatrix)
+  {
+    for (I2DRenderable renderable : renderables)
+      renderable.draw(orthoViewMatrix);
+  }
+
+  @Override
+  public void setVisible(boolean value)
+  {
+    for (I2DRenderable renderable : renderables)
+      renderable.setVisible(value);
+  }
+
+  @Override
+  public boolean isVisible()
+  {
+    if (renderables.size() == 0)
+      return false;
+    I2DRenderable first = renderables.get(0);
+    return first.isVisible();
   }
 
   @Override

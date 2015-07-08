@@ -1,10 +1,9 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
 
 public class ProgressBar
-  implements I2DRenderable
+  extends Control
 {
   private GLSprite edge;
   private GLSprite background;
@@ -15,7 +14,10 @@ public class ProgressBar
   public ProgressBar()
   {
     edge = new GLSprite("progressBarEdge");
+    addRenderable(edge);
+
     background = new GLSprite("progressBarBackground");
+    addRenderable(background);
 
     progress = 100;
     maxProgress = 100;
@@ -24,10 +26,9 @@ public class ProgressBar
   }
 
   @Override
-  public void draw(float[] orthoViewMatrix)
+  protected boolean canProcess(float x, float y)
   {
-    edge.draw(orthoViewMatrix);
-    background.draw(orthoViewMatrix);
+    return false;
   }
 
   public void setSize(float width, float height)
