@@ -88,17 +88,11 @@ public abstract class BaseWorld
   @Override
   public void add(EngineObject engineObject)
   {
-    add(engineObject, null);
-  }
-
-  @Override
-  public void add(EngineObject engineObject, Object args)
-  {
     synchronized (objects)
     {
       objects.add(engineObject);
     }
-    engineObject.initialize(args);
+    engineObject.initialize();
   }
 
   @Override

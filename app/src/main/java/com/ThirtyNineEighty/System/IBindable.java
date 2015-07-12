@@ -4,7 +4,7 @@ public interface IBindable
 {
   boolean isInitialized();
 
-  void initialize(Object args);
+  void initialize();
   void uninitialize();
 
   void enable();

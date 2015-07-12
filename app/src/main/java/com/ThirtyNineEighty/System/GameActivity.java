@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.ConfigChooser;
 import com.ThirtyNineEighty.Renderable.Renderer;
@@ -59,14 +60,15 @@ public class GameActivity
 
     if (GameContext.content == null)
       GameContext.content = new Content();
-    else
-    {
-      IWorld world = GameContext.content.getWorld();
-      if (world != null)
-        world.disable();
-    }
 
-    GameContext.content.setMenuAsync(new MainMenu(), null);
+    // Set world and menu
+    IWorld world = GameContext.content.getWorld();
+    if (world != null && world instanceof GameWorld)
+      world.disable();
+    else
+      GameContext.content.setWorldAsync(null);
+
+    GameContext.content.setMenuAsync(new MainMenu());
   }
 
   public void postEvent(final Runnable r)

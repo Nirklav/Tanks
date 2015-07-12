@@ -18,16 +18,15 @@ public class TankSelectMenu
   private GLLabel closedTankLabel;
   private GameStartArgs args;
 
-  @Override
-  public void initialize(Object obj)
+  public TankSelectMenu(GameStartArgs args)
   {
-    if (!(obj instanceof GameStartArgs))
-      throw new IllegalArgumentException("Illegal args type");
+    this.args = args;
+  }
 
-    args = (GameStartArgs) obj;
+  @Override
+  public void initialize()
+  {
     args.setTankName(Characteristic.Tank);
-
-    GameContext.content.setWorld(new TankSelectWorld());
 
     gesture = new Gesture();
     gesture.setGestureListener(new Runnable()
@@ -76,12 +75,7 @@ public class TankSelectMenu
           ? Characteristic.SpeedTank
           : Characteristic.Tank;
 
-        if (GameContext.gameProgress.isTankOpen(tankName) && !GameContext.gameProgress.isTankOpen(lastTankName))
-          removeRenderable(closedTankLabel);
-
-        if (!GameContext.gameProgress.isTankOpen(tankName) && GameContext.gameProgress.isTankOpen(lastTankName))
-          addRenderable(closedTankLabel);
-
+        closedTankLabel.setVisible(GameContext.gameProgress.isTankOpen(lastTankName));
         args.setTankName(tankName);
         world.setPlayer(tankName);
       }
@@ -99,7 +93,8 @@ public class TankSelectMenu
         if (!GameContext.gameProgress.isTankOpen(args.getTankName()))
           return;
 
-        GameContext.content.setWorld(new GameWorld(), args);
+        GameContext.content.setMenu(new GameMenu());
+        GameContext.content.setWorld(new GameWorld(args));
       }
     });
     addControl(gameButton);
@@ -107,7 +102,9 @@ public class TankSelectMenu
     closedTankLabel = new GLLabel("Tank closed");
     closedTankLabel.setAlign(GLLabel.AlignType.TopCenter);
     closedTankLabel.setPosition(0, 440);
+    closedTankLabel.setVisible(false);
+    addRenderable(closedTankLabel);
 
-    super.initialize(args);
+    super.initialize();
   }
 }

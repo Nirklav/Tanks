@@ -14,12 +14,12 @@ public class TankSelectWorld
   private float length = 8;
 
   @Override
-  public void initialize(Object args)
+  public void initialize()
   {
     add(new Land());
     add(player = new Tank(Characteristic.Tank));
 
-    super.initialize(args);
+    super.initialize();
   }
 
   public void addLength(float value)

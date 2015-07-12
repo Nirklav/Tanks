@@ -13,7 +13,7 @@ public class Characteristic
   public static final String Tank = "tank";
   public static final String SpeedTank = "speedTank";
   public static final String Bullet = "bullet";
-  public static final String AidKit = "aidkit";
+  public static final String AidKit = "aidKit";
 
   public final EngineObjectDescription initializer;
   private float health;

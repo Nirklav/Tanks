@@ -58,10 +58,9 @@ public class Content
   }
 
   public IWorld getWorld() { return world; }
-  public void setWorld(IWorld value) { setWorld(value, null, false); }
-  public void setWorld(IWorld value, Object args) { setWorld(value, args, false); }
-  public void setWorldAsync(IWorld value, Object args) { setWorld(value, args, true); }
-  private void setWorld(final IWorld value, final Object args, boolean async)
+  public void setWorld(IWorld value) { setWorld(value, false); }
+  public void setWorldAsync(IWorld value) { setWorld(value, true); }
+  private void setWorld(final IWorld value, boolean async)
   {
     Runnable r = new Runnable()
     {
@@ -72,7 +71,7 @@ public class Content
 
         world = value;
         if (world != null)
-          world.initialize(args);
+          world.initialize();
       }
     };
 
@@ -84,10 +83,9 @@ public class Content
 
 
   public IMenu getMenu() { return menu; }
-  public void setMenu(IMenu value) { setMenu(value, null, false); }
-  public void setMenu(IMenu value, Object args) { setMenu(value, args, false); }
-  public void setMenuAsync(IMenu value, Object args) { setMenu(value, args, true); }
-  private void setMenu(final IMenu value, final Object args, boolean async)
+  public void setMenu(IMenu value) { setMenu(value, false); }
+  public void setMenuAsync(IMenu value) { setMenu(value, true); }
+  private void setMenu(final IMenu value, boolean async)
   {
     Runnable r = new Runnable()
     {
@@ -98,7 +96,7 @@ public class Content
 
         menu = value;
         if (menu != null)
-          menu.initialize(args);
+          menu.initialize();
       }
     };
 

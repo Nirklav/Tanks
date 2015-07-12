@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Menu.GameMenu;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Camera;
 import com.ThirtyNineEighty.System.GameContext;
@@ -8,17 +7,18 @@ import com.ThirtyNineEighty.System.GameContext;
 public class GameWorld
   extends BaseWorld
 {
-  @Override
-  public void initialize(Object obj)
+  private GameStartArgs args;
+
+  public GameWorld(GameStartArgs args)
   {
-    if (!(obj instanceof GameStartArgs))
-      throw new IllegalArgumentException("Illegal args type");
+    this.args = args;
+  }
 
-    GameStartArgs args = (GameStartArgs) obj;
+  @Override
+  public void initialize()
+  {
     player = GameContext.mapManager.load(args);
-
-    GameContext.content.setMenu(new GameMenu());
-    super.initialize(args);
+    super.initialize();
   }
 
   @Override

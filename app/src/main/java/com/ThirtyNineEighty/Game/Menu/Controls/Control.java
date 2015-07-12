@@ -5,11 +5,11 @@ import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 
-public abstract class Control implements IControl
+public abstract class Control
+  implements IControl
 {
   private int pointerId;
   private Runnable clickListener;
-
   private ArrayList<I2DRenderable> renderables;
 
   protected Control()

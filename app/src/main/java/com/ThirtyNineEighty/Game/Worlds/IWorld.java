@@ -16,12 +16,11 @@ public interface IWorld
   void setCamera(Camera camera);
   void setLight(Vector3 lightPosition);
 
-  // world
+  // player
   EngineObject getPlayer();
 
+  // world
   void fillObjects(List<EngineObject> objects);
-
   void add(EngineObject engineObject);
-  void add(EngineObject engineObject, Object args);
   void remove(EngineObject engineObject);
 }

@@ -14,9 +14,9 @@ public class Bullet extends GameObject
   }
 
   @Override
-  public void initialize(Object args)
+  public void initialize()
   {
-    super.initialize(args);
+    super.initialize();
     bindProgram(new MoveSubprogram(this, 100));
   }
 

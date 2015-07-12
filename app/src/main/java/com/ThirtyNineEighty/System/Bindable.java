@@ -17,7 +17,7 @@ public class Bindable
   public boolean isInitialized() { return initialized; }
 
   @Override
-  public void initialize(Object args)
+  public void initialize()
   {
     initialized = true;
     enable();

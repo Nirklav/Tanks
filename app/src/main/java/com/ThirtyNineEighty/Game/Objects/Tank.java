@@ -22,9 +22,9 @@ public class Tank
   }
 
   @Override
-  public void initialize(Object args)
+  public void initialize()
   {
-    super.initialize(args);
+    super.initialize();
 
     bindProgram(new Subprogram()
     {

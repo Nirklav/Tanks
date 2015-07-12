@@ -29,7 +29,7 @@ public class GameMenu
   private GLLabel loseLabel;
 
   @Override
-  public void initialize(Object args)
+  public void initialize()
   {
     bindProgram(new Subprogram()
     {
@@ -139,7 +139,7 @@ public class GameMenu
     loseLabel.setVisible(false);
     addRenderable(loseLabel);
 
-    super.initialize(args);
+    super.initialize();
   }
 
   public float getJoystickAngle()
