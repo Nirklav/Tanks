@@ -68,14 +68,11 @@ public class TankSelectMenu
       public void run()
       {
         TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
-        String tankName = args.getTankName();
-        String lastTankName = tankName;
-
-        tankName = Characteristic.Tank.equals(tankName)
+        String tankName = Characteristic.Tank.equals(args.getTankName())
           ? Characteristic.SpeedTank
           : Characteristic.Tank;
 
-        closedTankLabel.setVisible(GameContext.gameProgress.isTankOpen(lastTankName));
+        closedTankLabel.setVisible(!GameContext.gameProgress.isTankOpen(tankName));
         args.setTankName(tankName);
         world.setPlayer(tankName);
       }

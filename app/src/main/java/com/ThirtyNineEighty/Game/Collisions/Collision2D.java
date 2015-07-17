@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Helpers.Vector2;
 import java.util.ArrayList;
 
 public class Collision2D
-  extends Collision<Vector2>
 {
   private Vector2 mtv;
   private float mtvLength;
@@ -94,19 +93,16 @@ public class Collision2D
     normal.normalize();
   }
 
-  @Override
   public Vector2 getMTV()
   {
     return mtv;
   }
 
-  @Override
   public float getMTVLength()
   {
     return mtvLength;
   }
 
-  @Override
   public boolean isCollide()
   {
     return collide;

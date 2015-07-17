@@ -127,6 +127,14 @@ public class Vector2 extends Vector
     setFrom(getX() + other.getX(), getY() + other.getY());
   }
 
+  public void multiply(float coefficient)
+  {
+    throwIfReleased();
+
+    value[0] = value[0] * coefficient;
+    value[1] = value[1] * coefficient;
+  }
+
   public Vector2 getNormalize()
   {
     throwIfReleased();
@@ -159,6 +167,15 @@ public class Vector2 extends Vector
 
     Vector2 result = Vector.getInstance(2, this);
     result.add(other);
+    return result;
+  }
+
+  public Vector2 getMultiply(float coefficient)
+  {
+    throwIfReleased();
+
+    Vector2 result = Vector.getInstance(2, this);
+    result.multiply(coefficient);
     return result;
   }
 

@@ -10,7 +10,6 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import java.util.ArrayList;
 
 public class Collision3D
-  extends Collision<Vector3>
 {
   private Vector3 mtv;
   private float mtvLength;
@@ -51,7 +50,7 @@ public class Collision3D
       if (!collision.isCollide())
         return null;
 
-      if (min == null || Collision2D.compare(collision, min) < 0)
+      if (min == null || collision.getMTVLength() < min.getMTVLength())
       {
         min = collision;
         minPlane.setFrom(plane);
@@ -127,19 +126,16 @@ public class Collision3D
     return mtv3;
   }
 
-  @Override
   public Vector3 getMTV()
   {
     return mtv;
   }
 
-  @Override
   public float getMTVLength()
   {
     return mtvLength;
   }
 
-  @Override
   public boolean isCollide()
   {
     return collide;
