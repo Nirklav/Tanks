@@ -6,18 +6,19 @@ import com.ThirtyNineEighty.System.Bindable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class BaseWorld
   extends Bindable
   implements IWorld
 {
-  protected final ArrayList<EngineObject> objects;
+  protected final HashMap<String, EngineObject> objects;
   protected EngineObject player;
 
   protected BaseWorld()
   {
-    objects = new ArrayList<>();
+    objects = new HashMap<>();
   }
 
   @Override
@@ -25,11 +26,10 @@ public abstract class BaseWorld
   {
     super.uninitialize();
 
-    ArrayList<EngineObject> disposed = new ArrayList<>();
+    ArrayList<EngineObject> disposed;
     synchronized (objects)
     {
-      for (EngineObject object : objects)
-        disposed.add(object);
+      disposed = new ArrayList<>(objects.values());
       objects.clear();
     }
 
@@ -64,7 +64,7 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      for (EngineObject object : objects)
+      for (EngineObject object : objects.values())
       {
         object.setGlobalRenderablePosition();
         Collections.addAll(filled, object.renderables);
@@ -77,7 +77,7 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      for (EngineObject object : objects)
+      for (EngineObject object : objects.values())
         filled.add(object);
     }
   }
@@ -90,7 +90,7 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      objects.add(engineObject);
+      objects.put(engineObject.getName(), engineObject);
     }
     engineObject.initialize();
   }
@@ -100,7 +100,7 @@ public abstract class BaseWorld
   {
     synchronized (objects)
     {
-      objects.remove(engineObject);
+      objects.remove(engineObject.getName());
     }
     engineObject.uninitialize();
   }

@@ -12,7 +12,7 @@ public class MoveSubprogram
   protected GameObject movedObject;
   protected float length;
 
-  public MoveSubprogram(GameObject obj) { this (obj, 0); }
+  public MoveSubprogram(GameObject obj) { this (obj, 100); }
   public MoveSubprogram(GameObject obj, float len)
   {
     super();

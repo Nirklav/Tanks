@@ -11,12 +11,11 @@ import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.concurrent.Callable;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class CollisionManager
 {
@@ -74,94 +73,6 @@ public class CollisionManager
     addToResolving(object);
   }
 
-  public void resolve()
-  {
-    IWorld world = GameContext.content.getWorld();
-    if (world == null)
-      return;
-
-    // Copy all world objects
-    worldObjects.clear();
-    world.fillObjects(worldObjects);
-
-    // Set current global positions for all objects
-    for (EngineObject current : worldObjects)
-      current.setGlobalCollidablePosition();
-
-    if (resolvingObjects.size() == 0)
-      return;
-
-    // Parallel collision search (should not change world or objects)
-    ArrayList<Future<ResolveResult>> results = new ArrayList<>(resolvingObjects.size());
-
-    final CountDownLatch latch = new CountDownLatch(resolvingObjects.size());
-    for (final EngineObject current : resolvingObjects)
-    {
-      Future<ResolveResult> futureResult = threadPool.submit(
-        new Callable<ResolveResult>()
-        {
-          @Override
-          public ResolveResult call() throws Exception
-          {
-            try
-            {
-              return resolve(current);
-            }
-            finally
-            {
-              latch.countDown();
-            }
-          }
-        }
-      );
-
-      results.add(futureResult);
-    }
-
-    try
-    {
-      // Wait for all tasks will be completed
-      latch.await();
-
-      // Resolving collisions
-      int size = results.size();
-      for (int i = size - 1; i >= 0; i--)
-      {
-        Future<ResolveResult> current = results.get(i);
-
-        ResolveResult result = current.get();
-        if (result == null)
-          continue;
-
-        EngineObject checked = result.checkedObject;
-
-        if (checked.properties.removeOnCollide)
-          world.remove(checked);
-
-        for (CollisionResult collResult : result.collisions)
-        {
-          EngineObject collided = collResult.collidedObject;
-
-          checked.collide(collided);
-          collided.collide(checked);
-
-          if (collided.properties.removeOnCollide)
-            world.remove(collided);
-
-          Collision3D collision = collResult.collision;
-          if (!collided.properties.removeOnCollide && !checked.properties.removeOnCollide)
-            checked.move(collision.getMTVLength(), collision.getMTV());
-        }
-      }
-    }
-    catch (Exception e)
-    {
-      throw new RuntimeException(e);
-    }
-
-    resolvingObjects.clear();
-  }
-
   private void addToResolving(EngineObject object)
   {
     if (!resolvingObjects.contains(object))
@@ -182,67 +93,141 @@ public class CollisionManager
     }
   }
 
-  private ResolveResult resolve(EngineObject object)
+  public void resolve()
   {
-    if (object.collidable == null)
-      return null;
+    IWorld world = GameContext.content.getWorld();
+    if (world == null)
+      return;
 
-    ResolveResult result = null;
+    // Copy all world objects
+    worldObjects.clear();
+    world.fillObjects(worldObjects);
 
+    // Set current global positions for all objects
     for (EngineObject current : worldObjects)
+      current.setGlobalCollidablePosition();
+
+    // Prepare objects
+    if (resolvingObjects.size() == 0)
+      return;
+
+    Collection<Pair> pairs = buildPairs(resolvingObjects, worldObjects);
+    if (pairs.size() == 0)
+      return;
+
+    // Parallel collision search (should not change world or objects)
+    final CountDownLatch latch = new CountDownLatch(pairs.size());
+    for (final Pair pair : pairs)
     {
-      if (object == current)
-        continue;
-
-      if (current.collidable == null)
-        continue;
-
-      if (object.collidable.getRadius() + current.collidable.getRadius() < getLength(object, current))
-        continue;
-
-      Collision3D collision = new Collision3D(object.collidable, current.collidable);
-      if (collision.isCollide())
+      threadPool.submit(new Runnable()
       {
-        if (result == null)
-          result = new ResolveResult(object);
-
-        result.collisions.add(new CollisionResult(current, collision));
-      }
+        @Override
+        public void run()
+        {
+          try
+          {
+            pair.collision = new Collision3D(pair.first.collidable, pair.second.collidable);
+          }
+          finally
+          {
+            latch.countDown();
+          }
+        }
+      });
     }
 
-    return result;
+    try
+    {
+      // Wait for all tasks will be completed
+      latch.await();
+
+      // Resolving collisions
+      for (Pair pair : pairs)
+      {
+        EngineObject first = pair.first;
+        EngineObject second = pair.second;
+        Collision3D collision = pair.collision;
+
+        if (!collision.isCollide())
+          continue;
+
+        first.collide(second);
+        second.collide(first);
+
+        if (first.properties.removeOnCollide)
+          world.remove(first);
+
+        if (second.properties.removeOnCollide)
+          world.remove(second);
+
+        if (first.properties.removeOnCollide || second.properties.removeOnCollide)
+          continue;
+
+        if (pair.firstMoved && !pair.secondMoved)
+        {
+          first.move(collision.getMTVLength(), collision.getMTV());
+          continue;
+        }
+
+        if (!pair.firstMoved && pair.secondMoved)
+        {
+          second.move(-collision.getMTVLength(), collision.getMTV());
+          continue;
+        }
+
+        // first and second moved
+        first.move(collision.getMTVLength() / 2, collision.getMTV());
+        second.move(-collision.getMTVLength() / 2, collision.getMTV());
+      }
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
+
+    resolvingObjects.clear();
   }
 
-  private float getLength(EngineObject one, EngineObject two)
+  private static Collection<Pair> buildPairs(Collection<EngineObject> resolving, Collection<EngineObject> all)
+  {
+    HashMap<PairKey, Pair> pairs = new HashMap<>();
+
+    for (EngineObject first : resolving)
+      for (EngineObject second : all)
+      {
+        if (first == second)
+          continue;
+
+        if (first.collidable == null || second.collidable == null)
+          continue;
+
+        if (first.collidable.getRadius() + second.collidable.getRadius() < getLength(first, second))
+          continue;
+
+        PairKey key = new PairKey(first, second);
+        Pair pair = pairs.get(key);
+        if (pair == null)
+        {
+          pair = new Pair(first, second);
+          pairs.put(key, pair);
+        }
+
+        // In pair objects can swap
+        if (pair.first == first)
+          pair.firstMoved = true;
+        else
+          pair.secondMoved = true;
+      }
+
+    return pairs.values();
+  }
+
+  private static float getLength(EngineObject one, EngineObject two)
   {
     Vector3 positionOne = one.collidable.getPosition();
     Vector3 positionTwo = two.collidable.getPosition();
 
     Vector3 lengthVector = positionOne.getSubtract(positionTwo);
     return lengthVector.getLength();
-  }
-
-  private static class ResolveResult
-  {
-    public final EngineObject checkedObject;
-    public final LinkedList<CollisionResult> collisions;
-
-    public ResolveResult(EngineObject obj)
-    {
-      checkedObject = obj;
-      collisions = new LinkedList<>();
-    }
-  }
-
-  private static class CollisionResult
-  {
-    public final EngineObject collidedObject;
-    public final Collision3D collision;
-
-    public CollisionResult(EngineObject obj, Collision3D coll)
-    {
-      collidedObject = obj;
-      collision = coll;
-    }
   }
 }

@@ -9,6 +9,7 @@ import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Subprograms.BotSubprogram;
 import com.ThirtyNineEighty.Game.Subprograms.KillMarkedSubprogram;
+import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.System.ISubprogram;
 
 import java.lang.reflect.Constructor;
@@ -31,6 +32,7 @@ public class MapFactory
 
     subprogramBindings = new HashMap<>();
     subprogramBindings.put("bot", BotSubprogram.class);
+    subprogramBindings.put("move", MoveSubprogram.class);
     subprogramBindings.put("killMarkedCompletion", KillMarkedSubprogram.class);
   }
 

@@ -28,40 +28,59 @@ public class Bindable
   {
     initialized = false;
 
-    for (ISubprogram subprogram : subprograms)
-      GameContext.content.unbindProgram(subprogram);
+    for (ISubprogram subprogram : getSubprogramsCopy())
+      unbindProgram(subprogram);
   }
 
   @Override
   public void enable()
   {
-    for (ISubprogram subprogram : subprograms)
+    for (ISubprogram subprogram : getSubprogramsCopy())
       subprogram.enable();
   }
 
   @Override
   public void disable()
   {
-    for (ISubprogram subprogram : subprograms)
+    for (ISubprogram subprogram : getSubprogramsCopy())
       subprogram.disable();
   }
 
   @Override
   public void bindProgram(ISubprogram subprogram)
   {
-    if (!initialized)
+    if (initialized)
+      subprogram.enable();
+    else
       subprogram.disable();
 
     GameContext.content.bindProgram(subprogram);
     subprogram.setBindable(this);
-    subprograms.add(subprogram);
+
+    synchronized (subprograms)
+    {
+      subprograms.add(subprogram);
+    }
   }
 
   @Override
   public void unbindProgram(ISubprogram subprogram)
   {
     GameContext.content.unbindProgram(subprogram);
+    subprogram.disable();
     subprogram.setBindable(null);
-    subprograms.remove(subprogram);
+
+    synchronized (subprograms)
+    {
+      subprograms.remove(subprogram);
+    }
+  }
+
+  private ArrayList<ISubprogram> getSubprogramsCopy()
+  {
+    synchronized (subprograms)
+    {
+      return new ArrayList<>(subprograms);
+    }
   }
 }
