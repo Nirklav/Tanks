@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.System;
 public abstract class Subprogram
   implements ISubprogram
 {
+  private float delay;
   private boolean enabled = true;
   private IBindable bindable;
 
@@ -18,16 +19,33 @@ public abstract class Subprogram
     if (!enabled)
       return;
 
+    if (delay > 0)
+    {
+      delay -= 1000 * GameContext.getDelta();
+      return;
+    }
+
     onUpdate();
   }
 
-  @Override
-  public void enable() { enabled = true; }
-
-  @Override
-  public void disable() { enabled = false; }
-
   protected abstract void onUpdate();
+
+  @Override
+  public void enable()
+  {
+    enabled = true;
+  }
+
+  @Override
+  public void disable()
+  {
+    enabled = false;
+  }
+
+  protected void delay(float millis)
+  {
+    delay = millis;
+  }
 
   protected void unbind()
   {

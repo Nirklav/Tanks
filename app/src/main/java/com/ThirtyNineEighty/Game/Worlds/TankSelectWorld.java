@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Helpers.Angle;
@@ -13,12 +12,18 @@ public class TankSelectWorld
   private float angle = 35;
   private float length = 8;
 
+  private GameStartArgs args;
+
+  public TankSelectWorld(GameStartArgs args)
+  {
+    this.args = args;
+  }
+
   @Override
   public void initialize()
   {
     add(new Land());
-    add(player = new Tank(Characteristic.Tank));
-
+    add(player = new Tank(args.getTankName(), args.getBulletName()));
     super.initialize();
   }
 
@@ -41,7 +46,7 @@ public class TankSelectWorld
   public void setPlayer(String tankName)
   {
     remove(player);
-    add(player = new Tank(tankName));
+    add(player = new Tank(tankName, args.getBulletName()));
   }
 
   @Override

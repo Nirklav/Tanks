@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
+import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
@@ -41,7 +42,7 @@ public class MainMenu
       public void run()
       {
         GameContext.content.setWorld(null);
-        GameContext.content.setMenu(new MapSelectMenu());
+        GameContext.content.setMenu(new MapSelectMenu(new GameStartArgs()));
       }
     });
     addControl(newGameButton);

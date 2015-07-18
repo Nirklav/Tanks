@@ -15,7 +15,8 @@ public class MapDescription
   {
     private static final long serialVersionUID = 1L;
 
-    public String name;
+    public String type;
+    public String bulletType;
     public String[] subprograms;
     public boolean needKill;
 

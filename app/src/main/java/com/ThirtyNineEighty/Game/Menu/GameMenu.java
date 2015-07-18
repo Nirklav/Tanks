@@ -39,10 +39,13 @@ public class GameMenu
         Map map = GameContext.mapManager.getMap();
         IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
-        Characteristic characteristic = player.getCharacteristic();
+
+        Characteristic baseCh = player.getBaseCharacteristic();
+        Characteristic currentCh = player.getCharacteristic();
 
         // Player state
-        health.setProgress(characteristic.getHealth());
+        health.setMaxProgress(baseCh.getHealth());
+        health.setProgress(currentCh.getHealth());
         recharge.setProgress(player.getRechargeProgress());
 
         // Player control

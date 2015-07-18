@@ -10,10 +10,6 @@ public class Characteristic
   private static final long serialVersionUID = 1L;
 
   public static final float maxRechargeLevel = 100;
-  public static final String Tank = "tank";
-  public static final String SpeedTank = "speedTank";
-  public static final String Bullet = "bullet";
-  public static final String AidKit = "aidKit";
 
   public final EngineObjectDescription initializer;
   private float health;

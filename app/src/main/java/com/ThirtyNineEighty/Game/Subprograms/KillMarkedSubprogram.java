@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Game.Map.Map;
+import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -23,11 +24,19 @@ public class KillMarkedSubprogram
     GameObject player = (GameObject) world.getPlayer();
     Characteristic playerCharacteristic = player.getCharacteristic();
 
+    if (map.getState() != Map.StateInProgress)
+    {
+      unbind();
+      GameContext.content.setWorld(null);
+      GameContext.content.setMenu(new MainMenu());
+      return;
+    }
+
     // Check lose
     if (playerCharacteristic.getHealth() <= 0)
     {
       map.setState(Map.StateLose);
-      unbind();
+      delay(5000);
       return;
     }
 
@@ -54,7 +63,7 @@ public class KillMarkedSubprogram
     if (marked.size() == 0)
     {
       map.setState(Map.StateWin);
-      unbind();
+      delay(5000);
     }
   }
 }

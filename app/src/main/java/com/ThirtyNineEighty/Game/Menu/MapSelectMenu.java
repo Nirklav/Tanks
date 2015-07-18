@@ -7,23 +7,33 @@ import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
-import java.util.List;
-
 public class MapSelectMenu
   extends BaseMenu
 {
-  private List<String> maps;
-  private int selectedMapIndex;
+  private final GameStartArgs args;
+  private final Selector mapSelector;
 
   private GLLabel mapName;
   private GLLabel closed;
 
+  public MapSelectMenu(final GameStartArgs args)
+  {
+    this.args = args;
+    this.mapSelector = new Selector("maps", new Selector.Callback()
+    {
+      @Override
+      public void onChange(String current)
+      {
+        args.setMapName(current);
+        mapName.setValue(current);
+        closed.setVisible(!GameContext.gameProgress.isMapOpen(current));
+      }
+    });
+  }
+
   @Override
   public void initialize()
   {
-    maps = GameContext.mapManager.getMaps();
-    selectedMapIndex = 0;
-
     Button prevMap = new Button("Prev map");
     prevMap.setPosition(70, -440);
     prevMap.setSize(300, 200);
@@ -32,7 +42,7 @@ public class MapSelectMenu
       @Override
       public void run()
       {
-        setMap(-1);
+        mapSelector.Prev();
       }
     });
     addControl(prevMap);
@@ -45,7 +55,7 @@ public class MapSelectMenu
       @Override
       public void run()
       {
-        setMap(1);
+        mapSelector.Next();
       }
     });
     addControl(nextMapButton);
@@ -58,15 +68,11 @@ public class MapSelectMenu
       @Override
       public void run()
       {
-        String selectedMap = maps.get(selectedMapIndex);
-        if (!GameContext.gameProgress.isMapOpen(selectedMap))
+        if (!GameContext.gameProgress.isMapOpen(args.getMapName()))
           return;
 
-        GameStartArgs args = new GameStartArgs();
-        args.setMapName(selectedMap);
-
         GameContext.content.setMenu(new TankSelectMenu(args));
-        GameContext.content.setWorld(new TankSelectWorld());
+        GameContext.content.setWorld(new TankSelectWorld(args));
       }
     });
     addControl(selectTank);
@@ -85,7 +91,7 @@ public class MapSelectMenu
     });
     addControl(menu);
 
-    mapName = new GLLabel(maps.get(selectedMapIndex), "simpleFont", 40, 60, MeshMode.Dynamic);
+    mapName = new GLLabel(mapSelector.getCurrent(), "simpleFont", 40, 60, MeshMode.Dynamic);
     addRenderable(mapName);
 
     closed = new GLLabel("Closed");
@@ -94,19 +100,5 @@ public class MapSelectMenu
     addRenderable(closed);
 
     super.initialize();
-  }
-
-  private void setMap(int delta)
-  {
-    selectedMapIndex += delta;
-    if (selectedMapIndex < 0)
-      selectedMapIndex = maps.size() - 1;
-    if (selectedMapIndex >= maps.size())
-      selectedMapIndex = 0;
-
-    String selectedMap = maps.get(selectedMapIndex);
-
-    mapName.setValue(selectedMap);
-    closed.setVisible(!GameContext.gameProgress.isMapOpen(selectedMap));
   }
 }

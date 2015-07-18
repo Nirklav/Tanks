@@ -36,15 +36,19 @@ public class MapFactory
     subprogramBindings.put("killMarkedCompletion", KillMarkedSubprogram.class);
   }
 
-  public EngineObject createObject(String name)
+  public EngineObject createObject(String type, String bulletType)
   {
     try
     {
-      Class<?> objectClass = objectBindings.get(name);
+      Class<?> objectClass = objectBindings.get(type);
+
+      Constructor<?> stringStringCtor = getConstructor(objectClass, String.class, String.class);
+      if (stringStringCtor != null)
+        return (EngineObject) stringStringCtor.newInstance(type, bulletType);
 
       Constructor<?> stringCtor = getConstructor(objectClass, String.class);
       if (stringCtor != null)
-        return (EngineObject) stringCtor.newInstance(name);
+        return (EngineObject) stringCtor.newInstance(type);
 
       Constructor<?> emptyCtor = getConstructor(objectClass);
       if (emptyCtor != null)
@@ -54,15 +58,15 @@ public class MapFactory
     }
     catch (Exception e)
     {
-      throw new RuntimeException(String.format("Can't create object with %s name", name), e);
+      throw new RuntimeException(String.format("Can't create object with %s name", type), e);
     }
   }
 
-  public ISubprogram createSubprogram(String name, Object parameter)
+  public ISubprogram createSubprogram(String type, Object parameter)
   {
     try
     {
-      Class<?> subprogramClass = subprogramBindings.get(name);
+      Class<?> subprogramClass = subprogramBindings.get(type);
 
       Constructor<?> gameObjectCtor = getConstructor(subprogramClass, GameObject.class);
       if (gameObjectCtor != null && parameter instanceof GameObject)
@@ -80,7 +84,7 @@ public class MapFactory
     }
     catch (Exception e)
     {
-      throw new RuntimeException(String.format("Can't create subprogram with %s name", name), e);
+      throw new RuntimeException(String.format("Can't create subprogram with %s name", type), e);
     }
   }
 

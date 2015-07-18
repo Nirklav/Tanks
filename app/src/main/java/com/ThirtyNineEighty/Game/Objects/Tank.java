@@ -15,10 +15,13 @@ public class Tank
 {
   private float turretAngle;
   private float rechargeProgress;
+  private String bulletType;
 
-  public Tank(String type)
+  public Tank(String type, String bulletType)
   {
     super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
+
+    this.bulletType = bulletType;
   }
 
   @Override
@@ -49,7 +52,7 @@ public class Tank
     IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
-    Bullet bullet = new Bullet(Characteristic.Bullet);
+    Bullet bullet = new Bullet(bulletType);
 
     Vector3 bulletAngles = Vector.getInstance(3, angles);
     bulletAngles.addToZ(turretAngle);
@@ -63,9 +66,20 @@ public class Tank
     Vector.release(bulletAngles);
   }
 
-  public float getTurretAngle() { return Angle.correct(turretAngle + angles.getZ()); }
-  public void setTurretAngle(float value) { turretAngle = value; }
-  public void addTurretAngle(float delta) { turretAngle += delta; }
+  public float getTurretAngle()
+  {
+    return Angle.correct(turretAngle + angles.getZ());
+  }
+
+  public void setTurretAngle(float value)
+  {
+    turretAngle = value;
+  }
+
+  public void addTurretAngle(float delta)
+  {
+    turretAngle += delta;
+  }
 
   public void turnTurret(float targetAngle)
   {

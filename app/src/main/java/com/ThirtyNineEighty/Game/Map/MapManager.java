@@ -1,36 +1,33 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import android.content.res.AssetManager;
-
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Serializer;
+import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.System.IBindable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public final class MapManager
 {
-  private ArrayList<String> maps;
-
   private MapFactory factory;
   private Map map;
 
   public void initialize()
   {
     factory = new MapFactory();
-    maps = loadMapNames();
   }
 
   public Map getMap() { return map; }
 
   public Tank load(GameStartArgs args)
   {
+    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource("maps"));
     String name = args.getMapName();
+
     if (!maps.contains(name))
       throw new IllegalArgumentException("name");
 
@@ -41,7 +38,7 @@ public final class MapManager
     // Create objects
     for (MapDescription.Object obj : description.objects)
     {
-      EngineObject object = factory.createObject(obj.name);
+      EngineObject object = factory.createObject(obj.type, obj.bulletType);
 
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
@@ -57,7 +54,7 @@ public final class MapManager
     createSubprograms(world, description.subprograms, null);
 
     // Create player
-    Tank player = new Tank(args.getTankName());
+    Tank player = new Tank(args.getTankName(), args.getBulletName());
     player.setPosition(description.player.getPosition());
     player.setAngles(description.player.getAngles());
     world.add(player);
@@ -72,30 +69,5 @@ public final class MapManager
 
     for (String subprogramName : subprograms)
       bindable.bindProgram(factory.createSubprogram(subprogramName, parameter));
-  }
-
-  public List<String> getMaps() { return maps; }
-
-  private ArrayList<String> loadMapNames()
-  {
-    try
-    {
-      ArrayList<String> maps = new ArrayList<>();
-
-      AssetManager manager = GameContext.activity.getAssets();
-      String[] files = manager.list("Maps");
-
-      for (String fileName : files)
-      {
-        int pos = fileName.lastIndexOf('.');
-        maps.add(pos > 0 ? fileName.substring(0, pos) : fileName);
-      }
-
-      return maps;
-    }
-    catch (Exception e)
-    {
-      throw new RuntimeException(e);
-    }
   }
 }
