@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
@@ -72,7 +72,7 @@ public class BotSubprogram
       return;
     }
 
-    if (bot.getRechargeProgress() >= Characteristic.maxRechargeLevel)
+    if (bot.getRechargeProgress() >= GameDescription.maxRechargeLevel)
     {
       Tracer tracer = new Tracer(bot, target);
       if (!tracer.intersect())

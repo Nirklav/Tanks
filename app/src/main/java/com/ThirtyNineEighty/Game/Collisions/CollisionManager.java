@@ -1,7 +1,8 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -32,8 +33,8 @@ public class CollisionManager
 
   public void move(GameObject object)
   {
-    Characteristic c = object.getCharacteristic();
-    object.move(c.getSpeed() * GameContext.getDelta());
+    GameDescription description = object.getDescription();
+    object.move(description.getSpeed() * GameContext.getDelta());
     addToResolving(object);
   }
 
@@ -51,9 +52,9 @@ public class CollisionManager
 
   public void rotate(GameObject object, float targetAngle)
   {
-    Characteristic c = object.getCharacteristic();
+    GameDescription description = object.getDescription();
 
-    float speed = c.getRotationSpeed() * GameContext.getDelta();
+    float speed = description.getRotationSpeed() * GameContext.getDelta();
     float objectAngle = object.getAngles().getZ();
     float addedValue = 0;
 
@@ -146,6 +147,8 @@ public class CollisionManager
       {
         EngineObject first = pair.first;
         EngineObject second = pair.second;
+        Description firstDescription = first.getDescription();
+        Description secondDescription = second.getDescription();
         Collision3D collision = pair.collision;
 
         if (!collision.isCollide())
@@ -154,13 +157,13 @@ public class CollisionManager
         first.collide(second);
         second.collide(first);
 
-        if (first.properties.removeOnCollide)
+        if (firstDescription.removeOnCollide())
           world.remove(first);
 
-        if (second.properties.removeOnCollide)
+        if (secondDescription.removeOnCollide())
           world.remove(second);
 
-        if (first.properties.removeOnCollide || second.properties.removeOnCollide)
+        if (firstDescription.removeOnCollide() || secondDescription.removeOnCollide())
           continue;
 
         if (pair.firstMoved && !pair.secondMoved)

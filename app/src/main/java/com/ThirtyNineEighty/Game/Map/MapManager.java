@@ -1,5 +1,9 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
+import com.ThirtyNineEighty.Game.Map.Factory.MapFactory;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
@@ -36,13 +40,12 @@ public final class MapManager
     map = new Map(description);
 
     // Create objects
-    for (MapDescription.Object obj : description.objects)
+    for (MapObject obj : description.objects)
     {
-      EngineObject object = factory.createObject(obj.type, obj.bulletType);
+      EngineObject object = factory.createObject(obj.type, obj.properties);
 
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
-      object.properties.needKill = obj.needKill;
 
       // Create object subprograms
       createSubprograms(object, obj.subprograms, object);
@@ -54,7 +57,8 @@ public final class MapManager
     createSubprograms(world, description.subprograms, null);
 
     // Create player
-    Tank player = new Tank(args.getTankName(), args.getBulletName());
+    GameProperties properties = new GameProperties(args.getBulletName(), null);
+    Tank player = new Tank(args.getTankName(), properties);
     player.setPosition(description.player.getPosition());
     player.setAngles(description.player.getAngles());
     world.add(player);

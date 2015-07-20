@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Spiral;
 import com.ThirtyNineEighty.Helpers.Vector;
@@ -14,19 +17,22 @@ public class Land
   private static final int landsCount = 9;
   private static final float landSize = 50.0f;
 
-  private static EngineObjectDescription initializer;
+  private static Description description;
+  private static Properties properties;
   static
   {
-    initializer = new EngineObjectDescription();
-    initializer.VisualModels = new EngineObjectDescription.VisualModel[landsCount];
+    VisualDescription[] visuals = new VisualDescription[landsCount];
 
-    for (int i = 0; i < initializer.VisualModels.length; i++)
-      initializer.VisualModels[i] = new EngineObjectDescription.VisualModel("land", "land");
+    description = new Description(visuals, null);
+    properties = new Properties();
+
+    for (int i = 0; i < visuals.length; i++)
+      visuals[i] = new VisualDescription("land", "land");
   }
 
   public Land()
   {
-    super(initializer);
+    super(description, properties);
   }
 
   @Override

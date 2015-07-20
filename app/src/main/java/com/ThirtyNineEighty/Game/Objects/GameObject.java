@@ -1,21 +1,24 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 
 public abstract class GameObject
   extends EngineObject
 {
-  private Characteristic baseCharacteristic;
-  private Characteristic characteristic;
+  private float health;
 
-  protected GameObject(Characteristic characteristic)
+  protected GameObject(GameDescription description, GameProperties properties)
   {
-    super(characteristic.initializer);
+    super(description, properties);
 
-    this.baseCharacteristic = new Characteristic(characteristic);
-    this.characteristic = new Characteristic(characteristic);
+    health = description.getHealth();
   }
 
-  public Characteristic getBaseCharacteristic() { return baseCharacteristic; }
-  public Characteristic getCharacteristic() { return characteristic; }
+  public GameDescription getDescription() { return (GameDescription) description; }
+  public GameProperties getProperties() { return (GameProperties) properties; }
+
+  public float getHealth() { return health; }
+  public void addHealth(float value) { health += value; }
+  public void subtractHealth(float value) { health -= value; }
 }

@@ -2,6 +2,10 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.PhysicalDescription;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
@@ -16,40 +20,42 @@ public abstract class EngineObject
   protected final String name;
   protected Vector3 position;
   protected Vector3 angles;
+  protected Description description;
+  protected Properties properties;
 
   public final I3DRenderable[] renderables;
   public final ICollidable collidable;
-  public final EngineObjectProperties properties;
 
-  protected EngineObject(EngineObjectDescription description)
+  protected EngineObject(Description description, Properties properties)
   {
-    this(generatedNameTemplate + Integer.toString(lastId++), description);
+    this(generatedNameTemplate + Integer.toString(lastId++), description, properties);
   }
 
-  protected EngineObject(String objectName, EngineObjectDescription description)
+  protected EngineObject(String name, Description description, Properties properties)
   {
-    name = objectName;
-
-    properties = new EngineObjectProperties(description);
-    position = new Vector3();
-    angles = new Vector3();
+    this.name = name;
+    this.description = description;
+    this.properties = properties;
+    this.position = new Vector3();
+    this.angles = new Vector3();
 
     // Build visual models
-    int visualModelsCount = description.VisualModels.length;
-    renderables = new I3DRenderable[visualModelsCount];
-    for (int i = 0; i < visualModelsCount; i++)
+    VisualDescription[] visuals = description.getVisuals();
+    renderables = new I3DRenderable[visuals.length];
+    for (int i = 0; i < visuals.length; i++)
     {
-      EngineObjectDescription.VisualModel vmInit = description.VisualModels[i];
-      renderables[i] = new GLModel(vmInit.ModelName, vmInit.TextureName);
+      VisualDescription current = visuals[i];
+      renderables[i] = new GLModel(current.modelName, current.textureName);
       renderables[i].setGlobal(position, angles);
     }
 
     // Build physical model
-    if (description.PhysicalModel == null)
+    PhysicalDescription physicalModel = description.getPhysical();
+    if (physicalModel == null)
       collidable = null;
     else
     {
-      collidable = new Collidable(description.PhysicalModel.ModelName);
+      collidable = new Collidable(physicalModel.modelName);
       collidable.setGlobal(position, angles);
     }
   }
@@ -79,6 +85,9 @@ public abstract class EngineObject
     position.add(vector);
   }
 
+  public Description getDescription() { return description; }
+  public Properties getProperties() { return properties; }
+
   public Vector3 getPosition() { return position; }
   public void setPosition(Vector3 value) { position.setFrom(value); }
 
@@ -91,9 +100,8 @@ public abstract class EngineObject
 
   public final void setGlobalCollidablePosition()
   {
-    if (collidable == null)
-      return;
-    collidable.setGlobal(position, angles);
+    if (collidable != null)
+      collidable.setGlobal(position, angles);
   }
 
   public final void setGlobalRenderablePosition()

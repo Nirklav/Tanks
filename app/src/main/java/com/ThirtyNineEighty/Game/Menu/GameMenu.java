@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
@@ -40,12 +40,11 @@ public class GameMenu
         IWorld world = GameContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
 
-        Characteristic baseCh = player.getBaseCharacteristic();
-        Characteristic currentCh = player.getCharacteristic();
+        GameDescription currentDescription = player.getDescription();
 
         // Player state
-        health.setMaxProgress(baseCh.getHealth());
-        health.setProgress(currentCh.getHealth());
+        health.setMaxProgress(currentDescription.getHealth());
+        health.setProgress(player.getHealth());
         recharge.setProgress(player.getRechargeProgress());
 
         // Player control
@@ -60,12 +59,12 @@ public class GameMenu
         if (Math.abs(joyAngle - playerAngle) > 3)
           GameContext.collisions.rotate(player, joyAngle);
 
-        Characteristic playerCh = player.getCharacteristic();
+        GameDescription playerDescription = player.getDescription();
         if (leftTurretButton.getState())
-          player.addTurretAngle(playerCh.getTurretRotationSpeed() * GameContext.getDelta());
+          player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
 
         if (rightTurretButton.getState())
-          player.addTurretAngle(-playerCh.getTurretRotationSpeed() * GameContext.getDelta());
+          player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
 
         Vector.release(vector);
 

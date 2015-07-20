@@ -1,16 +1,17 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Bullet extends GameObject
 {
   protected Bullet(String type)
   {
-    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
+    super(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), new GameProperties());
   }
 
   @Override
@@ -29,12 +30,10 @@ public class Bullet extends GameObject
     IWorld world = GameContext.content.getWorld();
 
     GameObject target = (GameObject) object;
-    Characteristic targetCharacteristic = target.getCharacteristic();
-    Characteristic bulletCharacteristic = getCharacteristic();
+    GameDescription bulletDescription = getDescription();
 
-    targetCharacteristic.addHealth(-bulletCharacteristic.getDamage());
-
-    if (targetCharacteristic.getHealth() <= 0)
+    target.subtractHealth(bulletDescription.getDamage());
+    if (target.getHealth() <= 0)
       world.remove(object);
   }
 }

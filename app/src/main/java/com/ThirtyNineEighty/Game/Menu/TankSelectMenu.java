@@ -8,9 +8,9 @@ import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class TankSelectMenu
@@ -167,11 +167,11 @@ public class TankSelectMenu
 
   private String getBulletDescription(String name)
   {
-    Characteristic bulletCh = GameContext.resources.getCharacteristic(new FileCharacteristicSource(name));
+    GameDescription bulletDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(name));
     return String.format("Bullets: %s\nDamage: %d\nSpeed: %d"
       , name
-      , (int)bulletCh.getDamage()
-      , (int)bulletCh.getSpeed()
+      , (int)bulletDescription.getDamage()
+      , (int)bulletDescription.getSpeed()
     );
   }
 }

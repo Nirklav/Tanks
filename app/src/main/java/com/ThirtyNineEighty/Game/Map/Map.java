@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -73,13 +74,13 @@ public class Map
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
     Vector3 angles = object.getAngles();
-    Characteristic characteristic = object.getCharacteristic();
+    GameDescription description = object.getDescription();
 
     Projection projection = getProjection(object);
     if (projection == null)
       return true;
 
-    float distance = projection.getRadius() + characteristic.getSpeed() * GameContext.getDelta();
+    float distance = projection.getRadius() + description.getSpeed() * GameContext.getDelta();
     Vector2 checkPoint = position.getMove(distance, angles.getZ());
     ArrayList<Projection> projections = getProjections(object);
 

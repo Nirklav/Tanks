@@ -1,7 +1,8 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
-import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class AidKit
@@ -9,7 +10,7 @@ public class AidKit
 {
   protected AidKit(String type)
   {
-    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
+    super(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), new GameProperties());
   }
 
   @Override
@@ -19,10 +20,8 @@ public class AidKit
       return;
 
     GameObject gameObject = (GameObject) object;
+    GameDescription aidKitDescription = getDescription();
 
-    Characteristic objectCh = gameObject.getCharacteristic();
-    Characteristic aidKitCh = getCharacteristic();
-
-    objectCh.addHealth(aidKitCh.getHealth());
+    gameObject.addHealth(aidKitDescription.getHealth());
   }
 }

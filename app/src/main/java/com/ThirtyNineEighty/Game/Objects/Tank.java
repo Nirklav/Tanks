@@ -1,12 +1,13 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Helpers.Angle;
 import com.ThirtyNineEighty.Helpers.Vector;
 import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Resources.Sources.FileCharacteristicSource;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -15,13 +16,10 @@ public class Tank
 {
   private float turretAngle;
   private float rechargeProgress;
-  private String bulletType;
 
-  public Tank(String type, String bulletType)
+  public Tank(String type, GameProperties properties)
   {
-    super(GameContext.resources.getCharacteristic(new FileCharacteristicSource(type)));
-
-    this.bulletType = bulletType;
+    super(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), properties);
   }
 
   @Override
@@ -34,25 +32,26 @@ public class Tank
       @Override
       protected void onUpdate()
       {
-        Characteristic characteristic = getCharacteristic();
+        GameDescription description = getDescription();
 
-        if (rechargeProgress >= Characteristic.maxRechargeLevel)
-          rechargeProgress = Characteristic.maxRechargeLevel;
+        if (rechargeProgress >= GameDescription.maxRechargeLevel)
+          rechargeProgress = GameDescription.maxRechargeLevel;
         else
-          rechargeProgress += characteristic.getRechargeSpeed() * GameContext.getDelta();
+          rechargeProgress += description.getRechargeSpeed() * GameContext.getDelta();
       }
     });
   }
 
   public void fire()
   {
-    if (rechargeProgress < Characteristic.maxRechargeLevel)
+    if (rechargeProgress < GameDescription.maxRechargeLevel)
       return;
 
     IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
-    Bullet bullet = new Bullet(bulletType);
+    GameProperties properties = getProperties();
+    Bullet bullet = new Bullet(properties.getBullet());
 
     Vector3 bulletAngles = Vector.getInstance(3, angles);
     bulletAngles.addToZ(turretAngle);
@@ -71,11 +70,6 @@ public class Tank
     return Angle.correct(turretAngle + angles.getZ());
   }
 
-  public void setTurretAngle(float value)
-  {
-    turretAngle = value;
-  }
-
   public void addTurretAngle(float delta)
   {
     turretAngle += delta;
@@ -83,8 +77,8 @@ public class Tank
 
   public void turnTurret(float targetAngle)
   {
-    Characteristic characteristic = getCharacteristic();
-    turretAngle += Angle.getDirection(getTurretAngle(), targetAngle) * characteristic.getTurretRotationSpeed() * GameContext.getDelta();
+    GameDescription description = getDescription();
+    turretAngle += Angle.getDirection(getTurretAngle(), targetAngle) * description.getTurretRotationSpeed() * GameContext.getDelta();
   }
 
   public float getRechargeProgress()

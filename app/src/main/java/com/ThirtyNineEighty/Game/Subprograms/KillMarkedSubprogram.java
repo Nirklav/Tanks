@@ -4,8 +4,9 @@ import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Resources.Entities.Characteristic;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class KillMarkedSubprogram
   extends Subprogram
 {
-  private ArrayList<EngineObject> marked;
+  private ArrayList<GameObject> marked;
 
   @Override
   protected void onUpdate()
@@ -22,7 +23,7 @@ public class KillMarkedSubprogram
     Map map = GameContext.mapManager.getMap();
     IWorld world = GameContext.content.getWorld();
     GameObject player = (GameObject) world.getPlayer();
-    Characteristic playerCharacteristic = player.getCharacteristic();
+    GameDescription playerDescription = player.getDescription();
 
     if (map.getState() != Map.StateInProgress)
     {
@@ -33,7 +34,7 @@ public class KillMarkedSubprogram
     }
 
     // Check lose
-    if (playerCharacteristic.getHealth() <= 0)
+    if (playerDescription.getHealth() <= 0)
     {
       map.setState(Map.StateLose);
       delay(5000);
@@ -43,19 +44,26 @@ public class KillMarkedSubprogram
     // Check win
     if (marked == null)
     {
-      world.fillObjects(marked = new ArrayList<>());
+      marked = new ArrayList<>();
+      ArrayList<EngineObject> worldObjects = new ArrayList<>();
+      world.fillObjects(worldObjects);
 
-      for (int i = marked.size() - 1; i >= 0; i--)
+      for (int i = worldObjects.size() - 1; i >= 0; i--)
       {
-        EngineObject current = marked.get(i);
-        if (!current.properties.needKill)
-          marked.remove(i);
+        EngineObject object = worldObjects.get(i);
+        if (object instanceof GameObject)
+        {
+          GameObject gameObject = (GameObject) object;
+          GameProperties properties = gameObject.getProperties();
+          if (properties.needKill())
+            marked.add(gameObject);
+        }
       }
     }
 
     for (int i = marked.size() - 1; i >= 0; i--)
     {
-      EngineObject current = marked.get(i);
+      GameObject current = marked.get(i);
       if (!current.isInitialized())
         marked.remove(i);
     }
