@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Game.Map;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Map.Factory.MapFactory;
-import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
@@ -57,8 +56,7 @@ public final class MapManager
     createSubprograms(world, description.subprograms, null);
 
     // Create player
-    GameProperties properties = new GameProperties(args.getBulletName(), null);
-    Tank player = new Tank(args.getTankName(), properties);
+    Tank player = new Tank(args.getTankName(), args.getProperties());
     player.setPosition(description.player.getPosition());
     player.setAngles(description.player.getAngles());
     world.add(player);

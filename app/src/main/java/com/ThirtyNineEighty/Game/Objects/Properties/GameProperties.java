@@ -19,11 +19,16 @@ public class GameProperties
   {
     this.bullet = bullet;
 
-    if (upgrades != null)
-      this.upgrades = new ArrayList<>(upgrades);
+    this.upgrades = upgrades != null
+      ? new ArrayList<>(upgrades)
+      : new ArrayList<String>();
   }
 
   public boolean needKill() { return needKill; }
+
   public String getBullet() { return bullet; }
+  public void setBullet(String value) { bullet = value; }
+
   public List<String> getUpgrades() { return upgrades; }
+  public void setUpgrades(List<String> value) { upgrades = value; }
 }

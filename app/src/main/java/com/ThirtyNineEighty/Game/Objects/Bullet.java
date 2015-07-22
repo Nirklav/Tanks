@@ -7,7 +7,8 @@ import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
-public class Bullet extends GameObject
+public class Bullet
+  extends GameObject
 {
   protected Bullet(String type)
   {

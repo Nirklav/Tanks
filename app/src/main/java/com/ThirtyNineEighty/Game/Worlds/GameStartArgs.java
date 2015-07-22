@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -9,7 +10,7 @@ public class GameStartArgs
 {
   private String mapName;
   private String tankName;
-  private String bulletName;
+  private GameProperties properties;
 
   public GameStartArgs()
   {
@@ -19,7 +20,9 @@ public class GameStartArgs
 
     mapName = maps.get(0);
     tankName = tanks.get(0);
-    bulletName = bullets.get(0);
+
+    properties = new GameProperties();
+    properties.setBullet(bullets.get(0));
   }
 
   public String getMapName() { return mapName; }
@@ -28,6 +31,6 @@ public class GameStartArgs
   public String getTankName() { return tankName; }
   public void setTankName(String value) { tankName = value; }
 
-  public String getBulletName() { return bulletName; }
-  public void setBulletName(String value) { bulletName = value; }
+  public GameProperties getProperties() { return properties; }
+  public void setProperties(GameProperties value) { properties = value; }
 }

@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
@@ -19,14 +20,15 @@ public class TankSelectMenu
   private Gesture gesture;
   private GLLabel closedTankLabel;
   private GLLabel bulletLabel;
-  private GameStartArgs args;
+  private GLLabel tankLabel;
+  private GameStartArgs startArgs;
   private Selector tankSelector;
   private Selector bulletSelector;
 
-  public TankSelectMenu(final GameStartArgs args)
+  public TankSelectMenu(GameStartArgs args)
   {
-    this.args = args;
-    this.tankSelector = new Selector("tanks", new Selector.Callback()
+    startArgs = args;
+    tankSelector = new Selector("tanks", new Selector.Callback()
     {
       @Override
       public void onChange(String current)
@@ -34,16 +36,18 @@ public class TankSelectMenu
         TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
         closedTankLabel.setVisible(!GameContext.gameProgress.isTankOpen(current));
         world.setPlayer(current);
-        args.setTankName(current);
+        startArgs.setTankName(current);
+        tankLabel.setValue(getTankDescription());
       }
     });
-    this.bulletSelector = new Selector("bullets", new Selector.Callback()
+    bulletSelector = new Selector("bullets", new Selector.Callback()
     {
       @Override
       public void onChange(String current)
       {
-        args.setBulletName(current);
-        bulletLabel.setValue(getBulletDescription(current));
+        GameProperties properties = startArgs.getProperties();
+        properties.setBullet(current);
+        bulletLabel.setValue(getBulletDescription());
       }
     });
   }
@@ -82,9 +86,9 @@ public class TankSelectMenu
     });
     addControl(menuButton);
 
-    Button nextTankButton = new Button("Next");
-    nextTankButton.setPosition(490, -440);
-    nextTankButton.setSize(300, 200);
+    Button nextTankButton = new Button(">");
+    nextTankButton.setPosition(875, 460);
+    nextTankButton.setSize(150, 150);
     nextTankButton.setClickListener(new Runnable()
     {
       @Override
@@ -95,9 +99,9 @@ public class TankSelectMenu
     });
     addControl(nextTankButton);
 
-    Button prevTankButton = new Button("Prev");
-    prevTankButton.setPosition(170, -440);
-    prevTankButton.setSize(300, 200);
+    Button prevTankButton = new Button("<");
+    prevTankButton.setPosition(715, 460);
+    prevTankButton.setSize(150, 150);
     prevTankButton.setClickListener(new Runnable()
     {
       @Override
@@ -109,7 +113,7 @@ public class TankSelectMenu
     addControl(prevTankButton);
 
     Button nextBulletButton = new Button(">");
-    nextBulletButton.setPosition(-715, 455);
+    nextBulletButton.setPosition(-715, 460);
     nextBulletButton.setSize(150, 150);
     nextBulletButton.setClickListener(new Runnable()
     {
@@ -122,7 +126,7 @@ public class TankSelectMenu
     addControl(nextBulletButton);
 
     Button prevBulletButton = new Button("<");
-    prevBulletButton.setPosition(-875, 455);
+    prevBulletButton.setPosition(-875, 460);
     prevBulletButton.setSize(150, 150);
     prevBulletButton.setClickListener(new Runnable()
     {
@@ -142,11 +146,11 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        if (!GameContext.gameProgress.isTankOpen(args.getTankName()))
+        if (!GameContext.gameProgress.isTankOpen(startArgs.getTankName()))
           return;
 
         GameContext.content.setMenu(new GameMenu());
-        GameContext.content.setWorld(new GameWorld(args));
+        GameContext.content.setWorld(new GameWorld(startArgs));
       }
     });
     addControl(gameButton);
@@ -157,21 +161,39 @@ public class TankSelectMenu
     closedTankLabel.setVisible(false);
     addRenderable(closedTankLabel);
 
-    bulletLabel = new GLLabel(getBulletDescription(args.getBulletName()), "simpleFont", 30, 40, MeshMode.Dynamic);
+    bulletLabel = new GLLabel(getBulletDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
     bulletLabel.setAlign(GLLabel.AlignType.TopLeft);
     bulletLabel.setPosition(-950, 330);
     addRenderable(bulletLabel);
 
+    tankLabel = new GLLabel(getTankDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
+    tankLabel.setAlign(GLLabel.AlignType.TopRight);
+    tankLabel.setPosition(950, 330);
+    addRenderable(tankLabel);
+
     super.initialize();
   }
 
-  private String getBulletDescription(String name)
+  private String getBulletDescription()
   {
-    GameDescription bulletDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(name));
-    return String.format("Bullets: %s\nDamage: %d\nSpeed: %d"
-      , name
+    GameProperties properties = startArgs.getProperties();
+    GameDescription bulletDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(properties.getBullet()));
+    return String.format("Bullets: %s\nDamage: %d hp\nSpeed: %d m/s"
+      , properties.getBullet()
       , (int)bulletDescription.getDamage()
       , (int)bulletDescription.getSpeed()
+    );
+  }
+
+  private String getTankDescription()
+  {
+    GameDescription tankDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(startArgs.getTankName()));
+    return String.format("Tank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
+      , startArgs.getTankName()
+      , (int)tankDescription.getHealth()
+      , (int)tankDescription.getSpeed()
+      , (int)tankDescription.getTurretRotationSpeed()
+      , (int)tankDescription.getRechargeSpeed()
     );
   }
 }
