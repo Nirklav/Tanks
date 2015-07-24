@@ -18,9 +18,9 @@ public class TankSelectMenu
   extends BaseMenu
 {
   private Gesture gesture;
-  private GLLabel closedTankLabel;
   private GLLabel bulletLabel;
   private GLLabel tankLabel;
+
   private GameStartArgs startArgs;
   private Selector tankSelector;
   private Selector bulletSelector;
@@ -34,10 +34,11 @@ public class TankSelectMenu
       public void onChange(String current)
       {
         TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
-        closedTankLabel.setVisible(!GameContext.gameProgress.isTankOpen(current));
         world.setPlayer(current);
         startArgs.setTankName(current);
+
         tankLabel.setValue(getTankDescription());
+        bulletLabel.setValue(getBulletDescription());
       }
     });
     bulletSelector = new Selector("bullets", new Selector.Callback()
@@ -146,7 +147,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        if (!GameContext.gameProgress.isTankOpen(startArgs.getTankName()))
+        if (!isTankAvailable() || !isBulletAvailable())
           return;
 
         GameContext.content.setMenu(new GameMenu());
@@ -154,12 +155,6 @@ public class TankSelectMenu
       }
     });
     addControl(gameButton);
-
-    closedTankLabel = new GLLabel("Tank closed");
-    closedTankLabel.setAlign(GLLabel.AlignType.TopCenter);
-    closedTankLabel.setPosition(0, 440);
-    closedTankLabel.setVisible(false);
-    addRenderable(closedTankLabel);
 
     bulletLabel = new GLLabel(getBulletDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
     bulletLabel.setAlign(GLLabel.AlignType.TopLeft);
@@ -178,7 +173,9 @@ public class TankSelectMenu
   {
     GameProperties properties = startArgs.getProperties();
     GameDescription bulletDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(properties.getBullet()));
-    return String.format("Bullets: %s\nDamage: %d hp\nSpeed: %d m/s"
+
+    return String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
+      , isBulletAvailable() ? "Yes" : "No"
       , properties.getBullet()
       , (int)bulletDescription.getDamage()
       , (int)bulletDescription.getSpeed()
@@ -188,12 +185,28 @@ public class TankSelectMenu
   private String getTankDescription()
   {
     GameDescription tankDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(startArgs.getTankName()));
-    return String.format("Tank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
+    return String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
+      , isTankAvailable() ? "Yes" : "No"
       , startArgs.getTankName()
       , (int)tankDescription.getHealth()
       , (int)tankDescription.getSpeed()
       , (int)tankDescription.getTurretRotationSpeed()
       , (int)tankDescription.getRechargeSpeed()
     );
+  }
+
+  private boolean isBulletAvailable()
+  {
+    GameProperties properties = startArgs.getProperties();
+    GameDescription tankDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(startArgs.getTankName()));
+
+    return tankDescription
+      .getSupportedBullets()
+      .contains(properties.getBullet());
+  }
+
+  private boolean isTankAvailable()
+  {
+    return GameContext.gameProgress.isTankOpen(startArgs.getTankName());
   }
 }

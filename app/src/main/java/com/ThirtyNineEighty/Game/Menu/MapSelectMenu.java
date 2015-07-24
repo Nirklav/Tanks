@@ -96,7 +96,7 @@ public class MapSelectMenu
 
     closed = new GLLabel("Closed");
     closed.setPosition(0, 100);
-    closed.setVisible(false);
+    closed.setVisible(!GameContext.gameProgress.isMapOpen(mapSelector.getCurrent()));
     addRenderable(closed);
 
     super.initialize();

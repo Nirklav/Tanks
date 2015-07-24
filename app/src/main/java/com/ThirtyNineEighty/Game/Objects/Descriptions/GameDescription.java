@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Game.Objects.Descriptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameDescription
   extends Description
 {
@@ -13,6 +16,8 @@ public class GameDescription
   protected float speed; // meters per seconds
   protected float rotationSpeed; // degree per seconds
   protected float turretRotationSpeed; // degree per seconds
+  protected ArrayList<String> supportedBullets;
+  protected ArrayList<String> supportedUpgrades;
 
   public GameDescription(GameDescription other)
   {
@@ -24,6 +29,8 @@ public class GameDescription
     speed = other.speed;
     rotationSpeed = other.rotationSpeed;
     turretRotationSpeed = other.turretRotationSpeed;
+    supportedBullets = other.supportedBullets;
+    supportedUpgrades = other.supportedUpgrades;
   }
 
   public float getHealth() { return health; }
@@ -32,4 +39,6 @@ public class GameDescription
   public float getSpeed() { return speed; }
   public float getRotationSpeed() { return rotationSpeed; }
   public float getTurretRotationSpeed() { return turretRotationSpeed; }
+  public List<String> getSupportedBullets() { return supportedBullets; }
+  public List<String> getSupportedUpgrades() { return supportedUpgrades; }
 }
