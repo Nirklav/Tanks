@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -23,7 +22,6 @@ public class KillMarkedSubprogram
     Map map = GameContext.mapManager.getMap();
     IWorld world = GameContext.content.getWorld();
     GameObject player = (GameObject) world.getPlayer();
-    GameDescription playerDescription = player.getDescription();
 
     if (map.getState() != Map.StateInProgress)
     {
@@ -34,7 +32,7 @@ public class KillMarkedSubprogram
     }
 
     // Check lose
-    if (playerDescription.getHealth() <= 0)
+    if (player.getHealth() <= 0)
     {
       map.setState(Map.StateLose);
       delay(5000);

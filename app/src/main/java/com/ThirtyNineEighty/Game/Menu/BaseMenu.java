@@ -3,12 +3,12 @@ package com.ThirtyNineEighty.Game.Menu;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class BaseMenu
   extends Bindable
@@ -17,7 +17,7 @@ public abstract class BaseMenu
   private final Object syncObject;
   private final ArrayList<IControl> controls;
   private final ArrayList<IControl> controlsCopy;
-  private final ArrayList<I2DRenderable> renderables;
+  private final ArrayList<IRenderable> renderables;
 
   protected BaseMenu()
   {
@@ -27,12 +27,39 @@ public abstract class BaseMenu
     renderables = new ArrayList<>();
   }
 
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    ArrayList<IControl> controlsCopy;
+    synchronized (controls)
+    {
+      controlsCopy = new ArrayList<>(controls);
+      controls.clear();
+    }
+
+    for (IControl object : controlsCopy)
+      object.uninitialize();
+
+    ArrayList<IRenderable> renderablesCopy;
+    synchronized (renderables)
+    {
+      renderablesCopy = new ArrayList<>(renderables);
+      renderables.clear();
+    }
+
+    for (IRenderable renderable : renderablesCopy)
+      Renderer.remove(renderable);
+  }
+
   protected void addControl(IControl control)
   {
     synchronized (syncObject)
     {
       controls.add(control);
     }
+    control.initialize();
   }
 
   protected void removeControl(IControl control)
@@ -41,35 +68,25 @@ public abstract class BaseMenu
     {
       controls.remove(control);
     }
+    control.uninitialize();
   }
 
-  protected void addRenderable(I2DRenderable control)
+  protected void addRenderable(IRenderable renderable)
   {
     synchronized (syncObject)
     {
-      renderables.add(control);
+      renderables.add(renderable);
     }
+    Renderer.add(renderable);
   }
 
-  protected void removeRenderable(I2DRenderable control)
+  protected void removeRenderable(IRenderable renderable)
   {
     synchronized (syncObject)
     {
-      renderables.remove(control);
+      renderables.remove(renderable);
     }
-  }
-
-  @Override
-  public final void fillRenderable(List<I2DRenderable> filled)
-  {
-    synchronized (syncObject)
-    {
-      for (I2DRenderable renderable : controls)
-        filled.add(renderable);
-
-      for (I2DRenderable renderable : renderables)
-        filled.add(renderable);
-    }
+    Renderer.remove(renderable);
   }
 
   @Override

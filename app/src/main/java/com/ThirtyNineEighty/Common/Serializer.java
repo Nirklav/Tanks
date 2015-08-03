@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.Common;
 
 import com.ThirtyNineEighty.System.GameContext;
 

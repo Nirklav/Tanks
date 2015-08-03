@@ -11,9 +11,13 @@ import java.io.InputStream;
 
 public abstract class Shader
 {
-  protected static Shader current;
-  private static Shader shader2D;
-  private static Shader shader3D;
+  public final static int Count = 3;
+  public final static int Shader2D = 0;
+  public final static int Shader3D = 1;
+  public final static int ShaderParticles = 2;
+
+  protected static int currentId = -1;
+  private static Shader[] shaders;
 
   protected int vertexShaderHandle;
   protected int fragmentShaderHandle;
@@ -22,45 +26,37 @@ public abstract class Shader
   public abstract void compile();
   protected abstract void getLocations();
 
+  static
+  {
+    shaders = new Shader[Count];
+    shaders[Shader2D] = new Shader2D();
+    shaders[Shader3D] = new Shader3D();
+    shaders[ShaderParticles] = new ShaderParticles();
+  }
+
   public static Shader getCurrent()
   {
-    return current;
+    return shaders[currentId];
   }
 
-  public static void initShader3D()
+  public static void initShaders()
   {
-    if (shader3D != null)
-      shader3D.deleteProgram();
-
-    shader3D = new Shader3D();
-    shader3D.compile();
+    for (Shader shader : shaders)
+    {
+      shader.deleteProgram();
+      shader.compile();
+    }
   }
 
-  public static void initShader2D()
+  public static void setShader(int shaderId)
   {
-    if (shader2D != null)
-      shader2D.deleteProgram();
-
-    shader2D = new Shader2D();
-    shader2D.compile();
-  }
-
-  public static void setShader3D()
-  {
-    if (current == shader3D)
+    if (currentId == shaderId)
       return;
 
-    current = shader3D;
-    GLES20.glUseProgram(shader3D.programHandle);
-  }
+    currentId = shaderId;
+    Shader shader = shaders[shaderId];
 
-  public static void setShader2D()
-  {
-    if (current == shader2D)
-      return;
-
-    current = shader2D;
-    GLES20.glUseProgram(shader2D.programHandle);
+    GLES20.glUseProgram(shader.programHandle);
   }
 
   public void validate()

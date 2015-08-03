@@ -1,11 +1,9 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.Bindable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,19 +55,6 @@ public abstract class BaseWorld
     fillObjects(enabling);
     for (EngineObject object : enabling)
       object.disable();
-  }
-
-  @Override
-  public void fillRenderable(List<I3DRenderable> filled)
-  {
-    synchronized (objects)
-    {
-      for (EngineObject object : objects.values())
-      {
-        object.setGlobalRenderablePosition();
-        Collections.addAll(filled, object.renderables);
-      }
-    }
   }
 
   @Override

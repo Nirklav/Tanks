@@ -7,7 +7,7 @@ import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Serializer;
+import com.ThirtyNineEighty.Common.Serializer;
 import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.System.IBindable;
 import com.ThirtyNineEighty.System.GameContext;

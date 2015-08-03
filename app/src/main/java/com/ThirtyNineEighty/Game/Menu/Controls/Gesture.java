@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Gesture
@@ -61,7 +61,14 @@ public class Gesture
     GameContext.content.postEvent(gestureListener);
   }
 
-  public void setGestureListener(Runnable listener) { gestureListener = listener; }
-  @Override protected boolean canProcess(float x, float y) { return true; }
-  @Override public void draw(float[] orthoViewMatrix) { }
+  public void setGestureListener(Runnable listener)
+  {
+    gestureListener = listener;
+  }
+
+  @Override
+  protected boolean canProcess(float x, float y)
+  {
+    return true;
+  }
 }

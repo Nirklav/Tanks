@@ -2,16 +2,13 @@ package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
-import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -21,31 +18,33 @@ public class Renderer
 {
   private volatile boolean initialized = false;
 
-  private float[] viewMatrix;
-  private float[] projectionMatrix;
-  private float[] projectionViewMatrix;
-
-  private float[] orthoMatrix;
-
-  private Vector3 lightPosition;
-  private Camera camera;
-
-  private final ArrayList<I3DRenderable> renderable3DObjects;
-  private final ArrayList<I2DRenderable> renderable2DObjects;
+  private static final ArrayList<IRenderable> renderables = new ArrayList<>();
+  private final Camera camera;
+  private final Light light;
+  private final RendererContext context;
 
   public Renderer()
   {
-    lightPosition = new Vector3();
-    viewMatrix = new float[16];
-    projectionMatrix = new float[16];
-    projectionViewMatrix = new float[16];
-
-    orthoMatrix = new float[16];
-
-    renderable3DObjects = new ArrayList<>();
-    renderable2DObjects = new ArrayList<>();
-
     camera = new Camera();
+    light = new Light();
+    context = new RendererContext();
+  }
+
+  public static void add(IRenderable renderable)
+  {
+    synchronized (renderables)
+    {
+      renderables.add(renderable);
+      Collections.sort(renderables, new RenderableComparator());
+    }
+  }
+
+  public static void remove(IRenderable renderable)
+  {
+    synchronized (renderables)
+    {
+      renderables.remove(renderable);
+    }
   }
 
   @Override
@@ -60,48 +59,22 @@ public class Renderer
     IWorld world = GameContext.content.getWorld();
     if (world != null && world.isInitialized())
     {
-      renderable3DObjects.clear();
-      world.fillRenderable(renderable3DObjects);
-
-      if (renderable3DObjects.size() != 0)
-      {
-        world.setCamera(camera);
-        world.setLight(lightPosition);
-
-        float eyeX = camera.eye.getX();
-        float eyeY = camera.eye.getY();
-        float eyeZ = camera.eye.getZ();
-
-        float targetX = camera.target.getX();
-        float targetY = camera.target.getY();
-        float targetZ = camera.target.getZ();
-
-        Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0.0f, 0.0f, 1.0f);
-        Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 60.0f);
-        Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
-        Shader.setShader3D();
-
-        for (I3DRenderable renderable : renderable3DObjects)
-          renderable.draw(projectionViewMatrix, lightPosition);
-      }
+      world.setCamera(camera);
+      world.setLight(light);
     }
 
-    IMenu menu = GameContext.content.getMenu();
-    if (menu != null && menu.isInitialized())
+    context.setCamera(camera);
+    context.setLight(light);
+
+    synchronized (renderables)
     {
-      renderable2DObjects.clear();
-      menu.fillRenderable(renderable2DObjects);
-
-      if (renderable2DObjects.size() != 0)
+      for (IRenderable renderable : renderables)
       {
-        Matrix.setIdentityM(orthoMatrix, 0);
-        Matrix.orthoM(orthoMatrix, 0, GameContext.Left, GameContext.Right, GameContext.Bottom, GameContext.Top, -1, 1);
+        if (!renderable.isVisible())
+          continue;
 
-        Shader.setShader2D();
-
-        for (I2DRenderable renderable : renderable2DObjects)
-          renderable.draw(orthoMatrix);
+        Shader.setShader(renderable.getShaderId());
+        renderable.draw(context);
       }
     }
   }
@@ -120,8 +93,7 @@ public class Renderer
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
     GLES20.glViewport(0, 0, width, height);
 
-    Shader.initShader3D();
-    Shader.initShader2D();
+    Shader.initShaders();
 
     GameContext.resources.reloadCache();
     initialized = true;
@@ -133,5 +105,17 @@ public class Renderer
   public void onSurfaceCreated(GL10 gl, EGLConfig config)
   {
 
+  }
+
+  static class RenderableComparator
+    implements Comparator<IRenderable>
+  {
+    @Override
+    public int compare(IRenderable left, IRenderable right)
+    {
+      int leftShaderId = left.getShaderId();
+      int rightShaderId = right.getShaderId();
+      return rightShaderId - leftShaderId;
+    }
   }
 }

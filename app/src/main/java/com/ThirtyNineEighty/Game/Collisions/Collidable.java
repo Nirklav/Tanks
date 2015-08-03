@@ -2,10 +2,12 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Helpers.Plane;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.ILocationProvider;
+import com.ThirtyNineEighty.Common.Location;
+import com.ThirtyNineEighty.Common.Math.Plane;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Resources.Sources.FilePhGeometrySource;
 import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.System.GameContext;
@@ -17,28 +19,33 @@ import java.util.Comparator;
 public class Collidable
   implements ICollidable
 {
-  private float[] matrix;
-
-  private ArrayList<Vector3> globalVertices;
-  private ArrayList<Vector3> globalNormals;
-  private boolean globalsInitialized;
-
-  private Vector3 globalPosition;
-  private Vector3 globalAngles;
-
+  private float[] verticesMatrix;
+  private float[] normalsMatrix;
+  private ILocationProvider<Vector3> locationProvider;
   private PhGeometry geometryData;
+  private Location<Vector3> lastLocation;
+  private ArrayList<Vector3> normals;
+  private ArrayList<Vector3> vertices;
+  private Vector3 position;
 
-  public Collidable(String name)
+  public Collidable(String name, ILocationProvider<Vector3> provider)
   {
-    matrix = new float[16];
-
-    globalPosition = Vector.getInstance(3);
-    globalAngles = Vector.getInstance(3);
-
+    verticesMatrix = new float[16];
+    normalsMatrix = new float[16];
+    locationProvider = provider;
     geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
 
-    globalVertices = createAndFill(geometryData.vertices.size());
-    globalNormals = createAndFill(geometryData.normals.size());
+    position = new Vector3();
+
+    normals = new ArrayList<>();
+    for (int i = 0; i < geometryData.normals.size(); i++)
+      normals.add(new Vector3());
+
+    vertices = new ArrayList<>();
+    for (int i = 0; i < geometryData.vertices.size(); i++)
+      vertices.add(new Vector3());
+
+    normalizeLocation();
   }
 
   @Override
@@ -46,9 +53,10 @@ public class Collidable
   {
     ArrayList<Vector2> projection = getDistinctProjection(plane);
     ArrayList<Vector2> convexHull = new ArrayList<>(projection.size());
+    if (projection.size() < 2)
+      throw new IllegalStateException("projection size less than 2");
 
     int firstIndex = getFirstPointIndex(projection);
-
     Vector2 first = projection.remove(firstIndex);
     convexHull.add(first);
 
@@ -129,7 +137,7 @@ public class Collidable
     Vector2 vector = Vector.getInstance(2);
     ArrayList<Vector2> result = new ArrayList<>();
 
-    for(Vector3 current : globalVertices)
+    for (Vector3 current : vertices)
     {
       plane.getProjection(vector, current);
       if (!result.contains(vector))
@@ -201,69 +209,13 @@ public class Collidable
   @Override
   public Vector3 getPosition()
   {
-    // pos = object position + local ph position
-    return globalPosition.getSum(geometryData.position);
-  }
-
-  @Override
-  public Vector3 getAngles()
-  {
-    // angles = object angles + local object angles
-    return globalAngles.getSum(geometryData.angles);
-  }
-
-  @Override
-  public void setGlobal(Vector3 position, Vector3 angles)
-  {
-    if (globalsInitialized && position.equals(globalPosition) && angles.equals(globalAngles))
-      return;
-
-    globalsInitialized = true;
-    globalPosition.setFrom(position);
-    globalAngles.setFrom(angles);
-
-    Vector3 resultPos = globalPosition.getSum(geometryData.position);
-    Vector3 resultAngles = globalAngles.getSum(geometryData.angles);
-
-    // vertices
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.translateM(matrix, 0, resultPos.getX(), resultPos.getY(), resultPos.getZ());
-    Matrix.rotateM(matrix, 0, resultAngles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
-
-    int size = geometryData.vertices.size();
-    for (int i = 0; i < size; i++)
-    {
-      Vector3 local = geometryData.vertices.get(i);
-      Vector3 global = globalVertices.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
-    }
-
-    // normals
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, resultAngles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, resultAngles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(matrix, 0, resultAngles.getZ(), 0.0f, 0.0f, 1.0f);
-
-    size = geometryData.normals.size();
-    for(int i = 0; i < size; i++)
-    {
-      Vector3 local = geometryData.normals.get(i);
-      Vector3 global = globalNormals.get(i);
-      Matrix.multiplyMV(global.getRaw(), 0, matrix, 0, local.getRaw(), 0);
-
-      global.normalize();
-    }
-
-    Vector.release(resultPos);
-    Vector.release(resultAngles);
+    return position;
   }
 
   @Override
   public ArrayList<Vector3> getNormals()
   {
-    return globalNormals;
+    return normals;
   }
 
   @Override
@@ -272,13 +224,69 @@ public class Collidable
     return geometryData.radius;
   }
 
-  private ArrayList<Vector3> createAndFill(int count)
+  @Override
+  public void normalizeLocation()
   {
-    ArrayList<Vector3> result = new ArrayList<>(count);
+    Location<Vector3> loc = locationProvider.getLocation();
+    if (lastLocation != null && lastLocation.equals(loc))
+      return;
 
-    for(int i = 0; i < count; i++)
-      result.add(new Vector3());
+    lastLocation = loc;
 
-    return result;
+    // matrix
+    setVerticesMatrix(loc);
+    setNormalsMatrix(loc);
+
+    // vertices
+    for (int i = 0; i < geometryData.vertices.size(); i++)
+    {
+      Vector3 local = geometryData.vertices.get(i);
+      Vector3 global = vertices.get(i);
+
+      Matrix.multiplyMV(global.getRaw(), 0, verticesMatrix, 0, local.getRaw(), 0);
+    }
+
+    // position
+    Matrix.multiplyMV(position.getRaw(), 0, verticesMatrix, 0, Vector3.zero.getRaw(), 0);
+
+    // normals
+    for (int i = 0; i < geometryData.normals.size(); i++)
+    {
+      Vector3 local = geometryData.normals.get(i);
+      Vector3 global = normals.get(i);
+
+      Matrix.multiplyMV(global.getRaw(), 0, normalsMatrix, 0, local.getRaw(), 0);
+      global.normalize();
+    }
+  }
+
+  private void setVerticesMatrix(Location<Vector3> loc)
+  {
+    Vector3 resultPos = loc.position.getSum(loc.localPosition); // TODO: fix (can't just add)
+    resultPos.add(geometryData.position); // TODO: fix (can't just add)
+
+    Vector3 resultAng = loc.angles.getSum(loc.localAngles); // TODO: fix (can't just add)
+    resultAng.add(geometryData.angles); // TODO: fix (can't just add)
+
+    Matrix.setIdentityM(verticesMatrix, 0);
+    Matrix.translateM(verticesMatrix, 0, resultPos.getX(), resultPos.getY(), resultPos.getZ());
+    Matrix.rotateM(verticesMatrix, 0, resultAng.getX(), 1, 0, 0);
+    Matrix.rotateM(verticesMatrix, 0, resultAng.getY(), 0, 1, 0);
+    Matrix.rotateM(verticesMatrix, 0, resultAng.getZ(), 0, 0, 1);
+
+    Vector.release(resultPos);
+    Vector.release(resultAng);
+  }
+
+  private void setNormalsMatrix(Location<Vector3> loc)
+  {
+    Vector3 resultAng = loc.angles.getSum(loc.localAngles); // TODO: fix (can't just add)
+    resultAng.add(geometryData.angles); // TODO: fix (can't just add)
+
+    Matrix.setIdentityM(normalsMatrix, 0);
+    Matrix.rotateM(normalsMatrix, 0, resultAng.getX(), 1, 0, 0);
+    Matrix.rotateM(normalsMatrix, 0, resultAng.getY(), 0, 1, 0);
+    Matrix.rotateM(normalsMatrix, 0, resultAng.getZ(), 0, 0, 1);
+    Vector.release(resultAng);
   }
 }

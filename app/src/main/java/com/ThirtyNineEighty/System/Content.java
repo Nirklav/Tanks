@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.EventTimer;
 
 public class Content
 {
@@ -64,7 +63,8 @@ public class Content
   {
     Runnable r = new Runnable()
     {
-      @Override public void run()
+      @Override
+      public void run()
       {
         if (world != null)
           world.uninitialize();
@@ -89,7 +89,8 @@ public class Content
   {
     Runnable r = new Runnable()
     {
-      @Override public void run()
+      @Override
+      public void run()
       {
         if (menu != null)
           menu.uninitialize();

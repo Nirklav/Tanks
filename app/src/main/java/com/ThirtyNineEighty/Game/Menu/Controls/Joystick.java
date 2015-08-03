@@ -1,8 +1,8 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Renderable.GLSprite;
 
 public class Joystick
   extends Control
@@ -10,6 +10,7 @@ public class Joystick
   private float radius;
 
   private GLSprite stickSprite;
+  private GLSprite backgroundSprite;
 
   private Vector2 position;
   private Vector2 stickPosition;
@@ -28,14 +29,21 @@ public class Joystick
 
     vector = Vector.getInstance(2);
 
-    GLSprite backgroundSprite = new GLSprite("joyBackground");
+    backgroundSprite = new GLSprite("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);
     backgroundSprite.setPosition(position);
-    addRenderable(backgroundSprite);
 
     stickSprite = new GLSprite("joyStick");
     stickSprite.setSize(radius / 2, radius / 2);
     stickSprite.setPosition(stickPosition);
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    addRenderable(backgroundSprite);
     addRenderable(stickSprite);
   }
 

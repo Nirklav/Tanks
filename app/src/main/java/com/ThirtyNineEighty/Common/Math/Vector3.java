@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.Common.Math;
 
 import android.opengl.Matrix;
 
@@ -13,8 +13,6 @@ public class Vector3 extends Vector
   public final static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
   public final static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
   public final static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
-
-  protected float[] value;
 
   public Vector3()
   {
@@ -71,8 +69,6 @@ public class Vector3 extends Vector
   public void multiplyToX(float v) { throwIfReleased(); value[0] *= v; }
   public void multiplyToY(float v) { throwIfReleased(); value[1] *= v; }
   public void multiplyToZ(float v) { throwIfReleased(); value[2] *= v; }
-
-  public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()
   {
@@ -194,14 +190,13 @@ public class Vector3 extends Vector
     throwIfReleased();
 
     Vector3 vector = Vector.getInstance(3);
-    float[] translateMatrix = new float[16];
-    Matrix.setIdentityM(translateMatrix, 0);
+    float[] matrix = new float[16];
 
-    Matrix.rotateM(translateMatrix, 0, angles.getX(), 1.0f, 0.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, angles.getY(), 0.0f, 1.0f, 0.0f);
-    Matrix.rotateM(translateMatrix, 0, angles.getZ(), 0.0f, 0.0f, 1.0f);
-
-    Matrix.multiplyMV(vector.getRaw(), 0, translateMatrix, 0, Vector3.xAxis.getRaw(), 0);
+    Matrix.setIdentityM(matrix, 0);
+    Matrix.rotateM(matrix, 0, angles.getX(), 1, 0, 0);
+    Matrix.rotateM(matrix, 0, angles.getY(), 0, 1, 0);
+    Matrix.rotateM(matrix, 0, angles.getZ(), 0, 0, 1);
+    Matrix.multiplyMV(vector.getRaw(), 0, matrix, 0, Vector3.xAxis.getRaw(), 0);
 
     vector.normalize();
 

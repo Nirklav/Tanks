@@ -2,10 +2,10 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Helpers.Plane;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Plane;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 
 import java.util.ArrayList;
 
@@ -67,10 +67,8 @@ public class Collision3D
     ArrayList<Plane> planes = new ArrayList<>();
     ArrayList<Vector3> firstNormals = firstPh.getNormals();
     ArrayList<Vector3> secondNormals = secondPh.getNormals();
-
-    int size = firstNormals.size() + secondNormals.size();
-
     Plane plane = new Plane();
+    int size = firstNormals.size() + secondNormals.size();
 
     for(int i = 0; i < size; i++)
     {
@@ -79,7 +77,6 @@ public class Collision3D
       if (!planes.contains(plane))
         planes.add(new Plane(plane));
     }
-
     return planes;
   }
 

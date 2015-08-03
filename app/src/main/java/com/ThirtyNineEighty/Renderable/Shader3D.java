@@ -17,7 +17,7 @@ public class Shader3D
   @Override
   public void compile()
   {
-    compile("Shaders/vertex3D.c", "Shaders/fragment3D.c");
+    compile("Shaders/3D.vert", "Shaders/3D.frag");
   }
 
   @Override
@@ -27,8 +27,8 @@ public class Shader3D
     attributePositionHandle       = GLES20.glGetAttribLocation(programHandle, "a_position");
     attributeTexCoordHandle       = GLES20.glGetAttribLocation(programHandle, "a_texcoord");
     attributeNormalHandle         = GLES20.glGetAttribLocation(programHandle, "a_normal");
-    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(programHandle, "u_ModelViewProjectionM");
-    uniformMatrixHandle           = GLES20.glGetUniformLocation(programHandle, "u_ModelViewM");
+    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(programHandle, "u_modelViewProjectionMatrix");
+    uniformMatrixHandle           = GLES20.glGetUniformLocation(programHandle, "u_modelMatrix");
     uniformLightVectorHandle      = GLES20.glGetUniformLocation(programHandle, "u_light");
     uniformTextureHandle          = GLES20.glGetUniformLocation(programHandle, "u_texture");
   }

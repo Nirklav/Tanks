@@ -1,16 +1,20 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.Renderable.GLSprite;
+import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Renderable.Renderer;
+import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 
 public abstract class Control
+  extends Bindable
   implements IControl
 {
   private int pointerId;
   private Runnable clickListener;
-  private ArrayList<I2DRenderable> renderables;
+  private ArrayList<GLSprite> renderables;
 
   protected Control()
   {
@@ -18,31 +22,35 @@ public abstract class Control
     renderables = new ArrayList<>();
   }
 
-  protected void addRenderable(I2DRenderable renderable)
+  @Override
+  public void uninitialize()
   {
+    super.uninitialize();
+
+    for (IRenderable renderable : renderables)
+      Renderer.remove(renderable);
+  }
+
+  protected void addRenderable(GLSprite renderable)
+  {
+    if (!isInitialized())
+      throw new IllegalStateException("control not initialized");
+
     renderables.add(renderable);
+    Renderer.add(renderable);
   }
 
-  @Override
-  public void draw(float[] orthoViewMatrix)
-  {
-    for (I2DRenderable renderable : renderables)
-      renderable.draw(orthoViewMatrix);
-  }
-
-  @Override
   public void setVisible(boolean value)
   {
-    for (I2DRenderable renderable : renderables)
+    for (GLSprite renderable : renderables)
       renderable.setVisible(value);
   }
 
-  @Override
   public boolean isVisible()
   {
     if (renderables.size() == 0)
       return false;
-    I2DRenderable first = renderables.get(0);
+    IRenderable first = renderables.get(0);
     return first.isVisible();
   }
 

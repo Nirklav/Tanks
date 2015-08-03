@@ -1,15 +1,22 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Game.Collisions.ICollidable;
 import com.ThirtyNineEighty.Game.Collisions.Collidable;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.PhysicalDescription;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Renderable.Renderable3D.GLModel;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Renderable.GLModel;
+import com.ThirtyNineEighty.Common.ILocationProvider;
+import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.System.Bindable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class EngineObject
   extends Bindable
@@ -22,8 +29,8 @@ public abstract class EngineObject
   protected Vector3 angles;
   protected Description description;
   protected Properties properties;
+  protected List<IRenderable> renderables;
 
-  public final I3DRenderable[] renderables;
   public final ICollidable collidable;
 
   protected EngineObject(Description description, Properties properties)
@@ -40,13 +47,11 @@ public abstract class EngineObject
     this.angles = new Vector3();
 
     // Build visual models
-    VisualDescription[] visuals = description.getVisuals();
-    renderables = new I3DRenderable[visuals.length];
-    for (int i = 0; i < visuals.length; i++)
+    renderables = new ArrayList<>();
+    for (VisualDescription current : description.getVisuals())
     {
-      VisualDescription current = visuals[i];
-      renderables[i] = new GLModel(current.modelName, current.textureName);
-      renderables[i].setGlobal(position, angles);
+      ILocationProvider<Vector3> provider = createPositionProvider(current);
+      renderables.add(new GLModel(current.modelName, current.textureName, provider));
     }
 
     // Build physical model
@@ -55,9 +60,27 @@ public abstract class EngineObject
       collidable = null;
     else
     {
-      collidable = new Collidable(physicalModel.modelName);
-      collidable.setGlobal(position, angles);
+      ILocationProvider<Vector3> provider = createPositionProvider(physicalModel);
+      collidable = new Collidable(physicalModel.modelName, provider);
     }
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    for (IRenderable current : renderables)
+      Renderer.add(current);
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    for (IRenderable current : renderables)
+      Renderer.remove(current);
   }
 
   public String getName()
@@ -98,21 +121,35 @@ public abstract class EngineObject
     angles.correctAngles();
   }
 
-  public final void setGlobalCollidablePosition()
+  protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
   {
-    if (collidable != null)
-      collidable.setGlobal(position, angles);
+    return new LocationProvider(this);
   }
 
-  public final void setGlobalRenderablePosition()
+  protected ILocationProvider<Vector3> createPositionProvider(PhysicalDescription physical)
   {
-    int index = 0;
-    for (I3DRenderable vm : renderables)
-      setGlobalRenderablePosition(index++, vm);
+    return new LocationProvider(this);
   }
 
-  protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
+  protected static class LocationProvider
+    implements ILocationProvider<Vector3>
   {
-    renderable.setGlobal(position, angles);
+    private EngineObject source;
+
+    public LocationProvider(EngineObject object)
+    {
+      source = object;
+    }
+
+    @Override
+    public Location<Vector3> getLocation()
+    {
+      Location<Vector3> location = new Location<>();
+      location.position = Vector.getInstance(3, source.position);
+      location.angles = Vector.getInstance(3, source.angles);
+      location.localPosition = Vector.getInstance(3, Vector3.zero);
+      location.localAngles = Vector.getInstance(3, Vector3.zero);
+      return location;
+    }
   }
 }

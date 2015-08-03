@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Resources.Sources;
 
-import com.ThirtyNineEighty.Helpers.Serializer;
+import com.ThirtyNineEighty.Common.Serializer;
 
 public class FileSerializedSource<TResource>
   implements ISource<TResource>

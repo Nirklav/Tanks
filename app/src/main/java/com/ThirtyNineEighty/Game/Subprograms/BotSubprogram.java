@@ -7,8 +7,8 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 

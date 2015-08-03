@@ -2,11 +2,18 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
+import com.ThirtyNineEighty.System.GameContext;
 
 public abstract class GameObject
   extends EngineObject
 {
   private float health;
+
+  protected GameObject(String type, GameProperties properties)
+  {
+    this(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), properties);
+  }
 
   protected GameObject(GameDescription description, GameProperties properties)
   {

@@ -15,7 +15,7 @@ public class Shader2D
   @Override
   public void compile()
   {
-    compile("Shaders/vertex2D.c", "Shaders/fragment2D.c");
+    compile("Shaders/2D.vert", "Shaders/2D.frag");
   }
 
   @Override

@@ -6,17 +6,19 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Angle;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Angle;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CollisionManager
 {
@@ -104,30 +106,33 @@ public class CollisionManager
     worldObjects.clear();
     world.fillObjects(worldObjects);
 
-    // Set current global positions for all objects
-    for (EngineObject current : worldObjects)
-      current.setGlobalCollidablePosition();
+    // Normalize all objects locations
+    for (EngineObject object : worldObjects)
+      if (object.collidable != null)
+        object.collidable.normalizeLocation();
 
-    // Prepare objects
     if (resolvingObjects.size() == 0)
       return;
 
+    // Prepare objects
     Collection<Pair> pairs = buildPairs(resolvingObjects, worldObjects);
     if (pairs.size() == 0)
       return;
 
     // Parallel collision search (should not change world or objects)
+    Collection<Future<Pair>> tasks = new ArrayList<>();
     final CountDownLatch latch = new CountDownLatch(pairs.size());
     for (final Pair pair : pairs)
     {
-      threadPool.submit(new Runnable()
+      Future<Pair> task = threadPool.submit(new Callable<Pair>()
       {
         @Override
-        public void run()
+        public Pair call() throws Exception
         {
           try
           {
             pair.collision = new Collision3D(pair.first.collidable, pair.second.collidable);
+            return pair;
           }
           finally
           {
@@ -135,6 +140,7 @@ public class CollisionManager
           }
         }
       });
+      tasks.add(task);
     }
 
     try
@@ -143,8 +149,10 @@ public class CollisionManager
       latch.await();
 
       // Resolving collisions
-      for (Pair pair : pairs)
+      for (Future<Pair> task : tasks)
       {
+        Pair pair = task.get();
+
         EngineObject first = pair.first;
         EngineObject second = pair.second;
         Description firstDescription = first.getDescription();

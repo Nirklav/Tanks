@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
+import com.ThirtyNineEighty.Renderable.GLLabel;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 

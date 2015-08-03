@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
+import com.ThirtyNineEighty.Renderable.GLSprite;
 
 public class ProgressBar
   extends Control
@@ -14,15 +14,21 @@ public class ProgressBar
   public ProgressBar()
   {
     edge = new GLSprite("progressBarEdge");
-    addRenderable(edge);
-
     background = new GLSprite("progressBarBackground");
-    addRenderable(background);
 
     progress = 100;
     maxProgress = 100;
 
     setSize(400, 40);
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    addRenderable(edge);
+    addRenderable(background);
   }
 
   @Override

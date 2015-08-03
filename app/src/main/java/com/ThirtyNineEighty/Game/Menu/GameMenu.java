@@ -1,16 +1,16 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Map.Map;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Renderable.GLLabel;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
 import com.ThirtyNineEighty.Game.Menu.Controls.ProgressBar;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -125,11 +125,11 @@ public class GameMenu
 
     recharge = new ProgressBar();
     recharge.setPosition(220, 520);
-    addRenderable(recharge);
+    addControl(recharge);
 
     health = new ProgressBar();
     health.setPosition(-220, 520);
-    addRenderable(health);
+    addControl(health);
 
     winLabel = new GLLabel("WIN");
     winLabel.setCharSize(60, 80);

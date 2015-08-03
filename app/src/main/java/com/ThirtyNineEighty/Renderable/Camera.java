@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Renderable;
 
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 
 public class Camera
 {

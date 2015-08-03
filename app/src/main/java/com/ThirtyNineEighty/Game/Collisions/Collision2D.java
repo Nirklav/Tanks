@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 
 import java.util.ArrayList;
 

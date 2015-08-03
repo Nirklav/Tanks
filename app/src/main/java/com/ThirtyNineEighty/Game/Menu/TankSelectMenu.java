@@ -1,14 +1,14 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
+import com.ThirtyNineEighty.Renderable.GLLabel;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;

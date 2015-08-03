@@ -1,8 +1,8 @@
-package com.ThirtyNineEighty.Renderable.Renderable2D;
+package com.ThirtyNineEighty.Renderable;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Resources.Sources.GeometrySource;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;

@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLLabel;
-import com.ThirtyNineEighty.Renderable.Renderable2D.GLSprite;
+import com.ThirtyNineEighty.Renderable.GLLabel;
+import com.ThirtyNineEighty.Renderable.GLSprite;
 import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
 import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.System.GameContext;
@@ -30,13 +30,20 @@ public class Button
 
     sprite = new GLSprite(notPressed);
     sprite.setZIndex(0);
-    addRenderable(sprite);
 
     label = new GLLabel(caption);
     label.setZIndex(1);
-    addRenderable(label);
 
     setSize(200, 100);
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    addRenderable(sprite);
+    addRenderable(label);
   }
 
   public void setPosition(float x, float y)

@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Helpers.Vector3;
 import com.ThirtyNineEighty.Renderable.Camera;
+import com.ThirtyNineEighty.Renderable.Light;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GameWorld
@@ -32,9 +32,9 @@ public class GameWorld
   }
 
   @Override
-  public void setLight(Vector3 lightPosition)
+  public void setLight(Light light)
   {
-    lightPosition.setFrom(player.getPosition());
-    lightPosition.setZ(30);
+    light.Position.setFrom(player.getPosition());
+    light.Position.setZ(30);
   }
 }

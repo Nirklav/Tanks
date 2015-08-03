@@ -2,10 +2,10 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Plane;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Plane;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;

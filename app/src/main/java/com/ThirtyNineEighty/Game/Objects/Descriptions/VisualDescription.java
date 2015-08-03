@@ -9,10 +9,12 @@ public class VisualDescription
 
   public final String modelName;
   public final String textureName;
+  public final int index;
 
-  public VisualDescription(String modelName, String textureName)
+  public VisualDescription(String modelName, String textureName, int index)
   {
     this.modelName = modelName;
     this.textureName = textureName;
+    this.index = index;
   }
 }

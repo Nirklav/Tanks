@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.System;
 
 import java.util.ArrayDeque;
 

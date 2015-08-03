@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Resources.Sources;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.System.GameContext;
 

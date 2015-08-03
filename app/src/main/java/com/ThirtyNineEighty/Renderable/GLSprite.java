@@ -1,11 +1,11 @@
-package com.ThirtyNineEighty.Renderable.Renderable2D;
+package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.renderscript.Matrix3f;
 
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
 import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
 import com.ThirtyNineEighty.Resources.Entities.Geometry;
@@ -13,15 +13,13 @@ import com.ThirtyNineEighty.Resources.Sources.ISource;
 import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.Resources.Sources.StaticGeometrySource;
-import com.ThirtyNineEighty.Renderable.Shader;
-import com.ThirtyNineEighty.Renderable.Shader2D;
 import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.nio.FloatBuffer;
 
 public class GLSprite
-  implements I2DRenderable
+  implements IRenderable
 {
   private final static float[] quadMeshData = new float[]
   {
@@ -82,17 +80,20 @@ public class GLSprite
   }
 
   @Override
-  public void draw(float[] viewMatrix)
+  public int getShaderId()
   {
-    if (!visible)
-      return;
+    return Shader.Shader2D;
+  }
 
+  @Override
+  public void draw(RendererContext context)
+  {
     tryBuildMatrix();
 
     Shader2D shader = (Shader2D)Shader.getCurrent();
 
     // build result matrix
-    Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+    Matrix.multiplyMM(modelViewMatrix, 0, context.getOrthoMatrix(), 0, modelMatrix, 0);
 
     // bind texture to 0 slot
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -139,6 +140,17 @@ public class GLSprite
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
+  public void setVisible(boolean value)
+  {
+    visible = value;
+  }
+
+  @Override
+  public boolean isVisible()
+  {
+    return visible;
+  }
+
   private void tryBuildMatrix()
   {
     if (!needBuildMatrix)
@@ -166,18 +178,6 @@ public class GLSprite
     setTextureCoordinates(imageData.getCoordinates());
   }
 
-  @Override
-  public void setVisible(boolean value)
-  {
-    visible = value;
-  }
-
-  @Override
-  public boolean isVisible()
-  {
-    return visible;
-  }
-
   public void setSize(float width, float height)
   {
     this.width = width;
@@ -196,7 +196,6 @@ public class GLSprite
     position.setFrom(value);
     needBuildMatrix = true;
   }
-
 
   public Vector2 getPosition()
   {

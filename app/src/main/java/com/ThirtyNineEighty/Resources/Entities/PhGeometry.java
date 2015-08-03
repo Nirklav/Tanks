@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Resources.Entities;
 
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 
 import java.util.ArrayList;
 

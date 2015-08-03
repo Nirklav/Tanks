@@ -1,8 +1,9 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.Renderable2D.I2DRenderable;
+import com.ThirtyNineEighty.System.IBindable;
 
-public interface IControl extends I2DRenderable
+public interface IControl
+  extends IBindable
 {
   void processDown(int pointerId, float x, float y);
   void processMove(int pointerId, float x, float y);

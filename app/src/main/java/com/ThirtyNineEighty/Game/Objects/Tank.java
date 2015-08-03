@@ -1,13 +1,14 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Common.ILocationProvider;
+import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Helpers.Angle;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector3;
-import com.ThirtyNineEighty.Renderable.Renderable3D.I3DRenderable;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
+import com.ThirtyNineEighty.Common.Math.Angle;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
 
@@ -17,9 +18,14 @@ public class Tank
   private float turretAngle;
   private float rechargeProgress;
 
+  public Tank(String type)
+  {
+    this(type, new GameProperties());
+  }
+
   public Tank(String type, GameProperties properties)
   {
-    super(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), properties);
+    super(type, properties);
   }
 
   @Override
@@ -86,17 +92,33 @@ public class Tank
     return rechargeProgress;
   }
 
-  //TODO implement true interface for multi models objects
   @Override
-  protected void setGlobalRenderablePosition(int index, I3DRenderable renderable)
+  protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
   {
-    if (index == 1) // turret model
+    if (visual.index == 1)
+      return new LocationProvider(this);
+    return super.createPositionProvider(visual);
+  }
+
+  private static class LocationProvider
+    implements ILocationProvider<Vector3>
+  {
+    private Tank tank;
+
+    public LocationProvider(Tank tank)
     {
-      Vector3 turretAngles = Vector.getInstance(3);
-      turretAngles.addToZ(turretAngle);
-      renderable.setLocal(Vector3.zero, turretAngles);
+      this.tank = tank;
     }
 
-    super.setGlobalRenderablePosition(index, renderable);
+    @Override
+    public Location<Vector3> getLocation()
+    {
+      Location<Vector3> location = new Location<>();
+      location.position = Vector.getInstance(3, tank.position);
+      location.angles = Vector.getInstance(3, tank.angles);
+      location.localPosition = Vector.getInstance(3, Vector3.zero);
+      location.localAngles = Vector.getInstance(3, 0, 0, tank.turretAngle);
+      return location;
+    }
   }
 }

@@ -1,11 +1,10 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.Land;
-import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Helpers.Angle;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.Math.Angle;
 import com.ThirtyNineEighty.Renderable.Camera;
+import com.ThirtyNineEighty.Renderable.Light;
 
 public class TankSelectWorld
   extends BaseWorld
@@ -24,7 +23,7 @@ public class TankSelectWorld
   public void initialize()
   {
     add(new Land());
-    add(player = new Tank(args.getTankName(), new GameProperties()));
+    add(player = new Tank(args.getTankName()));
     super.initialize();
   }
 
@@ -47,7 +46,7 @@ public class TankSelectWorld
   public void setPlayer(String tankName)
   {
     remove(player);
-    add(player = new Tank(tankName, new GameProperties()));
+    add(player = new Tank(tankName));
   }
 
   @Override
@@ -63,12 +62,12 @@ public class TankSelectWorld
   }
 
   @Override
-  public void setLight(Vector3 lightPosition)
+  public void setLight(Light light)
   {
     float height = 10 + length / 2;
     float x = length * (float)Math.cos(Math.toRadians(angle));
     float y = length * (float)Math.sin(Math.toRadians(angle));
 
-    lightPosition.setFrom(x, y, height);
+    light.Position.setFrom(x, y, height);
   }
 }

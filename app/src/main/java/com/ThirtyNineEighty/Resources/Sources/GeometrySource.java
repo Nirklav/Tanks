@@ -3,8 +3,8 @@ package com.ThirtyNineEighty.Resources.Sources;
 import android.opengl.GLES20;
 import android.opengl.GLException;
 
-import com.ThirtyNineEighty.Helpers.ResultRunnable;
-import com.ThirtyNineEighty.Helpers.Vector3;
+import com.ThirtyNineEighty.Common.ResultRunnable;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Resources.Entities.Geometry;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;

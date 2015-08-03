@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.Common;
 
 public abstract class ResultRunnable<TResult>
   implements Runnable

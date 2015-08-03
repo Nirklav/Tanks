@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.Common.Math;
 
 import android.util.SparseArray;
 
@@ -43,6 +43,7 @@ public abstract class Vector
   private static final AtomicInteger cacheSize = new AtomicInteger();
 
   protected boolean released;
+  protected float[] value;
 
   public static <TVector extends Vector> TVector getInstance(int vectorSize, Vector copy)
   {
@@ -227,6 +228,8 @@ public abstract class Vector
   public abstract void set(int num, float value);
   public abstract int getSize();
   public abstract void clear();
+
+  public float[] getRaw() { throwIfReleased(); return value; }
 
   public void setFrom(Vector vector)
   {

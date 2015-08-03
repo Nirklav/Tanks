@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Helpers;
+package com.ThirtyNineEighty.Common.Math;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,6 @@ public class Vector2 extends Vector
 {
   public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
-
-  protected float[] value;
 
   public Vector2()
   {
@@ -61,8 +59,6 @@ public class Vector2 extends Vector
 
   public void multiplyToX(float v) { throwIfReleased(); value[0] *= v; }
   public void multiplyToY(float v) { throwIfReleased(); value[1] *= v; }
-
-  public float[] getRaw() { throwIfReleased(); return value; }
 
   public float getLength()
   {
@@ -139,7 +135,7 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = Vector.getInstance(2, this);
+    Vector2 result = getInstance(2, this);
     result.normalize();
     return result;
   }
@@ -156,7 +152,7 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = Vector.getInstance(2, this);
+    Vector2 result = getInstance(2, this);
     result.subtract(other);
     return result;
   }
@@ -165,7 +161,7 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = Vector.getInstance(2, this);
+    Vector2 result = getInstance(2, this);
     result.add(other);
     return result;
   }
@@ -174,7 +170,7 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = Vector.getInstance(2, this);
+    Vector2 result = getInstance(2, this);
     result.multiply(coefficient);
     return result;
   }
@@ -183,7 +179,7 @@ public class Vector2 extends Vector
   {
     throwIfReleased();
 
-    Vector2 result = Vector.getInstance(2, this);
+    Vector2 result = getInstance(2, this);
     result.move(length, angle);
     return result;
   }

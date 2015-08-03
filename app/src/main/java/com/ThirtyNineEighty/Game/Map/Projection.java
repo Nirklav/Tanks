@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Objects.EngineObject;
-import com.ThirtyNineEighty.Helpers.Plane;
-import com.ThirtyNineEighty.Helpers.Vector;
-import com.ThirtyNineEighty.Helpers.Vector2;
+import com.ThirtyNineEighty.Common.Math.Plane;
+import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Common.Math.Vector2;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ class Projection
     if (object.collidable == null)
       return null;
 
-    Vector2 position = Vector.getInstance(2, object.getPosition());
     ArrayList<Vector2> vertices = object.collidable.getConvexHull(plane);
+    Vector2 position = Vector.getInstance(2, object.getPosition());
 
     float radius = 0.0f;
     Vector2 tempVector = Vector.getInstance(2);
