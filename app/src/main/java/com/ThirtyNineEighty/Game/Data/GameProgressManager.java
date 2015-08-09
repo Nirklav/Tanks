@@ -1,19 +1,18 @@
 package com.ThirtyNineEighty.Game.Data;
 
-import android.content.Context;
-
 import com.ThirtyNineEighty.Game.Data.Entities.CampaignEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
+import com.ThirtyNineEighty.System.GameContext;
 
 public final class GameProgressManager
 {
   private DataBase dataBase;
 
-  public void initialize(Context context)
+  public void initialize()
   {
-    dataBase = new DataBase(context);
+    dataBase = new DataBase(GameContext.activity);
 
     openMap("standard");
     openTank("tank");

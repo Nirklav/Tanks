@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Shaders;
 
 import android.opengl.GLES20;
 

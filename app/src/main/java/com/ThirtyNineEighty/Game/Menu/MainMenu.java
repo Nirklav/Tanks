@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Common.ILocationProvider;
+import com.ThirtyNineEighty.Common.Location;
+import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
@@ -12,6 +15,8 @@ public class MainMenu
   @Override
   public void initialize()
   {
+    super.initialize();
+
     Button continueButton = new Button("Continue");
     continueButton.setPosition(0, 250);
     continueButton.setSize(600, 200);
@@ -59,7 +64,5 @@ public class MainMenu
       }
     });
     addControl(campaign);
-
-    super.initialize();
   }
 }

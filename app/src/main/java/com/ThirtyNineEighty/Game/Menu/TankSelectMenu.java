@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Renderable.GLLabel;
+import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
@@ -56,6 +56,8 @@ public class TankSelectMenu
   @Override
   public void initialize()
   {
+    super.initialize();
+
     gesture = new Gesture();
     gesture.setGestureListener(new Runnable()
     {
@@ -165,8 +167,6 @@ public class TankSelectMenu
     tankLabel.setAlign(GLLabel.AlignType.TopRight);
     tankLabel.setPosition(950, 330);
     addRenderable(tankLabel);
-
-    super.initialize();
   }
 
   private String getBulletDescription()

@@ -1,8 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.GLSprite;
+import com.ThirtyNineEighty.Renderable.GL.GLSprite;
 import com.ThirtyNineEighty.Renderable.IRenderable;
-import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -28,7 +27,7 @@ public abstract class Control
     super.uninitialize();
 
     for (IRenderable renderable : renderables)
-      Renderer.remove(renderable);
+      GameContext.renderer.remove(renderable);
   }
 
   protected void addRenderable(GLSprite renderable)
@@ -37,7 +36,7 @@ public abstract class Control
       throw new IllegalStateException("control not initialized");
 
     renderables.add(renderable);
-    Renderer.add(renderable);
+    GameContext.renderer.add(renderable);
   }
 
   public void setVisible(boolean value)

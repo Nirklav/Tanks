@@ -57,11 +57,9 @@ public class Land
     @Override
     public Location<Vector3> getLocation()
     {
-      Location<Vector3> location = new Location<>();
-      location.position = Vector.getInstance(3, getPosition());
-      location.angles = Vector.getInstance(3, source.angles);
-      location.localPosition = Vector.getInstance(3, Vector3.zero);
-      location.localAngles = Vector.getInstance(3, Vector3.zero);
+      Location<Vector3> location = new Location<>(3);
+      location.position.setFrom(getPosition());
+      location.angles.setFrom(source.angles);
       return location;
     }
 

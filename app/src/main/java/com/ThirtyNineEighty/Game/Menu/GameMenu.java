@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Renderable.GLLabel;
+import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
@@ -31,6 +31,8 @@ public class GameMenu
   @Override
   public void initialize()
   {
+    super.initialize();
+
     bindProgram(new Subprogram()
     {
       @Override
@@ -140,8 +142,6 @@ public class GameMenu
     loseLabel.setCharSize(60, 80);
     loseLabel.setVisible(false);
     addRenderable(loseLabel);
-
-    super.initialize();
   }
 
   public float getJoystickAngle()

@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Renderable.GLLabel;
+import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -34,6 +34,8 @@ public class MapSelectMenu
   @Override
   public void initialize()
   {
+    super.initialize();
+
     Button prevMap = new Button("Prev map");
     prevMap.setPosition(70, -440);
     prevMap.setSize(300, 200);
@@ -98,7 +100,5 @@ public class MapSelectMenu
     closed.setPosition(0, 100);
     closed.setVisible(!GameContext.gameProgress.isMapOpen(mapSelector.getCurrent()));
     addRenderable(closed);
-
-    super.initialize();
   }
 }

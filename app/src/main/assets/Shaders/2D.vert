@@ -8,7 +8,7 @@ varying highp vec2 v_texcoord;
 
 void main()
 {
-   v_texcoord = (u_texMatrix * vec3(a_texcoord, 1.0)).xy;
+  v_texcoord = (u_texMatrix * vec3(a_texcoord, 1.0)).xy;
 
-   gl_Position = u_modelViewMatrix * a_position;
+  gl_Position = u_modelViewMatrix * a_position;
 }

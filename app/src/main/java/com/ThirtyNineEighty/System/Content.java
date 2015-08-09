@@ -49,13 +49,6 @@ public class Content
     );
   }
 
-  @Override
-  protected void finalize() throws Throwable
-  {
-    super.finalize();
-    updateTimer.stop();
-  }
-
   public IWorld getWorld() { return world; }
   public void setWorld(IWorld value) { setWorld(value, false); }
   public void setWorldAsync(IWorld value) { setWorld(value, true); }

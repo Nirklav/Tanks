@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
@@ -14,11 +15,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class Renderer
-  implements GLSurfaceView.Renderer
+  implements GLSurfaceView.Renderer, IRenderer
 {
   private volatile boolean initialized = false;
 
-  private static final ArrayList<IRenderable> renderables = new ArrayList<>();
+  private final ArrayList<IRenderable> renderables = new ArrayList<>();
   private final Camera camera;
   private final Light light;
   private final RendererContext context;
@@ -30,7 +31,8 @@ public class Renderer
     context = new RendererContext();
   }
 
-  public static void add(IRenderable renderable)
+  @Override
+  public void add(IRenderable renderable)
   {
     synchronized (renderables)
     {
@@ -39,7 +41,8 @@ public class Renderer
     }
   }
 
-  public static void remove(IRenderable renderable)
+  @Override
+  public void remove(IRenderable renderable)
   {
     synchronized (renderables)
     {

@@ -4,7 +4,6 @@ import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
 import com.ThirtyNineEighty.Renderable.IRenderable;
-import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -50,11 +49,14 @@ public abstract class BaseMenu
     }
 
     for (IRenderable renderable : renderablesCopy)
-      Renderer.remove(renderable);
+      GameContext.renderer.remove(renderable);
   }
 
   protected void addControl(IControl control)
   {
+    if (!isInitialized())
+      throw new IllegalStateException("menu not initialized");
+
     synchronized (syncObject)
     {
       controls.add(control);
@@ -73,11 +75,14 @@ public abstract class BaseMenu
 
   protected void addRenderable(IRenderable renderable)
   {
+    if (!isInitialized())
+      throw new IllegalStateException("menu not initialized");
+
     synchronized (syncObject)
     {
       renderables.add(renderable);
     }
-    Renderer.add(renderable);
+    GameContext.renderer.add(renderable);
   }
 
   protected void removeRenderable(IRenderable renderable)
@@ -86,7 +91,7 @@ public abstract class BaseMenu
     {
       renderables.remove(renderable);
     }
-    Renderer.remove(renderable);
+    GameContext.renderer.remove(renderable);
   }
 
   @Override

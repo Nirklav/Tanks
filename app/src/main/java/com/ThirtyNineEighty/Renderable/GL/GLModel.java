@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.GL;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -7,6 +7,10 @@ import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Renderable.Light;
+import com.ThirtyNineEighty.Renderable.RendererContext;
+import com.ThirtyNineEighty.Renderable.Shaders.Shader;
+import com.ThirtyNineEighty.Renderable.Shaders.Shader3D;
 import com.ThirtyNineEighty.Resources.Sources.FileGeometrySource;
 import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
 import com.ThirtyNineEighty.Resources.Entities.Geometry;

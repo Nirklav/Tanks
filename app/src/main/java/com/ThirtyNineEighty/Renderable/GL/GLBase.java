@@ -1,10 +1,11 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.GL;
 
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Renderable.IRenderable;
 
 public abstract class GLBase
   implements IRenderable

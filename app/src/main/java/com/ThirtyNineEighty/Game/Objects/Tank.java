@@ -113,11 +113,10 @@ public class Tank
     @Override
     public Location<Vector3> getLocation()
     {
-      Location<Vector3> location = new Location<>();
-      location.position = Vector.getInstance(3, tank.position);
-      location.angles = Vector.getInstance(3, tank.angles);
-      location.localPosition = Vector.getInstance(3, Vector3.zero);
-      location.localAngles = Vector.getInstance(3, 0, 0, tank.turretAngle);
+      Location<Vector3> location = new Location<>(3);
+      location.position.setFrom(tank.position);
+      location.angles.setFrom(tank.angles);
+      location.localAngles.setFrom(0, 0, tank.turretAngle);
       return location;
     }
   }

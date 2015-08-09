@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.GLLabel;
-import com.ThirtyNineEighty.Renderable.GLSprite;
+import com.ThirtyNineEighty.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Renderable.GL.GLSprite;
 import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
 import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.System.GameContext;

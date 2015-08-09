@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.GLSprite;
+import com.ThirtyNineEighty.Renderable.GL.GLSprite;
 
 public class ProgressBar
   extends Control

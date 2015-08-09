@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Renderable;
+package com.ThirtyNineEighty.Renderable.Shaders;
 
 import android.opengl.GLES20;
 import android.opengl.GLException;
@@ -16,7 +16,7 @@ public abstract class Shader
   public final static int Shader3D = 1;
   public final static int ShaderParticles = 2;
 
-  protected static int currentId = -1;
+  protected static int currentId;
   private static Shader[] shaders;
 
   protected int vertexShaderHandle;
@@ -41,6 +41,7 @@ public abstract class Shader
 
   public static void initShaders()
   {
+    currentId = -1;
     for (Shader shader : shaders)
     {
       shader.deleteProgram();
@@ -69,8 +70,7 @@ public abstract class Shader
     GLES20.glValidateProgram(programHandle);
     GLES20.glGetProgramiv(programHandle, GLES20.GL_VALIDATE_STATUS, result, 0);
 
-    boolean validated = result[0] != 0;
-    if (!validated)
+    if (result[0] == 0)
     {
       String message = !GLES20.glIsProgram(programHandle)
         ? "Program handle deprecated!"

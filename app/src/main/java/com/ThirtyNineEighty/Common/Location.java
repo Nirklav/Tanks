@@ -10,6 +10,16 @@ public class Location<T extends Vector>
   public T localPosition;
   public T localAngles;
 
+  public Location() { }
+
+  public Location(int vecSize)
+  {
+    position = Vector.getInstance(vecSize);
+    angles = Vector.getInstance(vecSize);
+    localAngles = Vector.getInstance(vecSize);
+    localPosition = Vector.getInstance(vecSize);
+  }
+
   @Override
   public boolean equals(Object o)
   {

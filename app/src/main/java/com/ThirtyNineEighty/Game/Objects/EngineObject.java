@@ -7,13 +7,12 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.PhysicalDescription;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
-import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Renderable.GLModel;
+import com.ThirtyNineEighty.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Renderable.IRenderable;
-import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.System.Bindable;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public abstract class EngineObject
     super.initialize();
 
     for (IRenderable current : renderables)
-      Renderer.add(current);
+      GameContext.renderer.add(current);
   }
 
   @Override
@@ -80,7 +79,21 @@ public abstract class EngineObject
     super.uninitialize();
 
     for (IRenderable current : renderables)
-      Renderer.remove(current);
+      GameContext.renderer.remove(current);
+
+    renderables.clear();
+  }
+
+  protected void addRenderable(IRenderable renderable)
+  {
+    renderables.add(renderable);
+    GameContext.renderer.add(renderable);
+  }
+
+  protected void removeRenderable(IRenderable renderable)
+  {
+    renderables.remove(renderable);
+    GameContext.renderer.remove(renderable);
   }
 
   public String getName()
@@ -144,11 +157,9 @@ public abstract class EngineObject
     @Override
     public Location<Vector3> getLocation()
     {
-      Location<Vector3> location = new Location<>();
-      location.position = Vector.getInstance(3, source.position);
-      location.angles = Vector.getInstance(3, source.angles);
-      location.localPosition = Vector.getInstance(3, Vector3.zero);
-      location.localAngles = Vector.getInstance(3, Vector3.zero);
+      Location<Vector3> location = new Location<>(3);
+      location.position.setFrom(source.position);
+      location.angles.setFrom(source.angles);
       return location;
     }
   }

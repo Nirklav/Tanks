@@ -12,8 +12,6 @@ import android.view.WindowManager;
 
 import com.ThirtyNineEighty.Game.Menu.IMenu;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.ConfigChooser;
 import com.ThirtyNineEighty.Renderable.Renderer;
 
@@ -38,13 +36,21 @@ public class GameActivity
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     handler = new Handler();
+    Renderer renderer = new Renderer();
+
+    // Initialize game context
+    GameContext.setActivity(this);
+    GameContext.mapManager.initialize();
+    GameContext.gameProgress.initialize();
+    GameContext.content = new Content();
+    GameContext.renderer = renderer;
 
     // OpenGL init
     glView = new GLSurfaceView(this);
     glView.getHolder().setFormat(PixelFormat.RGBA_8888);
     glView.setEGLContextClientVersion(2);
     glView.setEGLConfigChooser(new ConfigChooser());
-    glView.setRenderer(new Renderer());
+    glView.setRenderer(renderer);
     glView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
     // Bind listener
@@ -53,21 +59,7 @@ public class GameActivity
     // Set view
     setContentView(glView);
 
-    // Initialize game context
-    GameContext.setActivity(this);
-    GameContext.mapManager.initialize();
-    GameContext.gameProgress.initialize(this);
-
-    if (GameContext.content == null)
-      GameContext.content = new Content();
-
-    // Set world and menu
-    IWorld world = GameContext.content.getWorld();
-    if (world != null && world instanceof GameWorld)
-      world.disable();
-    else
-      GameContext.content.setWorldAsync(null);
-
+    // Set menu
     GameContext.content.setMenuAsync(new MainMenu());
   }
 
@@ -159,7 +151,11 @@ public class GameActivity
 
     // reset
     GameContext.content.stop();
+    GameContext.resources.clearCache();
+
     GameContext.setActivity(null);
+    GameContext.content = null;
+    GameContext.renderer = null;
   }
 
   @Override

@@ -1,21 +1,25 @@
-attribute vec3 a_positionStart;
-attribute vec3 a_vector;
+attribute vec3 a_position;
+attribute vec3 a_directionVector;
 attribute vec3 a_color;
-attribute vec2 a_speedSize;
 
-uniform float u_time;
+uniform vec2 u_lifeTime;
+uniform mat4 u_matrix;
 
-varying vec4 v_color;
+varying vec3 v_color;
+varying float v_time;
 
 void main()
 {
-  v_color = vec4(a_color, 1.0);
+  v_color = a_color;
+  v_time = u_lifeTime.y;
+  float life = u_lifeTime.x;
 
-  float speed = a_speedSize.x;
-  float size = a_speedSize.y;
-
-  gl_Position.xyz = mod((a_vector * (speed * u_time) + a_positionStart), 2.0) - 1.0;
-  gl_Position.w = 1.0;
-
-  gl_PointSize = size;
+  if (life < v_time)
+    gl_Position = vec4(1000.0, 1000.0, 1.0, 1.0);
+  else
+  {
+    vec3 currentPosition = a_position + (a_directionVector * v_time);
+    gl_PointSize = 10.0;
+    gl_Position = u_matrix * vec4(currentPosition, 1.0);
+  }
 }

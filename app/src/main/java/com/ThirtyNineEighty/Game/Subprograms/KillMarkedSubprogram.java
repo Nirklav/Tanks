@@ -62,7 +62,7 @@ public class KillMarkedSubprogram
     for (int i = marked.size() - 1; i >= 0; i--)
     {
       GameObject current = marked.get(i);
-      if (!current.isInitialized())
+      if (current.getHealth() <= 0)
         marked.remove(i);
     }
 

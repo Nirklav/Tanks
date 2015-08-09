@@ -8,11 +8,9 @@ import android.opengl.GLSurfaceView.EGLConfigChooser;
 
 public class ConfigChooser implements EGLConfigChooser
 {
-  private int[] value;
-
   public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display)
   {
-    value = new int[1];
+    int[] value = new int[1];
     int[] configSpec = 
     {
       EGL10.EGL_RED_SIZE,        8,

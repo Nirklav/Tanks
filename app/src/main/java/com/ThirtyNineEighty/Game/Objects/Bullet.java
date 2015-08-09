@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Game.Objects;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -28,13 +27,9 @@ public class Bullet
     if (!(object instanceof GameObject))
       return;
 
-    IWorld world = GameContext.content.getWorld();
-
     GameObject target = (GameObject) object;
     GameDescription bulletDescription = getDescription();
 
     target.subtractHealth(bulletDescription.getDamage());
-    if (target.getHealth() <= 0)
-      world.remove(object);
   }
 }

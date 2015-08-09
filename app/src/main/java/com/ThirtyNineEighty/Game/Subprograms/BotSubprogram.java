@@ -38,6 +38,12 @@ public class BotSubprogram
   @Override
   protected void onUpdate()
   {
+    if (bot.getHealth() <= 0)
+    {
+      unbind();
+      return;
+    }
+
     IWorld world = GameContext.content.getWorld();
     EngineObject player = world.getPlayer();
 

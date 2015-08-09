@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Menu.Controls;
 
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Renderable.GLSprite;
+import com.ThirtyNineEighty.Renderable.GL.GLSprite;
 
 public class Joystick
   extends Control
