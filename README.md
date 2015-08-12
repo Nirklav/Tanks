@@ -3,11 +3,8 @@ Tanks
 
 Android 3d game about tanks.
 
-##### Tank select menu:
-![menu](https://raw.github.com/Nirklav/Tanks/master/screen_tankSelectMenu.png)
+![menu](https://github.com/Nirklav/Tanks/blob/master/screen_tankSelectMenu.png "Tank select menu")
 
-##### Battle:
-![battle](https://raw.github.com/Nirklav/Tanks/master/screen_battle.png)
+![battle](https://github.com/Nirklav/Tanks/blob/master/screen_battle.png "Battle")
 
-##### Simple particles:
-![particles](https://raw.github.com/Nirklav/Tanks/master/screen_simpleParticles.png)
+![particles](https://github.com/Nirklav/Tanks/blob/master/screen_simpleParticles.png "Simple particles")
