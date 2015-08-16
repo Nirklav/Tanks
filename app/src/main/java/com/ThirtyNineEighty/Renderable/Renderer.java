@@ -19,34 +19,51 @@ public class Renderer
 {
   private volatile boolean initialized = false;
 
-  private final ArrayList<IRenderable> renderables = new ArrayList<>();
-  private final Camera camera;
-  private final Light light;
-  private final RendererContext context;
+  private final Object syncObject = new Object();
 
-  public Renderer()
-  {
-    camera = new Camera();
-    light = new Light();
-    context = new RendererContext();
-  }
+  private final ArrayList<IRenderable> objects = new ArrayList<>();
+  private final ArrayList<IRenderable> menus = new ArrayList<>();
+  private final ArrayList<IRenderable> particles = new ArrayList<>();
+
+  private final Camera camera = new Camera();
+  private final Light light = new Light();
+  private final RendererContext context = new RendererContext();
 
   @Override
   public void add(IRenderable renderable)
   {
-    synchronized (renderables)
+    synchronized (syncObject)
     {
-      renderables.add(renderable);
-      Collections.sort(renderables, new RenderableComparator());
+      ArrayList<IRenderable> collection = getCollection(renderable.getShaderId());
+
+      collection.add(renderable);
+      Collections.sort(collection, new RenderableComparator());
     }
   }
 
   @Override
   public void remove(IRenderable renderable)
   {
-    synchronized (renderables)
+    synchronized (syncObject)
     {
-      renderables.remove(renderable);
+      ArrayList<IRenderable> collection = getCollection(renderable.getShaderId());
+
+      collection.remove(renderable);
+    }
+  }
+
+  private ArrayList<IRenderable> getCollection(int shaderId)
+  {
+    switch (shaderId)
+    {
+    case Shader.Shader2D:
+      return menus;
+    case Shader.Shader3D:
+      return objects;
+    case Shader.ShaderExplosionParticles:
+      return particles;
+    default:
+      throw new IllegalStateException("unknown shader id");
     }
   }
 
@@ -69,16 +86,36 @@ public class Renderer
     context.setCamera(camera);
     context.setLight(light);
 
-    synchronized (renderables)
+    synchronized (syncObject)
     {
-      for (IRenderable renderable : renderables)
-      {
-        if (!renderable.isVisible())
-          continue;
+      // Objects
+      GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-        Shader.setShader(renderable.getShaderId());
-        renderable.draw(context);
-      }
+      draw(context, objects);
+
+      GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+
+      // Particles
+      GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
+
+      draw(context, particles);
+
+      GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+      // Menus
+      draw(context, menus);
+    }
+  }
+
+  private static void draw(RendererContext context, ArrayList<IRenderable> renderables)
+  {
+    for (IRenderable renderable : renderables)
+    {
+      if (!renderable.isVisible())
+        continue;
+
+      Shader.setShader(renderable.getShaderId());
+      renderable.draw(context);
     }
   }
 

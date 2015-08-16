@@ -48,7 +48,7 @@ public class GLExplosionParticles
   @Override
   public int getShaderId()
   {
-    return Shader.ShaderParticles;
+    return Shader.ShaderExplosionParticles;
   }
 
   @Override
@@ -89,13 +89,7 @@ public class GLExplosionParticles
     geometryData.validate();
 
     // draw
-    GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
-
     GLES20.glDrawArrays(GLES20.GL_POINTS, 0, count);
-
-    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionStartHandle);

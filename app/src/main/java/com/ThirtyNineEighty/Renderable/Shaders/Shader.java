@@ -13,7 +13,7 @@ public abstract class Shader
 {
   public final static int Count = 3;
   public final static int Shader3D = 0;
-  public final static int ShaderParticles = 1;
+  public final static int ShaderExplosionParticles = 1;
   public final static int Shader2D = 2;
 
   protected static int currentId;
@@ -31,7 +31,7 @@ public abstract class Shader
     shaders = new Shader[Count];
     shaders[Shader2D] = new Shader2D();
     shaders[Shader3D] = new Shader3D();
-    shaders[ShaderParticles] = new ShaderExplosionParticles();
+    shaders[ShaderExplosionParticles] = new ShaderExplosionParticles();
   }
 
   public static Shader getCurrent()
