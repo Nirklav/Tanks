@@ -5,6 +5,7 @@ import com.ThirtyNineEighty.Resources.Entities.Geometry;
 import com.ThirtyNineEighty.Resources.Entities.Image;
 import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Resources.Entities.Texture;
+import com.ThirtyNineEighty.Resources.Sources.HemisphereParticlesSource;
 import com.ThirtyNineEighty.Resources.Sources.ISource;
 
 import java.util.ArrayList;
@@ -24,6 +25,11 @@ public final class Resources
   public PhGeometry getPhGeometry(ISource<PhGeometry> source) { return phGeometryCache.get(source); }
   public GameDescription getCharacteristic(ISource<GameDescription> source) { return descriptionCache.get(source); }
   public ArrayList<String> getContent(ISource<ArrayList<String>> source) { return contentCache.get(source); }
+
+  public void preload()
+  {
+    geometryCache.get(new HemisphereParticlesSource());
+  }
 
   public void reloadCache()
   {

@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Renderable.GL.GLParticles;
+import com.ThirtyNineEighty.Renderable.GL.GLExplosionParticles;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.Subprogram;
@@ -47,7 +47,7 @@ public abstract class GameObject
       return;
 
     final GameObject current = this;
-    final GLParticles particles = new GLParticles(GLParticles.Hemisphere, 2, 1000, new LocationProvider(this));
+    final GLExplosionParticles particles = new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1.0f, 2000, new LocationProvider(this));
 
     addRenderable(particles);
 
@@ -60,7 +60,7 @@ public abstract class GameObject
       {
         if (delay)
         {
-          delay(2000);
+          delay(1100);
           delay = false;
           return;
         }

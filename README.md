@@ -7,4 +7,4 @@ Android 3d game about tanks.
 
 ![battle](https://github.com/Nirklav/Tanks/blob/master/screen_battle.png "Battle")
 
-![particles](https://github.com/Nirklav/Tanks/blob/master/screen_simpleParticles.png "Simple particles")
+![particles](https://github.com/Nirklav/Tanks/blob/master/screen_particles.png "Simple particles")

@@ -99,6 +99,8 @@ public class Renderer
     Shader.initShaders();
 
     GameContext.resources.reloadCache();
+    GameContext.resources.preload();
+
     initialized = true;
 
     GameContext.content.start();
@@ -118,7 +120,7 @@ public class Renderer
     {
       int leftShaderId = left.getShaderId();
       int rightShaderId = right.getShaderId();
-      return rightShaderId - leftShaderId;
+      return leftShaderId - rightShaderId;
     }
   }
 }
