@@ -5,7 +5,7 @@ public abstract class Subprogram
 {
   private float delay;
   private boolean enabled = true;
-  private IBindable bindable;
+  protected IBindable bindable;
 
   @Override
   public void setBindable(IBindable value)
@@ -50,7 +50,7 @@ public abstract class Subprogram
   protected void unbind()
   {
     if (bindable != null)
-      bindable.unbindProgram(this);
+      bindable.unbind(this);
     else
       GameContext.content.unbindProgram(this);
   }

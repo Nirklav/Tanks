@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Renderable.Camera;
 import com.ThirtyNineEighty.Renderable.Light;
 import com.ThirtyNineEighty.System.IBindable;
@@ -15,10 +15,10 @@ public interface IWorld
   void setLight(Light light);
 
   // player
-  EngineObject getPlayer();
+  WorldObject getPlayer();
 
   // world
-  void fillObjects(List<EngineObject> objects);
-  void add(EngineObject engineObject);
-  void remove(EngineObject engineObject);
+  void fillObjects(List<WorldObject> objects);
+  void add(WorldObject worldObject);
+  void remove(WorldObject worldObject);
 }

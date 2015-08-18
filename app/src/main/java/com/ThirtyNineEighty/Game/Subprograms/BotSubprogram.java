@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
@@ -45,7 +45,7 @@ public class BotSubprogram
     }
 
     IWorld world = GameContext.content.getWorld();
-    EngineObject player = world.getPlayer();
+    WorldObject player = world.getPlayer();
 
     Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
     Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
@@ -68,7 +68,7 @@ public class BotSubprogram
     Vector.release(targetVector);
   }
 
-  private void tryFire(EngineObject target, Vector2 targetVector)
+  private void tryFire(WorldObject target, Vector2 targetVector)
   {
     float targetAngle = Vector2.xAxis.getAngle(targetVector);
 
@@ -86,7 +86,7 @@ public class BotSubprogram
     }
   }
 
-  private Vector2 getMovingVector(EngineObject target)
+  private Vector2 getMovingVector(WorldObject target)
   {
     Map map = GameContext.mapManager.getMap();
     Vector2 botPosition = Vector.getInstance(2, bot.getPosition());

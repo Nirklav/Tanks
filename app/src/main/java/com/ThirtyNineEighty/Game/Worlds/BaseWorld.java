@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.System.Bindable;
 
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public abstract class BaseWorld
   extends Bindable
   implements IWorld
 {
-  protected final HashMap<String, EngineObject> objects;
-  protected EngineObject player;
+  protected final HashMap<String, WorldObject> objects;
+  protected WorldObject player;
 
   protected BaseWorld()
   {
@@ -24,14 +24,14 @@ public abstract class BaseWorld
   {
     super.uninitialize();
 
-    ArrayList<EngineObject> disposed;
+    ArrayList<WorldObject> disposed;
     synchronized (objects)
     {
       disposed = new ArrayList<>(objects.values());
       objects.clear();
     }
 
-    for (EngineObject object : disposed)
+    for (WorldObject object : disposed)
       object.uninitialize();
   }
 
@@ -40,9 +40,9 @@ public abstract class BaseWorld
   {
     super.enable();
 
-    ArrayList<EngineObject> enabling = new ArrayList<>();
+    ArrayList<WorldObject> enabling = new ArrayList<>();
     fillObjects(enabling);
-    for (EngineObject object : enabling)
+    for (WorldObject object : enabling)
       object.enable();
   }
 
@@ -51,42 +51,42 @@ public abstract class BaseWorld
   {
     super.disable();
 
-    ArrayList<EngineObject> enabling = new ArrayList<>();
+    ArrayList<WorldObject> enabling = new ArrayList<>();
     fillObjects(enabling);
-    for (EngineObject object : enabling)
+    for (WorldObject object : enabling)
       object.disable();
   }
 
   @Override
-  public void fillObjects(List<EngineObject> filled)
+  public void fillObjects(List<WorldObject> filled)
   {
     synchronized (objects)
     {
-      for (EngineObject object : objects.values())
+      for (WorldObject object : objects.values())
         filled.add(object);
     }
   }
 
   @Override
-  public EngineObject getPlayer() { return player; }
+  public WorldObject getPlayer() { return player; }
 
   @Override
-  public void add(EngineObject engineObject)
+  public void add(WorldObject worldObject)
   {
     synchronized (objects)
     {
-      objects.put(engineObject.getName(), engineObject);
+      objects.put(worldObject.getName(), worldObject);
     }
-    engineObject.initialize();
+    worldObject.initialize();
   }
 
   @Override
-  public void remove(EngineObject engineObject)
+  public void remove(WorldObject worldObject)
   {
     synchronized (objects)
     {
-      objects.remove(engineObject.getName());
+      objects.remove(worldObject.getName());
     }
-    engineObject.uninitialize();
+    worldObject.uninitialize();
   }
 }

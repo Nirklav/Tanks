@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Map.Factory.MapFactory;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Serializer;
@@ -41,7 +41,7 @@ public final class MapManager
     // Create objects
     for (MapObject obj : description.objects)
     {
-      EngineObject object = factory.createObject(obj.type, obj.properties);
+      WorldObject object = factory.createObject(obj.type, obj.properties);
 
       object.setPosition(obj.getPosition());
       object.setAngles(obj.getAngles());
@@ -70,6 +70,6 @@ public final class MapManager
       return;
 
     for (String subprogramName : subprograms)
-      bindable.bindProgram(factory.createSubprogram(subprogramName, parameter));
+      bindable.bind(factory.createSubprogram(subprogramName, parameter));
   }
 }

@@ -1,11 +1,8 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.GL.GLSprite;
 import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
-
-import java.util.ArrayList;
 
 public abstract class Control
   extends Bindable
@@ -13,35 +10,15 @@ public abstract class Control
 {
   private int pointerId;
   private Runnable clickListener;
-  private ArrayList<GLSprite> renderables;
 
   protected Control()
   {
     pointerId = -1;
-    renderables = new ArrayList<>();
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-
-    for (IRenderable renderable : renderables)
-      GameContext.renderer.remove(renderable);
-  }
-
-  protected void addRenderable(GLSprite renderable)
-  {
-    if (!isInitialized())
-      throw new IllegalStateException("control not initialized");
-
-    renderables.add(renderable);
-    GameContext.renderer.add(renderable);
   }
 
   public void setVisible(boolean value)
   {
-    for (GLSprite renderable : renderables)
+    for (IRenderable renderable : renderables)
       renderable.setVisible(value);
   }
 

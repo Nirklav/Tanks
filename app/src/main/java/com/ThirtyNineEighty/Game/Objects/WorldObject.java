@@ -8,16 +8,14 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Game.Objects.States.State;
 import com.ThirtyNineEighty.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.Common.ILocationProvider;
-import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public abstract class EngineObject
+public abstract class WorldObject
   extends Bindable
 {
   private static int lastId = 1;
@@ -28,29 +26,35 @@ public abstract class EngineObject
   protected Vector3 angles;
   protected Description description;
   protected Properties properties;
-  protected List<IRenderable> renderables;
 
   public final ICollidable collidable;
 
-  protected EngineObject(Description description, Properties properties)
+  protected WorldObject(State state)
   {
-    this(generatedNameTemplate + Integer.toString(lastId++), description, properties);
+    this(state.getName(), state.getType(), state.getProperties());
+
+    position.setFrom(state.getPosition());
+    angles.setFrom(state.getAngles());
   }
 
-  protected EngineObject(String name, Description description, Properties properties)
+  protected WorldObject(String type, Properties properties)
+  {
+    this(generatedNameTemplate + Integer.toString(lastId++), type, properties);
+  }
+
+  protected WorldObject(String name, String type, Properties properties)
   {
     this.name = name;
-    this.description = description;
     this.properties = properties;
     this.position = new Vector3();
     this.angles = new Vector3();
+    this.description = GameContext.resources.getDescription(new FileDescriptionSource(type));
 
     // Build visual models
-    renderables = new ArrayList<>();
     for (VisualDescription current : description.getVisuals())
     {
       ILocationProvider<Vector3> provider = createPositionProvider(current);
-      renderables.add(new GLModel(current.modelName, current.textureName, provider));
+      bind(new GLModel(current.modelName, current.textureName, provider));
     }
 
     // Build physical model
@@ -64,44 +68,28 @@ public abstract class EngineObject
     }
   }
 
-  @Override
-  public void initialize()
-  {
-    super.initialize();
-
-    for (IRenderable current : renderables)
-      GameContext.renderer.add(current);
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-
-    for (IRenderable current : renderables)
-      GameContext.renderer.remove(current);
-
-    renderables.clear();
-  }
-
-  protected void addRenderable(IRenderable renderable)
-  {
-    renderables.add(renderable);
-    GameContext.renderer.add(renderable);
-  }
-
-  protected void removeRenderable(IRenderable renderable)
-  {
-    renderables.remove(renderable);
-    GameContext.renderer.remove(renderable);
-  }
-
   public String getName()
   {
     return name;
   }
 
-  public void collide(EngineObject object) { }
+  protected State createState()
+  {
+    return new State();
+  }
+
+  public State getState()
+  {
+    State state = createState();
+    state.setAngles(angles);
+    state.setPosition(position);
+    state.setProperties(properties);
+    state.setType(description.getType());
+    state.setName(name);
+    return state;
+  }
+
+  public void collide(WorldObject object) { }
 
   public void rotate(Vector3 value)
   {
@@ -147,9 +135,9 @@ public abstract class EngineObject
   protected static class LocationProvider
     implements ILocationProvider<Vector3>
   {
-    private EngineObject source;
+    private WorldObject source;
 
-    public LocationProvider(EngineObject object)
+    public LocationProvider(WorldObject object)
     {
       source = object;
     }

@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -43,12 +43,12 @@ public class KillMarkedSubprogram
     if (marked == null)
     {
       marked = new ArrayList<>();
-      ArrayList<EngineObject> worldObjects = new ArrayList<>();
+      ArrayList<WorldObject> worldObjects = new ArrayList<>();
       world.fillObjects(worldObjects);
 
       for (int i = worldObjects.size() - 1; i >= 0; i--)
       {
-        EngineObject object = worldObjects.get(i);
+        WorldObject object = worldObjects.get(i);
         if (object instanceof GameObject)
         {
           GameObject gameObject = (GameObject) object;

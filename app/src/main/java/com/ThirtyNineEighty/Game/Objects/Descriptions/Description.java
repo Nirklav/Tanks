@@ -7,6 +7,8 @@ public class Description
 {
   private static final long serialVersionUID = 1L;
 
+  protected String type;
+
   protected VisualDescription[] visuals;
   protected PhysicalDescription physical;
   protected boolean removeOnCollide;
@@ -16,6 +18,8 @@ public class Description
     this.visuals = visuals;
     this.physical = physical;
   }
+
+  public String getType() { return type; }
 
   public VisualDescription[] getVisuals() { return visuals; }
   public PhysicalDescription getPhysical() { return physical; }

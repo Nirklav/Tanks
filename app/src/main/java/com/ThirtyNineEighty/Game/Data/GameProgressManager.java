@@ -2,9 +2,13 @@ package com.ThirtyNineEighty.Game.Data;
 
 import com.ThirtyNineEighty.Game.Data.Entities.CampaignEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
+import com.ThirtyNineEighty.Game.Data.Entities.SavedGameEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
+import com.ThirtyNineEighty.Game.Objects.States.State;
 import com.ThirtyNineEighty.System.GameContext;
+
+import java.util.ArrayList;
 
 public final class GameProgressManager
 {
@@ -90,5 +94,18 @@ public final class GameProgressManager
     }
     campaign.data.currentMap = mapName;
     dataBase.campaigns.update(campaign);
+  }
+
+  public void saveGame(String name, State player, ArrayList<State> objects)
+  {
+    Entity<SavedGameEntity> savedGame = dataBase.savedGames.read(name);
+    if (savedGame == null)
+    {
+      dataBase.savedGames.insert(name, new SavedGameEntity(player, objects));
+      return;
+    }
+    savedGame.data.player = player;
+    savedGame.data.objects = objects;
+    dataBase.savedGames.update(savedGame);
   }
 }

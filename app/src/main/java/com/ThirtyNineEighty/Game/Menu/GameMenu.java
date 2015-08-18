@@ -33,7 +33,7 @@ public class GameMenu
   {
     super.initialize();
 
-    bindProgram(new Subprogram()
+    bind(new Subprogram()
     {
       @Override
       public void onUpdate()
@@ -136,12 +136,12 @@ public class GameMenu
     winLabel = new GLLabel("WIN");
     winLabel.setCharSize(60, 80);
     winLabel.setVisible(false);
-    addRenderable(winLabel);
+    bind(winLabel);
 
     loseLabel = new GLLabel("LOSE");
     loseLabel.setCharSize(60, 80);
     loseLabel.setVisible(false);
-    addRenderable(loseLabel);
+    bind(loseLabel);
   }
 
   public float getJoystickAngle()

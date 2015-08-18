@@ -2,13 +2,18 @@ package com.ThirtyNineEighty.Common.Math;
 
 import android.opengl.Matrix;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /*
  * Operation with prefix get - immutable;
  */
-public class Vector3 extends Vector
+public class Vector3
+  extends Vector
+  implements Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   public final static Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
   public final static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
   public final static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);

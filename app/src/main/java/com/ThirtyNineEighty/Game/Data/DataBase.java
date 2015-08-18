@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ThirtyNineEighty.Game.Data.Entities.CampaignEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
+import com.ThirtyNineEighty.Game.Data.Entities.SavedGameEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
 import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
 
@@ -15,6 +16,7 @@ public class DataBase extends SQLiteOpenHelper
   public final Table<TankEntity> tanks;
   public final Table<UpgradeEntity> upgrades;
   public final Table<CampaignEntity> campaigns;
+  public final Table<SavedGameEntity> savedGames;
 
   public DataBase(Context context)
   {
@@ -24,6 +26,7 @@ public class DataBase extends SQLiteOpenHelper
     tanks = new Table<>(this, "Tanks");
     upgrades = new Table<>(this, "Upgrades");
     campaigns = new Table<>(this, "Campaigns");
+    savedGames = new Table<>(this, "SavedGames");
   }
 
   @Override
@@ -33,6 +36,7 @@ public class DataBase extends SQLiteOpenHelper
     tanks.create(database);
     upgrades.create(database);
     campaigns.create(database);
+    savedGames.create(database);
   }
 
   @Override

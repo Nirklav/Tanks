@@ -1,17 +1,16 @@
 package com.ThirtyNineEighty.System;
 
+import com.ThirtyNineEighty.Renderable.IRenderable;
+
 import java.util.ArrayList;
 
 public class Bindable
   implements IBindable
 {
-  private final ArrayList<ISubprogram> subprograms;
-  private volatile boolean initialized;
+  protected final ArrayList<ISubprogram> subprograms = new ArrayList<>();
+  protected final ArrayList<IRenderable> renderables = new ArrayList<>();
 
-  public Bindable()
-  {
-    subprograms = new ArrayList<>();
-  }
+  private volatile boolean initialized;
 
   @Override
   public boolean isInitialized() { return initialized; }
@@ -21,6 +20,12 @@ public class Bindable
   {
     initialized = true;
     enable();
+
+    synchronized (renderables)
+    {
+      for (IRenderable renderable : renderables)
+        GameContext.renderer.add(renderable);
+    }
   }
 
   @Override
@@ -29,7 +34,10 @@ public class Bindable
     initialized = false;
 
     for (ISubprogram subprogram : getSubprogramsCopy())
-      unbindProgram(subprogram);
+      unbind(subprogram);
+
+    for (IRenderable renderable : getRenderablesCopy())
+      unbind(renderable);
   }
 
   @Override
@@ -47,7 +55,7 @@ public class Bindable
   }
 
   @Override
-  public void bindProgram(ISubprogram subprogram)
+  public void bind(ISubprogram subprogram)
   {
     if (initialized)
       subprogram.enable();
@@ -64,7 +72,7 @@ public class Bindable
   }
 
   @Override
-  public void unbindProgram(ISubprogram subprogram)
+  public void unbind(ISubprogram subprogram)
   {
     GameContext.content.unbindProgram(subprogram);
     subprogram.disable();
@@ -76,11 +84,42 @@ public class Bindable
     }
   }
 
+  @Override
+  public void bind(IRenderable renderable)
+  {
+    if (isInitialized())
+      GameContext.renderer.add(renderable);
+
+    synchronized (renderables)
+    {
+      renderables.add(renderable);
+    }
+  }
+
+  @Override
+  public void unbind(IRenderable renderable)
+  {
+    GameContext.renderer.remove(renderable);
+
+    synchronized (renderables)
+    {
+      renderables.remove(renderable);
+    }
+  }
+
   private ArrayList<ISubprogram> getSubprogramsCopy()
   {
     synchronized (subprograms)
     {
       return new ArrayList<>(subprograms);
+    }
+  }
+
+  private ArrayList<IRenderable> getRenderablesCopy()
+  {
+    synchronized (renderables)
+    {
+      return new ArrayList<>(renderables);
     }
   }
 }

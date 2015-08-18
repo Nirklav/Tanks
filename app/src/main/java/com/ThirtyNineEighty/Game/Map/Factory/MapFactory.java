@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Game.Map.Factory;
 import com.ThirtyNineEighty.Game.Objects.AidKit;
 import com.ThirtyNineEighty.Game.Objects.Bullet;
 import com.ThirtyNineEighty.Game.Objects.Decor;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
@@ -37,10 +37,10 @@ public class MapFactory
     subprogramBindings.put("killMarkedCompletion", new Creator<>(KillMarkedSubprogram.class));
   }
 
-  public EngineObject createObject(String type, Properties properties)
+  public WorldObject createObject(String type, Properties properties)
   {
     Creator<?> creator = objectCreators.get(type);
-    return (EngineObject)creator.create(type, properties);
+    return (WorldObject)creator.create(type, properties);
   }
 
   public ISubprogram createSubprogram(String type, Object parameter)

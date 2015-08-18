@@ -23,7 +23,7 @@ public final class Resources
   public Geometry getGeometry(ISource<Geometry> source) { return geometryCache.get(source); }
   public Image getImage(ISource<Image> source) { return imagesCache.get(source); }
   public PhGeometry getPhGeometry(ISource<PhGeometry> source) { return phGeometryCache.get(source); }
-  public GameDescription getCharacteristic(ISource<GameDescription> source) { return descriptionCache.get(source); }
+  public GameDescription getDescription(ISource<GameDescription> source) { return descriptionCache.get(source); }
   public ArrayList<String> getContent(ISource<ArrayList<String>> source) { return contentCache.get(source); }
 
   public void preload()

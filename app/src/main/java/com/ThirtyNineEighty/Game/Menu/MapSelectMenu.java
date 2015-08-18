@@ -94,11 +94,11 @@ public class MapSelectMenu
     addControl(menu);
 
     mapName = new GLLabel(mapSelector.getCurrent(), "simpleFont", 40, 60, MeshMode.Dynamic);
-    addRenderable(mapName);
+    bind(mapName);
 
     closed = new GLLabel("Closed");
     closed.setPosition(0, 100);
     closed.setVisible(!GameContext.gameProgress.isMapOpen(mapSelector.getCurrent()));
-    addRenderable(closed);
+    bind(closed);
   }
 }

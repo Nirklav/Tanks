@@ -42,8 +42,8 @@ public class Button
   {
     super.initialize();
 
-    addRenderable(sprite);
-    addRenderable(label);
+    bind(sprite);
+    bind(label);
   }
 
   public void setPosition(float x, float y)

@@ -5,6 +5,8 @@ import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
+import com.ThirtyNineEighty.Game.Objects.States.State;
+import com.ThirtyNineEighty.Game.Objects.States.TankState;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Angle;
 import com.ThirtyNineEighty.Common.Math.Vector;
@@ -18,11 +20,15 @@ public class Tank
   private float turretAngle;
   private float rechargeProgress;
 
-  public Tank(String type)
+  public Tank(TankState state)
   {
-    this(type, new GameProperties());
+    super(state);
+
+    turretAngle = state.getTurretAngle();
+    rechargeProgress = state.getRechargeProgress();
   }
 
+  public Tank(String type) { this(type, new GameProperties()); }
   public Tank(String type, GameProperties properties)
   {
     super(type, properties);
@@ -33,7 +39,7 @@ public class Tank
   {
     super.initialize();
 
-    bindProgram(new Subprogram()
+    bind(new Subprogram()
     {
       @Override
       protected void onUpdate()
@@ -46,6 +52,21 @@ public class Tank
           rechargeProgress += description.getRechargeSpeed() * GameContext.getDelta();
       }
     });
+  }
+
+  @Override
+  protected State createState()
+  {
+    return new TankState();
+  }
+
+  @Override
+  public State getState()
+  {
+    TankState state = (TankState) super.getState();
+    state.setTurretAngle(turretAngle);
+    state.setRechargeProgress(rechargeProgress);
+    return state;
   }
 
   public void fire()
@@ -95,7 +116,7 @@ public class Tank
   @Override
   protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
   {
-    if (visual.index == 1)
+    if (visual.id == 1)
       return new LocationProvider(this);
     return super.createPositionProvider(visual);
   }

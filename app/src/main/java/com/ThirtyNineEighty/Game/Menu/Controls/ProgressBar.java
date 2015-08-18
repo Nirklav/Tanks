@@ -13,22 +13,13 @@ public class ProgressBar
 
   public ProgressBar()
   {
-    edge = new GLSprite("progressBarEdge");
-    background = new GLSprite("progressBarBackground");
+    bind(edge = new GLSprite("progressBarEdge"));
+    bind(background = new GLSprite("progressBarBackground"));
 
     progress = 100;
     maxProgress = 100;
 
     setSize(400, 40);
-  }
-
-  @Override
-  public void initialize()
-  {
-    super.initialize();
-
-    addRenderable(edge);
-    addRenderable(background);
   }
 
   @Override

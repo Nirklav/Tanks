@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Plane;
 import com.ThirtyNineEighty.Common.Math.Vector;
@@ -16,24 +16,24 @@ public class Tracer
 
   private final Vector3 start;
   private final Vector3 end;
-  private final EngineObject[] ignoring;
+  private final WorldObject[] ignoring;
 
   private boolean calculated;
   private boolean result;
 
-  public Tracer(EngineObject watcher, EngineObject target)
+  public Tracer(WorldObject watcher, WorldObject target)
   {
     this(getPosition(watcher), getPosition(target), watcher, target);
   }
 
-  public Tracer(Vector3 start, Vector3 end, EngineObject... ignoring)
+  public Tracer(Vector3 start, Vector3 end, WorldObject... ignoring)
   {
     this.start = start;
     this.end = end;
     this.ignoring = ignoring;
   }
 
-  private static Vector3 getPosition(EngineObject object)
+  private static Vector3 getPosition(WorldObject object)
   {
     if (object.collidable != null)
       return object.collidable.getPosition();
@@ -51,7 +51,7 @@ public class Tracer
 
   private boolean calculate()
   {
-    ArrayList<EngineObject> worldObjects = new ArrayList<>();
+    ArrayList<WorldObject> worldObjects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
     world.fillObjects(worldObjects);
@@ -61,7 +61,7 @@ public class Tracer
     Vector2 lineProjection = plane.getProjection(start);
     float fullLength = vector.getLength();
 
-    for (EngineObject object : worldObjects)
+    for (WorldObject object : worldObjects)
     {
       if (contains(ignoring, object))
         continue;
@@ -99,9 +99,9 @@ public class Tracer
     return false;
   }
 
-  private boolean contains(EngineObject[] objects, EngineObject object)
+  private boolean contains(WorldObject[] objects, WorldObject object)
   {
-    for (EngineObject current : objects)
+    for (WorldObject current : objects)
       if (current == object)
         return true;
     return false;

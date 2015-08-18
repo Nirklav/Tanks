@@ -161,18 +161,18 @@ public class TankSelectMenu
     bulletLabel = new GLLabel(getBulletDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
     bulletLabel.setAlign(GLLabel.AlignType.TopLeft);
     bulletLabel.setPosition(-950, 330);
-    addRenderable(bulletLabel);
+    bind(bulletLabel);
 
     tankLabel = new GLLabel(getTankDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
     tankLabel.setAlign(GLLabel.AlignType.TopRight);
     tankLabel.setPosition(950, 330);
-    addRenderable(tankLabel);
+    bind(tankLabel);
   }
 
   private String getBulletDescription()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription bulletDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(properties.getBullet()));
+    GameDescription bulletDescription = GameContext.resources.getDescription(new FileDescriptionSource(properties.getBullet()));
 
     return String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
       , isBulletAvailable() ? "Yes" : "No"
@@ -184,7 +184,7 @@ public class TankSelectMenu
 
   private String getTankDescription()
   {
-    GameDescription tankDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
     return String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
       , isTankAvailable() ? "Yes" : "No"
       , startArgs.getTankName()
@@ -198,7 +198,7 @@ public class TankSelectMenu
   private boolean isBulletAvailable()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription tankDescription = GameContext.resources.getCharacteristic(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
 
     return tankDescription
       .getSupportedBullets()

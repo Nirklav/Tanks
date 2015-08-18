@@ -1,17 +1,17 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 
 class Pair
 {
-  public final EngineObject first;
-  public final EngineObject second;
+  public final WorldObject first;
+  public final WorldObject second;
 
   public boolean firstMoved;
   public boolean secondMoved;
   public Collision3D collision;
 
-  public Pair(EngineObject first, EngineObject second)
+  public Pair(WorldObject first, WorldObject second)
   {
     String firstName = first.getName();
     String secondName = second.getName();

@@ -2,30 +2,49 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
+import com.ThirtyNineEighty.Game.Objects.States.GameState;
+import com.ThirtyNineEighty.Game.Objects.States.State;
+import com.ThirtyNineEighty.Game.Subprograms.TimedSubprogram;
 import com.ThirtyNineEighty.Renderable.GL.GLExplosionParticles;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
-import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 public abstract class GameObject
-  extends EngineObject
+  extends WorldObject
 {
   private float health;
+  private boolean isDead;
+
+  protected GameObject(GameState state)
+  {
+    super(state);
+
+    health = state.getHealth();
+    isDead = health <= 0;
+  }
 
   protected GameObject(String type, GameProperties properties)
   {
-    this(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), properties);
-  }
+    super(type, properties);
 
-  protected GameObject(GameDescription description, GameProperties properties)
-  {
-    super(description, properties);
-
+    GameDescription description = getDescription();
     health = description.getHealth();
   }
 
   public GameDescription getDescription() { return (GameDescription) description; }
   public GameProperties getProperties() { return (GameProperties) properties; }
+
+  @Override
+  protected State createState()
+  {
+    return new GameState();
+  }
+
+  @Override
+  public State getState()
+  {
+    GameState state = (GameState)super.getState();
+    state.setHealth(health);
+    return state;
+  }
 
   public float getHealth() { return health; }
 
@@ -43,30 +62,12 @@ public abstract class GameObject
 
   private void checkHealth()
   {
-    if (health > 0)
+    if (health > 0 || isDead)
       return;
 
-    final GameObject current = this;
-    final GLExplosionParticles particles = new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1.0f, 2000, new LocationProvider(this));
+    isDead = true;
 
-    addRenderable(particles);
-
-    bindProgram(new Subprogram()
-    {
-      boolean delay = true;
-
-      @Override
-      protected void onUpdate()
-      {
-        if (delay)
-        {
-          delay(1100);
-          delay = false;
-          return;
-        }
-        current.removeRenderable(particles);
-        unbind();
-      }
-    });
+    GLExplosionParticles particles = new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1.0f, 2000, new LocationProvider(this));
+    bind(new TimedSubprogram(particles, 1100));
   }
 }

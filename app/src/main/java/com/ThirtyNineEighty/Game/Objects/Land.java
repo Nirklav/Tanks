@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Common.Location;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -13,27 +12,13 @@ import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class Land
-  extends EngineObject
+  extends WorldObject
 {
-  private static final int landsCount = 9;
   private static final float landSize = 50.0f;
-
-  private static Description description;
-  private static Properties properties;
-  static
-  {
-    VisualDescription[] visuals = new VisualDescription[landsCount];
-
-    description = new Description(visuals, null);
-    properties = new Properties();
-
-    for (int i = 0; i < visuals.length; i++)
-      visuals[i] = new VisualDescription("land", "land", i);
-  }
 
   public Land()
   {
-    super(description, properties);
+    super("land", new Properties());
   }
 
   @Override
@@ -45,13 +30,13 @@ public class Land
   private static class LocationProvider
     implements ILocationProvider<Vector3>
   {
-    private EngineObject source;
-    private int index;
+    private WorldObject source;
+    private int id;
 
-    public LocationProvider(EngineObject source, VisualDescription visual)
+    public LocationProvider(WorldObject source, VisualDescription visual)
     {
       this.source = source;
-      this.index = visual.index;
+      this.id = visual.id;
     }
 
     @Override
@@ -66,13 +51,13 @@ public class Land
     public Vector3 getPosition()
     {
       IWorld world = GameContext.content.getWorld();
-      EngineObject player = world.getPlayer();
+      WorldObject player = world.getPlayer();
 
       Vector3 position = player != null
         ? player.getPosition()
         : Vector3.zero;
 
-      Vector2 shift = Spiral.get(index);
+      Vector2 shift = Spiral.get(id);
       shift.multiplyToX(landSize);
       shift.multiplyToY(landSize);
       shift.addToX(landSize * Math.signum(position.getX()) / 2);

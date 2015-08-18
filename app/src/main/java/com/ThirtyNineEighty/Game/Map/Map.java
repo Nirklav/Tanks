@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Vector;
@@ -91,7 +91,7 @@ public class Map
     return true;
   }
 
-  public ArrayList<Vector2> findPath(EngineObject finder, EngineObject target)
+  public ArrayList<Vector2> findPath(WorldObject finder, WorldObject target)
   {
     Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
     Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
@@ -151,16 +151,16 @@ public class Map
     return null;
   }
 
-  private ArrayList<Projection> getProjections(EngineObject finder) { return getProjections(finder, null); }
-  private ArrayList<Projection> getProjections(EngineObject finder, EngineObject target)
+  private ArrayList<Projection> getProjections(WorldObject finder) { return getProjections(finder, null); }
+  private ArrayList<Projection> getProjections(WorldObject finder, WorldObject target)
   {
     ArrayList<Projection> result = new ArrayList<>();
-    ArrayList<EngineObject> objects = new ArrayList<>();
+    ArrayList<WorldObject> objects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
     world.fillObjects(objects);
 
-    for (EngineObject object : objects)
+    for (WorldObject object : objects)
     {
       if (target == object || finder == object)
         continue;
@@ -174,7 +174,7 @@ public class Map
     return result;
   }
 
-  private Projection getProjection(EngineObject object)
+  private Projection getProjection(WorldObject object)
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
     Projection projection = projectionsCache.get(object.getName());

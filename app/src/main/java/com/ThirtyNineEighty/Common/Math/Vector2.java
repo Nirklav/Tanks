@@ -1,13 +1,18 @@
 package com.ThirtyNineEighty.Common.Math;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
  * Operation with prefix get - immutable;
  */
-public class Vector2 extends Vector
+public class Vector2
+  extends Vector
+  implements Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
 

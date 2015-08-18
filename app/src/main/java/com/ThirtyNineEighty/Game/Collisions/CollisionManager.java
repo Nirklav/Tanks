@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
@@ -22,8 +22,8 @@ import java.util.concurrent.Future;
 
 public class CollisionManager
 {
-  private final ArrayList<EngineObject> resolvingObjects;
-  private final ArrayList<EngineObject> worldObjects;
+  private final ArrayList<WorldObject> resolvingObjects;
+  private final ArrayList<WorldObject> worldObjects;
 
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
@@ -40,13 +40,13 @@ public class CollisionManager
     addToResolving(object);
   }
 
-  public void move(EngineObject object, float length)
+  public void move(WorldObject object, float length)
   {
     object.move(length);
     addToResolving(object);
   }
 
-  public void move(EngineObject object, Vector3 vector, float length)
+  public void move(WorldObject object, Vector3 vector, float length)
   {
     object.move(length, vector);
     addToResolving(object);
@@ -70,13 +70,13 @@ public class CollisionManager
     Vector.release(vector);
   }
 
-  public void rotate(EngineObject object, Vector3 angles)
+  public void rotate(WorldObject object, Vector3 angles)
   {
     object.rotate(angles);
     addToResolving(object);
   }
 
-  private void addToResolving(EngineObject object)
+  private void addToResolving(WorldObject object)
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);
@@ -107,7 +107,7 @@ public class CollisionManager
     world.fillObjects(worldObjects);
 
     // Normalize all objects locations
-    for (EngineObject object : worldObjects)
+    for (WorldObject object : worldObjects)
       if (object.collidable != null)
         object.collidable.normalizeLocation();
 
@@ -153,8 +153,8 @@ public class CollisionManager
       {
         Pair pair = task.get();
 
-        EngineObject first = pair.first;
-        EngineObject second = pair.second;
+        WorldObject first = pair.first;
+        WorldObject second = pair.second;
         Description firstDescription = first.getDescription();
         Description secondDescription = second.getDescription();
         Collision3D collision = pair.collision;
@@ -199,12 +199,12 @@ public class CollisionManager
     resolvingObjects.clear();
   }
 
-  private static Collection<Pair> buildPairs(Collection<EngineObject> resolving, Collection<EngineObject> all)
+  private static Collection<Pair> buildPairs(Collection<WorldObject> resolving, Collection<WorldObject> all)
   {
     HashMap<PairKey, Pair> pairs = new HashMap<>();
 
-    for (EngineObject first : resolving)
-      for (EngineObject second : all)
+    for (WorldObject first : resolving)
+      for (WorldObject second : all)
       {
         if (first == second)
           continue;
@@ -233,7 +233,7 @@ public class CollisionManager
     return pairs.values();
   }
 
-  private static float getLength(EngineObject one, EngineObject two)
+  private static float getLength(WorldObject one, WorldObject two)
   {
     Vector3 positionOne = one.collidable.getPosition();
     Vector3 positionTwo = two.collidable.getPosition();

@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Common.Math;
 
 import android.util.SparseArray;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 public abstract class Vector
+  implements Serializable
 {
   private static class Vectors
   {
@@ -36,6 +38,8 @@ public abstract class Vector
   }
 
   public static final float epsilon = 0.0001f;
+
+  private static final long serialVersionUID = 1L;
 
   private static final int cacheSizeLimit = 500;
   private static final boolean disableCache = false;

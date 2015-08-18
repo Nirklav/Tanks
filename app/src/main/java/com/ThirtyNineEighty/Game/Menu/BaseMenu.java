@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Game.Menu;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
-import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -16,14 +15,12 @@ public abstract class BaseMenu
   private final Object syncObject;
   private final ArrayList<IControl> controls;
   private final ArrayList<IControl> controlsCopy;
-  private final ArrayList<IRenderable> renderables;
 
   protected BaseMenu()
   {
     syncObject = new Object();
     controls = new ArrayList<>();
     controlsCopy = new ArrayList<>();
-    renderables = new ArrayList<>();
   }
 
   @Override
@@ -40,16 +37,6 @@ public abstract class BaseMenu
 
     for (IControl object : controlsCopy)
       object.uninitialize();
-
-    ArrayList<IRenderable> renderablesCopy;
-    synchronized (renderables)
-    {
-      renderablesCopy = new ArrayList<>(renderables);
-      renderables.clear();
-    }
-
-    for (IRenderable renderable : renderablesCopy)
-      GameContext.renderer.remove(renderable);
   }
 
   protected void addControl(IControl control)
@@ -71,27 +58,6 @@ public abstract class BaseMenu
       controls.remove(control);
     }
     control.uninitialize();
-  }
-
-  protected void addRenderable(IRenderable renderable)
-  {
-    if (!isInitialized())
-      throw new IllegalStateException("menu not initialized");
-
-    synchronized (syncObject)
-    {
-      renderables.add(renderable);
-    }
-    GameContext.renderer.add(renderable);
-  }
-
-  protected void removeRenderable(IRenderable renderable)
-  {
-    synchronized (syncObject)
-    {
-      renderables.remove(renderable);
-    }
-    GameContext.renderer.remove(renderable);
   }
 
   @Override

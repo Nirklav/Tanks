@@ -1,13 +1,13 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 
 class PairKey
 {
   private final String first;
   private final String second;
 
-  public PairKey(EngineObject first, EngineObject second)
+  public PairKey(WorldObject first, WorldObject second)
   {
     String firstName = first.getName();
     String secondName = second.getName();

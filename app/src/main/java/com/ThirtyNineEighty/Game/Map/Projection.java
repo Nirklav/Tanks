@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Game.Objects.EngineObject;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Common.Math.Plane;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
@@ -14,7 +14,7 @@ class Projection
   private final float radius;
   private Vector2 position;
 
-  public static Projection FromObject(EngineObject object)
+  public static Projection FromObject(WorldObject object)
   {
     if (object.collidable == null)
       return null;

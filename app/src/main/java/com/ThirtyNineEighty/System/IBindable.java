@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.System;
 
+import com.ThirtyNineEighty.Renderable.IRenderable;
+
 public interface IBindable
 {
   boolean isInitialized();
@@ -10,6 +12,9 @@ public interface IBindable
   void enable();
   void disable();
 
-  void bindProgram(ISubprogram subprogram);
-  void unbindProgram(ISubprogram subprogram);
+  void bind(ISubprogram subprogram);
+  void unbind(ISubprogram subprogram);
+
+  void bind(IRenderable renderable);
+  void unbind(IRenderable renderable);
 }

@@ -10,7 +10,6 @@ public class Joystick
   private float radius;
 
   private GLSprite stickSprite;
-  private GLSprite backgroundSprite;
 
   private Vector2 position;
   private Vector2 stickPosition;
@@ -29,22 +28,15 @@ public class Joystick
 
     vector = Vector.getInstance(2);
 
-    backgroundSprite = new GLSprite("joyBackground");
+    GLSprite backgroundSprite = new GLSprite("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);
     backgroundSprite.setPosition(position);
+    bind(backgroundSprite);
 
     stickSprite = new GLSprite("joyStick");
     stickSprite.setSize(radius / 2, radius / 2);
     stickSprite.setPosition(stickPosition);
-  }
-
-  @Override
-  public void initialize()
-  {
-    super.initialize();
-
-    addRenderable(backgroundSprite);
-    addRenderable(stickSprite);
+    bind(stickSprite);
   }
 
   public Vector2 getVector()

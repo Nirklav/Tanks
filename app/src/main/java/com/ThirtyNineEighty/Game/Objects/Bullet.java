@@ -3,26 +3,24 @@ package com.ThirtyNineEighty.Game.Objects;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
-import com.ThirtyNineEighty.System.GameContext;
 
 public class Bullet
   extends GameObject
 {
   protected Bullet(String type)
   {
-    super(GameContext.resources.getCharacteristic(new FileDescriptionSource(type)), new GameProperties());
+    super(type, new GameProperties());
   }
 
   @Override
   public void initialize()
   {
     super.initialize();
-    bindProgram(new MoveSubprogram(this, 100));
+    bind(new MoveSubprogram(this, 100));
   }
 
   @Override
-  public void collide(EngineObject object)
+  public void collide(WorldObject object)
   {
     if (!(object instanceof GameObject))
       return;
