@@ -2,10 +2,8 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Game.Objects.States.GameState;
-import com.ThirtyNineEighty.Game.Objects.States.State;
-import com.ThirtyNineEighty.Game.Subprograms.TimedSubprogram;
 import com.ThirtyNineEighty.Renderable.GL.GLExplosionParticles;
+import com.ThirtyNineEighty.System.State;
 
 public abstract class GameObject
   extends WorldObject
@@ -13,11 +11,12 @@ public abstract class GameObject
   private float health;
   private boolean isDead;
 
-  protected GameObject(GameState state)
+  public GameObject(State s)
   {
-    super(state);
+    super(s);
 
-    health = state.getHealth();
+    GameState state = (GameState) s;
+    health = state.health;
     isDead = health <= 0;
   }
 
@@ -42,7 +41,7 @@ public abstract class GameObject
   public State getState()
   {
     GameState state = (GameState)super.getState();
-    state.setHealth(health);
+    state.health = health;
     return state;
   }
 
@@ -66,8 +65,14 @@ public abstract class GameObject
       return;
 
     isDead = true;
+    bind(new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1000, 2000, new LocationProvider(this)));
+  }
 
-    GLExplosionParticles particles = new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1.0f, 2000, new LocationProvider(this));
-    bind(new TimedSubprogram(particles, 1100));
+  protected static class GameState
+    extends ObjectState
+  {
+    private static final long serialVersionUID = 1L;
+
+    protected float health;
   }
 }

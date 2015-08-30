@@ -10,7 +10,6 @@ import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
@@ -29,7 +28,7 @@ public class BotSubprogram
 
   public BotSubprogram(GameObject bot)
   {
-    super();
+    super(String.format("BotSubprogram_%s", bot.getName()));
     this.bot = (Tank)bot;
 
     stepCompletion = bot.collidable.getRadius();

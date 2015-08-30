@@ -1,8 +1,5 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Common.ILocationProvider;
-import com.ThirtyNineEighty.Common.Location;
-import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
@@ -36,7 +33,7 @@ public class MainMenu
         }
       }
     });
-    addControl(continueButton);
+    add(continueButton);
 
     Button newGameButton = new Button("Solo");
     newGameButton.setPosition(0, 0);
@@ -50,7 +47,7 @@ public class MainMenu
         GameContext.content.setMenu(new MapSelectMenu(new GameStartArgs()));
       }
     });
-    addControl(newGameButton);
+    add(newGameButton);
 
     Button campaign = new Button("Campaign");
     campaign.setPosition(0, -250);
@@ -63,6 +60,6 @@ public class MainMenu
 
       }
     });
-    addControl(campaign);
+    add(campaign);
   }
 }

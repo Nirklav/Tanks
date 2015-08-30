@@ -28,7 +28,8 @@ public class EventTimer
 
     timerRunnable = new Runnable()
     {
-      @Override public void run()
+      @Override
+      public void run()
       {
         try
         {

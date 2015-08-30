@@ -3,62 +3,16 @@ package com.ThirtyNineEighty.Game.Menu;
 import android.view.MotionEvent;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.IControl;
-import com.ThirtyNineEighty.System.Bindable;
+import com.ThirtyNineEighty.System.BindableHost;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.ArrayList;
 
 public abstract class BaseMenu
-  extends Bindable
+  extends BindableHost<IControl>
   implements IMenu
 {
-  private final Object syncObject;
-  private final ArrayList<IControl> controls;
-  private final ArrayList<IControl> controlsCopy;
-
-  protected BaseMenu()
-  {
-    syncObject = new Object();
-    controls = new ArrayList<>();
-    controlsCopy = new ArrayList<>();
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-
-    ArrayList<IControl> controlsCopy;
-    synchronized (controls)
-    {
-      controlsCopy = new ArrayList<>(controls);
-      controls.clear();
-    }
-
-    for (IControl object : controlsCopy)
-      object.uninitialize();
-  }
-
-  protected void addControl(IControl control)
-  {
-    if (!isInitialized())
-      throw new IllegalStateException("menu not initialized");
-
-    synchronized (syncObject)
-    {
-      controls.add(control);
-    }
-    control.initialize();
-  }
-
-  protected void removeControl(IControl control)
-  {
-    synchronized (syncObject)
-    {
-      controls.remove(control);
-    }
-    control.uninitialize();
-  }
+  private final ArrayList<IControl> controlsCopy = new ArrayList<>();
 
   @Override
   public final void processEvent(MotionEvent event)
@@ -77,10 +31,10 @@ public abstract class BaseMenu
 
     int id = event.getPointerId(pointerIndex);
 
-    synchronized (syncObject)
+    synchronized (objects)
     {
       controlsCopy.clear();
-      controlsCopy.addAll(controls);
+      controlsCopy.addAll(objects);
     }
 
     switch (action)

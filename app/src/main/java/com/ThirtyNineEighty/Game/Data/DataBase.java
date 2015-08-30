@@ -4,13 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.ThirtyNineEighty.Game.Data.Entities.CampaignEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.SavedGameEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
+import com.ThirtyNineEighty.Game.Data.Entities.*;
 
-public class DataBase extends SQLiteOpenHelper
+public class DataBase
+  extends SQLiteOpenHelper
 {
   public final Table<MapEntity> maps;
   public final Table<TankEntity> tanks;

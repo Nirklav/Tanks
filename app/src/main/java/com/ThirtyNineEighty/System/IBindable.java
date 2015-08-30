@@ -1,16 +1,12 @@
 package com.ThirtyNineEighty.System;
 
-import com.ThirtyNineEighty.Renderable.IRenderable;
+import java.util.List;
 
 public interface IBindable
+  extends IEngineObject
 {
-  boolean isInitialized();
-
-  void initialize();
-  void uninitialize();
-
-  void enable();
-  void disable();
+  List<ISubprogram> getSubprograms();
+  List<IRenderable> getRenderables();
 
   void bind(ISubprogram subprogram);
   void unbind(ISubprogram subprogram);

@@ -26,10 +26,10 @@ public class Table<T>
     database.execSQL(String.format("CREATE TABLE %s (Name Text PRIMARY KEY, Data BLOB);", name));
   }
 
-  public Entity<T> read(String entityName)
+  public Record<T> read(String entityName)
   {
     SQLiteDatabase database = helper.getReadableDatabase();
-    Cursor cursor = database.rawQuery(String.format("SELECT * FROM %s WHERE Name = ?", name), new String[]{ entityName });
+    Cursor cursor = database.rawQuery(String.format("SELECT * FROM %s WHERE Name = ?;", name), new String[] { entityName });
 
     if (!cursor.moveToFirst())
     {
@@ -42,12 +42,10 @@ public class Table<T>
     T data = Serializer.Deserialize(blob);
 
     cursor.close();
-    database.close();
-    helper.close();
-    return new Entity<>(entityName, data);
+    return new Record<>(entityName, data);
   }
 
-  public Collection<Entity<T>> readAll()
+  public Collection<Record<T>> readAll()
   {
     SQLiteDatabase database = helper.getReadableDatabase();
     Cursor cursor = database.query(name, null, null, null, null, null, null);
@@ -61,25 +59,35 @@ public class Table<T>
     int nameIndex = cursor.getColumnIndex("Name");
     int dataIndex = cursor.getColumnIndex("Data");
 
-    ArrayList<Entity<T>> result = new ArrayList<>();
+    ArrayList<Record<T>> result = new ArrayList<>();
     while (true)
     {
       String name = cursor.getString(nameIndex);
       byte[] blob = cursor.getBlob(dataIndex);
       T data = Serializer.Deserialize(blob);
-      result.add(new Entity<>(name, data));
+      result.add(new Record<>(name, data));
 
       if (!cursor.moveToNext())
         break;
     }
 
     cursor.close();
-    database.close();
-    helper.close();
     return result;
   }
 
-  public long insert(Entity<T> entity) { return insert(entity.name, entity.data); }
+  public void save(Record<T> record) { save(record.name, record.data); }
+  public void save(String entityName, T data)
+  {
+    Record<T> record = read(entityName);
+    if (record == null)
+    {
+      insert(entityName, data);
+      return;
+    }
+    update(entityName, data);
+  }
+
+  public long insert(Record<T> record) { return insert(record.name, record.data); }
   public long insert(String entityName, T data)
   {
     SQLiteDatabase database = helper.getWritableDatabase();
@@ -87,15 +95,10 @@ public class Table<T>
     values.put("Name", entityName);
     values.put("Data", Serializer.Serialize(data));
 
-    long id = database.insertOrThrow(name, null, values);
-
-    database.close();
-    helper.close();
-
-    return id;
+    return database.insertOrThrow(name, null, values);
   }
 
-  public int update(Entity<T> entity) { return update(entity.name, entity.data); }
+  public int update(Record<T> record) { return update(record.name, record.data); }
   public int update(String entityName, T data)
   {
     SQLiteDatabase database = helper.getWritableDatabase();
@@ -103,11 +106,12 @@ public class Table<T>
     values.put("Name", entityName);
     values.put("Data", Serializer.Serialize(data));
 
-    int count = database.update(name, values, "Name = ?", new String[]{ entityName });
+    return database.update(name, values, "Name = ?", new String[]{ entityName });
+  }
 
-    database.close();
-    helper.close();
-
-    return count;
+  public int delete(String entityName)
+  {
+    SQLiteDatabase database = helper.getWritableDatabase();
+    return database.delete(name, "Name = ?", new String[] { entityName });
   }
 }

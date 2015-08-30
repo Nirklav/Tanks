@@ -6,7 +6,6 @@ import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Data.GameProgressManager;
 import com.ThirtyNineEighty.Game.Map.MapManager;
 import com.ThirtyNineEighty.Renderable.IRenderer;
-import com.ThirtyNineEighty.Renderable.Renderer;
 import com.ThirtyNineEighty.Resources.Resources;
 
 public class GameContext

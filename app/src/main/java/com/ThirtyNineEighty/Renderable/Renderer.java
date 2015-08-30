@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.IRenderable;
 
 import java.util.ArrayList;
 import java.util.Collections;

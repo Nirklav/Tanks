@@ -1,14 +1,7 @@
 package com.ThirtyNineEighty.Game.Data;
 
-import com.ThirtyNineEighty.Game.Data.Entities.CampaignEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.MapEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.SavedGameEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.TankEntity;
-import com.ThirtyNineEighty.Game.Data.Entities.UpgradeEntity;
-import com.ThirtyNineEighty.Game.Objects.States.State;
+import com.ThirtyNineEighty.Game.Data.Entities.*;
 import com.ThirtyNineEighty.System.GameContext;
-
-import java.util.ArrayList;
 
 public final class GameProgressManager
 {
@@ -24,88 +17,42 @@ public final class GameProgressManager
 
   public boolean isMapOpen(String name)
   {
-    Entity<MapEntity> map = dataBase.maps.read(name);
-    return map != null && map.data.opened;
+    Record<MapEntity> record = dataBase.maps.read(name);
+    return record != null && record.data.opened;
   }
 
   public boolean isTankOpen(String name)
   {
-    Entity<TankEntity> tank = dataBase.tanks.read(name);
-    return tank != null && tank.data.opened;
+    Record<TankEntity> record = dataBase.tanks.read(name);
+    return record != null && record.data.opened;
   }
 
   public boolean isUpgradeOpen(String name)
   {
-    Entity<UpgradeEntity> upgrade = dataBase.upgrades.read(name);
-    return upgrade != null && upgrade.data.opened;
+    Record<UpgradeEntity> record = dataBase.upgrades.read(name);
+    return record != null && record.data.opened;
   }
 
   public String getCurrentCampaignMap(String name)
   {
-    Entity<CampaignEntity> campaign = dataBase.campaigns.read(name);
-    if (campaign == null)
-      return null;
-    return campaign.data.currentMap;
+    Record<CampaignEntity> record = dataBase.campaigns.read(name);
+    return record == null ? null : record.data.currentMap;
   }
 
-  public void openMap(String name)
+  public SavedGameEntity getSavedGame(String name)
   {
-    Entity<MapEntity> map = dataBase.maps.read(name);
-    if (map == null)
-    {
-      dataBase.maps.insert(name, new MapEntity(true));
-      return;
-    }
-    map.data.opened = true;
-    dataBase.maps.update(map);
+    Record<SavedGameEntity> record = dataBase.savedGames.read(name);
+    return record == null ? null : record.data;
   }
 
-  public void openTank(String name)
-  {
-    Entity<TankEntity> tank = dataBase.tanks.read(name);
-    if (tank == null)
-    {
-      dataBase.tanks.insert(name, new TankEntity(true));
-      return;
-    }
-    tank.data.opened = true;
-    dataBase.tanks.update(tank);
-  }
+  public void openMap(String name) { dataBase.maps.save(name, new MapEntity(true)); }
+  public void openTank(String name) { dataBase.tanks.save(name, new TankEntity(true)); }
+  public void openUpgrade(String name) { dataBase.upgrades.save(name, new UpgradeEntity(true)); }
+  public void setCurrentCampaignMap(String campaignName, String mapName) { dataBase.campaigns.save(campaignName, new CampaignEntity(mapName)); }
+  public void saveGame(String name, SavedGameEntity savedGame) { dataBase.savedGames.save(name, savedGame); }
 
-  public void openUpgrade(String name)
+  public void close()
   {
-    Entity<UpgradeEntity> upgrade = dataBase.upgrades.read(name);
-    if (upgrade == null)
-    {
-      dataBase.upgrades.insert(name, new UpgradeEntity(true));
-      return;
-    }
-    upgrade.data.opened = true;
-    dataBase.upgrades.update(upgrade);
-  }
-
-  public void setCurrentCampaignMap(String campaignName, String mapName)
-  {
-    Entity<CampaignEntity> campaign = dataBase.campaigns.read(campaignName);
-    if (campaign == null)
-    {
-      dataBase.campaigns.insert(campaignName, new CampaignEntity(mapName));
-      return;
-    }
-    campaign.data.currentMap = mapName;
-    dataBase.campaigns.update(campaign);
-  }
-
-  public void saveGame(String name, State player, ArrayList<State> objects)
-  {
-    Entity<SavedGameEntity> savedGame = dataBase.savedGames.read(name);
-    if (savedGame == null)
-    {
-      dataBase.savedGames.insert(name, new SavedGameEntity(player, objects));
-      return;
-    }
-    savedGame.data.player = player;
-    savedGame.data.objects = objects;
-    dataBase.savedGames.update(savedGame);
+    dataBase.close();
   }
 }

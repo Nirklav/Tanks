@@ -37,15 +37,16 @@ public class Map
   private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
 
   private final HashMap<String, Projection> projectionsCache;
-  private MapDescription description;
+
   private int state;
 
-  public final float size;
+  public final String name;
+  public final MapDescription description;
 
-  public Map(MapDescription description)
+  public Map(String name, MapDescription description)
   {
+    this.name = name;
     this.description = description;
-    this.size = description.size;
     this.projectionsCache = new HashMap<>();
     this.state = 0;
   }
@@ -158,7 +159,7 @@ public class Map
     ArrayList<WorldObject> objects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
-    world.fillObjects(objects);
+    world.getObjects(objects);
 
     for (WorldObject object : objects)
     {
@@ -230,8 +231,8 @@ public class Map
     for (int i = 0; i < result.getSize(); i++)
     {
       float value = result.get(i);
-      if (Math.abs(value) > size)
-        result.set(i, Math.signum(value) * size);
+      if (Math.abs(value) > description.size)
+        result.set(i, Math.signum(value) * description.size);
     }
 
     return result;
@@ -273,6 +274,7 @@ public class Map
     return result;
   }
 
+  @SuppressWarnings("SuspiciousNameCombination")
   private static float getPathLength(Vector2 start, Vector2 end)
   {
     float x = Math.abs(start.getX() - end.getX());

@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Menu.Controls;
 
-import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.System.Bindable;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -14,20 +13,6 @@ public abstract class Control
   protected Control()
   {
     pointerId = -1;
-  }
-
-  public void setVisible(boolean value)
-  {
-    for (IRenderable renderable : renderables)
-      renderable.setVisible(value);
-  }
-
-  public boolean isVisible()
-  {
-    if (renderables.size() == 0)
-      return false;
-    IRenderable first = renderables.get(0);
-    return first.isVisible();
   }
 
   @Override

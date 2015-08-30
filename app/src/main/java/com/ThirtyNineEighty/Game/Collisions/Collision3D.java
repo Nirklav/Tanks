@@ -90,7 +90,7 @@ public class Collision3D
       plane.setFrom(secondNormals.get(num));
     }
 
-    plane.swapZY();
+    plane.swapXZ();
   }
 
   private static Vector3 getMTV(CheckResult result)

@@ -4,7 +4,6 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 public class MoveSubprogram
   extends Subprogram
@@ -15,7 +14,7 @@ public class MoveSubprogram
   public MoveSubprogram(GameObject obj) { this (obj, 100); }
   public MoveSubprogram(GameObject obj, float len)
   {
-    super();
+    super(String.format("MoveSubprogram_%s", obj.getName()));
 
     movedObject = obj;
     length = len;

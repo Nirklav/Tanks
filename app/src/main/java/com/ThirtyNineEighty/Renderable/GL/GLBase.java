@@ -5,10 +5,10 @@ import android.opengl.Matrix;
 import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Renderable.Renderable;
 
 public abstract class GLBase
-  implements IRenderable
+  extends Renderable
 {
   protected float[] modelProjectionViewMatrix;
   protected float[] modelMatrix;
@@ -17,27 +17,14 @@ public abstract class GLBase
   protected Location<Vector3> lastLocation;
 
   protected float scale;
-  protected boolean visible;
 
   protected GLBase(ILocationProvider<Vector3> provider)
   {
     modelMatrix = new float[16];
     modelProjectionViewMatrix = new float[16];
     scale = 1f;
-    visible = true;
 
     locationProvider = provider;
-  }
-
-  public void setVisible(boolean value)
-  {
-    visible = value;
-  }
-
-  @Override
-  public boolean isVisible()
-  {
-    return visible;
   }
 
   protected void setModelMatrix()

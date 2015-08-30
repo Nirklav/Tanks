@@ -31,7 +31,12 @@ public class Content
           GameContext.updateTime();
 
           for (ISubprogram subprogram : subprograms)
+          {
+            if (!subprogram.isEnabled())
+              continue;
+
             subprogram.update();
+          }
 
           for (Action action : subprogramActions)
           {
@@ -60,11 +65,18 @@ public class Content
       public void run()
       {
         if (world != null)
+        {
+          if (world.isEnabled())
+            world.disable();
           world.uninitialize();
+        }
 
         world = value;
         if (world != null)
+        {
           world.initialize();
+          world.enable();
+        }
       }
     };
 
@@ -86,11 +98,18 @@ public class Content
       public void run()
       {
         if (menu != null)
+        {
+          if (menu.isEnabled())
+            menu.disable();
           menu.uninitialize();
+        }
 
         menu = value;
         if (menu != null)
+        {
           menu.initialize();
+          menu.enable();
+        }
       }
     };
 

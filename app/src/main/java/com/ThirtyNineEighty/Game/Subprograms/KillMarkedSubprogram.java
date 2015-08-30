@@ -7,7 +7,6 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
@@ -15,6 +14,11 @@ public class KillMarkedSubprogram
   extends Subprogram
 {
   private ArrayList<GameObject> marked;
+
+  public KillMarkedSubprogram()
+  {
+    super("KillMarkedSubprogramInst");
+  }
 
   @Override
   protected void onUpdate()
@@ -44,7 +48,7 @@ public class KillMarkedSubprogram
     {
       marked = new ArrayList<>();
       ArrayList<WorldObject> worldObjects = new ArrayList<>();
-      world.fillObjects(worldObjects);
+      world.getObjects(worldObjects);
 
       for (int i = worldObjects.size() - 1; i >= 0; i--)
       {
@@ -62,7 +66,7 @@ public class KillMarkedSubprogram
     for (int i = marked.size() - 1; i >= 0; i--)
     {
       GameObject current = marked.get(i);
-      if (current.getHealth() <= 0)
+      if (current.getHealth() <= 0 || !current.isInitialized())
         marked.remove(i);
     }
 

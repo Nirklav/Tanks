@@ -27,7 +27,7 @@ public class GLExplosionParticles
   private float time;
   private float life;
 
-  public GLExplosionParticles(int type, float lifeSec, int count, ILocationProvider<Vector3> provider)
+  public GLExplosionParticles(int type, float lifeMs, int count, ILocationProvider<Vector3> provider)
   {
     super(provider);
 
@@ -35,7 +35,7 @@ public class GLExplosionParticles
     this.textureData = GameContext.resources.getTexture(new FileTextureSource("particle", false));
     this.count = count;
     this.time = 0;
-    this.life = lifeSec;
+    this.life = lifeMs;
   }
 
   private static ISource<Geometry> getSource(int type)
@@ -55,7 +55,13 @@ public class GLExplosionParticles
   public void draw(RendererContext context)
   {
     ShaderExplosionParticles shader = (ShaderExplosionParticles) Shader.getCurrent();
-    time += GameContext.getDelta();
+
+    if (isEnabled())
+    {
+      time += 1000 * GameContext.getDelta();
+      if (time > life)
+        unbind();
+    }
 
     setModelMatrix();
 

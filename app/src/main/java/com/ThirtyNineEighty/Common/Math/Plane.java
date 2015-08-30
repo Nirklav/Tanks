@@ -92,7 +92,7 @@ public class Plane
     return result;
   }
 
-  public void swapZY()
+  public void swapXZ()
   {
     throwIfReleased();
 

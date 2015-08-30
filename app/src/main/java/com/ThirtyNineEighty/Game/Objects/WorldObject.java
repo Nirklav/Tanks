@@ -1,27 +1,19 @@
 package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Common.Location;
-import com.ThirtyNineEighty.Game.Collisions.ICollidable;
-import com.ThirtyNineEighty.Game.Collisions.Collidable;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.PhysicalDescription;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
-import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Game.Objects.States.State;
-import com.ThirtyNineEighty.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.Common.ILocationProvider;
+import com.ThirtyNineEighty.Game.Collisions.*;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
+import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
+import com.ThirtyNineEighty.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
-import com.ThirtyNineEighty.System.Bindable;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.*;
 
 public abstract class WorldObject
   extends Bindable
+  implements ISaveble
 {
-  private static int lastId = 1;
-  private static final String generatedNameTemplate = "object_";
-
-  protected final String name;
   protected Vector3 position;
   protected Vector3 angles;
   protected Description description;
@@ -29,22 +21,25 @@ public abstract class WorldObject
 
   public final ICollidable collidable;
 
-  protected WorldObject(State state)
+  protected WorldObject(State s)
   {
-    this(state.getName(), state.getType(), state.getProperties());
+    this(((ObjectState) s).name, ((ObjectState) s).type, ((ObjectState) s).properties);
 
-    position.setFrom(state.getPosition());
-    angles.setFrom(state.getAngles());
+    ObjectState state = (ObjectState) s;
+
+    position.setFrom(state.position);
+    angles.setFrom(state.angles);
   }
 
   protected WorldObject(String type, Properties properties)
   {
-    this(generatedNameTemplate + Integer.toString(lastId++), type, properties);
+    this(null, type, properties);
   }
 
   protected WorldObject(String name, String type, Properties properties)
   {
-    this.name = name;
+    super(name);
+
     this.properties = properties;
     this.position = new Vector3();
     this.angles = new Vector3();
@@ -68,24 +63,19 @@ public abstract class WorldObject
     }
   }
 
-  public String getName()
-  {
-    return name;
-  }
-
   protected State createState()
   {
-    return new State();
+    return new ObjectState();
   }
 
   public State getState()
   {
-    State state = createState();
-    state.setAngles(angles);
-    state.setPosition(position);
-    state.setProperties(properties);
-    state.setType(description.getType());
-    state.setName(name);
+    ObjectState state = (ObjectState)createState();
+    state.angles = angles;
+    state.position = position;
+    state.properties = properties;
+    state.name = getName();
+    state.type = description.getType();
     return state;
   }
 
@@ -150,5 +140,18 @@ public abstract class WorldObject
       location.angles.setFrom(source.angles);
       return location;
     }
+  }
+
+  protected static class ObjectState
+    extends State
+  {
+    private static final long serialVersionUID = 1L;
+
+    protected String name;
+    protected String type;
+    protected Properties properties;
+
+    protected Vector3 position;
+    protected Vector3 angles;
   }
 }

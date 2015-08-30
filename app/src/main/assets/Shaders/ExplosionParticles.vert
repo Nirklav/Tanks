@@ -12,7 +12,7 @@ void main()
   float time = u_lifeTime.y;
   float life = u_lifeTime.x;
 
-  float length = min(time, (time - life / 4.0) / 4.0 + life / 4.0);
+  float length = min(time, (time - life / 4.0) / 4.0 + life / 4.0) / 1000.0;
   vec3 currentPosition = a_position + (a_directionVector * length);
 
   float delta = time / life;

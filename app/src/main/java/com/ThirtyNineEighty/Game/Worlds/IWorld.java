@@ -18,7 +18,7 @@ public interface IWorld
   WorldObject getPlayer();
 
   // world
-  void fillObjects(List<WorldObject> objects);
+  void getObjects(List<WorldObject> objects);
   void add(WorldObject worldObject);
   void remove(WorldObject worldObject);
 }

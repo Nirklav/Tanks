@@ -87,12 +87,12 @@ public class CollisionManager
       Vector3 position = object.getPosition();
 
       float x = position.getX();
-      if (Math.abs(x) >= map.size)
-        position.setX(map.size * Math.signum(x));
+      if (Math.abs(x) >= map.description.size)
+        position.setX(map.description.size * Math.signum(x));
 
       float y = position.getY();
-      if (Math.abs(y) >= map.size)
-        position.setY(map.size * Math.signum(y));
+      if (Math.abs(y) >= map.description.size)
+        position.setY(map.description.size * Math.signum(y));
     }
   }
 
@@ -104,7 +104,7 @@ public class CollisionManager
 
     // Copy all world objects
     worldObjects.clear();
-    world.fillObjects(worldObjects);
+    world.getObjects(worldObjects);
 
     // Normalize all objects locations
     for (WorldObject object : worldObjects)

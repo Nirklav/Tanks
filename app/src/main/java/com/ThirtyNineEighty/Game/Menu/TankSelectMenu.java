@@ -5,7 +5,6 @@ import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
@@ -73,7 +72,7 @@ public class TankSelectMenu
         Vector.release(vec);
       }
     });
-    addControl(gesture);
+    add(gesture);
 
     Button menuButton = new Button("Menu");
     menuButton.setPosition(-810, -440);
@@ -87,7 +86,7 @@ public class TankSelectMenu
         GameContext.content.setMenu(new MainMenu());
       }
     });
-    addControl(menuButton);
+    add(menuButton);
 
     Button nextTankButton = new Button(">");
     nextTankButton.setPosition(875, 460);
@@ -100,7 +99,7 @@ public class TankSelectMenu
         tankSelector.Next();
       }
     });
-    addControl(nextTankButton);
+    add(nextTankButton);
 
     Button prevTankButton = new Button("<");
     prevTankButton.setPosition(715, 460);
@@ -113,7 +112,7 @@ public class TankSelectMenu
         tankSelector.Prev();
       }
     });
-    addControl(prevTankButton);
+    add(prevTankButton);
 
     Button nextBulletButton = new Button(">");
     nextBulletButton.setPosition(-715, 460);
@@ -126,7 +125,7 @@ public class TankSelectMenu
         bulletSelector.Next();
       }
     });
-    addControl(nextBulletButton);
+    add(nextBulletButton);
 
     Button prevBulletButton = new Button("<");
     prevBulletButton.setPosition(-875, 460);
@@ -139,7 +138,7 @@ public class TankSelectMenu
         bulletSelector.Prev();
       }
     });
-    addControl(prevBulletButton);
+    add(prevBulletButton);
 
     Button gameButton = new Button("Game");
     gameButton.setPosition(810, -440);
@@ -153,10 +152,10 @@ public class TankSelectMenu
           return;
 
         GameContext.content.setMenu(new GameMenu());
-        GameContext.content.setWorld(new GameWorld(startArgs));
+        GameContext.content.setWorld(GameContext.mapManager.create(startArgs));
       }
     });
-    addControl(gameButton);
+    add(gameButton);
 
     bulletLabel = new GLLabel(getBulletDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
     bulletLabel.setAlign(GLLabel.AlignType.TopLeft);

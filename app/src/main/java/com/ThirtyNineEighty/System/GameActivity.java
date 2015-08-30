@@ -3,17 +3,12 @@ package com.ThirtyNineEighty.System;
 import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.os.*;
+import android.view.*;
 
-import com.ThirtyNineEighty.Game.Menu.IMenu;
-import com.ThirtyNineEighty.Game.Menu.MainMenu;
-import com.ThirtyNineEighty.Renderable.ConfigChooser;
-import com.ThirtyNineEighty.Renderable.Renderer;
+import com.ThirtyNineEighty.Game.Menu.*;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
+import com.ThirtyNineEighty.Renderable.*;
 
 public class GameActivity
   extends Activity
@@ -59,8 +54,21 @@ public class GameActivity
     // Set view
     setContentView(glView);
 
-    // Set menu
+    // Set menu and world
     GameContext.content.setMenuAsync(new MainMenu());
+    GameContext.content.postEvent(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        GameWorld world = GameContext.mapManager.load();
+        if (world != null)
+        {
+          GameContext.content.setWorld(world);
+          world.disable();
+        }
+      }
+    });
   }
 
   public void postEvent(final Runnable r)
@@ -149,9 +157,12 @@ public class GameActivity
     glView.onPause();
     pause = true;
 
+    GameContext.mapManager.save();
+
     // reset
     GameContext.content.stop();
     GameContext.resources.clearCache();
+    GameContext.gameProgress.close();
 
     GameContext.setActivity(null);
     GameContext.content = null;

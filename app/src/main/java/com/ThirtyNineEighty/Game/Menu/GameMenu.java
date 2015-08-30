@@ -1,18 +1,15 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Map.Map;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Common.Math.*;
+import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Game.Menu.Controls.Button;
-import com.ThirtyNineEighty.Game.Menu.Controls.Joystick;
-import com.ThirtyNineEighty.Game.Menu.Controls.ProgressBar;
+import com.ThirtyNineEighty.Game.Menu.Controls.*;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
+import com.ThirtyNineEighty.System.*;
 
 public class GameMenu
   extends BaseMenu
@@ -33,7 +30,7 @@ public class GameMenu
   {
     super.initialize();
 
-    bind(new Subprogram()
+    bind(new Subprogram("GameMenu.UpdateInst")
     {
       @Override
       public void onUpdate()
@@ -96,7 +93,7 @@ public class GameMenu
         player.fire();
       }
     });
-    addControl(fireButton);
+    add(fireButton);
 
     Button menuButton = new Button("Menu");
     menuButton.setPosition(-810, 440);
@@ -111,27 +108,27 @@ public class GameMenu
         GameContext.content.setMenu(new MainMenu());
       }
     });
-    addControl(menuButton);
+    add(menuButton);
 
     rightTurretButton = new Button("Right");
     rightTurretButton.setPosition(800, -290);
     rightTurretButton.setSize(150, 150);
-    addControl(rightTurretButton);
+    add(rightTurretButton);
 
     leftTurretButton = new Button("Left");
     leftTurretButton.setPosition(600, -290);
     leftTurretButton.setSize(150, 150);
-    addControl(leftTurretButton);
+    add(leftTurretButton);
 
-    addControl(joystick = new Joystick(-710, -290, 150));
+    add(joystick = new Joystick(-710, -290, 150));
 
     recharge = new ProgressBar();
     recharge.setPosition(220, 520);
-    addControl(recharge);
+    add(recharge);
 
     health = new ProgressBar();
     health.setPosition(-220, 520);
-    addControl(health);
+    add(health);
 
     winLabel = new GLLabel("WIN");
     winLabel.setCharSize(60, 80);

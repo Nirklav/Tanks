@@ -3,11 +3,17 @@ package com.ThirtyNineEighty.Game.Objects;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
+import com.ThirtyNineEighty.System.State;
 
 public class Bullet
   extends GameObject
 {
-  protected Bullet(String type)
+  public Bullet(State state)
+  {
+    super(state);
+  }
+
+  public Bullet(String type)
   {
     super(type, new GameProperties());
   }
@@ -15,8 +21,9 @@ public class Bullet
   @Override
   public void initialize()
   {
-    super.initialize();
     bind(new MoveSubprogram(this, 100));
+
+    super.initialize();
   }
 
   @Override

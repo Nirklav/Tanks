@@ -1,23 +1,21 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
+import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Renderable.Camera;
 import com.ThirtyNineEighty.Renderable.Light;
-import com.ThirtyNineEighty.System.GameContext;
 
 public class GameWorld
   extends BaseWorld
 {
-  private GameStartArgs args;
-
-  public GameWorld(GameStartArgs args)
+  public GameWorld(Tank player)
   {
-    this.args = args;
+    this.player = player;
+    add(player);
   }
 
   @Override
   public void initialize()
   {
-    player = GameContext.mapManager.load(args);
     super.initialize();
   }
 

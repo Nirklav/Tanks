@@ -1,15 +1,11 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Common.ILocationProvider;
-import com.ThirtyNineEighty.Common.Location;
+import com.ThirtyNineEighty.Common.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.Spiral;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Common.Math.*;
+import com.ThirtyNineEighty.System.*;
 
 public class Land
   extends WorldObject
@@ -19,6 +15,11 @@ public class Land
   public Land()
   {
     super("land", new Properties());
+  }
+
+  public Land(State state)
+  {
+    super(state);
   }
 
   @Override

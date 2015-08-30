@@ -6,7 +6,6 @@ import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader2D;
@@ -19,11 +18,12 @@ import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.Resources.Sources.StaticGeometrySource;
 import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Renderable.Renderable;
 
 import java.nio.FloatBuffer;
 
 public class GLSprite
-  implements IRenderable
+  extends Renderable
 {
   private final static float[] quadMeshData = new float[]
   {
@@ -47,7 +47,6 @@ public class GLSprite
   protected float zIndex;
   protected float width;
   protected float height;
-  protected boolean visible;
 
   protected Texture textureData;
   protected Geometry geometryData;
@@ -78,7 +77,6 @@ public class GLSprite
     modelViewMatrix = new float[16];
     textureMatrix = new Matrix3f();
     position = Vector.getInstance(2);
-    visible = true;
 
     setSize(1, 1);
   }
@@ -142,17 +140,6 @@ public class GLSprite
     // disable arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
-  }
-
-  public void setVisible(boolean value)
-  {
-    visible = value;
-  }
-
-  @Override
-  public boolean isVisible()
-  {
-    return visible;
   }
 
   private void tryBuildMatrix()

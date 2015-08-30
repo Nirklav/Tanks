@@ -47,7 +47,7 @@ public class MapSelectMenu
         mapSelector.Prev();
       }
     });
-    addControl(prevMap);
+    add(prevMap);
 
     Button nextMapButton = new Button("Next map");
     nextMapButton.setPosition(390, -440);
@@ -60,7 +60,7 @@ public class MapSelectMenu
         mapSelector.Next();
       }
     });
-    addControl(nextMapButton);
+    add(nextMapButton);
 
     Button selectTank = new Button("Select tank");
     selectTank.setPosition(760, -440);
@@ -77,7 +77,7 @@ public class MapSelectMenu
         GameContext.content.setWorld(new TankSelectWorld(args));
       }
     });
-    addControl(selectTank);
+    add(selectTank);
 
     Button menu = new Button("Menu");
     menu.setPosition(-810, -440);
@@ -91,7 +91,7 @@ public class MapSelectMenu
         GameContext.content.setMenu(new MainMenu());
       }
     });
-    addControl(menu);
+    add(menu);
 
     mapName = new GLLabel(mapSelector.getCurrent(), "simpleFont", 40, 60, MeshMode.Dynamic);
     bind(mapName);

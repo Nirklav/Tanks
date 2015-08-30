@@ -54,7 +54,7 @@ public class Tracer
     ArrayList<WorldObject> worldObjects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
-    world.fillObjects(worldObjects);
+    world.getObjects(worldObjects);
 
     Vector3 vector = end.getSubtract(start);
     Plane plane = new Plane(vector);
