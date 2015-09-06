@@ -34,7 +34,7 @@ public class Map
   private final static int BottomRight = 7;
 
   private final static float stepSize = 3;
-  private final static PathLengthComparator pathLengthComparator = new PathLengthComparator();
+  private final static PathComparator pathLengthComparator = new PathComparator();
 
   private final HashMap<String, Projection> projectionsCache;
 
@@ -294,54 +294,55 @@ public class Map
         return current;
     return null;
   }
+
+  private static class PositionEqualsPredicate
+    implements Predicate<PathNode>
+  {
+    private final Vector2 position;
+
+    public PositionEqualsPredicate(Vector2 value)
+    {
+      position = value;
+    }
+
+    @Override
+    public boolean apply(PathNode pathNode)
+    {
+      return pathNode.position.equals(position);
+    }
+  }
+
+  private static class ProjectionPredicate
+    implements Predicate<Projection>
+  {
+    private final Vector2 point;
+    private final Vector2 end;
+    private final float finderRadius;
+
+    public ProjectionPredicate(float finderRadius, Vector2 point, Vector2 end)
+    {
+      this.point = point;
+      this.end = end;
+      this.finderRadius = finderRadius;
+    }
+
+    @Override
+    public boolean apply(Projection projection)
+    {
+      return projection.contains(point, finderRadius)
+        && !projection.contains(end, finderRadius);
+    }
+  }
+
+  private static class PathComparator
+    implements Comparator<PathNode>
+  {
+    @Override
+    public int compare(PathNode first, PathNode second)
+    {
+      float firstLength = first.getFullLength();
+      float secondLength = second.getFullLength();
+      return Float.compare(firstLength, secondLength);
+    }
+  }
 }
-
-class PositionEqualsPredicate implements Predicate<PathNode>
-{
-  private final Vector2 position;
-
-  public PositionEqualsPredicate(Vector2 value)
-  {
-    position = value;
-  }
-
-  @Override
-  public boolean apply(PathNode pathNode)
-  {
-    return pathNode.position.equals(position);
-  }
-}
-
-class ProjectionPredicate implements Predicate<Projection>
-{
-  private final Vector2 point;
-  private final Vector2 end;
-  private final float finderRadius;
-
-  public ProjectionPredicate(float finderRadius, Vector2 point, Vector2 end)
-  {
-    this.point = point;
-    this.end = end;
-    this.finderRadius = finderRadius;
-  }
-
-  @Override
-  public boolean apply(Projection projection)
-  {
-    return projection.contains(point, finderRadius)
-       && !projection.contains(end, finderRadius);
-  }
-}
-
-class PathLengthComparator
-  implements Comparator<PathNode>
-{
-  @Override
-  public int compare(PathNode first, PathNode second)
-  {
-    float firstLength = first.getFullLength();
-    float secondLength = second.getFullLength();
-    return Float.compare(firstLength, secondLength);
-  }
-}
-

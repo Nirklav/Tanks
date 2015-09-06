@@ -13,6 +13,6 @@ public class Decor
 
   public Decor(String type)
   {
-    super(type, new Properties());
+    super(null, type, new Properties());
   }
 }

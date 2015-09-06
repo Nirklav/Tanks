@@ -14,7 +14,7 @@ public class AidKit
 
   public AidKit(String type)
   {
-    super(type, new GameProperties());
+    super(null, type, new GameProperties());
   }
 
   @Override

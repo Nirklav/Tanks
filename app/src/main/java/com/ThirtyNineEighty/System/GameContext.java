@@ -10,6 +10,8 @@ import com.ThirtyNineEighty.Resources.Resources;
 
 public class GameContext
 {
+  private static final float MinDelta = 1f / 15f; // 15 updates for 1 second
+
   // Width / Height
   public static final float EtalonHeight = 1080f;
   public static final float EtalonWidth  = 1920f;
@@ -90,8 +92,8 @@ public class GameContext
   {
     float d = delta / 1000.0f;
 
-    if (d >= 1.0f)
-      return 1.0f;
+    if (d >= MinDelta)
+      return MinDelta;
 
     return d;
   }

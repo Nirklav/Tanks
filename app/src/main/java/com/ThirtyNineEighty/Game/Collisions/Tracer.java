@@ -90,8 +90,11 @@ public class Tracer
       if (lengthVector.getLength() > object.collidable.getRadius())
         continue;
 
-      ArrayList<Vector2> convexHull = object.collidable.getConvexHull(plane);
-      if (contain(convexHull, lineProjection))
+      ConvexHull hull = new ConvexHull(object.collidable, plane);
+      boolean result = contain(hull.get(), lineProjection);
+      hull.release();
+
+      if (result)
         return true;
     }
 

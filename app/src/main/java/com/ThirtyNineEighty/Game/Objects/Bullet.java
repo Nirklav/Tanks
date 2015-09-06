@@ -15,7 +15,7 @@ public class Bullet
 
   public Bullet(String type)
   {
-    super(type, new GameProperties());
+    super(null, type, new GameProperties());
   }
 
   @Override

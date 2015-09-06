@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Game.Collisions.ConvexHull;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Common.Math.Plane;
 import com.ThirtyNineEighty.Common.Math.Vector;
@@ -19,13 +20,13 @@ class Projection
     if (object.collidable == null)
       return null;
 
-    ArrayList<Vector2> vertices = object.collidable.getConvexHull(plane);
+    ConvexHull hull = new ConvexHull(object.collidable, plane);
     Vector2 position = Vector.getInstance(2, object.getPosition());
 
     float radius = 0.0f;
     Vector2 tempVector = Vector.getInstance(2);
 
-    for (Vector2 vec : vertices)
+    for (Vector2 vec : hull.get())
     {
       tempVector.setFrom(vec);
       tempVector.subtract(position);
@@ -35,7 +36,7 @@ class Projection
         radius = length;
     }
 
-    Vector.release(vertices);
+    hull.release();
     Vector.release(tempVector);
     return new Projection(radius);
   }

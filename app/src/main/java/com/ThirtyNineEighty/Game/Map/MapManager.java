@@ -37,7 +37,7 @@ public final class MapManager
     map = new Map(name, description);
 
     // Create player
-    Tank player = new Tank(args.getTankName(), args.getProperties());
+    Tank player = new Tank("Player", args.getTankName(), args.getProperties());
     player.setPosition(description.player.getPosition());
     player.setAngles(description.player.getAngles());
 
@@ -75,39 +75,39 @@ public final class MapManager
   public void save()
   {
     IWorld world = GameContext.content.getWorld();
-    if (world == null)
-      return;
-
-    if (world instanceof GameWorld)
+    if (world == null || !(world instanceof GameWorld))
     {
-      WorldObject player = world.getPlayer();
-      SavedGameEntity game = new SavedGameEntity();
-
-      game.mapName = map.name;
-      game.player = new SavedObject(player);
-      game.objects = new ArrayList<>();
-      game.worldSubprograms = new ArrayList<>();
-
-      for (ISubprogram subprogram : world.getSubprograms())
-        game.worldSubprograms.add(new SavedSubprogram(subprogram));
-
-      ArrayList<WorldObject> worldObjects = new ArrayList<>();
-      world.getObjects(worldObjects);
-
-      for (WorldObject object : worldObjects)
-      {
-        String playerName = player.getName();
-        String objectName = object.getName();
-
-        // Skip player, we already serialized it
-        if (playerName.equals(objectName))
-          continue;
-
-        game.objects.add(new SavedObject(object));
-      }
-
-      GameContext.gameProgress.saveGame(SavedGame, game);
+      GameContext.gameProgress.deleteGame(SavedGame);
+      return;
     }
+
+    WorldObject player = world.getPlayer();
+    SavedGameEntity game = new SavedGameEntity();
+
+    game.mapName = map.name;
+    game.player = new SavedObject(player);
+    game.objects = new ArrayList<>();
+    game.worldSubprograms = new ArrayList<>();
+
+    for (ISubprogram subprogram : world.getSubprograms())
+      game.worldSubprograms.add(new SavedSubprogram(subprogram));
+
+    ArrayList<WorldObject> worldObjects = new ArrayList<>();
+    world.getObjects(worldObjects);
+
+    for (WorldObject object : worldObjects)
+    {
+      String playerName = player.getName();
+      String objectName = object.getName();
+
+      // Skip player, we already serialized it
+      if (playerName.equals(objectName))
+        continue;
+
+      game.objects.add(new SavedObject(object));
+    }
+
+    GameContext.gameProgress.saveGame(SavedGame, game);
   }
 
   public GameWorld load()

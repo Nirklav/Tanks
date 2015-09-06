@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Resources.Sources;
 
-import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 
 public class FileDescriptionSource
-  extends FileSerializedSource<GameDescription>
+  extends FileSerializedSource<Description>
 {
   public FileDescriptionSource(String name)
   {

@@ -5,12 +5,11 @@ import com.ThirtyNineEighty.Renderable.RendererContext;
 public interface IRenderable
   extends IEngineObject
 {
-  int getShaderId();
+  void setBindable(IBindable bindable);
 
   boolean isVisible();
   void setVisible(boolean value);
 
+  int getShaderId();
   void draw(RendererContext context);
-
-  void setBindable(IBindable bindable);
 }

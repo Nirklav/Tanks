@@ -51,6 +51,8 @@ public final class GameProgressManager
   public void setCurrentCampaignMap(String campaignName, String mapName) { dataBase.campaigns.save(campaignName, new CampaignEntity(mapName)); }
   public void saveGame(String name, SavedGameEntity savedGame) { dataBase.savedGames.save(name, savedGame); }
 
+  public void deleteGame(String name) { dataBase.savedGames.delete(name); }
+
   public void close()
   {
     dataBase.close();

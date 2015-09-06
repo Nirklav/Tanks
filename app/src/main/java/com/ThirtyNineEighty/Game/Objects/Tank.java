@@ -23,10 +23,11 @@ public class Tank
     rechargeProgress = state.rechargeProgress;
   }
 
-  public Tank(String type) { this(type, new GameProperties()); }
-  public Tank(String type, GameProperties properties)
+  public Tank(String type) { this(null, type, new GameProperties()); }
+  public Tank(String type, GameProperties properties) { this(null, type, properties); }
+  public Tank(String name, String type, GameProperties properties)
   {
-    super(type, properties);
+    super(name, type, properties);
   }
 
   @Override

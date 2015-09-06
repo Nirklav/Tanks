@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Common.Math;
 import android.opengl.Matrix;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -209,6 +210,29 @@ public class Vector3
     value[0] += vector.getX() * length;
     value[1] += vector.getY() * length;
     value[2] += vector.getZ() * length;
+  }
+
+  public Vector2 getProjection(ArrayList<Vector3> vertices)
+  {
+    Vector2 result = null;
+
+    for (Vector3 current : vertices)
+    {
+      float projection = getScalar(current);
+
+      if (result == null)
+        result = new Vector2(projection, projection);
+
+      // x - max
+      if (projection > result.getX())
+        result.setX(projection);
+
+      // y - min
+      if (projection < result.getY())
+        result.setY(projection);
+    }
+
+    return result;
   }
 
   public void lineProjection(Vector3 start, Vector3 end)

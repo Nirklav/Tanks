@@ -31,11 +31,6 @@ public abstract class WorldObject
     angles.setFrom(state.angles);
   }
 
-  protected WorldObject(String type, Properties properties)
-  {
-    this(null, type, properties);
-  }
-
   protected WorldObject(String name, String type, Properties properties)
   {
     super(name);
@@ -61,22 +56,6 @@ public abstract class WorldObject
       ILocationProvider<Vector3> provider = createPositionProvider(physicalModel);
       collidable = new Collidable(physicalModel.modelName, provider);
     }
-  }
-
-  protected State createState()
-  {
-    return new ObjectState();
-  }
-
-  public State getState()
-  {
-    ObjectState state = (ObjectState)createState();
-    state.angles = angles;
-    state.position = position;
-    state.properties = properties;
-    state.name = getName();
-    state.type = description.getType();
-    return state;
   }
 
   public void collide(WorldObject object) { }
@@ -112,6 +91,35 @@ public abstract class WorldObject
     angles.correctAngles();
   }
 
+  protected State createState()
+  {
+    return new ObjectState();
+  }
+
+  public State getState()
+  {
+    ObjectState state = (ObjectState)createState();
+    state.angles = angles;
+    state.position = position;
+    state.properties = properties;
+    state.name = getName();
+    state.type = description.getType();
+    return state;
+  }
+
+  protected static class ObjectState
+    extends State
+  {
+    private static final long serialVersionUID = 1L;
+
+    protected String name;
+    protected String type;
+    protected Properties properties;
+
+    protected Vector3 position;
+    protected Vector3 angles;
+  }
+
   protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
   {
     return new LocationProvider(this);
@@ -140,18 +148,5 @@ public abstract class WorldObject
       location.angles.setFrom(source.angles);
       return location;
     }
-  }
-
-  protected static class ObjectState
-    extends State
-  {
-    private static final long serialVersionUID = 1L;
-
-    protected String name;
-    protected String type;
-    protected Properties properties;
-
-    protected Vector3 position;
-    protected Vector3 angles;
   }
 }

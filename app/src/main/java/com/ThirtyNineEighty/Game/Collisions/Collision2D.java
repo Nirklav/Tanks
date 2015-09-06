@@ -30,7 +30,7 @@ public class Collision2D
   {
     Vector2 mtv = null;
     Vector2 normal = Vector.getInstance(2);
-    float minMTVLength = 0.0f;
+    float minMTVLength = 0;
     int count = firstVertices.size() + secondVertices.size();
 
     for (int i = 0; i < count; i ++)
@@ -53,7 +53,7 @@ public class Collision2D
         float mtvLength = getIntersectionLength(firstProjection, secondProjection);
         if (Math.abs(mtvLength) < Math.abs(minMTVLength))
         {
-          mtv = Vector.getInstance(2, normal);
+          mtv.setFrom(normal);
           minMTVLength = mtvLength;
         }
       }
@@ -95,7 +95,7 @@ public class Collision2D
 
   public Vector2 getMTV()
   {
-    return mtv;
+    return Vector.getInstance(2, mtv);
   }
 
   public float getMTVLength()
@@ -108,10 +108,16 @@ public class Collision2D
     return collide;
   }
 
+  @Override
+  public String toString()
+  {
+    return String.format("{Mtv:%s, Length:%f}", mtv == null ? "<null>" : mtv.toString(), mtvLength);
+  }
+
   private static class CheckResult
   {
-    private Vector2 mtv;
-    private float mtvLength;
+    private final Vector2 mtv;
+    private final float mtvLength;
 
     public CheckResult(Vector2 mtv, float mtvLength)
     {

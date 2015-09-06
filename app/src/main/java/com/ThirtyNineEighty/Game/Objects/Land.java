@@ -14,7 +14,7 @@ public class Land
 
   public Land()
   {
-    super("land", new Properties());
+    super(null, "land", new Properties());
   }
 
   public Land(State state)

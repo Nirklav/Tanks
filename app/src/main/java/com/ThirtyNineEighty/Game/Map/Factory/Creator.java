@@ -30,6 +30,9 @@ public class Creator<T>
         boolean isRightCtor = true;
 
         Class<?>[] parameterTypes = ctor.getParameterTypes();
+        if (parameterTypes.length > allParams.length)
+          continue;
+
         Object[] params = new Object[parameterTypes.length];
 
         for (int i = 0; i < parameterTypes.length; i++)

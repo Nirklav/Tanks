@@ -29,9 +29,9 @@ public abstract class Renderable
   @Override
   public void uninitialize()
   {
-    super.uninitialize();
-
     GameContext.renderer.remove(this);
+
+    super.uninitialize();
   }
 
   @Override

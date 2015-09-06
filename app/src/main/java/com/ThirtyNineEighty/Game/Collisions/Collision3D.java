@@ -1,8 +1,5 @@
 package com.ThirtyNineEighty.Game.Collisions;
 
-import android.opengl.Matrix;
-
-import com.ThirtyNineEighty.Common.Math.Plane;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.Common.Math.Vector3;
@@ -15,10 +12,9 @@ public class Collision3D
   private float mtvLength;
   private boolean collide;
 
-  public Collision3D(ICollidable objectOne, ICollidable objectTwo)
+  public Collision3D(ICollidable first, ICollidable second)
   {
-    CheckResult result = check(objectOne, objectTwo);
-
+    CheckResult result = check(first, second);
     if (result == null)
     {
       collide = false;
@@ -26,106 +22,149 @@ public class Collision3D
     }
 
     collide = true;
-    mtv = getMTV(result);
-    mtvLength = result.collision.getMTVLength();
+    mtv = result.mtv;
+    mtvLength = result.mtvLength;
   }
 
-  private static CheckResult check(ICollidable firstPh, ICollidable secondPh)
+  private static CheckResult check(ICollidable first, ICollidable second)
   {
-    ArrayList<Plane> planes = getPlanes(firstPh, secondPh);
+    ArrayList<Vector3> normals = getPlanesNormals(first, second);
 
-    Collision2D min = null;
-    Plane minPlane = new Plane();
+    Vector3 mtv = null;
+    float minMTVLength = 0;
 
-    for (Plane plane : planes)
+    for (Vector3 normal : normals)
     {
-      ArrayList<Vector2> resultOne = firstPh.getConvexHull(plane);
-      ArrayList<Vector2> resultTwo = secondPh.getConvexHull(plane);
+      Vector2 firstProjection = normal.getProjection(first.getVertices());
+      Vector2 secondProjection = normal.getProjection(second.getVertices());
 
-      Collision2D collision = new Collision2D(resultOne, resultTwo);
+      //if (firstProjection.getX() < secondProjection.getY() || secondProjection.getX() < firstProjection.getY())
+      //  return null;
 
-      Vector.release(resultOne);
-      Vector.release(resultTwo);
-
-      if (!collision.isCollide())
+      float mtvLength = getIntersectionLength(firstProjection, secondProjection);
+      if (Math.abs(mtvLength) < Vector.epsilon)
         return null;
 
-      if (min == null || collision.getMTVLength() < min.getMTVLength())
+      if (mtv == null)
       {
-        min = collision;
-        minPlane.setFrom(plane);
+        mtv = Vector.getInstance(3, normal);
+        minMTVLength = mtvLength;
       }
-
-      plane.release();
+      else
+      {
+        if (Math.abs(mtvLength) < Math.abs(minMTVLength))
+        {
+          mtv.setFrom(normal);
+          minMTVLength = mtvLength;
+        }
+      }
     }
 
-    return new CheckResult(min, minPlane);
+    Vector.release(normals);
+
+    return new CheckResult(mtv, minMTVLength);
   }
 
-  private static ArrayList<Plane> getPlanes(ICollidable firstPh, ICollidable secondPh)
+  private static ArrayList<Vector3> getPlanesNormals(ICollidable first, ICollidable second)
   {
-    ArrayList<Plane> planes = new ArrayList<>();
-    ArrayList<Vector3> firstNormals = firstPh.getNormals();
-    ArrayList<Vector3> secondNormals = secondPh.getNormals();
-    Plane plane = new Plane();
+    ArrayList<Vector3> result = new ArrayList<>();
+    ArrayList<Vector3> firstNormals = first.getNormals();
+    ArrayList<Vector3> secondNormals = second.getNormals();
     int size = firstNormals.size() + secondNormals.size();
+
+    Vector3 normal = new Vector3();
 
     for(int i = 0; i < size; i++)
     {
-      setPlane(plane, firstNormals, secondNormals, i);
+      setPlaneNormal(normal, firstNormals, secondNormals, i);
 
-      if (!planes.contains(plane))
-        planes.add(new Plane(plane));
+      if (!result.contains(normal))
+        result.add((Vector3)Vector.getInstance(3, normal));
     }
-    return planes;
+    return result;
   }
 
-  private static void setPlane(Plane plane, ArrayList<Vector3> firstNormals, ArrayList<Vector3> secondNormals, int num)
+  private static void setPlaneNormal(Vector3 normal, ArrayList<Vector3> firstNormals, ArrayList<Vector3> secondNormals, int num)
   {
     if (num < firstNormals.size())
-      plane.setFrom(firstNormals.get(num));
+      normal.setFrom(firstNormals.get(num));
     else
     {
       num -= firstNormals.size();
-      plane.setFrom(secondNormals.get(num));
+      normal.setFrom(secondNormals.get(num));
     }
 
-    plane.swapXZ();
+    normal.normalize();
   }
 
-  private static Vector3 getMTV(CheckResult result)
+  private static float getIntersectionLength(Vector2 first, Vector2 second)
   {
-    Vector2 mtv2 = result.collision.getMTV();
-    Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
+    // If swapped result must be negative
+    float coeff = 1;
 
-    Vector3 planeX = result.plane.xAxis();
-    Vector3 planeY = result.plane.yAxis();
-    Vector3 planeZ = result.plane.zAxis();
+    // Swap (first should be with max X)
+    if (first.getX() < second.getX())
+    {
+      Vector2 temp = first;
+      first = second;
+      second = temp;
+      coeff = -1;
+    }
 
-    float[] matrix = new float[16];
-    matrix[0] = planeX.getX();
-    matrix[1] = planeX.getY();
-    matrix[2] = planeX.getZ();
+    if (first.getY() < second.getX()) // Intersect
+    {
+      if (first.getY() > second.getY())
+      {
+        return coeff * (second.getX() - first.getY());
+      }
+      else
+      {
+        float firstResult = coeff * (second.getY() - first.getX());
+        float secondResult = coeff * (second.getX() - first.getY());
 
-    matrix[4] = planeY.getX();
-    matrix[5] = planeY.getY();
-    matrix[6] = planeY.getZ();
+        if (Math.abs(firstResult) < Math.abs(secondResult))
+          return firstResult;
+        else
+          return secondResult;
+      }
+    }
 
-    matrix[8] = planeZ.getX();
-    matrix[9] = planeZ.getY();
-    matrix[10] = planeZ.getZ();
-
-    matrix[15] = 1.0f;
-
-    Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
-
-    mtv3.normalize();
-    return mtv3;
+    return 0;
   }
+
+//  private static Vector3 getMTV(CheckResult result)
+//  {
+//    Vector2 mtv2 = result.collision.getMTV();
+//    Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
+//
+//    Vector3 planeX = result.plane.xAxis();
+//    Vector3 planeY = result.plane.yAxis();
+//    Vector3 planeZ = result.plane.zAxis();
+//
+//    float[] matrix = new float[16];
+//    matrix[0] = planeX.getX();
+//    matrix[1] = planeX.getY();
+//    matrix[2] = planeX.getZ();
+//
+//    matrix[4] = planeY.getX();
+//    matrix[5] = planeY.getY();
+//    matrix[6] = planeY.getZ();
+//
+//    matrix[8] = planeZ.getX();
+//    matrix[9] = planeZ.getY();
+//    matrix[10] = planeZ.getZ();
+//
+//    matrix[15] = 1.0f;
+//
+//    Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
+//
+//    mtv3.normalize();
+//    return mtv3;
+//  }
 
   public Vector3 getMTV()
   {
-    return mtv;
+    return Vector3.getInstance(3, mtv);
   }
 
   public float getMTVLength()
@@ -138,15 +177,21 @@ public class Collision3D
     return collide;
   }
 
+  @Override
+  public String toString()
+  {
+    return String.format("{Mtv:%s, Length:%f}", mtv == null ? "<null>" : mtv.toString(), mtvLength);
+  }
+
   private static class CheckResult
   {
-    public Collision2D collision;
-    public Plane plane;
+    private final Vector3 mtv;
+    private final float mtvLength;
 
-    public CheckResult(Collision2D collision, Plane plane)
+    public CheckResult(Vector3 mtv, float mtvLength)
     {
-      this.collision = collision;
-      this.plane = plane;
+      this.mtv = mtv;
+      this.mtvLength = mtvLength;
     }
   }
 }

@@ -22,5 +22,8 @@ class PathNode
     this.estimateLeftLength = estimateLeftLength;
   }
 
-  public float getFullLength() { return lengthFromStart + estimateLeftLength; }
+  public float getFullLength()
+  {
+    return lengthFromStart + estimateLeftLength;
+  }
 }

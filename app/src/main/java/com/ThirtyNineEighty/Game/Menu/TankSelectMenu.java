@@ -171,7 +171,7 @@ public class TankSelectMenu
   private String getBulletDescription()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription bulletDescription = GameContext.resources.getDescription(new FileDescriptionSource(properties.getBullet()));
+    GameDescription bulletDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(properties.getBullet()));
 
     return String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
       , isBulletAvailable() ? "Yes" : "No"
@@ -183,7 +183,7 @@ public class TankSelectMenu
 
   private String getTankDescription()
   {
-    GameDescription tankDescription = GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
     return String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
       , isTankAvailable() ? "Yes" : "No"
       , startArgs.getTankName()
@@ -197,7 +197,7 @@ public class TankSelectMenu
   private boolean isBulletAvailable()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription tankDescription = GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
 
     return tankDescription
       .getSupportedBullets()

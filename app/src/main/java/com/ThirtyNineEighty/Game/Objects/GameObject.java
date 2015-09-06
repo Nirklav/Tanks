@@ -20,9 +20,9 @@ public abstract class GameObject
     isDead = health <= 0;
   }
 
-  protected GameObject(String type, GameProperties properties)
+  protected GameObject(String name, String type, GameProperties properties)
   {
-    super(type, properties);
+    super(name, type, properties);
 
     GameDescription description = getDescription();
     health = description.getHealth();
@@ -30,20 +30,6 @@ public abstract class GameObject
 
   public GameDescription getDescription() { return (GameDescription) description; }
   public GameProperties getProperties() { return (GameProperties) properties; }
-
-  @Override
-  protected State createState()
-  {
-    return new GameState();
-  }
-
-  @Override
-  public State getState()
-  {
-    GameState state = (GameState)super.getState();
-    state.health = health;
-    return state;
-  }
 
   public float getHealth() { return health; }
 
@@ -66,6 +52,20 @@ public abstract class GameObject
 
     isDead = true;
     bind(new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1000, 2000, new LocationProvider(this)));
+  }
+
+  @Override
+  protected State createState()
+  {
+    return new GameState();
+  }
+
+  @Override
+  public State getState()
+  {
+    GameState state = (GameState)super.getState();
+    state.health = health;
+    return state;
   }
 
   protected static class GameState
