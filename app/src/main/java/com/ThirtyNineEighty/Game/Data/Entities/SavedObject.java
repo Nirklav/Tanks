@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Data.Entities;
 
-import com.ThirtyNineEighty.Game.Map.Factory.Creator;
+import com.ThirtyNineEighty.Game.Factory.Creator;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.System.ISubprogram;
 import com.ThirtyNineEighty.System.State;

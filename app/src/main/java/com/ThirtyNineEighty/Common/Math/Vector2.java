@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Common.Math;
 
+import android.opengl.Matrix;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,6 +136,35 @@ public class Vector2
 
     value[0] = value[0] * coefficient;
     value[1] = value[1] * coefficient;
+  }
+
+  public Vector3 toVector3(Plane plane)
+  {
+    Vector3 mtv3 = new Vector3(getX(), getY(), 0);
+
+    Vector3 planeX = plane.xAxis();
+    Vector3 planeY = plane.yAxis();
+    Vector3 planeZ = plane.zAxis();
+
+    float[] matrix = new float[16];
+    matrix[0] = planeX.getX();
+    matrix[1] = planeX.getY();
+    matrix[2] = planeX.getZ();
+
+    matrix[4] = planeY.getX();
+    matrix[5] = planeY.getY();
+    matrix[6] = planeY.getZ();
+
+    matrix[8] = planeZ.getX();
+    matrix[9] = planeZ.getY();
+    matrix[10] = planeZ.getZ();
+
+    matrix[15] = 1.0f;
+
+    Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
+
+    mtv3.normalize();
+    return mtv3;
   }
 
   public Vector2 getNormalize()

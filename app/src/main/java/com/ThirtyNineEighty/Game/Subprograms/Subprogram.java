@@ -13,10 +13,9 @@ public abstract class Subprogram
   private IBindable bindable;
   private float delay;
 
-  public Subprogram(State s)
+  public Subprogram(SubprogramState state)
   {
-    super(((SubprogramState) s).name);
-    SubprogramState state = (SubprogramState) s;
+    super(state.name);
     delay = state.delay;
   }
 
@@ -85,7 +84,7 @@ public abstract class Subprogram
     return new SubprogramState();
   }
 
-  private static class SubprogramState
+  protected static class SubprogramState
     extends State
   {
     private static final long serialVersionUID = 1L;

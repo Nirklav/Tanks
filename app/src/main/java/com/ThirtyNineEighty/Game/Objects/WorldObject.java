@@ -1,12 +1,11 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Common.Location;
 import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Common.ILocationProvider;
 import com.ThirtyNineEighty.Game.Collisions.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
-import com.ThirtyNineEighty.Renderable.GL.GLModel;
+import com.ThirtyNineEighty.Providers.CollidableTankProvider;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.*;
 
@@ -19,13 +18,11 @@ public abstract class WorldObject
   protected Description description;
   protected Properties properties;
 
-  public final ICollidable collidable;
+  public ICollidable collidable;
 
-  protected WorldObject(State s)
+  protected WorldObject(ObjectState state)
   {
-    this(((ObjectState) s).name, ((ObjectState) s).type, ((ObjectState) s).properties);
-
-    ObjectState state = (ObjectState) s;
+    this(state.name, state.type, state.properties);
 
     position.setFrom(state.position);
     angles.setFrom(state.angles);
@@ -40,22 +37,24 @@ public abstract class WorldObject
     this.angles = new Vector3();
     this.description = GameContext.resources.getDescription(new FileDescriptionSource(type));
 
+    build();
+  }
+
+  private void build()
+  {
     // Build visual models
-    for (VisualDescription current : description.getVisuals())
+    for (VisualDescription visual : description.getVisuals())
     {
-      ILocationProvider<Vector3> provider = createPositionProvider(current);
-      bind(new GLModel(current.modelName, current.textureName, provider));
+      IDataProvider provider = GameContext.factory.createProvider(visual.providerType, this, visual);
+      IRenderable renderable = GameContext.factory.createRenderable(visual.type, visual.renderable, provider);
+
+      bind(renderable);
     }
 
     // Build physical model
-    PhysicalDescription physicalModel = description.getPhysical();
-    if (physicalModel == null)
-      collidable = null;
-    else
-    {
-      ILocationProvider<Vector3> provider = createPositionProvider(physicalModel);
-      collidable = new Collidable(physicalModel.modelName, provider);
-    }
+    PhysicalDescription physical = description.getPhysical();
+    if (physical != null)
+      collidable = new Collidable(physical.modelName, new CollidableTankProvider(this, physical));
   }
 
   public void collide(WorldObject object) { }
@@ -118,35 +117,5 @@ public abstract class WorldObject
 
     protected Vector3 position;
     protected Vector3 angles;
-  }
-
-  protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
-  {
-    return new LocationProvider(this);
-  }
-
-  protected ILocationProvider<Vector3> createPositionProvider(PhysicalDescription physical)
-  {
-    return new LocationProvider(this);
-  }
-
-  protected static class LocationProvider
-    implements ILocationProvider<Vector3>
-  {
-    private WorldObject source;
-
-    public LocationProvider(WorldObject object)
-    {
-      source = object;
-    }
-
-    @Override
-    public Location<Vector3> getLocation()
-    {
-      Location<Vector3> location = new Location<>(3);
-      location.position.setFrom(source.position);
-      location.angles.setFrom(source.angles);
-      return location;
-    }
   }
 }

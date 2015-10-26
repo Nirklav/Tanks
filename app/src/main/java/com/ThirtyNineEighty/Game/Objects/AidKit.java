@@ -2,12 +2,11 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.System.State;
 
 public class AidKit
   extends GameObject
 {
-  public AidKit(State state)
+  public AidKit(GameState state)
   {
     super(state);
   }

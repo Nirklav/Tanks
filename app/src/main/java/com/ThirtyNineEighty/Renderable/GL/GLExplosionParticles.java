@@ -3,8 +3,7 @@ package com.ThirtyNineEighty.Renderable.GL;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Common.ILocationProvider;
-import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.Renderable.Shaders.ShaderExplosionParticles;
@@ -16,7 +15,7 @@ import com.ThirtyNineEighty.Resources.Sources.HemisphereParticlesSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLExplosionParticles
-  extends GLBase
+  extends GLRenderable<GLRenderable.Data>
 {
   public static final int Sphere = 0;
   public static final int Hemisphere = 1;
@@ -27,7 +26,7 @@ public class GLExplosionParticles
   private float time;
   private float life;
 
-  public GLExplosionParticles(int type, float lifeMs, int count, ILocationProvider<Vector3> provider)
+  public GLExplosionParticles(int type, float lifeMs, int count, IDataProvider<Data> provider)
   {
     super(provider);
 
@@ -52,7 +51,7 @@ public class GLExplosionParticles
   }
 
   @Override
-  public void draw(RendererContext context)
+  public void draw(RendererContext context, Data data)
   {
     ShaderExplosionParticles shader = (ShaderExplosionParticles) Shader.getCurrent();
 
@@ -62,8 +61,6 @@ public class GLExplosionParticles
       if (time > life)
         unbind();
     }
-
-    setModelMatrix();
 
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);

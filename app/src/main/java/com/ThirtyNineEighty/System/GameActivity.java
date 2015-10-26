@@ -35,7 +35,7 @@ public class GameActivity
 
     // Initialize game context
     GameContext.setActivity(this);
-    GameContext.mapManager.initialize();
+    GameContext.factory.initialize();
     GameContext.gameProgress.initialize();
     GameContext.content = new Content();
     GameContext.renderer = renderer;

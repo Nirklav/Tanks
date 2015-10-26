@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
+import com.ThirtyNineEighty.Providers.GLRenderableWorldObjectProvider;
 import com.ThirtyNineEighty.Renderable.GL.GLExplosionParticles;
 import com.ThirtyNineEighty.System.State;
 
@@ -11,11 +12,10 @@ public abstract class GameObject
   private float health;
   private boolean isDead;
 
-  public GameObject(State s)
+  public GameObject(GameState state)
   {
-    super(s);
+    super(state);
 
-    GameState state = (GameState) s;
     health = state.health;
     isDead = health <= 0;
   }
@@ -51,7 +51,8 @@ public abstract class GameObject
       return;
 
     isDead = true;
-    bind(new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1000, 2000, new LocationProvider(this)));
+    GLRenderableWorldObjectProvider provider = new GLRenderableWorldObjectProvider(this, null);
+    bind(new GLExplosionParticles(GLExplosionParticles.Hemisphere, 1000, 2000, provider));
   }
 
   @Override

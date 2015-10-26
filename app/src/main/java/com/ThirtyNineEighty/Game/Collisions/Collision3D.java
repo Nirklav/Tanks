@@ -38,9 +38,6 @@ public class Collision3D
       Vector2 firstProjection = normal.getProjection(first.getVertices());
       Vector2 secondProjection = normal.getProjection(second.getVertices());
 
-      //if (firstProjection.getX() < secondProjection.getY() || secondProjection.getX() < firstProjection.getY())
-      //  return null;
-
       float mtvLength = getIntersectionLength(firstProjection, secondProjection);
       if (Math.abs(mtvLength) < Vector.epsilon)
         return null;
@@ -131,36 +128,6 @@ public class Collision3D
 
     return 0;
   }
-
-//  private static Vector3 getMTV(CheckResult result)
-//  {
-//    Vector2 mtv2 = result.collision.getMTV();
-//    Vector3 mtv3 = new Vector3(mtv2.getX(), mtv2.getY(), 0);
-//
-//    Vector3 planeX = result.plane.xAxis();
-//    Vector3 planeY = result.plane.yAxis();
-//    Vector3 planeZ = result.plane.zAxis();
-//
-//    float[] matrix = new float[16];
-//    matrix[0] = planeX.getX();
-//    matrix[1] = planeX.getY();
-//    matrix[2] = planeX.getZ();
-//
-//    matrix[4] = planeY.getX();
-//    matrix[5] = planeY.getY();
-//    matrix[6] = planeY.getZ();
-//
-//    matrix[8] = planeZ.getX();
-//    matrix[9] = planeZ.getY();
-//    matrix[10] = planeZ.getZ();
-//
-//    matrix[15] = 1.0f;
-//
-//    Matrix.multiplyMV(mtv3.getRaw(), 0, matrix, 0, mtv3.getRaw(), 0);
-//
-//    mtv3.normalize();
-//    return mtv3;
-//  }
 
   public Vector3 getMTV()
   {

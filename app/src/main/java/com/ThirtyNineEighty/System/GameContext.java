@@ -4,6 +4,7 @@ import android.content.pm.ApplicationInfo;
 
 import com.ThirtyNineEighty.Game.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Game.Data.GameProgressManager;
+import com.ThirtyNineEighty.Game.Factory.Factory;
 import com.ThirtyNineEighty.Game.Map.MapManager;
 import com.ThirtyNineEighty.Renderable.IRenderer;
 import com.ThirtyNineEighty.Resources.Resources;
@@ -64,6 +65,7 @@ public class GameContext
   public static final Resources resources = new Resources();
   public static final CollisionManager collisions = new CollisionManager();
   public static final GameProgressManager gameProgress = new GameProgressManager();
+  public static final Factory factory = new Factory();
 
   // Delta time
   private static boolean isFirst;

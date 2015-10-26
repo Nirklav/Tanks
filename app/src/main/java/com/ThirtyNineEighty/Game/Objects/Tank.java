@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Common.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
@@ -14,11 +13,10 @@ public class Tank
   private float turretAngle;
   private float rechargeProgress;
 
-  public Tank(State s)
+  public Tank(TankState state)
   {
-    super(s);
+    super(state);
 
-    TankState state = (TankState) s;
     turretAngle = state.turretAngle;
     rechargeProgress = state.rechargeProgress;
   }
@@ -76,6 +74,11 @@ public class Tank
     Vector.release(bulletAngles);
   }
 
+  public float getRelativeTurretAngle()
+  {
+    return turretAngle;
+  }
+
   public float getTurretAngle()
   {
     return Angle.correct(turretAngle + angles.getZ());
@@ -100,35 +103,6 @@ public class Tank
   public void setRechargeProgress(float value)
   {
     rechargeProgress = value;
-  }
-
-  @Override
-  protected ILocationProvider<Vector3> createPositionProvider(VisualDescription visual)
-  {
-    if (visual.id == 1)
-      return new LocationProvider(this);
-    return super.createPositionProvider(visual);
-  }
-
-  private static class LocationProvider
-    implements ILocationProvider<Vector3>
-  {
-    private Tank tank;
-
-    public LocationProvider(Tank tank)
-    {
-      this.tank = tank;
-    }
-
-    @Override
-    public Location<Vector3> getLocation()
-    {
-      Location<Vector3> location = new Location<>(3);
-      location.position.setFrom(tank.position);
-      location.angles.setFrom(tank.angles);
-      location.localAngles.setFrom(0, 0, tank.turretAngle);
-      return location;
-    }
   }
 
   protected static class TankState

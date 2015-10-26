@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.System.State;
 public class Decor
   extends WorldObject
 {
-  public Decor(State state)
+  public Decor(ObjectState state)
   {
     super(state);
   }

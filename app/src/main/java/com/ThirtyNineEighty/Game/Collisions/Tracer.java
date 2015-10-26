@@ -63,13 +63,13 @@ public class Tracer
 
     for (WorldObject object : worldObjects)
     {
-      if (contains(ignoring, object))
-        continue;
-
       if (object.collidable == null)
         continue;
 
-      Vector3 position = object.getPosition();
+      if (contains(ignoring, object))
+        continue;
+
+      Vector3 position = object.collidable.getPosition();
       Vector3 projection = position.getLineProjection(start, end);
 
       vector.setFrom(projection);

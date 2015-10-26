@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Data.Entities.*;
 import com.ThirtyNineEighty.Game.Map.Descriptions.*;
-import com.ThirtyNineEighty.Game.Map.Factory.*;
 import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Worlds.*;
 import com.ThirtyNineEighty.Common.Serializer;
@@ -15,13 +14,7 @@ public final class MapManager
 {
   private static final String SavedGame = "savedGame";
 
-  private MapFactory factory;
   private Map map;
-
-  public void initialize()
-  {
-    factory = new MapFactory();
-  }
 
   public Map getMap() { return map; }
 
@@ -33,43 +26,39 @@ public final class MapManager
     if (!maps.contains(name))
       throw new IllegalArgumentException("name");
 
-    MapDescription description = Serializer.Deserialize(String.format("Maps/%s.map", name));
-    map = new Map(name, description);
+    MapDescription mapDesc = Serializer.Deserialize(String.format("Maps/%s.map", name));
+    map = new Map(name, mapDesc);
 
     // Create player
     Tank player = new Tank("Player", args.getTankName(), args.getProperties());
-    player.setPosition(description.player.getPosition());
-    player.setAngles(description.player.getAngles());
+    player.setPosition(mapDesc.player.getPosition());
+    player.setAngles(mapDesc.player.getAngles());
 
+    // Create world
     GameWorld world = new GameWorld(player);
 
     // Create objects
-    for (MapObject obj : description.objects)
-    {
-      WorldObject object = factory.createObject(obj.type, obj.type, obj.properties);
-
-      object.setPosition(obj.getPosition());
-      object.setAngles(obj.getAngles());
-
-      // Create object subprograms
-      createSubprograms(object, obj.subprograms, object);
-
-      world.add(object);
-    }
+    for (MapObject mapObj : mapDesc.objects)
+      world.add(create(mapObj));
 
     // Create map subprograms
-    createSubprograms(world, description.subprograms, null);
+    for (String subprogramName : mapDesc.subprograms)
+      world.bind(GameContext.factory.createSubprogram(subprogramName, subprogramName));
 
     return world;
   }
 
-  private void createSubprograms(IBindable bindable, String[] subprograms, Object parameter)
+  private WorldObject create(MapObject mapObj)
   {
-    if (subprograms == null)
-      return;
+    WorldObject object = GameContext.factory.createObject(mapObj.type, mapObj.type, mapObj.properties);
 
-    for (String subprogramName : subprograms)
-      bindable.bind(factory.createSubprogram(subprogramName, subprogramName, parameter));
+    object.setPosition(mapObj.getPosition());
+    object.setAngles(mapObj.getAngles());
+
+    for (String subprogramName : mapObj.subprograms)
+      object.bind(GameContext.factory.createSubprogram(subprogramName, subprogramName, object));
+
+    return object;
   }
 
   public void save()
@@ -116,8 +105,8 @@ public final class MapManager
     if (game == null)
       return null;
 
-    MapDescription description = Serializer.Deserialize(String.format("Maps/%s.map", game.mapName));
-    map = new Map(game.mapName, description);
+    MapDescription mapDesc = Serializer.Deserialize(String.format("Maps/%s.map", game.mapName));
+    map = new Map(game.mapName, mapDesc);
 
     try
     {

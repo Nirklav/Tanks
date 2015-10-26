@@ -9,9 +9,9 @@ public class RechargeSubprogram
 {
   private Tank tank;
 
-  public RechargeSubprogram(State s)
+  public RechargeSubprogram(SubprogramState state)
   {
-    super(s);
+    super(state);
   }
 
   public RechargeSubprogram(Tank tank)

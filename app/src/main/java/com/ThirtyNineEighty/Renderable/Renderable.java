@@ -13,10 +13,16 @@ public abstract class Renderable
   private boolean visible = true;
 
   @Override
-  public boolean isVisible() { return visible; }
+  public boolean isVisible()
+  {
+    return visible;
+  }
 
   @Override
-  public void setVisible(boolean value) { visible = value; }
+  public void setVisible(boolean value)
+  {
+    visible = value;
+  }
 
   @Override
   public void initialize()

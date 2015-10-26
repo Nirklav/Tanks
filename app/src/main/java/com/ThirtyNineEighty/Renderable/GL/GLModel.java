@@ -3,10 +3,9 @@ package com.ThirtyNineEighty.Renderable.GL;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Common.ILocationProvider;
-import com.ThirtyNineEighty.Common.Location;
-import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.Light;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
@@ -18,17 +17,17 @@ import com.ThirtyNineEighty.Resources.Entities.Texture;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLModel
-  extends GLBase
+  extends GLRenderable<GLModel.Data>
 {
   private Texture textureData;
   private Geometry geometryData;
 
-  public GLModel(String geometryName, String textureName, ILocationProvider<Vector3> provider)
+  public GLModel(RenderableDescription description, IDataProvider<Data> provider)
   {
     super(provider);
 
-    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(geometryName));
-    textureData = GameContext.resources.getTexture(new FileTextureSource(textureName, true));
+    this.geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
   }
 
   @Override
@@ -38,12 +37,22 @@ public class GLModel
   }
 
   @Override
-  public void draw(RendererContext context)
+  protected Vector3 getLocalPosition()
+  {
+    return geometryData.getPosition();
+  }
+
+  @Override
+  protected Vector3 getLocalAngles()
+  {
+    return geometryData.getAngles();
+  }
+
+  @Override
+  public void draw(RendererContext context, Data data)
   {
     Shader3D shader = (Shader3D) Shader.getCurrent();
     Light light = context.getLight();
-
-    setModelMatrix();
 
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
@@ -57,6 +66,7 @@ public class GLModel
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
     GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, light.Position.getRaw(), 0);
+    GLES20.glUniform4f(shader.uniformColorCoefficients, data.RedCoeff, data.GreenCoeff, data.BlueCoeff, 1.0f);
 
     // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
@@ -85,39 +95,11 @@ public class GLModel
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
   }
 
-  @Override
-  protected void setModelMatrix()
+  public static class Data
+    extends GLRenderable.Data
   {
-    Location<Vector3> loc = locationProvider.getLocation();
-    if (lastLocation != null && lastLocation.equals(loc))
-      return;
-
-    lastLocation = loc;
-
-    // calculate local
-    Vector3 resultLocalPosition = loc.localPosition.getSum(geometryData.getPosition());
-    Vector3 resultLocalAngles = loc.localAngles.getSum(geometryData.getAngles());
-
-    // reset matrix
-    Matrix.setIdentityM(modelMatrix, 0);
-
-    // set global
-    Matrix.translateM(modelMatrix, 0, loc.position.getX(), loc.position.getY(), loc.position.getZ());
-    Matrix.rotateM(modelMatrix, 0, loc.angles.getX(), 1, 0, 0);
-    Matrix.rotateM(modelMatrix, 0, loc.angles.getY(), 0, 1, 0);
-    Matrix.rotateM(modelMatrix, 0, loc.angles.getZ(), 0, 0, 1);
-
-    // set local
-    Matrix.translateM(modelMatrix, 0, resultLocalPosition.getX(), resultLocalPosition.getY(), resultLocalPosition.getZ());
-    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getX(), 1, 0, 0);
-    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getY(), 0, 1, 0);
-    Matrix.rotateM(modelMatrix, 0, resultLocalAngles.getZ(), 0, 0, 1);
-
-    // set scale
-    Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
-
-    // release vectors
-    Vector.release(resultLocalPosition);
-    Vector.release(resultLocalAngles);
+    public float RedCoeff = 1;
+    public float GreenCoeff = 1;
+    public float BlueCoeff = 1;
   }
 }

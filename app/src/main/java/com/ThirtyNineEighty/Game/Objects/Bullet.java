@@ -3,12 +3,11 @@ package com.ThirtyNineEighty.Game.Objects;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.System.State;
 
 public class Bullet
   extends GameObject
 {
-  public Bullet(State state)
+  public Bullet(GameState state)
   {
     super(state);
   }

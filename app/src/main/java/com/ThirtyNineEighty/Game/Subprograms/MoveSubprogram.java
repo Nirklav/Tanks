@@ -5,6 +5,7 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
 
+// TODO: state
 public class MoveSubprogram
   extends Subprogram
 {

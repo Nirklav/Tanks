@@ -1,4 +1,4 @@
-package com.ThirtyNineEighty.Game.Map.Factory;
+package com.ThirtyNineEighty.Game.Factory;
 
 import android.support.annotation.NonNull;
 

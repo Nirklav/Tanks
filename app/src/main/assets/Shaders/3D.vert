@@ -1,6 +1,7 @@
 uniform mat4 u_modelViewProjectionMatrix;
 uniform mat4 u_modelMatrix;
 uniform vec3 u_light;
+uniform vec4 u_colorCoefficients;
 
 attribute highp vec2 a_texcoord;
 attribute highp vec4 a_normal;
@@ -8,6 +9,7 @@ attribute highp vec4 a_position;
 
 varying highp vec2 v_texcoord;
 varying mediump float v_light;
+varying mediump vec4 v_colorCoefficients;
 
 void main()
 {
@@ -24,6 +26,7 @@ void main()
   vec3 normal = normalize(vec3(modelNormalsMatrix * a_normal));
 
   v_light = max(dot(normal, light), 0.2);
+  v_colorCoefficients = u_colorCoefficients;
 
   gl_Position = u_modelViewProjectionMatrix * a_position;
 }
