@@ -35,6 +35,7 @@ public class Factory
     addSubprogram("move", MoveSubprogram.class);
     addSubprogram("killMarkedCompletion", KillMarkedSubprogram.class);
     addSubprogram("rechargeSubprogram", RechargeSubprogram.class);
+    addSubprogram("respawnSubprogram", RespawnSubprogram.class);
 
     addProvider("glModelTankProvider", GLModelTankProvider.class);
     addProvider("glModelLandProvider", GLModelLandProvider.class);

@@ -17,6 +17,17 @@ public class MapState
   private float yAng;
   private float zAng;
 
+  public MapState(Vector3 position, Vector3 angles)
+  {
+    xPos = position.getX();
+    yPos = position.getY();
+    zPos = position.getZ();
+
+    xAng = angles.getX();
+    yAng = angles.getY();
+    zAng = angles.getZ();
+  }
+
   public Vector3 getPosition() { return new Vector3(xPos, yPos, zPos); }
   public Vector3 getAngles() { return new Vector3(xAng, yAng, zAng); }
 }

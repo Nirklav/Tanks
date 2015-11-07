@@ -19,11 +19,13 @@ public class BotSubprogram
   private static final long serialVersionUID = 1L;
 
   private final static float minDistance = 20;
+  private final static float minPathRebuildDistance = 50;
   private final static float maxDistance = 150;
   private final static float maxPathTimeMissedSec = 5;
 
   private Tank bot;
   private ArrayList<Vector2> path;
+  private Vector2 pathEnd;
   private int currentPathStep;
   private float stepCompletion;
   private float pathTimeMissedSec;
@@ -55,7 +57,7 @@ public class BotSubprogram
     {
       tryFire(player, targetVector);
 
-      Vector2 movingVector = getMovingVector(player);
+      Vector2 movingVector = getMovingVector(player, botPosition, playerPosition);
       if (movingVector != null && distance > minDistance)
         move(movingVector);
 
@@ -85,10 +87,9 @@ public class BotSubprogram
     }
   }
 
-  private Vector2 getMovingVector(WorldObject<?, ?> target)
+  private Vector2 getMovingVector(WorldObject<?, ?> target, Vector2 botPosition, Vector2 playerPosition)
   {
     Map map = GameContext.mapManager.getMap();
-    Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
 
     // Find path
     if (path == null)
@@ -98,6 +99,16 @@ public class BotSubprogram
         return null;
 
       currentPathStep = 0;
+      pathEnd = path.get(path.size() - 1);
+    }
+
+    // If player drove away from path end
+    Vector2 vector = playerPosition.getSubtract(pathEnd);
+    if (vector.getLength() > minPathRebuildDistance)
+    {
+      Vector.release(path);
+      path = null;
+      return null;
     }
 
     // Select next step from path
