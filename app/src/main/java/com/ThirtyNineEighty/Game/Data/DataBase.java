@@ -13,7 +13,7 @@ public class DataBase
   public final Table<TankEntity> tanks;
   public final Table<UpgradeEntity> upgrades;
   public final Table<CampaignEntity> campaigns;
-  public final Table<SavedGameEntity> savedGames;
+  public final Table<SavedWorldEntity> worlds;
 
   public DataBase(Context context)
   {
@@ -23,7 +23,7 @@ public class DataBase
     tanks = new Table<>(this, "Tanks");
     upgrades = new Table<>(this, "Upgrades");
     campaigns = new Table<>(this, "Campaigns");
-    savedGames = new Table<>(this, "SavedGames");
+    worlds = new Table<>(this, "SavedWorlds");
   }
 
   @Override
@@ -33,7 +33,7 @@ public class DataBase
     tanks.create(database);
     upgrades.create(database);
     campaigns.create(database);
-    savedGames.create(database);
+    worlds.create(database);
   }
 
   @Override

@@ -10,6 +10,7 @@ import com.ThirtyNineEighty.System.GameContext;
 import java.nio.FloatBuffer;
 
 // Can process only \n and \t spec symbols
+// TODO: serializable
 public class GLLabel
   extends GLSprite
 {

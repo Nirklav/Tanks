@@ -8,26 +8,36 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.Light;
 import com.ThirtyNineEighty.Renderable.RendererContext;
-import com.ThirtyNineEighty.Renderable.Shaders.Shader;
-import com.ThirtyNineEighty.Renderable.Shaders.Shader3D;
-import com.ThirtyNineEighty.Resources.Sources.FileGeometrySource;
-import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
-import com.ThirtyNineEighty.Resources.Entities.Geometry;
-import com.ThirtyNineEighty.Resources.Entities.Texture;
+import com.ThirtyNineEighty.Renderable.Shaders.*;
+import com.ThirtyNineEighty.Resources.Sources.*;
+import com.ThirtyNineEighty.Resources.Entities.*;
 import com.ThirtyNineEighty.System.GameContext;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class GLModel
   extends GLRenderable<GLModel.Data>
 {
-  private Texture textureData;
-  private Geometry geometryData;
+  private static final long serialVersionUID = 1L;
+
+  private transient Texture textureData;
+  private transient Geometry geometryData;
 
   public GLModel(RenderableDescription description, IDataProvider<Data> provider)
   {
-    super(provider);
+    super(description, provider);
 
-    this.geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
-    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
+    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  {
+    in.defaultReadObject();
+
+    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
+    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
   }
 
   @Override
@@ -98,6 +108,8 @@ public class GLModel
   public static class Data
     extends GLRenderable.Data
   {
+    private static final long serialVersionUID = 1L;
+
     public float RedCoeff = 1;
     public float GreenCoeff = 1;
     public float BlueCoeff = 1;

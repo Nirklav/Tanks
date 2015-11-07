@@ -7,9 +7,11 @@ import com.ThirtyNineEighty.Game.Objects.WorldObject;
 public class CollidableTankProvider
   extends DataProvider<Collidable.Data, PhysicalDescription>
 {
-  private final WorldObject object;
+  private static final long serialVersionUID = 1L;
 
-  public CollidableTankProvider(WorldObject object, PhysicalDescription description)
+  private final WorldObject<?, ?> object;
+
+  public CollidableTankProvider(WorldObject<?, ?> object, PhysicalDescription description)
   {
     super(new Collidable.Data(), description);
     this.object = object;

@@ -4,25 +4,22 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 
 public class AidKit
-  extends GameObject
+  extends GameObject<GameDescription, GameProperties>
 {
-  public AidKit(GameState state)
-  {
-    super(state);
-  }
+  private static final long serialVersionUID = 1L;
 
   public AidKit(String type)
   {
-    super(null, type, new GameProperties());
+    super(type, new GameProperties());
   }
 
   @Override
-  public void collide(WorldObject object)
+  public void collide(WorldObject<?, ?> object)
   {
     if (!(object instanceof GameObject))
       return;
 
-    GameObject gameObject = (GameObject) object;
+    GameObject<?, ?> gameObject = (GameObject<?, ?>) object;
     GameDescription aidKitDescription = getDescription();
 
     gameObject.addHealth(aidKitDescription.getHealth());

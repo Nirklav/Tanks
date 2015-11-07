@@ -14,6 +14,8 @@ import com.ThirtyNineEighty.System.GameContext;
 public class GLModelLandProvider
   extends DataProvider<GLModel.Data, VisualDescription>
 {
+  private static final long serialVersionUID = 1L;
+
   private final Land land;
 
   public GLModelLandProvider(Land land, VisualDescription description)
@@ -33,7 +35,7 @@ public class GLModelLandProvider
   private Vector3 getPosition(int id)
   {
     IWorld world = GameContext.content.getWorld();
-    WorldObject player = world.getPlayer();
+    WorldObject<?, ?> player = world.getPlayer();
 
     Vector3 position = player != null
       ? player.getPosition()

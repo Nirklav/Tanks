@@ -7,17 +7,12 @@ import com.ThirtyNineEighty.System.*;
 public class RechargeSubprogram
   extends Subprogram
 {
-  private Tank tank;
+  private static final long serialVersionUID = 1L;
 
-  public RechargeSubprogram(SubprogramState state)
-  {
-    super(state);
-  }
+  private Tank tank;
 
   public RechargeSubprogram(Tank tank)
   {
-    super(String.format("RechargeSubprogram_%s", tank.getName()));
-
     this.tank = tank;
   }
 

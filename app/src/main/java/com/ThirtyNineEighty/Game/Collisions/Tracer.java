@@ -16,24 +16,24 @@ public class Tracer
 
   private final Vector3 start;
   private final Vector3 end;
-  private final WorldObject[] ignoring;
+  private final WorldObject<?, ?>[] ignoring;
 
   private boolean calculated;
   private boolean result;
 
-  public Tracer(WorldObject watcher, WorldObject target)
+  public Tracer(WorldObject<?, ?> watcher, WorldObject<?, ?> target)
   {
     this(getPosition(watcher), getPosition(target), watcher, target);
   }
 
-  public Tracer(Vector3 start, Vector3 end, WorldObject... ignoring)
+  public Tracer(Vector3 start, Vector3 end, WorldObject<?, ?>... ignoring)
   {
     this.start = start;
     this.end = end;
     this.ignoring = ignoring;
   }
 
-  private static Vector3 getPosition(WorldObject object)
+  private static Vector3 getPosition(WorldObject<?, ?> object)
   {
     if (object.collidable != null)
       return object.collidable.getPosition();
@@ -51,7 +51,7 @@ public class Tracer
 
   private boolean calculate()
   {
-    ArrayList<WorldObject> worldObjects = new ArrayList<>();
+    ArrayList<WorldObject<?, ?>> worldObjects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
     world.getObjects(worldObjects);
@@ -61,7 +61,7 @@ public class Tracer
     Vector2 lineProjection = plane.getProjection(start);
     float fullLength = vector.getLength();
 
-    for (WorldObject object : worldObjects)
+    for (WorldObject<?, ?> object : worldObjects)
     {
       if (object.collidable == null)
         continue;
@@ -102,9 +102,9 @@ public class Tracer
     return false;
   }
 
-  private boolean contains(WorldObject[] objects, WorldObject object)
+  private boolean contains(WorldObject<?, ?>[] objects, WorldObject<?, ?> object)
   {
-    for (WorldObject current : objects)
+    for (WorldObject<?, ?> current : objects)
       if (current == object)
         return true;
     return false;

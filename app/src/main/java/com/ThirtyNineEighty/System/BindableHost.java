@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class BindableHost<T extends IBindable>
   extends Bindable
 {
+  private static final long serialVersionUID = 1L;
+
   protected final ArrayList<T> objects = new ArrayList<>();
 
   public void add(T bindable)

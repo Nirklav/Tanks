@@ -4,13 +4,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.renderscript.Matrix3f;
 
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Common.Math.*;
 import com.ThirtyNineEighty.Renderable.RendererContext;
-import com.ThirtyNineEighty.Renderable.Shaders.Shader;
-import com.ThirtyNineEighty.Renderable.Shaders.Shader2D;
-import com.ThirtyNineEighty.Resources.Sources.FileImageSource;
-import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
+import com.ThirtyNineEighty.Renderable.Shaders.*;
+import com.ThirtyNineEighty.Resources.Sources.*;
 import com.ThirtyNineEighty.Resources.Entities.Geometry;
 import com.ThirtyNineEighty.Resources.Sources.ISource;
 import com.ThirtyNineEighty.Resources.Entities.Image;
@@ -22,6 +19,7 @@ import com.ThirtyNineEighty.Renderable.Renderable;
 
 import java.nio.FloatBuffer;
 
+// TODO: serializable
 public class GLSprite
   extends Renderable
 {
@@ -34,6 +32,8 @@ public class GLSprite
      0.5f, -0.5f, 1, 1,
      0.5f,  0.5f, 1, 0,
   };
+
+  private final static StaticGeometrySource geometrySource = new StaticGeometrySource("GLSpriteMesh", quadMeshData, quadMeshData.length / 12, MeshMode.Static);
 
   private float[] modelMatrix;
   private float[] modelViewMatrix;
@@ -48,14 +48,14 @@ public class GLSprite
   protected float width;
   protected float height;
 
-  protected Texture textureData;
-  protected Geometry geometryData;
+  protected transient Texture textureData;
+  protected transient Geometry geometryData;
 
   public GLSprite(String imageName) { this(GameContext.resources.getImage(new FileImageSource(imageName))); }
   public GLSprite(Image image)
   {
     this();
-    geometryData = GameContext.resources.getGeometry(new StaticGeometrySource("GLSpriteMesh", quadMeshData, quadMeshData.length / 12, MeshMode.Static));
+    geometryData = GameContext.resources.getGeometry(geometrySource);
     setImage(image);
     needBuildMatrix = true;
   }

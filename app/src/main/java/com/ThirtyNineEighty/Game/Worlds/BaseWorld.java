@@ -9,18 +9,23 @@ public abstract class BaseWorld
   extends BindableHost<WorldObject>
   implements IWorld
 {
-  protected WorldObject player;
+  private static final long serialVersionUID = 1L;
+
+  protected WorldObject<?, ?> player;
 
   @Override
-  public void getObjects(List<WorldObject> filled)
+  public void getObjects(List<WorldObject<?, ?>> filled)
   {
     synchronized (objects)
     {
-      for (WorldObject object : objects)
+      for (WorldObject<?, ?> object : objects)
         filled.add(object);
     }
   }
 
   @Override
-  public WorldObject getPlayer() { return player; }
+  public WorldObject<?, ?> getPlayer() { return player; }
+
+  @Override
+  public boolean needSave() { return false; }
 }

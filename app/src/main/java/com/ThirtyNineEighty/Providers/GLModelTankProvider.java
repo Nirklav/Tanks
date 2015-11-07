@@ -1,42 +1,32 @@
 package com.ThirtyNineEighty.Providers;
 
-import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Renderable.GL.GLModel;
 
 public class GLModelTankProvider
-  extends DataProvider<GLModel.Data, VisualDescription>
+  extends GLModelGameObjectProvider<Tank>
 {
-  private final Tank tank;
+  private static final long serialVersionUID = 1L;
 
   public GLModelTankProvider(Tank tank, VisualDescription description)
   {
-    super(new GLModel.Data(), description);
-    this.tank = tank;
+    super(tank, description);
   }
 
   @Override
   public void set(GLModel.Data data, VisualDescription description)
   {
-    data.position.setFrom(tank.getPosition());
-    data.angles.setFrom(tank.getAngles());
-
-    data.localPosition = Vector3.zero;
+    super.set(data, description);
 
     switch (description.id)
     {
-    case 0: // chassis
-      data.localAngles = Vector3.zero;
-      break;
     case 1: // turret
-      data.localAngles.setFrom(0, 0, tank.getRelativeTurretAngle());
+      data.localAngles.setFrom(0, 0, object.getRelativeTurretAngle());
       break;
     }
 
-    data.scale = 1;
-
-    if (tank.getHealth() <= 0)
+    if (object.getHealth() <= 0)
     {
       data.RedCoeff = 0.2f;
       data.GreenCoeff = 0.2f;

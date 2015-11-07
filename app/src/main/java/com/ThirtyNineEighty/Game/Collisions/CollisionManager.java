@@ -22,8 +22,8 @@ import java.util.concurrent.Future;
 
 public class CollisionManager
 {
-  private final ArrayList<WorldObject> resolvingObjects;
-  private final ArrayList<WorldObject> worldObjects;
+  private final ArrayList<WorldObject<?, ?>> resolvingObjects;
+  private final ArrayList<WorldObject<?, ?>> worldObjects;
 
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
@@ -33,26 +33,26 @@ public class CollisionManager
     worldObjects = new ArrayList<>();
   }
 
-  public void move(GameObject object)
+  public void move(GameObject<?, ?> object)
   {
     GameDescription description = object.getDescription();
     object.move(description.getSpeed() * GameContext.getDelta());
     addToResolving(object);
   }
 
-  public void move(WorldObject object, float length)
+  public void move(WorldObject<?, ?> object, float length)
   {
     object.move(length);
     addToResolving(object);
   }
 
-  public void move(WorldObject object, Vector3 vector, float length)
+  public void move(WorldObject<?, ?> object, Vector3 vector, float length)
   {
     object.move(length, vector);
     addToResolving(object);
   }
 
-  public void rotate(GameObject object, float targetAngle)
+  public void rotate(GameObject<?, ?> object, float targetAngle)
   {
     GameDescription description = object.getDescription();
 
@@ -70,13 +70,13 @@ public class CollisionManager
     Vector.release(vector);
   }
 
-  public void rotate(WorldObject object, Vector3 angles)
+  public void rotate(WorldObject<?, ?> object, Vector3 angles)
   {
     object.rotate(angles);
     addToResolving(object);
   }
 
-  private void addToResolving(WorldObject object)
+  private void addToResolving(WorldObject<?, ?> object)
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);
@@ -107,7 +107,7 @@ public class CollisionManager
     world.getObjects(worldObjects);
 
     // Normalize all objects locations
-    for (WorldObject object : worldObjects)
+    for (WorldObject<?, ?> object : worldObjects)
       if (object.collidable != null)
         object.collidable.normalizeLocation();
 
@@ -153,8 +153,8 @@ public class CollisionManager
       {
         Pair pair = task.get();
 
-        WorldObject first = pair.first;
-        WorldObject second = pair.second;
+        WorldObject<?, ?> first = pair.first;
+        WorldObject<?, ?> second = pair.second;
         Description firstDescription = first.getDescription();
         Description secondDescription = second.getDescription();
         Collision3D collision = pair.collision;
@@ -199,12 +199,12 @@ public class CollisionManager
     resolvingObjects.clear();
   }
 
-  private static Collection<Pair> buildPairs(Collection<WorldObject> resolving, Collection<WorldObject> all)
+  private static Collection<Pair> buildPairs(Collection<WorldObject<?, ?>> resolving, Collection<WorldObject<?, ?>> all)
   {
     HashMap<PairKey, Pair> pairs = new HashMap<>();
 
-    for (WorldObject first : resolving)
-      for (WorldObject second : all)
+    for (WorldObject<?, ?> first : resolving)
+      for (WorldObject<?, ?> second : all)
       {
         if (first == second)
           continue;
@@ -233,7 +233,7 @@ public class CollisionManager
     return pairs.values();
   }
 
-  private static float getLength(WorldObject one, WorldObject two)
+  private static float getLength(WorldObject<?, ?> one, WorldObject<?, ?> two)
   {
     Vector3 positionOne = one.collidable.getPosition();
     Vector3 positionTwo = two.collidable.getPosition();

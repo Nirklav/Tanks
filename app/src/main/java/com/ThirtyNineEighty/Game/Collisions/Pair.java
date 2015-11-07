@@ -4,19 +4,19 @@ import com.ThirtyNineEighty.Game.Objects.WorldObject;
 
 class Pair
 {
-  public final WorldObject first;
-  public final WorldObject second;
+  public final WorldObject<?, ?> first;
+  public final WorldObject<?, ?> second;
 
   public boolean firstMoved;
   public boolean secondMoved;
   public Collision3D collision;
 
-  public Pair(WorldObject first, WorldObject second)
+  public Pair(WorldObject<?, ?> first, WorldObject<?, ?> second)
   {
-    String firstName = first.getName();
-    String secondName = second.getName();
+    Long firstId = first.getId();
+    Long secondId = second.getId();
 
-    if (firstName.compareTo(secondName) < 0)
+    if (firstId > secondId)
     {
       this.first = first;
       this.second = second;

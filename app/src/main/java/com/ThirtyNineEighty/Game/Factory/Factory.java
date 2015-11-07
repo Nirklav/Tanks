@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class Factory
 {
-  private HashMap<String, Creator<? extends WorldObject>> objectCreators;
+  private HashMap<String, Creator<? extends WorldObject<?, ?>>> objectCreators;
   private HashMap<String, Creator<? extends ISubprogram>> subprogramsCreators;
   private HashMap<String, Creator<? extends IDataProvider>> providersCreators;
   private HashMap<String, Creator<? extends IRenderable>> renderableCreators;
@@ -38,15 +38,14 @@ public class Factory
 
     addProvider("glModelTankProvider", GLModelTankProvider.class);
     addProvider("glModelLandProvider", GLModelLandProvider.class);
-    addProvider("glRenderableWorldObjectProvider", GLRenderableWorldObjectProvider.class);
     addProvider("glModelWorldObjectProvider", GLModelWorldObjectProvider.class);
 
     addRenderable("glModel", GLModel.class);
   }
 
-  public WorldObject createObject(String type, Object... params)
+  public WorldObject<?, ?> createObject(String type, Object... params)
   {
-    Creator<? extends WorldObject> creator = objectCreators.get(type);
+    Creator<? extends WorldObject<?, ?>> creator = objectCreators.get(type);
     return creator.create(params);
   }
 
@@ -68,7 +67,7 @@ public class Factory
     return creator.create(params);
   }
 
-  private void addObject(String name, Class<? extends WorldObject> type)
+  private void addObject(String name, Class<? extends WorldObject<?, ?>> type)
   {
     objectCreators.put(name, new Creator<>(type));
   }

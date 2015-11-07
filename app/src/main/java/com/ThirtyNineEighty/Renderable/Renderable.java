@@ -9,6 +9,8 @@ public abstract class Renderable
   extends EngineObject
   implements IRenderable
 {
+  private static final long serialVersionUID = 1L;
+
   private IBindable bindable;
   private boolean visible = true;
 

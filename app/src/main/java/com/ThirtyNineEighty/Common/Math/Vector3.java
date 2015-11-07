@@ -308,6 +308,17 @@ public class Vector3
     return result;
   }
 
+  public Vector3 getSum(float x, float y, float z)
+  {
+    throwIfReleased();
+
+    Vector3 result = Vector.getInstance(3, this);
+    result.addToX(x);
+    result.addToY(y);
+    result.addToZ(z);
+    return result;
+  }
+
   public Vector3 getSubtract(Vector3 other)
   {
     throwIfReleased();

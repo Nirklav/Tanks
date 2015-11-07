@@ -153,6 +153,27 @@ public class Content
   public void start() { updateTimer.start(); }
   public void stop() { updateTimer.stop(); }
 
+  public void reset()
+  {
+    if (updateTimer.isStarted())
+      throw new IllegalStateException("can't reset content because timer is started, before use reset call the stop method");
+
+    reset(world);
+    reset(menu);
+  }
+
+  private static void reset(IEngineObject object)
+  {
+    if (object == null)
+      return;
+
+    if (object.isEnabled())
+      object.disable();
+
+    if (object.isInitialized())
+      object.uninitialize();
+  }
+
   private static class Action
   {
     public static final int ADD = 0;

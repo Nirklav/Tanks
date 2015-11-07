@@ -4,23 +4,23 @@ import com.ThirtyNineEighty.Game.Objects.WorldObject;
 
 class PairKey
 {
-  private final String first;
-  private final String second;
+  private final Long first;
+  private final Long second;
 
-  public PairKey(WorldObject first, WorldObject second)
+  public PairKey(WorldObject<?, ?> first, WorldObject<?, ?> second)
   {
-    String firstName = first.getName();
-    String secondName = second.getName();
+    Long firstId = first.getId();
+    Long secondId = second.getId();
 
-    if (firstName.compareTo(secondName) < 0)
+    if (firstId > secondId)
     {
-      this.first = firstName;
-      this.second = secondName;
+      this.first = firstId;
+      this.second = secondId;
     }
     else
     {
-      this.first = secondName;
-      this.second = firstName;
+      this.first = secondId;
+      this.second = firstId;
     }
   }
 

@@ -1,18 +1,15 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
-import com.ThirtyNineEighty.System.State;
 
 public class Decor
-  extends WorldObject
+  extends WorldObject<Description, Properties>
 {
-  public Decor(ObjectState state)
-  {
-    super(state);
-  }
+  private static final long serialVersionUID = 1L;
 
   public Decor(String type)
   {
-    super(null, type, new Properties());
+    super(type, new Properties());
   }
 }

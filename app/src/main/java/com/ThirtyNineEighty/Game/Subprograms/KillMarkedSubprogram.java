@@ -7,17 +7,20 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
 public class KillMarkedSubprogram
   extends Subprogram
 {
-  private ArrayList<GameObject> marked;
+  private static final long serialVersionUID = 1L;
+
+  private ArrayList<GameObject<?, ?>> marked;
 
   public KillMarkedSubprogram()
   {
-    super("KillMarkedSubprogramInst");
+
   }
 
   @Override
@@ -25,7 +28,7 @@ public class KillMarkedSubprogram
   {
     Map map = GameContext.mapManager.getMap();
     IWorld world = GameContext.content.getWorld();
-    GameObject player = (GameObject) world.getPlayer();
+    GameObject<?, ?> player = (GameObject<?, ?>) world.getPlayer();
 
     if (map.getState() != Map.StateInProgress)
     {
@@ -47,15 +50,15 @@ public class KillMarkedSubprogram
     if (marked == null)
     {
       marked = new ArrayList<>();
-      ArrayList<WorldObject> worldObjects = new ArrayList<>();
+      ArrayList<WorldObject<?, ?>> worldObjects = new ArrayList<>();
       world.getObjects(worldObjects);
 
       for (int i = worldObjects.size() - 1; i >= 0; i--)
       {
-        WorldObject object = worldObjects.get(i);
+        WorldObject<?, ?> object = worldObjects.get(i);
         if (object instanceof GameObject)
         {
-          GameObject gameObject = (GameObject) object;
+          GameObject<?, ?> gameObject = (GameObject<?, ?>) object;
           GameProperties properties = gameObject.getProperties();
           if (properties.needKill())
             marked.add(gameObject);
@@ -65,7 +68,7 @@ public class KillMarkedSubprogram
 
     for (int i = marked.size() - 1; i >= 0; i--)
     {
-      GameObject current = marked.get(i);
+      GameObject<?, ?> current = marked.get(i);
       if (current.getHealth() <= 0 || !current.isInitialized())
         marked.remove(i);
     }

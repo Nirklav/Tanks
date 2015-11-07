@@ -9,35 +9,41 @@ import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.*;
 
-public abstract class WorldObject
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+public abstract class WorldObject<TDescription extends Description, TProperties extends Properties>
   extends Bindable
-  implements ISaveble
 {
+  private static final long serialVersionUID = 1L;
+
+  protected String type;
+
+  protected transient TDescription description;
+  protected TProperties properties;
+
   protected Vector3 position;
   protected Vector3 angles;
-  protected Description description;
-  protected Properties properties;
 
   public ICollidable collidable;
 
-  protected WorldObject(ObjectState state)
+  protected WorldObject(String type, TProperties properties)
   {
-    this(state.name, state.type, state.properties);
+    this.type = type;
 
-    position.setFrom(state.position);
-    angles.setFrom(state.angles);
-  }
-
-  protected WorldObject(String name, String type, Properties properties)
-  {
-    super(name);
-
+    this.description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(type));
     this.properties = properties;
     this.position = new Vector3();
     this.angles = new Vector3();
-    this.description = GameContext.resources.getDescription(new FileDescriptionSource(type));
 
     build();
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  {
+    in.defaultReadObject();
+
+    description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(type));
   }
 
   private void build()
@@ -57,7 +63,7 @@ public abstract class WorldObject
       collidable = new Collidable(physical.modelName, new CollidableTankProvider(this, physical));
   }
 
-  public void collide(WorldObject object) { }
+  public void collide(WorldObject<?, ?> object) { }
 
   public void rotate(Vector3 value)
   {
@@ -77,8 +83,8 @@ public abstract class WorldObject
     position.add(vector);
   }
 
-  public Description getDescription() { return description; }
-  public Properties getProperties() { return properties; }
+  public TDescription getDescription() { return description; }
+  public TProperties getProperties() { return properties; }
 
   public Vector3 getPosition() { return position; }
   public void setPosition(Vector3 value) { position.setFrom(value); }
@@ -88,34 +94,5 @@ public abstract class WorldObject
   {
     angles.setFrom(value);
     angles.correctAngles();
-  }
-
-  protected State createState()
-  {
-    return new ObjectState();
-  }
-
-  public State getState()
-  {
-    ObjectState state = (ObjectState)createState();
-    state.angles = angles;
-    state.position = position;
-    state.properties = properties;
-    state.name = getName();
-    state.type = description.getType();
-    return state;
-  }
-
-  protected static class ObjectState
-    extends State
-  {
-    private static final long serialVersionUID = 1L;
-
-    protected String name;
-    protected String type;
-    protected Properties properties;
-
-    protected Vector3 position;
-    protected Vector3 angles;
   }
 }

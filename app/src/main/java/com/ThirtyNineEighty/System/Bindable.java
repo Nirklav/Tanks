@@ -8,18 +8,10 @@ public abstract class Bindable
   extends EngineObject
   implements IBindable
 {
-  private final HashMap<String, ISubprogram> subprograms = new HashMap<>();
-  private final HashMap<String, IRenderable> renderables = new HashMap<>();
+  private static final long serialVersionUID = 1L;
 
-  protected Bindable()
-  {
-
-  }
-
-  protected Bindable(String name)
-  {
-    super(name);
-  }
+  private final HashMap<Long, ISubprogram> subprograms = new HashMap<>();
+  private final HashMap<Long, IRenderable> renderables = new HashMap<>();
 
   @Override
   public void initialize()
@@ -94,16 +86,11 @@ public abstract class Bindable
 
     synchronized (subprograms)
     {
-      String name = subprogram.getName();
+      Long id = subprogram.getId();
+      if (subprograms.containsKey(id))
+        throw new IllegalStateException("Subprogram with this id already added");
 
-      if (subprograms.containsKey(name))
-      {
-        if (isInitialized())
-          throw new IllegalStateException("Subprogram with this name already added");
-        return;
-      }
-
-      subprograms.put(name, subprogram);
+      subprograms.put(id, subprogram);
     }
   }
 
@@ -120,7 +107,7 @@ public abstract class Bindable
 
     synchronized (subprograms)
     {
-      subprograms.remove(subprogram.getName());
+      subprograms.remove(subprogram.getId());
     }
   }
 
@@ -143,16 +130,11 @@ public abstract class Bindable
 
     synchronized (renderables)
     {
-      String name = renderable.getName();
+      Long id = renderable.getId();
+      if (renderables.containsKey(id))
+        throw new IllegalStateException("Renderable with this id already added");
 
-      if (renderables.containsKey(name))
-      {
-        if (isInitialized())
-          throw new IllegalStateException("Renderable with this name already added");
-        return;
-      }
-
-      renderables.put(name, renderable);
+      renderables.put(id, renderable);
     }
   }
 
@@ -169,7 +151,7 @@ public abstract class Bindable
 
     synchronized (renderables)
     {
-      renderables.remove(renderable.getName());
+      renderables.remove(renderable.getId());
     }
   }
 

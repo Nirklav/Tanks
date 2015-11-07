@@ -8,25 +8,32 @@ import com.ThirtyNineEighty.Resources.Sources.FilePhGeometrySource;
 import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.System.GameContext;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Collidable
-  implements ICollidable
+  implements ICollidable,
+             Serializable
 {
+  private static final long serialVersionUID = 1L;
+
+  private String name;
   private IDataProvider<Data> dataProvider;
 
   private Vector3 position;
-
   private float[] verticesMatrix;
   private float[] normalsMatrix;
-
-  private PhGeometry geometryData;
-
   private ArrayList<Vector3> normals;
   private ArrayList<Vector3> vertices;
 
+  private transient PhGeometry geometryData;
+
   public Collidable(String name, IDataProvider<Data> provider)
   {
+    this.name = name;
+
     verticesMatrix = new float[16];
     normalsMatrix = new float[16];
     dataProvider = provider;
@@ -43,6 +50,13 @@ public class Collidable
       vertices.add(new Vector3());
 
     normalizeLocation();
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  {
+    in.defaultReadObject();
+
+    geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
   }
 
   @Override
@@ -125,7 +139,10 @@ public class Collidable
   }
 
   public static class Data
+    implements Serializable
   {
+    private static final long serialVersionUID = 1L;
+
     public Vector3 position;
     public Vector3 angles;
 

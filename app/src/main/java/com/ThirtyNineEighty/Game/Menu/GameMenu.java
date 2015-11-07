@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Common.Math.*;
-import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
+import com.ThirtyNineEighty.System.Subprogram;
 import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
@@ -30,7 +30,7 @@ public class GameMenu
   {
     super.initialize();
 
-    bind(new Subprogram("GameMenu.UpdateInst")
+    bind(new Subprogram()
     {
       @Override
       public void onUpdate()
@@ -47,25 +47,28 @@ public class GameMenu
         recharge.setProgress(player.getRechargeProgress());
 
         // Player control
-        Vector3 vector = Vector.getInstance(3);
+        if (player.getHealth() > 0)
+        {
+          Vector3 vector = Vector.getInstance(3);
 
-        float joyAngle = getJoystickAngle();
-        float playerAngle = player.getAngles().getZ();
+          float joyAngle = getJoystickAngle();
+          float playerAngle = player.getAngles().getZ();
 
-        if (Math.abs(joyAngle - playerAngle) < 90)
-          GameContext.collisions.move(player);
+          if (Math.abs(joyAngle - playerAngle) < 90)
+            GameContext.collisions.move(player);
 
-        if (Math.abs(joyAngle - playerAngle) > 3)
-          GameContext.collisions.rotate(player, joyAngle);
+          if (Math.abs(joyAngle - playerAngle) > 3)
+            GameContext.collisions.rotate(player, joyAngle);
 
-        GameDescription playerDescription = player.getDescription();
-        if (leftTurretButton.getState())
-          player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
+          GameDescription playerDescription = player.getDescription();
+          if (leftTurretButton.getState())
+            player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
 
-        if (rightTurretButton.getState())
-          player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
+          if (rightTurretButton.getState())
+            player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
 
-        Vector.release(vector);
+          Vector.release(vector);
+        }
 
         // Map state
         switch (map.getState())

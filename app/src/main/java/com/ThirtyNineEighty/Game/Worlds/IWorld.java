@@ -15,10 +15,13 @@ public interface IWorld
   void setLight(Light light);
 
   // player
-  WorldObject getPlayer();
+  WorldObject<?, ?> getPlayer();
 
   // world
-  void getObjects(List<WorldObject> objects);
-  void add(WorldObject worldObject);
-  void remove(WorldObject worldObject);
+  void getObjects(List<WorldObject<?, ?>> objects);
+  void add(WorldObject<?, ?> worldObject);
+  void remove(WorldObject<?, ?> worldObject);
+
+  // save
+  boolean needSave();
 }

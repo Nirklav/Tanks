@@ -16,6 +16,8 @@ public class EventTimer
   private Thread thread;
   private String threadName;
 
+  public boolean isStarted() { return thread != null; }
+
   public EventTimer(String name, int periodMs, Runnable r)
   {
     period = periodMs;
@@ -98,7 +100,7 @@ public class EventTimer
 
   public void start()
   {
-    if (thread != null)
+    if (isStarted())
       throw new IllegalStateException("timer already started");
 
     thread = new Thread(timerRunnable);
@@ -108,7 +110,7 @@ public class EventTimer
 
   public void stop()
   {
-    if (thread == null)
+    if (!isStarted())
       throw new IllegalStateException("timer not started");
 
     try
@@ -134,11 +136,11 @@ public class EventTimer
   public void sendEvent(Runnable r) { addEvent(r, false); }
   private void addEvent(Runnable r, boolean async)
   {
-    if (thread == null && !async)
+    if (!isStarted() && !async)
       throw new IllegalStateException("Can't wait, timer not started");
 
     Thread current = Thread.currentThread();
-    if (thread != null && thread.getId() == current.getId())
+    if (isStarted() && thread.getId() == current.getId())
     {
       r.run();
       return;

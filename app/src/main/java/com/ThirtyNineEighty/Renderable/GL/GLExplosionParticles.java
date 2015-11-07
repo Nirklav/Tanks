@@ -3,44 +3,58 @@ package com.ThirtyNineEighty.Renderable.GL;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.RendererContext;
-import com.ThirtyNineEighty.Renderable.Shaders.Shader;
-import com.ThirtyNineEighty.Renderable.Shaders.ShaderExplosionParticles;
-import com.ThirtyNineEighty.Resources.Entities.Geometry;
-import com.ThirtyNineEighty.Resources.Entities.Texture;
-import com.ThirtyNineEighty.Resources.Sources.FileTextureSource;
-import com.ThirtyNineEighty.Resources.Sources.ISource;
-import com.ThirtyNineEighty.Resources.Sources.HemisphereParticlesSource;
+import com.ThirtyNineEighty.Renderable.Shaders.*;
+import com.ThirtyNineEighty.Resources.Entities.*;
+import com.ThirtyNineEighty.Resources.Sources.*;
 import com.ThirtyNineEighty.System.GameContext;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class GLExplosionParticles
   extends GLRenderable<GLRenderable.Data>
 {
-  public static final int Sphere = 0;
-  public static final int Hemisphere = 1;
+  private static final long serialVersionUID = 1L;
 
-  private Texture textureData;
-  private Geometry geometryData;
+  public static final RenderableDescription Sphere = new RenderableDescription("sphere", "particle");
+  public static final RenderableDescription Hemisphere = new RenderableDescription("hemisphere", "particle");
+
+  private transient Texture textureData;
+  private transient Geometry geometryData;
+
   private int count;
   private float time;
   private float life;
 
-  public GLExplosionParticles(int type, float lifeMs, int count, IDataProvider<Data> provider)
+  public GLExplosionParticles(float lifeMs, int count, RenderableDescription description, IDataProvider<Data> provider)
   {
-    super(provider);
+    super(description, provider);
 
-    this.geometryData = GameContext.resources.getGeometry(getSource(type));
-    this.textureData = GameContext.resources.getTexture(new FileTextureSource("particle", false));
     this.count = count;
     this.time = 0;
     this.life = lifeMs;
+
+    this.geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
   }
 
-  private static ISource<Geometry> getSource(int type)
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
   {
-    if (type == Hemisphere)
+    in.defaultReadObject();
+
+    geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
+    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
+  }
+
+  private static ISource<Geometry> getSource(String type)
+  {
+    if (type.equals(Hemisphere.modelName))
       return new HemisphereParticlesSource();
+    if (type.equals(Sphere.modelName))
+      return null; // TODO:
     return null;
   }
 

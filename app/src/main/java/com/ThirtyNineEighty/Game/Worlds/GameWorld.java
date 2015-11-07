@@ -7,6 +7,8 @@ import com.ThirtyNineEighty.Renderable.Light;
 public class GameWorld
   extends BaseWorld
 {
+  private static final long serialVersionUID = 1L;
+
   public GameWorld(Tank player)
   {
     this.player = player;
@@ -35,4 +37,7 @@ public class GameWorld
     light.Position.setFrom(player.getPosition());
     light.Position.setZ(30);
   }
+
+  @Override
+  public boolean needSave() { return true; }
 }

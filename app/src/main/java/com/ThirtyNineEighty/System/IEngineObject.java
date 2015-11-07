@@ -1,8 +1,11 @@
 package com.ThirtyNineEighty.System;
 
+import java.io.Serializable;
+
 public interface IEngineObject
+  extends Serializable
 {
-  String getName();
+  Long getId();
 
   boolean isInitialized();
   boolean isEnabled();

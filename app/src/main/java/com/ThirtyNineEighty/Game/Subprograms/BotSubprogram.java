@@ -3,19 +3,21 @@ package com.ThirtyNineEighty.Game.Subprograms;
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
 public class BotSubprogram
   extends Subprogram
 {
+  private static final long serialVersionUID = 1L;
+
   private final static float minDistance = 20;
   private final static float maxDistance = 150;
   private final static float maxPathTimeMissedSec = 5;
@@ -26,11 +28,9 @@ public class BotSubprogram
   private float stepCompletion;
   private float pathTimeMissedSec;
 
-  public BotSubprogram(GameObject bot)
+  public BotSubprogram(Tank bot)
   {
-    super(String.format("BotSubprogram_%s", bot.getName()));
-    this.bot = (Tank)bot;
-
+    this.bot = bot;
     stepCompletion = bot.collidable.getRadius();
   }
 
@@ -44,7 +44,7 @@ public class BotSubprogram
     }
 
     IWorld world = GameContext.content.getWorld();
-    WorldObject player = world.getPlayer();
+    WorldObject<?, ?> player = world.getPlayer();
 
     Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
     Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
@@ -67,7 +67,7 @@ public class BotSubprogram
     Vector.release(targetVector);
   }
 
-  private void tryFire(WorldObject target, Vector2 targetVector)
+  private void tryFire(WorldObject<?, ?> target, Vector2 targetVector)
   {
     float targetAngle = Vector2.xAxis.getAngle(targetVector);
 
@@ -85,7 +85,7 @@ public class BotSubprogram
     }
   }
 
-  private Vector2 getMovingVector(WorldObject target)
+  private Vector2 getMovingVector(WorldObject<?, ?> target)
   {
     Map map = GameContext.mapManager.getMap();
     Vector2 botPosition = Vector.getInstance(2, bot.getPosition());

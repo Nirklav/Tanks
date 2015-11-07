@@ -2,53 +2,23 @@ package com.ThirtyNineEighty.Game.Objects;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
+import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.*;
 import com.ThirtyNineEighty.System.*;
 
 public class Tank
-  extends GameObject
+  extends GameObject<GameDescription, GameProperties>
 {
-  private float turretAngle;
-  private float rechargeProgress;
+  private static final long serialVersionUID = 1L;
 
-  public Tank(TankState state)
+  protected float turretAngle;
+  protected float rechargeProgress;
+
+  public Tank(String type) { this(type, new GameProperties()); }
+  public Tank(String type, GameProperties properties)
   {
-    super(state);
-
-    turretAngle = state.turretAngle;
-    rechargeProgress = state.rechargeProgress;
-  }
-
-  public Tank(String type) { this(null, type, new GameProperties()); }
-  public Tank(String type, GameProperties properties) { this(null, type, properties); }
-  public Tank(String name, String type, GameProperties properties)
-  {
-    super(name, type, properties);
-  }
-
-  @Override
-  public void initialize()
-  {
-    bind(new RechargeSubprogram(this));
-
-    super.initialize();
-  }
-
-  @Override
-  protected State createState()
-  {
-    return new TankState();
-  }
-
-  @Override
-  public State getState()
-  {
-    TankState state = (TankState) super.getState();
-    state.turretAngle = turretAngle;
-    state.rechargeProgress = rechargeProgress;
-    return state;
+    super(type, properties);
   }
 
   public void fire()
@@ -56,19 +26,18 @@ public class Tank
     if (rechargeProgress < GameDescription.maxRechargeLevel)
       return;
 
-    IWorld world = GameContext.content.getWorld();
     rechargeProgress = 0;
 
+    Vector3 bulletAngles = angles.getSum(0, 0, turretAngle);
     GameProperties properties = getProperties();
     Bullet bullet = new Bullet(properties.getBullet());
 
-    Vector3 bulletAngles = Vector.getInstance(3, angles);
-    bulletAngles.addToZ(turretAngle);
+    bullet.bind(new MoveSubprogram(bullet, 100));
     bullet.setAngles(bulletAngles);
-
     bullet.setPosition(position);
     bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
 
+    IWorld world = GameContext.content.getWorld();
     world.add(bullet);
 
     Vector.release(bulletAngles);
@@ -103,14 +72,5 @@ public class Tank
   public void setRechargeProgress(float value)
   {
     rechargeProgress = value;
-  }
-
-  protected static class TankState
-    extends GameState
-  {
-    private static final long serialVersionUID = 1L;
-
-    protected float turretAngle;
-    protected float rechargeProgress;
   }
 }

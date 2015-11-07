@@ -1,8 +1,13 @@
 package com.ThirtyNineEighty.Providers;
 
-public abstract class DataProvider<TData, TDescription>
-  implements IDataProvider<TData>
+import java.io.Serializable;
+
+public abstract class DataProvider<TData extends Serializable, TDescription extends Serializable>
+  implements IDataProvider<TData>,
+             Serializable
 {
+  private static final long serialVersionUID = 1L;
+
   private final TData data;
   private final TDescription description;
 

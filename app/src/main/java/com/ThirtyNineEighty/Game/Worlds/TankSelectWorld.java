@@ -9,6 +9,8 @@ import com.ThirtyNineEighty.Renderable.Light;
 public class TankSelectWorld
   extends BaseWorld
 {
+  private static final long serialVersionUID = 1L;
+
   private float angle = 35;
   private float length = 8;
 

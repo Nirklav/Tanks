@@ -36,7 +36,7 @@ public class Map
   private final static float stepSize = 3;
   private final static PathComparator pathLengthComparator = new PathComparator();
 
-  private final HashMap<String, Projection> projectionsCache;
+  private final HashMap<Long, Projection> projectionsCache;
 
   private int state;
 
@@ -71,7 +71,7 @@ public class Map
     }
   }
 
-  public boolean canMove(GameObject object)
+  public boolean canMove(GameObject<?, ?> object)
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
     Vector3 angles = object.getAngles();
@@ -92,7 +92,7 @@ public class Map
     return true;
   }
 
-  public ArrayList<Vector2> findPath(WorldObject finder, WorldObject target)
+  public ArrayList<Vector2> findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
     Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
     Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
@@ -152,16 +152,16 @@ public class Map
     return null;
   }
 
-  private ArrayList<Projection> getProjections(WorldObject finder) { return getProjections(finder, null); }
-  private ArrayList<Projection> getProjections(WorldObject finder, WorldObject target)
+  private ArrayList<Projection> getProjections(WorldObject<?, ?> finder) { return getProjections(finder, null); }
+  private ArrayList<Projection> getProjections(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
     ArrayList<Projection> result = new ArrayList<>();
-    ArrayList<WorldObject> objects = new ArrayList<>();
+    ArrayList<WorldObject<?, ?>> objects = new ArrayList<>();
 
     IWorld world = GameContext.content.getWorld();
     world.getObjects(objects);
 
-    for (WorldObject object : objects)
+    for (WorldObject<?, ?> object : objects)
     {
       if (target == object || finder == object)
         continue;
@@ -175,10 +175,10 @@ public class Map
     return result;
   }
 
-  private Projection getProjection(WorldObject object)
+  private Projection getProjection(WorldObject<?, ?> object)
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
-    Projection projection = projectionsCache.get(object.getName());
+    Projection projection = projectionsCache.get(object.getId());
     if (projection != null)
     {
       projection.setPosition(position);
@@ -189,7 +189,7 @@ public class Map
     if (projection == null)
       return null;
 
-    projectionsCache.put(object.getName(), projection);
+    projectionsCache.put(object.getId(), projection);
     projection.setPosition(position);
     return projection;
   }

@@ -3,21 +3,29 @@ package com.ThirtyNineEighty.Renderable.GL;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Common.Math.Vector;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Renderable.Renderable;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 
+import java.io.Serializable;
+
 public abstract class GLRenderable<TData extends GLRenderable.Data>
   extends Renderable
 {
+  private static final long serialVersionUID = 1L;
+
   protected float[] modelProjectionViewMatrix;
   protected float[] modelMatrix;
 
+  protected RenderableDescription description;
+
   private IDataProvider<TData> provider;
 
-  protected GLRenderable(IDataProvider<TData> provider)
+  protected GLRenderable(RenderableDescription description, IDataProvider<TData> provider)
   {
+    this.description = description;
     this.provider = provider;
 
     modelMatrix = new float[16];
@@ -73,7 +81,10 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
   }
 
   public static class Data
+    implements Serializable
   {
+    private static final long serialVersionUID = 1L;
+
     public Vector3 position;
     public Vector3 angles;
 

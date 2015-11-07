@@ -6,14 +6,18 @@ import android.opengl.GLSurfaceView;
 import android.os.*;
 import android.view.*;
 
+import com.ThirtyNineEighty.Game.Data.Entities.SavedWorldEntity;
+import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Menu.*;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
+import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.*;
 
 public class GameActivity
   extends Activity
   implements View.OnTouchListener
 {
+  public static final String SavedWorld = "savedWorld";
   public static final int FPS = 30;
 
   private boolean pause;
@@ -61,12 +65,14 @@ public class GameActivity
       @Override
       public void run()
       {
-        GameWorld world = GameContext.mapManager.load();
-        if (world != null)
-        {
-          GameContext.content.setWorld(world);
-          world.disable();
-        }
+        SavedWorldEntity saved = GameContext.gameProgress.getSavedWorld(SavedWorld);
+        if (saved == null)
+          return;
+
+        GameContext.mapManager.load(saved.mapName);
+        GameContext.content.setWorld(saved.world);
+
+        saved.world.disable();
       }
     });
   }
@@ -157,12 +163,24 @@ public class GameActivity
     glView.onPause();
     pause = true;
 
-    GameContext.mapManager.save();
+    // get world info
+    Map map = GameContext.mapManager.getMap();
+    IWorld world = GameContext.content.getWorld();
 
-    // reset
+    // stop the world
     GameContext.content.stop();
+    GameContext.content.reset();
+
+    // save game world if need
+    if (world != null && world.needSave())
+      GameContext.gameProgress.saveWorld(SavedWorld, map.name, world);
+    else
+      GameContext.gameProgress.deleteWorld(SavedWorld);
+
+    // reset other managers
     GameContext.resources.clearCache();
     GameContext.gameProgress.close();
+    GameContext.mapManager.reset();
 
     GameContext.setActivity(null);
     GameContext.content = null;
