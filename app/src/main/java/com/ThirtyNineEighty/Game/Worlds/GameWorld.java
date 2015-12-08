@@ -16,12 +16,6 @@ public class GameWorld
   }
 
   @Override
-  public void initialize()
-  {
-    super.initialize();
-  }
-
-  @Override
   public void setCamera(Camera camera)
   {
     camera.target.setFrom(player.getPosition());
@@ -34,8 +28,7 @@ public class GameWorld
   @Override
   public void setLight(Light light)
   {
-    light.Position.setFrom(player.getPosition());
-    light.Position.setZ(30);
+    light.Position.setFrom(50, 50, 200);
   }
 
   @Override

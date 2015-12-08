@@ -6,7 +6,15 @@ import java.util.HashMap;
 
 public class ResourceCache<TResource>
 {
-  private HashMap<String, Container<TResource>> cache = new HashMap<>();
+  private final String name;
+  private final HashMap<String, Container<TResource>> cache = new HashMap<>();
+
+  public ResourceCache(String name)
+  {
+    this.name = name;
+  }
+
+  public String getName() { return name; }
 
   public TResource get(ISource<TResource> source)
   {

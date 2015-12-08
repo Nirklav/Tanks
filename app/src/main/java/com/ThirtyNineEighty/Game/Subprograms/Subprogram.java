@@ -1,4 +1,8 @@
-package com.ThirtyNineEighty.System;
+package com.ThirtyNineEighty.Game.Subprograms;
+
+import com.ThirtyNineEighty.System.EngineObject;
+import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.System.IBindable;
 
 public abstract class Subprogram
   extends EngineObject

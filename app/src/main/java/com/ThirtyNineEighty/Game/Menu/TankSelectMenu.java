@@ -157,12 +157,12 @@ public class TankSelectMenu
     });
     add(gameButton);
 
-    bulletLabel = new GLLabel(getBulletDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
+    bulletLabel = new GLLabel(getBulletDescription(), MeshMode.Dynamic);
     bulletLabel.setAlign(GLLabel.AlignType.TopLeft);
     bulletLabel.setPosition(-950, 330);
     bind(bulletLabel);
 
-    tankLabel = new GLLabel(getTankDescription(), "simpleFont", 30, 40, MeshMode.Dynamic);
+    tankLabel = new GLLabel(getTankDescription(), MeshMode.Dynamic);
     tankLabel.setAlign(GLLabel.AlignType.TopRight);
     tankLabel.setPosition(950, 330);
     bind(tankLabel);

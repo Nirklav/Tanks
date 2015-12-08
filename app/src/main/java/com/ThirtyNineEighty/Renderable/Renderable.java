@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Renderable;
 import com.ThirtyNineEighty.System.EngineObject;
 import com.ThirtyNineEighty.System.GameContext;
 import com.ThirtyNineEighty.System.IBindable;
-import com.ThirtyNineEighty.System.IRenderable;
 
 public abstract class Renderable
   extends EngineObject

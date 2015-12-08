@@ -2,12 +2,8 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.Angle;
-import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -33,50 +29,7 @@ public class CollisionManager
     worldObjects = new ArrayList<>();
   }
 
-  public void move(GameObject<?, ?> object)
-  {
-    GameDescription description = object.getDescription();
-    object.move(description.getSpeed() * GameContext.getDelta());
-    addToResolving(object);
-  }
-
-  public void move(WorldObject<?, ?> object, float length)
-  {
-    object.move(length);
-    addToResolving(object);
-  }
-
-  public void move(WorldObject<?, ?> object, Vector3 vector, float length)
-  {
-    object.move(length, vector);
-    addToResolving(object);
-  }
-
-  public void rotate(GameObject<?, ?> object, float targetAngle)
-  {
-    GameDescription description = object.getDescription();
-
-    float speed = description.getRotationSpeed() * GameContext.getDelta();
-    float objectAngle = object.getAngles().getZ();
-    float addedValue = 0;
-
-    if (Math.abs(targetAngle - objectAngle) > speed)
-      addedValue = speed * Angle.getDirection(objectAngle, targetAngle);
-
-    Vector3 vector = Vector.getInstance(3);
-    vector.addToZ(addedValue);
-    object.rotate(vector);
-    addToResolving(object);
-    Vector.release(vector);
-  }
-
-  public void rotate(WorldObject<?, ?> object, Vector3 angles)
-  {
-    object.rotate(angles);
-    addToResolving(object);
-  }
-
-  private void addToResolving(WorldObject<?, ?> object)
+  public void addToResolving(WorldObject<?, ?> object)
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);

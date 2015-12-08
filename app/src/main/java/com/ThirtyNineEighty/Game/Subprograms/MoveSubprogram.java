@@ -4,9 +4,7 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
-// TODO: state
 public class MoveSubprogram
   extends Subprogram
 {
@@ -27,17 +25,18 @@ public class MoveSubprogram
   @Override
   public void onUpdate()
   {
-    IWorld world = GameContext.content.getWorld();
     GameDescription description = movedObject.getDescription();
-
     float stepLength = description.getSpeed() * GameContext.getDelta();
-    GameContext.collisions.move(movedObject, stepLength);
+    movedObject.move(stepLength);
 
     if (checkLength)
     {
       length -= stepLength;
       if (length < 0)
+      {
+        IWorld world = GameContext.content.getWorld();
         world.remove(movedObject);
+      }
     }
   }
 }

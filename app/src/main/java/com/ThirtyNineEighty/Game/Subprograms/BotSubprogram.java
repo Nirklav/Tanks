@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
+import android.support.annotation.Nullable;
+
 import com.ThirtyNineEighty.Game.Collisions.Tracer;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
@@ -9,7 +11,6 @@ import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
@@ -87,6 +88,7 @@ public class BotSubprogram
     }
   }
 
+  @Nullable
   private Vector2 getMovingVector(WorldObject<?, ?> target, Vector2 botPosition, Vector2 playerPosition)
   {
     Map map = GameContext.mapManager.getMap();
@@ -140,7 +142,7 @@ public class BotSubprogram
     float movingAngle = Vector2.xAxis.getAngle(movingVector);
     float botAngle = bot.getAngles().getZ();
 
-    GameContext.collisions.rotate(bot, movingAngle);
+    bot.rotate(movingAngle);
 
     if (Math.abs(botAngle - movingAngle) >= 15)
       return;
@@ -149,7 +151,7 @@ public class BotSubprogram
     if (map.canMove(bot))
     {
       pathTimeMissedSec = 0.0f;
-      GameContext.collisions.move(bot);
+      bot.move();
     }
     else
     {

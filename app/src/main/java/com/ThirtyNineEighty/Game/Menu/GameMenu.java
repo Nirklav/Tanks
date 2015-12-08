@@ -1,8 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Map.Map;
-import com.ThirtyNineEighty.Common.Math.*;
-import com.ThirtyNineEighty.System.Subprogram;
+import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
@@ -47,28 +46,7 @@ public class GameMenu
         recharge.setProgress(player.getRechargeProgress());
 
         // Player control
-        if (player.getHealth() > 0)
-        {
-          Vector3 vector = Vector.getInstance(3);
-
-          float joyAngle = getJoystickAngle();
-          float playerAngle = player.getAngles().getZ();
-
-          if (Math.abs(joyAngle - playerAngle) < 90)
-            GameContext.collisions.move(player);
-
-          if (Math.abs(joyAngle - playerAngle) > 3)
-            GameContext.collisions.rotate(player, joyAngle);
-
-          GameDescription playerDescription = player.getDescription();
-          if (leftTurretButton.getState())
-            player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
-
-          if (rightTurretButton.getState())
-            player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
-
-          Vector.release(vector);
-        }
+        processPlayerControl(player);
 
         // Map state
         switch (map.getState())
@@ -142,6 +120,53 @@ public class GameMenu
     loseLabel.setCharSize(60, 80);
     loseLabel.setVisible(false);
     bind(loseLabel);
+  }
+
+  private void processPlayerControl(Tank player)
+  {
+    if (player.getHealth() <= 0)
+      return;
+
+    float joyAngle = getJoystickAngle();
+    float playerAngle = player.getAngles().getZ();
+
+    float deltaAngle = Math.abs(joyAngle - playerAngle);
+
+    // make an adjustment to the angle for the following conditions
+    // example: joyAngle = 359 deg
+    //          playerAngle = 5 deg
+    //
+    // delta should be 6 deg
+    if (deltaAngle > 180)
+      deltaAngle = 360 - deltaAngle;
+
+    // forward
+    if (deltaAngle <= 90)
+    {
+      if (deltaAngle < 45)
+        player.move();
+
+      if (deltaAngle > 3)
+        player.rotate(joyAngle);
+    }
+    // back
+    else
+    {
+      if (deltaAngle > 135)
+        player.moveBack();
+
+      if (deltaAngle < 177)
+        player.rotate(joyAngle - 180);
+    }
+
+    // turret
+    GameDescription playerDescription = player.getDescription();
+
+    if (leftTurretButton.getState())
+      player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
+
+    if (rightTurretButton.getState())
+      player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
   }
 
   public float getJoystickAngle()

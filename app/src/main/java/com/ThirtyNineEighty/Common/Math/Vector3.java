@@ -60,6 +60,18 @@ public class Vector3
     setFrom(vec.getX(), vec.getY(), vec.getZ());
   }
 
+  public void setFromAngles(Vector3 angles)
+  {
+    float[] matrix = new float[16];
+    Matrix.setIdentityM(matrix, 0);
+    Matrix.rotateM(matrix, 0, angles.getX(), 1, 0, 0);
+    Matrix.rotateM(matrix, 0, angles.getY(), 0, 1, 0);
+    Matrix.rotateM(matrix, 0, angles.getZ(), 0, 0, 1);
+
+    Matrix.multiplyMV(getRaw(), 0, matrix, 0, Vector3.xAxis.getRaw(), 0);
+    normalize();
+  }
+
   public float getX() { throwIfReleased(); return value[0]; }
   public float getY() { throwIfReleased(); return value[1]; }
   public float getZ() { throwIfReleased(); return value[2]; }
@@ -197,19 +209,13 @@ public class Vector3
     throwIfReleased();
 
     Vector3 vector = Vector.getInstance(3);
-    float[] matrix = new float[16];
-
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, angles.getX(), 1, 0, 0);
-    Matrix.rotateM(matrix, 0, angles.getY(), 0, 1, 0);
-    Matrix.rotateM(matrix, 0, angles.getZ(), 0, 0, 1);
-    Matrix.multiplyMV(vector.getRaw(), 0, matrix, 0, Vector3.xAxis.getRaw(), 0);
-
-    vector.normalize();
+    vector.setFromAngles(angles);
 
     value[0] += vector.getX() * length;
     value[1] += vector.getY() * length;
     value[2] += vector.getZ() * length;
+
+    Vector.release(vector);
   }
 
   public Vector2 getProjection(ArrayList<Vector3> vertices)

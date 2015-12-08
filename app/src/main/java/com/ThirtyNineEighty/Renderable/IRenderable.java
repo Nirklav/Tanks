@@ -1,6 +1,7 @@
-package com.ThirtyNineEighty.System;
+package com.ThirtyNineEighty.Renderable;
 
-import com.ThirtyNineEighty.Renderable.RendererContext;
+import com.ThirtyNineEighty.System.IBindable;
+import com.ThirtyNineEighty.System.IEngineObject;
 
 public interface IRenderable
   extends IEngineObject

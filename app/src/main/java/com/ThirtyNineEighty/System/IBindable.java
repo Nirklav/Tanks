@@ -1,5 +1,8 @@
 package com.ThirtyNineEighty.System;
 
+import com.ThirtyNineEighty.Game.Subprograms.ISubprogram;
+import com.ThirtyNineEighty.Renderable.IRenderable;
+
 import java.util.List;
 
 public interface IBindable

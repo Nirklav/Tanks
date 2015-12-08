@@ -2,37 +2,39 @@ package com.ThirtyNineEighty.Renderable.GL;
 
 import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.Resources.Sources.GeometrySource;
 import com.ThirtyNineEighty.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.Sources.LabelGeometrySource;
 import com.ThirtyNineEighty.System.GameContext;
-
-import java.nio.FloatBuffer;
 
 // Can process only \n and \t spec symbols
 // TODO: serializable
 public class GLLabel
   extends GLSprite
 {
-  private static final int tabLength = 3;
+  public static final int tabLength = 3;
 
-  private static final float TextureCellWidth = 0.0625f;
-  private static final float TextureCellHeight = 0.125f;
+  public static final String FontSimple = "SimpleFont";
+  private static final int StandardWidth = 30;
+  private static final int StandardHeight = 40;
 
-  private float charWidth;
-  private float charHeight;
+  private int charWidth;
+  private int charHeight;
   private String value;
 
   private AlignType alignType;
   private Vector2 originalPosition;
 
-  public GLLabel(String value) { this(value, "simpleFont", 30, 40, MeshMode.Static); }
-  public GLLabel(String value, String fontTexture, float charWidth, float chatHeight,  MeshMode mode)
+  public GLLabel(String value) { this(value, FontSimple, StandardWidth, StandardHeight, MeshMode.Static); }
+  public GLLabel(String value, MeshMode mode) { this(value, FontSimple, StandardWidth, StandardHeight, mode); }
+  public GLLabel(String value, String fontTexture, int charWidth, int chatHeight,  MeshMode mode)
   {
     super(fontTexture, new LabelGeometrySource(value, mode, charWidth, chatHeight));
+
     this.charWidth = charWidth;
     this.charHeight = chatHeight;
     this.value = value;
+
+    colorCoefficients.setFrom(1, 1, 0);
 
     alignType = AlignType.Center;
     originalPosition = Vector.getInstance(2, position);
@@ -53,7 +55,7 @@ public class GLLabel
     rebuild();
   }
 
-  public void setCharSize(float width, float height)
+  public void setCharSize(int width, int height)
   {
     charWidth = width;
     charHeight = height;
@@ -189,135 +191,5 @@ public class GLLabel
     BottomRight,
     BottomLeft,
     BottomCenter
-  }
-
-  private static class LabelGeometrySource
-    extends GeometrySource
-  {
-    private String value;
-    private float charWidth;
-    private float charHeight;
-
-    public LabelGeometrySource(String value, MeshMode mode, float charWidth, float charHeight)
-    {
-      super(String.format("String: %s Width: %d Height %d", value, (int)charWidth, (int)charHeight), mode);
-
-      this.value = value;
-      this.charWidth = charWidth;
-      this.charHeight = charHeight;
-    }
-
-    @Override
-    public String getName() // Disable cache for dynamic label.
-    {
-      if (mode == MeshMode.Dynamic)
-        return null;
-
-      return super.getName();
-    }
-
-    @Override
-    protected LoadResult buildGeometry()
-    {
-      int carriagePosition = 0;
-      int lineNumber = 0;
-      int counter = 0;
-      int strLength = 0;
-      int strRealLength = value.length();
-
-      for (int i = 0; i < strRealLength; i++)
-      {
-        char ch = value.charAt(i);
-
-        switch (ch)
-        {
-        case '\n':
-        case '\t':
-          continue;
-
-        default:
-          strLength++;
-          break;
-        }
-      }
-
-      float[] geometry = new float[strLength * 24];
-
-      for (int i = 0; i < strRealLength; i++)
-      {
-        char ch = value.charAt(i);
-
-        switch (ch)
-        {
-        case '\n':
-          lineNumber++;
-          carriagePosition = 0;
-          continue;
-        case '\t':
-          carriagePosition += tabLength;
-          continue;
-        }
-
-        int chInt = (int) ch;
-        int numOfTextureCellX = (chInt - 32) % 16;
-        int numOfTextureCellY = (chInt - 32) / 16;
-
-        float charViewOffsetX = carriagePosition * charWidth;
-        float charViewOffsetY = lineNumber * charHeight;
-
-        // 1 point
-        // vertices
-        geometry[counter++] = - charWidth / 2 + charViewOffsetX;
-        geometry[counter++] =   charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight;
-
-        // 2 point
-        // vertices
-        geometry[counter++] = - charWidth / 2 + charViewOffsetX;
-        geometry[counter++] = - charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight + TextureCellHeight;
-
-        // 3 point
-        // vertices
-        geometry[counter++] =   charWidth / 2 + charViewOffsetX;
-        geometry[counter++] =   charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth + TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight;
-
-        // 4 point
-        // vertices
-        geometry[counter++] = - charWidth / 2 + charViewOffsetX;
-        geometry[counter++] = - charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight + TextureCellHeight;
-
-        // 5 point
-        // vertices
-        geometry[counter++] =   charWidth / 2 + charViewOffsetX;
-        geometry[counter++] = - charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth + TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight + TextureCellHeight;
-
-        // 6 point
-        // vertices
-        geometry[counter++] =   charWidth / 2 + charViewOffsetX;
-        geometry[counter++] =   charHeight / 2 - charViewOffsetY;
-        // texture
-        geometry[counter++] = numOfTextureCellX * TextureCellWidth + TextureCellWidth;
-        geometry[counter++] = numOfTextureCellY * TextureCellHeight;
-
-        carriagePosition++;
-      }
-
-      FloatBuffer buffer = loadGeometry(geometry);
-      return new LoadResult(buffer, geometry.length / 12, Vector3.zero, Vector3.zero);
-    }
   }
 }

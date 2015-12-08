@@ -4,11 +4,16 @@ import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
 
 public class MainMenu
   extends BaseMenu
 {
+  private GLLabel resourceCacheStatus;
+
   @Override
   public void initialize()
   {
@@ -49,17 +54,43 @@ public class MainMenu
     });
     add(newGameButton);
 
-    Button campaign = new Button("Campaign");
-    campaign.setPosition(0, -250);
-    campaign.setSize(600, 200);
-    campaign.setClickListener(new Runnable()
+    Button cacheStatus = new Button("Show cache status");
+    cacheStatus.setPosition(0, -250);
+    cacheStatus.setSize(600, 200);
+    cacheStatus.setClickListener(new Runnable()
     {
       @Override
       public void run()
       {
+        resourceCacheStatus.setVisible(true);
+        resourceCacheStatus.setValue(GameContext.resources.getCacheStatus());
 
+        bind(new Subprogram()
+        {
+          private boolean delayed;
+
+          @Override
+          protected void onUpdate()
+          {
+            if (!delayed)
+            {
+              delayed = true;
+              delay(5000);
+              return;
+            }
+
+            resourceCacheStatus.setVisible(false);
+            unbind();
+          }
+        });
       }
     });
-    add(campaign);
+    add(cacheStatus);
+
+    resourceCacheStatus = new GLLabel(GameContext.resources.getCacheStatus(), MeshMode.Dynamic);
+    resourceCacheStatus.setPosition(960, 540);
+    resourceCacheStatus.setAlign(GLLabel.AlignType.TopRight);
+    resourceCacheStatus.setVisible(false);
+    bind(resourceCacheStatus);
   }
 }

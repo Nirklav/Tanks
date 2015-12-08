@@ -66,9 +66,9 @@ public class TankSelectWorld
   @Override
   public void setLight(Light light)
   {
-    float height = 10 + length / 2;
-    float x = length * (float)Math.cos(Math.toRadians(angle));
-    float y = length * (float)Math.sin(Math.toRadians(angle));
+    float height = 100 + length / 2;
+    float x = 50 + length * (float)Math.cos(Math.toRadians(angle));
+    float y = 50 + length * (float)Math.sin(Math.toRadians(angle));
 
     light.Position.setFrom(x, y, height);
   }

@@ -11,6 +11,7 @@ public class Shader2D
   public int uniformModelViewMatrixHandle;
   public int uniformTextureMatrixHandle;
   public int uniformTextureHandle;
+  public int uniformColorCoefficients;
 
   @Override
   public void compile()
@@ -27,5 +28,6 @@ public class Shader2D
     uniformModelViewMatrixHandle  = GLES20.glGetUniformLocation(programHandle, "u_modelViewMatrix");
     uniformTextureMatrixHandle    = GLES20.glGetUniformLocation(programHandle, "u_texMatrix");
     uniformTextureHandle          = GLES20.glGetUniformLocation(programHandle, "u_texture");
+    uniformColorCoefficients      = GLES20.glGetUniformLocation(programHandle, "u_colorCoefficients");
   }
 }

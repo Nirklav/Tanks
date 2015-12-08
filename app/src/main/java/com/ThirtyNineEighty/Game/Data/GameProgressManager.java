@@ -13,7 +13,8 @@ public final class GameProgressManager
     dataBase = new DataBase(GameContext.activity);
 
     openMap("standard");
-    openTank("tank");
+    openMap("move test");
+    openTank("without bots");
   }
 
   public boolean isMapOpen(String name)

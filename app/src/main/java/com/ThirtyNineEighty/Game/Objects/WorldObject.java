@@ -6,6 +6,7 @@ import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Providers.CollidableTankProvider;
 import com.ThirtyNineEighty.Providers.IDataProvider;
+import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.*;
 
@@ -65,15 +66,29 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public void collide(WorldObject<?, ?> object) { }
 
+  public void rotate(float x, float y, float z)
+  {
+    angles.addToX(x);
+    angles.addToY(y);
+    angles.addToZ(z);
+    angles.correctAngles();
+
+    GameContext.collisions.addToResolving(this);
+  }
+
   public void rotate(Vector3 value)
   {
     angles.add(value);
     angles.correctAngles();
+
+    GameContext.collisions.addToResolving(this);
   }
 
   public void move(float length)
   {
     position.move(length, angles);
+
+    GameContext.collisions.addToResolving(this);
   }
 
   public void move(float length, Vector3 vector)
@@ -81,6 +96,8 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     vector.normalize();
     vector.multiply(length);
     position.add(vector);
+
+    GameContext.collisions.addToResolving(this);
   }
 
   public TDescription getDescription() { return description; }

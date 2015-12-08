@@ -93,7 +93,7 @@ public class MapSelectMenu
     });
     add(menu);
 
-    mapName = new GLLabel(mapSelector.getCurrent(), "simpleFont", 40, 60, MeshMode.Dynamic);
+    mapName = new GLLabel(mapSelector.getCurrent(), GLLabel.FontSimple, 40, 60, MeshMode.Dynamic);
     bind(mapName);
 
     closed = new GLLabel("Closed");

@@ -5,8 +5,8 @@ import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Subprograms.*;
 import com.ThirtyNineEighty.Providers.GLModelTankProvider;
 import com.ThirtyNineEighty.Renderable.GL.*;
-import com.ThirtyNineEighty.System.IRenderable;
-import com.ThirtyNineEighty.System.ISubprogram;
+import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Game.Subprograms.ISubprogram;
 
 import java.util.HashMap;
 

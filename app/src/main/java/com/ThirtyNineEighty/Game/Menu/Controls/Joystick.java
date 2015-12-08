@@ -74,6 +74,18 @@ public class Joystick
 
   private void setStick(float x, float y)
   {
+    float stickRadius = stickSprite.getWidth() / 2f;
+    float coeff = radius / (radius - stickRadius);
+    float xCat = x - position.getX();
+    float yCat = y - position.getY();
+    float length = (float) Math.sqrt(xCat * xCat + yCat * yCat) * coeff;
+
+    if (length > radius)
+    {
+      x = position.getX() + xCat * radius / length;
+      y = position.getY() + yCat * radius / length;
+    }
+
     stickPosition.setFrom(x, y);
     stickSprite.setPosition(x, y);
   }

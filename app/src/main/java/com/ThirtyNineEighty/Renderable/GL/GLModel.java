@@ -64,7 +64,7 @@ public class GLModel
     Shader3D shader = (Shader3D) Shader.getCurrent();
     Light light = context.getLight();
 
-    // build result matrix
+    // build PVM matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
 
     // bind texture to 0 slot
@@ -74,6 +74,7 @@ public class GLModel
     // send uniform data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
+    GLES20.glUniformMatrix3fv(shader.uniformNormalMatrix, 1, false, modelNormalMatrix, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
     GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, light.Position.getRaw(), 0);
     GLES20.glUniform4f(shader.uniformColorCoefficients, data.RedCoeff, data.GreenCoeff, data.BlueCoeff, 1.0f);

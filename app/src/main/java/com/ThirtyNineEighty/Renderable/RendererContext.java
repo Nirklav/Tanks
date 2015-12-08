@@ -29,6 +29,8 @@ public class RendererContext
 
   public float[] getProjectionViewMatrix() { return projectionViewMatrix; }
   public float[] getOrthoMatrix() { return orthoMatrix; }
+  public float[] getViewMatrix() { return viewMatrix; }
+
   public Light getLight() { return light; }
 
   public void setLight(Light value)

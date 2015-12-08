@@ -9,13 +9,13 @@ import com.ThirtyNineEighty.System.GameContext;
 public class Button
   extends Control
 {
-  private boolean state;
+  protected boolean state;
 
-  private GLSprite sprite;
-  private GLLabel label;
+  protected GLSprite sprite;
+  protected GLLabel label;
 
-  private Image pressed;
-  private Image notPressed;
+  protected Image pressed;
+  protected Image notPressed;
 
   private float x;
   private float y;
@@ -23,10 +23,10 @@ public class Button
   private float height;
 
   public Button(String caption) { this(caption, "pressedBtn", "notPressedBtn"); }
-  public Button(String caption, String pressedName, String notPressedName)
+  public Button(String caption, String pressedImageName, String notPressedImageName)
   {
-    pressed = GameContext.resources.getImage(new FileImageSource(pressedName));
-    notPressed = GameContext.resources.getImage(new FileImageSource(notPressedName));
+    pressed = GameContext.resources.getImage(new FileImageSource(pressedImageName));
+    notPressed = GameContext.resources.getImage(new FileImageSource(notPressedImageName));
 
     sprite = new GLSprite(notPressed);
     sprite.setZIndex(0);

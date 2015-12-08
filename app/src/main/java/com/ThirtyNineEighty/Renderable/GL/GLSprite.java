@@ -43,6 +43,7 @@ public class GLSprite
   private boolean needBuildMatrix;
 
   protected Vector2 position;
+  protected Vector3 colorCoefficients;
   protected float angle;
   protected float zIndex;
   protected float width;
@@ -55,6 +56,7 @@ public class GLSprite
   public GLSprite(Image image)
   {
     this();
+
     geometryData = GameContext.resources.getGeometry(geometrySource);
     setImage(image);
     needBuildMatrix = true;
@@ -77,6 +79,7 @@ public class GLSprite
     modelViewMatrix = new float[16];
     textureMatrix = new Matrix3f();
     position = Vector.getInstance(2);
+    colorCoefficients = Vector.getInstance(3, 1, 1, 1);
 
     setSize(1, 1);
   }
@@ -105,6 +108,7 @@ public class GLSprite
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix3fv(shader.uniformTextureMatrixHandle, 1, false, textureMatrix.getArray(), 0);
     GLES20.glUniformMatrix4fv(shader.uniformModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
+    GLES20.glUniform4f(shader.uniformColorCoefficients, colorCoefficients.getX(), colorCoefficients.getY(), colorCoefficients.getZ(), 1);
 
     // set buffer or reset if dynamic
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
@@ -191,6 +195,11 @@ public class GLSprite
   public Vector2 getPosition()
   {
     return position;
+  }
+
+  public void setColorCoefficients(Vector3 coefficients)
+  {
+    colorCoefficients.setFrom(coefficients);
   }
 
   public void setAngle(float value)

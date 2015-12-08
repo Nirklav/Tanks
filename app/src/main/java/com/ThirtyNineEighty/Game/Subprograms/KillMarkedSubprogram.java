@@ -7,7 +7,6 @@ import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.Subprogram;
 
 import java.util.ArrayList;
 
@@ -19,9 +18,7 @@ public class KillMarkedSubprogram
   private ArrayList<GameObject<?, ?>> marked;
 
   public KillMarkedSubprogram()
-  {
-
-  }
+  { }
 
   @Override
   protected void onUpdate()

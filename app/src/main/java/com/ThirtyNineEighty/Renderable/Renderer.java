@@ -6,7 +6,6 @@ import android.opengl.GLSurfaceView;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IRenderable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,12 +122,10 @@ public class Renderer
   @Override
   public void onSurfaceChanged(GL10 gl, int width, int height)
   {
-    GameContext.setGLThread();
     GameContext.setWidth(width);
     GameContext.setHeight(height);
 
     GLES20.glEnable(GLES20.GL_CULL_FACE);
-    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     GLES20.glEnable(GLES20.GL_BLEND);
     GLES20.glDepthFunc(GLES20.GL_LEQUAL);
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -147,6 +144,7 @@ public class Renderer
   @Override
   public void onSurfaceCreated(GL10 gl, EGLConfig config)
   {
+    GameContext.setGLThread();
 
   }
 

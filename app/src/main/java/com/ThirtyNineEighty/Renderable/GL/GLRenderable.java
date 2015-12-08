@@ -17,6 +17,7 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
   private static final long serialVersionUID = 1L;
 
   protected float[] modelProjectionViewMatrix;
+  protected float[] modelNormalMatrix;
   protected float[] modelMatrix;
 
   protected RenderableDescription description;
@@ -29,6 +30,7 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
     this.provider = provider;
 
     modelMatrix = new float[16];
+    modelNormalMatrix = new float[9];
     modelProjectionViewMatrix = new float[16];
   }
 
@@ -38,6 +40,7 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
     TData data = provider.get();
 
     setModelMatrix(data);
+    setNormalMatrix();
     draw(context, data);
   }
 
@@ -78,6 +81,13 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
 
     Vector.release(localPosition);
     Vector.release(localAngles);
+  }
+
+  private void setNormalMatrix()
+  {
+    for (int x = 0; x < 3; x++)
+      for (int y = 0; y < 3; y++)
+        modelNormalMatrix[x + y * 3] = modelMatrix[x + y * 3];
   }
 
   public static class Data
