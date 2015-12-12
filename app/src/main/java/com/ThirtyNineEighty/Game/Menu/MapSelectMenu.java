@@ -1,10 +1,12 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
 import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.Sources.FileMapDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class MapSelectMenu
@@ -26,7 +28,7 @@ public class MapSelectMenu
       {
         args.setMapName(current);
         mapName.setValue(current);
-        closed.setVisible(!GameContext.gameProgress.isMapOpen(current));
+        closed.setVisible(!isMapOpen(current));
       }
     });
   }
@@ -70,7 +72,7 @@ public class MapSelectMenu
       @Override
       public void run()
       {
-        if (!GameContext.gameProgress.isMapOpen(args.getMapName()))
+        if (!isMapOpen(args.getMapName()))
           return;
 
         GameContext.content.setMenu(new TankSelectMenu(args));
@@ -98,7 +100,13 @@ public class MapSelectMenu
 
     closed = new GLLabel("Closed");
     closed.setPosition(0, 100);
-    closed.setVisible(!GameContext.gameProgress.isMapOpen(mapSelector.getCurrent()));
+    closed.setVisible(!isMapOpen(mapSelector.getCurrent()));
     bind(closed);
+  }
+
+  private boolean isMapOpen(String mapName)
+  {
+    MapDescription mapDescription = GameContext.resources.getMap(new FileMapDescriptionSource(mapName));
+    return mapDescription.openedOnStart || GameContext.gameProgress.isMapOpen(mapName);
   }
 }

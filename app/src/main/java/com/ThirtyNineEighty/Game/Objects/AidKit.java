@@ -8,9 +8,9 @@ public class AidKit
 {
   private static final long serialVersionUID = 1L;
 
-  public AidKit(String type)
+  public AidKit(String descriptionName)
   {
-    super(type, new GameProperties());
+    super(descriptionName, new GameProperties());
   }
 
   @Override

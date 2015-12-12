@@ -8,10 +8,11 @@ public class Land
 {
   private static final long serialVersionUID = 1L;
 
+  public static final String sand = "sandLand";
   public static final float size = 50.0f;
 
-  public Land()
+  public Land(String descriptionName)
   {
-    super("land", new Properties());
+    super(descriptionName, new Properties());
   }
 }

@@ -11,10 +11,6 @@ public final class GameProgressManager
   public void initialize()
   {
     dataBase = new DataBase(GameContext.activity);
-
-    openMap("standard");
-    openMap("move test");
-    openTank("without bots");
   }
 
   public boolean isMapOpen(String name)

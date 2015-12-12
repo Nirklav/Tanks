@@ -7,6 +7,6 @@ public class FileContentSource
 {
   public FileContentSource(String name)
   {
-    super(name, "Content");
+    super(name, "Content", "ch");
   }
 }

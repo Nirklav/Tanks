@@ -25,10 +25,9 @@ public class Factory
     renderableCreators = new HashMap<>();
 
     addObject("tank", Tank.class);
-    addObject("botTank", Tank.class);
     addObject("land", Land.class);
     addObject("bullet", Bullet.class);
-    addObject("building", Decor.class);
+    addObject("decor", Decor.class);
     addObject("aidKit", AidKit.class);
 
     addSubprogram("bot", BotSubprogram.class);

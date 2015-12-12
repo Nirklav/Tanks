@@ -8,7 +8,7 @@ public class MapObject
 {
   private static final long serialVersionUID = 1L;
 
-  public String type;
+  public String description;
   public String[] subprograms;
   public Properties properties;
 

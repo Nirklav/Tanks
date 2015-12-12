@@ -7,14 +7,13 @@ public class VisualDescription
 {
   private static final long serialVersionUID = 1L;
 
+  public final int id;
   public final String type;
   public final String providerType;
 
   public final RenderableDescription renderable;
 
-  public final int id;
-
-  public VisualDescription(String type, RenderableDescription renderable, String providerType, int id)
+  public VisualDescription(int id, String type, RenderableDescription renderable, String providerType)
   {
     this.type = type;
     this.renderable = renderable;

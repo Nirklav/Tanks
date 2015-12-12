@@ -7,11 +7,14 @@ public class Description
 {
   private static final long serialVersionUID = 1L;
 
-  protected String type;
+  protected String name;
+  protected String objectType;
 
   protected VisualDescription[] visuals;
   protected PhysicalDescription physical;
+
   protected boolean removeOnCollide;
+  protected boolean openedOnStart;
 
   public Description(VisualDescription[] visuals, PhysicalDescription physical)
   {
@@ -19,9 +22,12 @@ public class Description
     this.physical = physical;
   }
 
-  public String getType() { return type; }
+  public String getName() { return name; }
+  public String getObjectType() { return objectType; }
 
   public VisualDescription[] getVisuals() { return visuals; }
   public PhysicalDescription getPhysical() { return physical; }
+
   public boolean removeOnCollide() { return removeOnCollide; }
+  public boolean openedOnStart() { return openedOnStart; }
 }

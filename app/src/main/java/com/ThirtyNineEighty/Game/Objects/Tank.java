@@ -15,10 +15,10 @@ public class Tank
   protected float turretAngle;
   protected float rechargeProgress;
 
-  public Tank(String type) { this(type, new GameProperties()); }
-  public Tank(String type, GameProperties properties)
+  public Tank(String descriptionName) { this(descriptionName, new GameProperties()); }
+  public Tank(String descriptionName, GameProperties properties)
   {
-    super(type, properties);
+    super(descriptionName, properties);
   }
 
   public void fire()

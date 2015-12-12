@@ -18,7 +18,7 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 {
   private static final long serialVersionUID = 1L;
 
-  protected String type;
+  protected String descriptionName;
 
   protected transient TDescription description;
   protected TProperties properties;
@@ -28,11 +28,11 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public ICollidable collidable;
 
-  protected WorldObject(String type, TProperties properties)
+  protected WorldObject(String descriptionName, TProperties properties)
   {
-    this.type = type;
+    this.descriptionName = descriptionName;
 
-    this.description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(type));
+    this.description = getDescription(descriptionName);
     this.properties = properties;
     this.position = new Vector3();
     this.angles = new Vector3();
@@ -44,7 +44,12 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
   {
     in.defaultReadObject();
 
-    description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(type));
+    description = getDescription(descriptionName);
+  }
+
+  private TDescription getDescription(String descriptionName)
+  {
+    return (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
   }
 
   private void build()

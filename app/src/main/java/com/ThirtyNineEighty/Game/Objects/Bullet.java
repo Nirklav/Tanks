@@ -8,9 +8,9 @@ public class Bullet
 {
   private static final long serialVersionUID = 1L;
 
-  public Bullet(String type)
+  public Bullet(String descriptionName)
   {
-    super(type, new GameProperties());
+    super(descriptionName, new GameProperties());
   }
 
   @Override

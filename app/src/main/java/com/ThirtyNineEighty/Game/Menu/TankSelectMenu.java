@@ -171,7 +171,7 @@ public class TankSelectMenu
   private String getBulletDescription()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription bulletDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(properties.getBullet()));
+    GameDescription bulletDescription = getDescription(properties.getBullet());
 
     return String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
       , isBulletAvailable() ? "Yes" : "No"
@@ -183,7 +183,7 @@ public class TankSelectMenu
 
   private String getTankDescription()
   {
-    GameDescription tankDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = getDescription(startArgs.getTankName());
     return String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
       , isTankAvailable() ? "Yes" : "No"
       , startArgs.getTankName()
@@ -197,15 +197,21 @@ public class TankSelectMenu
   private boolean isBulletAvailable()
   {
     GameProperties properties = startArgs.getProperties();
-    GameDescription tankDescription = (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(startArgs.getTankName()));
+    GameDescription tankDescription = getDescription(startArgs.getTankName());
 
     return tankDescription
-      .getSupportedBullets()
-      .contains(properties.getBullet());
+      .getSupportedBullets().contains(properties.getBullet());
   }
 
   private boolean isTankAvailable()
   {
-    return GameContext.gameProgress.isTankOpen(startArgs.getTankName());
+    String tankName = startArgs.getTankName();
+    GameDescription tankDescription = getDescription(startArgs.getTankName());
+    return tankDescription.openedOnStart() || GameContext.gameProgress.isTankOpen(tankName);
+  }
+
+  private GameDescription getDescription(String name)
+  {
+    return (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(name));
   }
 }

@@ -16,4 +16,6 @@ public class MapDescription
   public String[] openingMaps;
   public String[] openingTanks;
   public String[] openingUpgrades;
+
+  public boolean openedOnStart;
 }

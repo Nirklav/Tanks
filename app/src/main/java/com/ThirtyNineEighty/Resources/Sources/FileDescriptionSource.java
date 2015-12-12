@@ -7,6 +7,6 @@ public class FileDescriptionSource
 {
   public FileDescriptionSource(String name)
   {
-    super(name, "Descriptions");
+    super(name, "Descriptions", "ch");
   }
 }

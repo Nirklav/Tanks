@@ -13,9 +13,9 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
   protected float health;
   protected boolean isDead;
 
-  protected GameObject(String type, TProperties properties)
+  protected GameObject(String descriptionName, TProperties properties)
   {
-    super(type, properties);
+    super(descriptionName, properties);
 
     health = description.getHealth();
   }

@@ -8,8 +8,8 @@ public class Decor
 {
   private static final long serialVersionUID = 1L;
 
-  public Decor(String type)
+  public Decor(String descriptionName)
   {
-    super(type, new Properties());
+    super(descriptionName, new Properties());
   }
 }

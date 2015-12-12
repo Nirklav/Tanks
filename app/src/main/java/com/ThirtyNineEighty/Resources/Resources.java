@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Resources;
 
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Resources.Entities.FrameBuffer;
 import com.ThirtyNineEighty.Resources.Entities.Geometry;
@@ -22,6 +23,7 @@ public final class Resources
   private final ResourceCache<Description> descriptionCache;
   private final ResourceCache<ArrayList<String>> contentCache;
   private final ResourceCache<FrameBuffer> frameBuffersCache;
+  private final ResourceCache<MapDescription> mapsCache;
 
   public Resources()
   {
@@ -33,6 +35,7 @@ public final class Resources
     caches.add(descriptionCache = new ResourceCache<>("Descriptions"));
     caches.add(contentCache = new ResourceCache<>("Contents"));
     caches.add(frameBuffersCache = new ResourceCache<>("FrameBuffers"));
+    caches.add(mapsCache = new ResourceCache<>("Maps"));
   }
 
   public Texture getTexture(ISource<Texture> source) { return textureCache.get(source); }
@@ -42,6 +45,7 @@ public final class Resources
   public Description getDescription(ISource<Description> source) { return descriptionCache.get(source); }
   public ArrayList<String> getContent(ISource<ArrayList<String>> source) { return contentCache.get(source); }
   public FrameBuffer getFrameBuffer(ISource<FrameBuffer> source) { return frameBuffersCache.get(source); }
+  public MapDescription getMap(ISource<MapDescription> source) { return mapsCache.get(source); }
 
   public void preload()
   {

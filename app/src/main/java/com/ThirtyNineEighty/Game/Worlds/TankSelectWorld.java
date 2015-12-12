@@ -24,7 +24,7 @@ public class TankSelectWorld
   @Override
   public void initialize()
   {
-    add(new Land());
+    add(new Land(Land.sand));
     add(player = new Tank(args.getTankName()));
     super.initialize();
   }

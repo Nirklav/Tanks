@@ -2,10 +2,13 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Map.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.*;
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.*;
 import com.ThirtyNineEighty.Common.Serializer;
 import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
+import com.ThirtyNineEighty.Resources.Sources.FileMapDescriptionSource;
 import com.ThirtyNineEighty.System.*;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ public final class MapManager
     if (!maps.contains(name))
       throw new IllegalArgumentException("name");
 
-    MapDescription mapDesc = Serializer.Deserialize(String.format("Maps/%s.map", name));
+    MapDescription mapDesc = GameContext.resources.getMap(new FileMapDescriptionSource(name));
     map = new Map(name, mapDesc);
 
     // Create player
@@ -49,7 +52,8 @@ public final class MapManager
 
   private WorldObject<?, ?> create(MapObject mapObj)
   {
-    WorldObject<?, ?> object = GameContext.factory.createObject(mapObj.type, mapObj.type, mapObj.properties);
+    Description description = GameContext.resources.getDescription(new FileDescriptionSource(mapObj.description));
+    WorldObject<?, ?> object = GameContext.factory.createObject(description.getObjectType(), mapObj.description, mapObj.properties);
 
     object.setPosition(mapObj.getPosition());
     object.setAngles(mapObj.getAngles());
