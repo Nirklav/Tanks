@@ -59,6 +59,7 @@ public class Renderer
     case Shader.Shader2D:
       return menus;
     case Shader.Shader3D:
+    case Shader.ShaderSkyBox:
       return objects;
     case Shader.ShaderExplosionParticles:
       return particles;

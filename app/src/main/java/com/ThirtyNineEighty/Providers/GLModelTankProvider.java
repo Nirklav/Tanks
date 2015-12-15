@@ -28,9 +28,9 @@ public class GLModelTankProvider
 
     if (object.getHealth() <= 0)
     {
-      data.RedCoeff = 0.2f;
-      data.GreenCoeff = 0.2f;
-      data.BlueCoeff = 0.2f;
+      data.redCoeff = 0.2f;
+      data.greenCoeff = 0.2f;
+      data.blueCoeff = 0.2f;
     }
   }
 }

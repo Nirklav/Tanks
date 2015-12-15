@@ -49,7 +49,7 @@ public class RendererContext
     float targetZ = camera.target.getZ();
 
     Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0.0f, 0.0f, 1.0f);
-    Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 60.0f);
+    Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 200.0f);
     Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
   }
 }

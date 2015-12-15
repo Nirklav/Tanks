@@ -25,10 +25,11 @@ public class Factory
     renderableCreators = new HashMap<>();
 
     addObject("tank", Tank.class);
-    addObject("land", Land.class);
     addObject("bullet", Bullet.class);
     addObject("decor", Decor.class);
     addObject("aidKit", AidKit.class);
+    addObject("land", Land.class);
+    addObject("skyBox", SkyBox.class);
 
     addSubprogram("bot", BotSubprogram.class);
     addSubprogram("move", MoveSubprogram.class);
@@ -39,8 +40,10 @@ public class Factory
     addProvider("glModelTankProvider", GLModelTankProvider.class);
     addProvider("glModelLandProvider", GLModelLandProvider.class);
     addProvider("glModelWorldObjectProvider", GLModelWorldObjectProvider.class);
+    addProvider("glRenderableSkyBoxProvider", GLRenderableSkyBoxProvider.class);
 
     addRenderable("glModel", GLModel.class);
+    addRenderable("glSkyBox", GLSkyBox.class);
   }
 
   public WorldObject<?, ?> createObject(String type, Object... params)

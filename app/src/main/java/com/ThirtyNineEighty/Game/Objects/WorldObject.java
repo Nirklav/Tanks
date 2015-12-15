@@ -47,7 +47,8 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     description = getDescription(descriptionName);
   }
 
-  private TDescription getDescription(String descriptionName)
+  @SuppressWarnings("unchecked")
+  private TDescription  getDescription(String descriptionName)
   {
     return (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
   }

@@ -3,28 +3,26 @@ package com.ThirtyNineEighty.Renderable.GL;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Providers.IDataProvider;
-import com.ThirtyNineEighty.Renderable.Light;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.*;
-import com.ThirtyNineEighty.Resources.Sources.*;
 import com.ThirtyNineEighty.Resources.Entities.*;
+import com.ThirtyNineEighty.Resources.Sources.*;
 import com.ThirtyNineEighty.System.GameContext;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class GLModel
-  extends GLRenderable<GLModel.Data>
+public class GLSkyBox
+  extends GLRenderable<GLRenderable.Data>
 {
   private static final long serialVersionUID = 1L;
 
   private transient Texture textureData;
   private transient Geometry geometryData;
 
-  public GLModel(RenderableDescription description, IDataProvider<Data> provider)
+  public GLSkyBox(RenderableDescription description, IDataProvider<Data> provider)
   {
     super(description, provider);
 
@@ -43,26 +41,13 @@ public class GLModel
   @Override
   public int getShaderId()
   {
-    return Shader.Shader3D;
+    return Shader.ShaderSkyBox;
   }
 
   @Override
-  protected Vector3 getLocalPosition()
+  protected void draw(RendererContext context, Data data)
   {
-    return geometryData.getPosition();
-  }
-
-  @Override
-  protected Vector3 getLocalAngles()
-  {
-    return geometryData.getAngles();
-  }
-
-  @Override
-  public void draw(RendererContext context, Data data)
-  {
-    Shader3D shader = (Shader3D) Shader.getCurrent();
-    Light light = context.getLight();
+    ShaderSkyBox shader = (ShaderSkyBox) Shader.getCurrent();
 
     // build PVM matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
@@ -74,22 +59,16 @@ public class GLModel
     // send uniform data to shader
     GLES20.glUniform1i(shader.uniformTextureHandle, 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
-    GLES20.glUniformMatrix3fv(shader.uniformNormalMatrix, 1, false, modelNormalMatrix, 0);
-    GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelMatrix, 0);
-    GLES20.glUniform3fv(shader.uniformLightVectorHandle, 1, light.Position.getRaw(), 0);
-    GLES20.glUniform4f(shader.uniformColorCoefficients, data.redCoeff, data.greenCoeff, data.blueCoeff, 1.0f);
 
     // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
 
     // set offsets to arrays for buffer
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 32, 0);
-    GLES20.glVertexAttribPointer(shader.attributeNormalHandle, 3, GLES20.GL_FLOAT, false, 32, 12);
     GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 32, 24);
 
     // enable attribute arrays
     GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
-    GLES20.glEnableVertexAttribArray(shader.attributeNormalHandle);
     GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
     // validating if debug
@@ -102,17 +81,6 @@ public class GLModel
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
-    GLES20.glDisableVertexAttribArray(shader.attributeNormalHandle);
     GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
-  }
-
-  public static class Data
-    extends GLRenderable.Data
-  {
-    private static final long serialVersionUID = 1L;
-
-    public float redCoeff = 1;
-    public float greenCoeff = 1;
-    public float blueCoeff = 1;
   }
 }

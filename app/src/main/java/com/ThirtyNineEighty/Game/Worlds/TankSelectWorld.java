@@ -1,6 +1,8 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.Land;
+import com.ThirtyNineEighty.Game.Objects.Properties.SkyBoxProperties;
+import com.ThirtyNineEighty.Game.Objects.SkyBox;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Common.Math.Angle;
 import com.ThirtyNineEighty.Renderable.Camera;
@@ -10,6 +12,13 @@ public class TankSelectWorld
   extends BaseWorld
 {
   private static final long serialVersionUID = 1L;
+
+  private static final float skyBoxScale = 100;
+  private static final float minLength = 4;
+  private static final float maxLength = 10;
+  private static final float lightHeight = 100;
+  private static final float lightX = 50;
+  private static final float lightY = 50;
 
   private float angle = 35;
   private float length = 8;
@@ -25,6 +34,7 @@ public class TankSelectWorld
   public void initialize()
   {
     add(new Land(Land.sand));
+    add(new SkyBox(SkyBox.desert, new SkyBoxProperties(skyBoxScale)));
     add(player = new Tank(args.getTankName()));
     super.initialize();
   }
@@ -33,11 +43,11 @@ public class TankSelectWorld
   {
     length += value;
 
-    if (length < 4)
-      length = 4;
+    if (length < minLength)
+      length = minLength;
 
-    if (length > 10)
-      length = 10;
+    if (length > maxLength)
+      length = maxLength;
   }
 
   public void addAngle(float value)
@@ -66,10 +76,6 @@ public class TankSelectWorld
   @Override
   public void setLight(Light light)
   {
-    float height = 100 + length / 2;
-    float x = 50 + length * (float)Math.cos(Math.toRadians(angle));
-    float y = 50 + length * (float)Math.sin(Math.toRadians(angle));
-
-    light.Position.setFrom(x, y, height);
+    light.Position.setFrom(lightX, lightY, lightHeight);
   }
 }
