@@ -1,9 +1,6 @@
 package com.ThirtyNineEighty.Providers;
 
-import com.ThirtyNineEighty.Common.Math.Spiral;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Common.Math.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Game.Objects.WorldObject;

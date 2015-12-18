@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Providers.IDataProvider;
-import com.ThirtyNineEighty.Renderable.Light;
+import com.ThirtyNineEighty.Renderable.Common.Light;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.*;
 import com.ThirtyNineEighty.Resources.Sources.*;
@@ -62,7 +62,7 @@ public class GLModel
   public void draw(RendererContext context, Data data)
   {
     Shader3D shader = (Shader3D) Shader.getCurrent();
-    Light light = context.getLight();
+    Light.Data light = context.getLight();
 
     // build PVM matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);

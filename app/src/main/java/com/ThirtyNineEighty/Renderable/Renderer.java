@@ -4,6 +4,8 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import com.ThirtyNineEighty.Providers.IDataProvider;
+import com.ThirtyNineEighty.Renderable.Common.Camera;
+import com.ThirtyNineEighty.Renderable.Common.Light;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -25,8 +27,8 @@ public class Renderer
   private final ArrayList<IRenderable> menus = new ArrayList<>();
   private final ArrayList<IRenderable> particles = new ArrayList<>();
 
-  private IDataProvider<Camera> cameraProvider;
-  private IDataProvider<Light> lightProvider;
+  private IDataProvider<Camera.Data> cameraProvider;
+  private IDataProvider<Light.Data> lightProvider;
   private final RendererContext context = new RendererContext();
 
   @Override
@@ -53,7 +55,7 @@ public class Renderer
   }
 
   @Override
-  public void setCameraProvider(IDataProvider<Camera> provider)
+  public void setCameraProvider(IDataProvider<Camera.Data> provider)
   {
     if (cameraProvider != null && provider != null)
       throw new IllegalStateException("Camera provider already set");
@@ -62,7 +64,7 @@ public class Renderer
   }
 
   @Override
-  public void setLightProvider(IDataProvider<Light> provider)
+  public void setLightProvider(IDataProvider<Light.Data> provider)
   {
     if (lightProvider != null && provider != null)
       throw new IllegalStateException("Light provider already set");
@@ -97,14 +99,14 @@ public class Renderer
 
     if (cameraProvider != null)
     {
-      Camera camera = cameraProvider.get();
-      context.setCamera(camera);
+      Camera.Data data = cameraProvider.get();
+      context.setCamera(data);
     }
 
     if (lightProvider != null)
     {
-      Light light = lightProvider.get();
-      context.setLight(light);
+      Light.Data data = lightProvider.get();
+      context.setLight(data);
     }
 
     synchronized (syncObject)

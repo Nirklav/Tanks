@@ -5,11 +5,8 @@ import com.ThirtyNineEighty.Game.Objects.Properties.SkyBoxProperties;
 import com.ThirtyNineEighty.Game.Objects.SkyBox;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Common.Math.Angle;
-import com.ThirtyNineEighty.Providers.DataProvider;
-import com.ThirtyNineEighty.Renderable.Camera;
-import com.ThirtyNineEighty.Renderable.Common.CameraView;
-import com.ThirtyNineEighty.Renderable.Common.LightView;
-import com.ThirtyNineEighty.Renderable.Light;
+import com.ThirtyNineEighty.Renderable.Common.Camera;
+import com.ThirtyNineEighty.Renderable.Common.Light;
 
 public class TankSelectWorld
   extends BaseWorld
@@ -32,10 +29,10 @@ public class TankSelectWorld
     add(new SkyBox(SkyBox.desert, new SkyBoxProperties(skyBoxScale)));
     add(player = new Tank(args.getTankName()));
 
-    bind(new CameraView(new DataProvider<Camera>(Camera.class)
+    bind(new Camera(new Camera.Setter()
     {
       @Override
-      public void set(Camera camera)
+      public void set(Camera.Data camera)
       {
         camera.target.setFrom(player.getPosition());
 
@@ -47,10 +44,10 @@ public class TankSelectWorld
       }
     }));
 
-    bind(new LightView(new DataProvider<Light>(Light.class)
+    bind(new Light(new Light.Setter()
     {
       @Override
-      public void set(Light light)
+      public void set(Light.Data light)
       {
         light.Position.setFrom(lightX, lightY, lightHeight);
       }

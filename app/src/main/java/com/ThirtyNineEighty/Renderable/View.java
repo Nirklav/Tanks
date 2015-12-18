@@ -9,6 +9,8 @@ public abstract class View
   extends EngineObject
   implements IView
 {
+  private static final long serialVersionUID = 1L;
+
   private IBindable bindable;
 
   @Override

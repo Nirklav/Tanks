@@ -1,11 +1,8 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Providers.DataProvider;
-import com.ThirtyNineEighty.Renderable.Camera;
-import com.ThirtyNineEighty.Renderable.Common.CameraView;
-import com.ThirtyNineEighty.Renderable.Common.LightView;
-import com.ThirtyNineEighty.Renderable.Light;
+import com.ThirtyNineEighty.Renderable.Common.Camera;
+import com.ThirtyNineEighty.Renderable.Common.Light;
 
 public class GameWorld
   extends BaseWorld
@@ -17,10 +14,10 @@ public class GameWorld
     this.player = player;
     add(player);
 
-    bind(new CameraView(new DataProvider<Camera>(Camera.class)
+    bind(new Camera(new Camera.Setter()
     {
       @Override
-      public void set(Camera camera)
+      public void set(Camera.Data camera)
       {
         camera.target.setFrom(player.getPosition());
         camera.eye.setFrom(player.getPosition());
@@ -30,10 +27,10 @@ public class GameWorld
       }
     }));
 
-    bind(new LightView(new DataProvider<Light>(Light.class)
+    bind(new Light(new Light.Setter()
     {
       @Override
-      public void set(Light light)
+      public void set(Light.Data light)
       {
         light.Position.setFrom(50, 50, 200);
       }

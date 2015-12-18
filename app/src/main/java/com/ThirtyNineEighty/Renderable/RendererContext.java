@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Renderable;
 
 import android.opengl.Matrix;
 
+import com.ThirtyNineEighty.Renderable.Common.Camera;
+import com.ThirtyNineEighty.Renderable.Common.Light;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class RendererContext
@@ -12,7 +14,7 @@ public class RendererContext
 
   private float[] orthoMatrix;
 
-  private Light light;
+  private Light.Data lightData;
 
   public RendererContext()
   {
@@ -24,29 +26,29 @@ public class RendererContext
     Matrix.setIdentityM(orthoMatrix, 0);
     Matrix.orthoM(orthoMatrix, 0, GameContext.Left, GameContext.Right, GameContext.Bottom, GameContext.Top, -1, 1);
 
-    light = new Light();
+    lightData = new Light.Data();
   }
 
   public float[] getProjectionViewMatrix() { return projectionViewMatrix; }
   public float[] getOrthoMatrix() { return orthoMatrix; }
   public float[] getViewMatrix() { return viewMatrix; }
 
-  public Light getLight() { return light; }
+  public Light.Data getLight() { return lightData; }
 
-  public void setLight(Light value)
+  public void setLight(Light.Data value)
   {
-    light = value;
+    lightData = value;
   }
 
-  public void setCamera(Camera camera)
+  public void setCamera(Camera.Data value)
   {
-    float eyeX = camera.eye.getX();
-    float eyeY = camera.eye.getY();
-    float eyeZ = camera.eye.getZ();
+    float eyeX = value.eye.getX();
+    float eyeY = value.eye.getY();
+    float eyeZ = value.eye.getZ();
 
-    float targetX = camera.target.getX();
-    float targetY = camera.target.getY();
-    float targetZ = camera.target.getZ();
+    float targetX = value.target.getX();
+    float targetY = value.target.getY();
+    float targetZ = value.target.getZ();
 
     Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0.0f, 0.0f, 1.0f);
     Matrix.perspectiveM(projectionMatrix, 0, 60.0f, GameContext.getAspect(), 0.1f, 200.0f);
