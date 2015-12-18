@@ -4,7 +4,6 @@ import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Collisions.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
-import com.ThirtyNineEighty.Providers.CollidableTankProvider;
 import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
@@ -26,7 +25,7 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
   protected Vector3 position;
   protected Vector3 angles;
 
-  public ICollidable collidable;
+  public Collidable collidable;
 
   protected WorldObject(String descriptionName, TProperties properties)
   {
@@ -48,7 +47,7 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
   }
 
   @SuppressWarnings("unchecked")
-  private TDescription  getDescription(String descriptionName)
+  private TDescription getDescription(String descriptionName)
   {
     return (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
   }
@@ -67,10 +66,22 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     // Build physical model
     PhysicalDescription physical = description.getPhysical();
     if (physical != null)
-      collidable = new Collidable(physical.modelName, new CollidableTankProvider(this, physical));
+    {
+      collidable = new Collidable(physical.modelName);
+      collidable.setLocation(position, angles);
+    }
   }
 
-  public void collide(WorldObject<?, ?> object) { }
+  public void setCollidableLocation()
+  {
+    if (collidable != null)
+      collidable.setLocation(position, angles);
+  }
+
+  public void collide(WorldObject<?, ?> object)
+  {
+
+  }
 
   public void rotate(float x, float y, float z)
   {

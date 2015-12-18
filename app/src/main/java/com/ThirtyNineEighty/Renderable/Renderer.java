@@ -3,7 +3,7 @@ package com.ThirtyNineEighty.Renderable;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.Shaders.Shader;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -25,8 +25,8 @@ public class Renderer
   private final ArrayList<IRenderable> menus = new ArrayList<>();
   private final ArrayList<IRenderable> particles = new ArrayList<>();
 
-  private final Camera camera = new Camera();
-  private final Light light = new Light();
+  private IDataProvider<Camera> cameraProvider;
+  private IDataProvider<Light> lightProvider;
   private final RendererContext context = new RendererContext();
 
   @Override
@@ -50,6 +50,24 @@ public class Renderer
 
       collection.remove(renderable);
     }
+  }
+
+  @Override
+  public void setCameraProvider(IDataProvider<Camera> provider)
+  {
+    if (cameraProvider != null && provider != null)
+      throw new IllegalStateException("Camera provider already set");
+
+    cameraProvider = provider;
+  }
+
+  @Override
+  public void setLightProvider(IDataProvider<Light> provider)
+  {
+    if (lightProvider != null && provider != null)
+      throw new IllegalStateException("Light provider already set");
+
+    lightProvider = provider;
   }
 
   private ArrayList<IRenderable> getCollection(int shaderId)
@@ -77,15 +95,17 @@ public class Renderer
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-    IWorld world = GameContext.content.getWorld();
-    if (world != null && world.isInitialized())
+    if (cameraProvider != null)
     {
-      world.setCamera(camera);
-      world.setLight(light);
+      Camera camera = cameraProvider.get();
+      context.setCamera(camera);
     }
 
-    context.setCamera(camera);
-    context.setLight(light);
+    if (lightProvider != null)
+    {
+      Light light = lightProvider.get();
+      context.setLight(light);
+    }
 
     synchronized (syncObject)
     {
@@ -146,7 +166,6 @@ public class Renderer
   public void onSurfaceCreated(GL10 gl, EGLConfig config)
   {
     GameContext.setGLThread();
-
   }
 
   static class RenderableComparator

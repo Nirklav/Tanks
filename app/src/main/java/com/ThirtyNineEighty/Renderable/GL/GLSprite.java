@@ -5,6 +5,7 @@ import android.opengl.Matrix;
 import android.renderscript.Matrix3f;
 
 import com.ThirtyNineEighty.Common.Math.*;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Renderable.RendererContext;
 import com.ThirtyNineEighty.Renderable.Shaders.*;
 import com.ThirtyNineEighty.Resources.Sources.*;
@@ -88,6 +89,12 @@ public class GLSprite
   public int getShaderId()
   {
     return Shader.Shader2D;
+  }
+
+  @Override
+  public IDataProvider getProvider()
+  {
+    return null;
   }
 
   @Override

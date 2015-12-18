@@ -12,20 +12,22 @@ import com.ThirtyNineEighty.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.System.GameContext;
 
 public class GLModelLandProvider
-  extends DataProvider<GLModel.Data, VisualDescription>
+  extends DataProvider<GLModel.Data>
 {
   private static final long serialVersionUID = 1L;
 
   private final Land land;
+  private final VisualDescription description;
 
   public GLModelLandProvider(Land land, VisualDescription description)
   {
-    super(new GLModel.Data(), description);
+    super(GLModel.Data.class);
+    this.description = description;
     this.land = land;
   }
 
   @Override
-  public void set(GLModel.Data data, VisualDescription description)
+  public void set(GLModel.Data data)
   {
     data.position.setFrom(getPosition(description.id));
     data.angles.setFrom(land.getAngles());

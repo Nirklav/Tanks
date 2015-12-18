@@ -12,7 +12,7 @@ public class Collision3D
   private float mtvLength;
   private boolean collide;
 
-  public Collision3D(ICollidable first, ICollidable second)
+  public Collision3D(Collidable first, Collidable second)
   {
     CheckResult result = check(first, second);
     if (result == null)
@@ -26,7 +26,7 @@ public class Collision3D
     mtvLength = result.mtvLength;
   }
 
-  private static CheckResult check(ICollidable first, ICollidable second)
+  private static CheckResult check(Collidable first, Collidable second)
   {
     ArrayList<Vector3> normals = getPlanesNormals(first, second);
 
@@ -62,7 +62,7 @@ public class Collision3D
     return new CheckResult(mtv, minMTVLength);
   }
 
-  private static ArrayList<Vector3> getPlanesNormals(ICollidable first, ICollidable second)
+  private static ArrayList<Vector3> getPlanesNormals(Collidable first, Collidable second)
   {
     ArrayList<Vector3> result = new ArrayList<>();
     ArrayList<Vector3> firstNormals = first.getNormals();

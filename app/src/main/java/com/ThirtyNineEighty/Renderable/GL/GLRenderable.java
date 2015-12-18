@@ -46,6 +46,12 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
 
   protected abstract void draw(RendererContext context, TData data);
 
+  @Override
+  public IDataProvider getProvider()
+  {
+    return provider;
+  }
+
   protected Vector3 getLocalPosition()
   {
     return Vector3.zero;

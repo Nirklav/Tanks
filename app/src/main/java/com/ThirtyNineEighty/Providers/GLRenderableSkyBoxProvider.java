@@ -10,7 +10,7 @@ public class GLRenderableSkyBoxProvider
 {
   public GLRenderableSkyBoxProvider(SkyBox object, VisualDescription description)
   {
-    super(object, new GLRenderable.Data(), description);
+    super(object, GLRenderable.Data.class, description);
   }
 
   @Override

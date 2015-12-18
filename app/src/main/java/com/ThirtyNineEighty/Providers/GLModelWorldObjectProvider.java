@@ -9,6 +9,6 @@ public class GLModelWorldObjectProvider<TObject extends WorldObject<?, ?>>
 {
   public GLModelWorldObjectProvider(TObject object, VisualDescription description)
   {
-    super(object, new GLModel.Data(), description);
+    super(object, GLModel.Data.class, description);
   }
 }

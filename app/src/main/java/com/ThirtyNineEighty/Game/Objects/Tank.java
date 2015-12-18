@@ -29,7 +29,6 @@ public class Tank
     rechargeProgress = 0;
 
     Vector3 bulletAngles = angles.getSum(0, 0, turretAngle);
-    GameProperties properties = getProperties();
     Bullet bullet = new Bullet(properties.getBullet());
 
     bullet.bind(new MoveSubprogram(bullet, 100));
@@ -60,7 +59,6 @@ public class Tank
 
   public void turnTurret(float targetAngle)
   {
-    GameDescription description = getDescription();
     turretAngle += Angle.getDirection(getTurretAngle(), targetAngle) * description.getTurretRotationSpeed() * GameContext.getDelta();
   }
 

@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.System;
 import java.util.ArrayList;
 
 import com.ThirtyNineEighty.Game.Menu.IMenu;
+import com.ThirtyNineEighty.Game.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Subprograms.ISubprogram;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
 
@@ -16,14 +17,17 @@ public class Content
   private final ArrayList<ISubprogram> subprograms;
   private final ArrayList<Action> subprogramActions;
 
+  private final ArrayList<WorldObject<?, ?>> worldObjects; // memory optimization
+
   public Content()
   {
     subprograms = new ArrayList<>();
     subprogramActions = new ArrayList<>();
+    worldObjects = new ArrayList<>();
 
     updateTimer = new EventTimer(
       "update"
-      , 25
+      , 20
       , new Runnable()
       {
         @Override
@@ -31,28 +35,52 @@ public class Content
         {
           GameContext.updateTime();
 
-          for (ISubprogram subprogram : subprograms)
-          {
-            if (!subprogram.isEnabled())
-              continue;
+          updateSubprograms();
+          resolveCollisions();
 
-            subprogram.update();
-          }
+          if (world != null)
+            world.setViews();
 
-          for (Action action : subprogramActions)
-          {
-            switch (action.type)
-            {
-            case Action.ADD: subprograms.add(action.subprogram); break;
-            case Action.REMOVE: subprograms.remove(action.subprogram); break;
-            }
-          }
-          subprogramActions.clear();
-
-          GameContext.collisions.resolve();
+          if (menu != null)
+            menu.setViews();
         }
       }
     );
+  }
+
+  private void updateSubprograms()
+  {
+    for (ISubprogram subprogram : subprograms)
+    {
+      if (!subprogram.isEnabled())
+        continue;
+
+      subprogram.update();
+    }
+
+    for (Action action : subprogramActions)
+    {
+      switch (action.type)
+      {
+      case Action.ADD: subprograms.add(action.subprogram); break;
+      case Action.REMOVE: subprograms.remove(action.subprogram); break;
+      }
+    }
+    subprogramActions.clear();
+  }
+
+  private void resolveCollisions()
+  {
+    if (world == null)
+      return;
+
+    worldObjects.clear();
+    world.getObjects(worldObjects);
+
+    for (WorldObject<?, ?> object : worldObjects)
+      object.setCollidableLocation();
+
+    GameContext.collisions.resolve(worldObjects);
   }
 
   public IWorld getWorld() { return world; }

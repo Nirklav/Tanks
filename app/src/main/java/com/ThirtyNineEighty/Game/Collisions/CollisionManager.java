@@ -18,16 +18,8 @@ import java.util.concurrent.Future;
 
 public class CollisionManager
 {
-  private final ArrayList<WorldObject<?, ?>> resolvingObjects;
-  private final ArrayList<WorldObject<?, ?>> worldObjects;
-
+  private final ArrayList<WorldObject<?, ?>> resolvingObjects = new ArrayList<>();
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
-
-  public CollisionManager()
-  {
-    resolvingObjects = new ArrayList<>();
-    worldObjects = new ArrayList<>();
-  }
 
   public void addToResolving(WorldObject<?, ?> object)
   {
@@ -49,21 +41,8 @@ public class CollisionManager
     }
   }
 
-  public void resolve()
+  public void resolve(Collection<WorldObject<?, ?>> worldObjects)
   {
-    IWorld world = GameContext.content.getWorld();
-    if (world == null)
-      return;
-
-    // Copy all world objects
-    worldObjects.clear();
-    world.getObjects(worldObjects);
-
-    // Normalize all objects locations
-    for (WorldObject<?, ?> object : worldObjects)
-      if (object.collidable != null)
-        object.collidable.normalizeLocation();
-
     if (resolvingObjects.size() == 0)
       return;
 
@@ -101,9 +80,13 @@ public class CollisionManager
       // Wait for all tasks will be completed
       latch.await();
 
+      IWorld world = GameContext.content.getWorld();
+
       // Resolving collisions
       for (Future<Pair> task : tasks)
       {
+
+
         Pair pair = task.get();
 
         WorldObject<?, ?> first = pair.first;
@@ -127,12 +110,14 @@ public class CollisionManager
         if (firstDescription.removeOnCollide() || secondDescription.removeOnCollide())
           continue;
 
+        // first moved
         if (pair.firstMoved && !pair.secondMoved)
         {
           first.move(collision.getMTVLength(), collision.getMTV());
           continue;
         }
 
+        // second moved
         if (!pair.firstMoved && pair.secondMoved)
         {
           second.move(-collision.getMTVLength(), collision.getMTV());

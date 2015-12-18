@@ -79,6 +79,15 @@ public class BindableHost<T extends IBindable>
       bindable.disable();
   }
 
+  @Override
+  public void setViews()
+  {
+    super.setViews();
+
+    for (IBindable bindable : getCopy())
+      bindable.setViews();
+  }
+
   private ArrayList<T> getCopy()
   {
     synchronized (objects)

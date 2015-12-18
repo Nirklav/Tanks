@@ -2,8 +2,9 @@ package com.ThirtyNineEighty.Providers;
 
 import java.io.Serializable;
 
-public interface IDataProvider<T extends Serializable>
+public interface IDataProvider<TData extends Serializable >
   extends Serializable
 {
-  T get();
+  void set();
+  TData get();
 }

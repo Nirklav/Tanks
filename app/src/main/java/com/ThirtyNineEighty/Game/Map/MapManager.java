@@ -5,10 +5,7 @@ import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.*;
-import com.ThirtyNineEighty.Common.Serializer;
-import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
-import com.ThirtyNineEighty.Resources.Sources.FileMapDescriptionSource;
+import com.ThirtyNineEighty.Resources.Sources.*;
 import com.ThirtyNineEighty.System.*;
 
 import java.util.ArrayList;
@@ -45,7 +42,7 @@ public final class MapManager
 
     // Create map subprograms
     for (String subprogramName : mapDesc.subprograms)
-      world.bind(GameContext.factory.createSubprogram(subprogramName, subprogramName));
+      world.bind(GameContext.factory.createSubprogram(subprogramName));
 
     return world;
   }
@@ -59,14 +56,14 @@ public final class MapManager
     object.setAngles(mapObj.getAngles());
 
     for (String subprogramName : mapObj.subprograms)
-      object.bind(GameContext.factory.createSubprogram(subprogramName, subprogramName, object));
+      object.bind(GameContext.factory.createSubprogram(subprogramName, object));
 
     return object;
   }
 
   public void load(String mapName)
   {
-    MapDescription mapDesc = Serializer.Deserialize(String.format("Maps/%s.map", mapName));
+    MapDescription mapDesc = GameContext.resources.getMap(new FileMapDescriptionSource(mapName));
     map = new Map(mapName, mapDesc);
   }
 

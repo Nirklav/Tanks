@@ -48,14 +48,11 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
 
   private float getSpeed()
   {
-    GameDescription description = getDescription();
     return description.getSpeed() * GameContext.getDelta();
   }
 
   public void rotate(float targetAngleZ)
   {
-    GameDescription description = getDescription();
-
     float correctedAngleZ = Angle.correct(targetAngleZ);
     float speed = description.getRotationSpeed() * GameContext.getDelta();
     float angleZ = angles.getZ();

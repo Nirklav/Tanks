@@ -20,8 +20,6 @@ public class AidKit
       return;
 
     GameObject<?, ?> gameObject = (GameObject<?, ?>) object;
-    GameDescription aidKitDescription = getDescription();
-
-    gameObject.addHealth(aidKitDescription.getHealth());
+    gameObject.addHealth(description.getHealth());
   }
 }

@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.System;
 
 import com.ThirtyNineEighty.Game.Subprograms.ISubprogram;
-import com.ThirtyNineEighty.Renderable.IRenderable;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,10 @@ public abstract class Bindable
   private static final long serialVersionUID = 1L;
 
   private final HashMap<Long, ISubprogram> subprograms = new HashMap<>();
-  private final HashMap<Long, IRenderable> renderables = new HashMap<>();
+  private final HashMap<Long, IView> views = new HashMap<>();
+  private final HashMap<Long, IDataProvider> viewsProviders = new HashMap<>(); // view.Id -> IDataProvider
+
+  private final ArrayList<IDataProvider> providers = new ArrayList<>(); // memory optimization
 
   @Override
   public void initialize()
@@ -24,7 +27,7 @@ public abstract class Bindable
     for (ISubprogram subprogram : getSubprogramsCopy())
       subprogram.initialize();
 
-    for (IRenderable renderable : getRenderablesCopy())
+    for (IView renderable : getViewsCopy())
       renderable.initialize();
   }
 
@@ -36,7 +39,7 @@ public abstract class Bindable
     for (ISubprogram subprogram : getSubprogramsCopy())
       subprogram.uninitialize();
 
-    for (IRenderable renderable : getRenderablesCopy())
+    for (IView renderable : getViewsCopy())
       renderable.uninitialize();
   }
 
@@ -45,7 +48,7 @@ public abstract class Bindable
   {
     super.enable();
 
-    for (IRenderable renderable : getRenderablesCopy())
+    for (IView renderable : getViewsCopy())
       renderable.enable();
 
     for (ISubprogram subprogram : getSubprogramsCopy())
@@ -57,7 +60,7 @@ public abstract class Bindable
   {
     super.disable();
 
-    for (IRenderable renderable : getRenderablesCopy())
+    for (IView renderable : getViewsCopy())
       renderable.disable();
 
     for (ISubprogram subprogram : getSubprogramsCopy())
@@ -65,7 +68,7 @@ public abstract class Bindable
   }
 
   @Override
-  public List<IRenderable> getRenderables() { return getRenderablesCopy(); }
+  public List<IView> getViews() { return getViewsCopy(); }
 
   @Override
   public List<ISubprogram> getSubprograms() { return getSubprogramsCopy(); }
@@ -115,47 +118,73 @@ public abstract class Bindable
   }
 
   @Override
-  public void bind(IRenderable renderable)
+  public void bind(IView view)
   {
-    if (renderable.isInitialized())
-      throw new IllegalArgumentException("Subprogram should be not initialized");
+    if (view.isInitialized())
+      throw new IllegalArgumentException("View should be not initialized");
 
-    if (renderable.isEnabled())
-      throw new IllegalArgumentException("Subprogram should be disabled");
+    if (view.isEnabled())
+      throw new IllegalArgumentException("View should be disabled");
 
     if (isInitialized())
-      renderable.initialize();
+      view.initialize();
 
     if (isEnabled())
-      renderable.enable();
+      view.enable();
 
-    renderable.setBindable(this);
+    view.setBindable(this);
 
-    synchronized (renderables)
+    synchronized (views)
     {
-      Long id = renderable.getId();
-      if (renderables.containsKey(id))
-        throw new IllegalStateException("Renderable with this id already added");
+      Long id = view.getId();
+      if (views.containsKey(id))
+        throw new IllegalStateException("View with this id already added (views)");
 
-      renderables.put(id, renderable);
+      IDataProvider provider = view.getProvider();
+      if (provider != null)
+      {
+        if (viewsProviders.containsKey(id))
+          throw new IllegalStateException("View with this id already added (viewsProviders)");
+
+        viewsProviders.put(id, provider);
+      }
+
+      views.put(id, view);
     }
   }
 
   @Override
-  public void unbind(IRenderable renderable)
+  public void unbind(IView view)
   {
-    renderable.setBindable(null);
+    view.setBindable(null);
 
-    if (renderable.isEnabled())
-      renderable.disable();
+    if (view.isEnabled())
+      view.disable();
 
-    if (renderable.isInitialized())
-      renderable.uninitialize();
+    if (view.isInitialized())
+      view.uninitialize();
 
-    synchronized (renderables)
+    synchronized (views)
     {
-      renderables.remove(renderable.getId());
+      Long id = view.getId();
+
+      views.remove(id);
+      viewsProviders.remove(id);
     }
+  }
+
+  @Override
+  public void setViews()
+  {
+    synchronized (views)
+    {
+      // copy because provider.set can add views
+      providers.clear();
+      providers.addAll(viewsProviders.values());
+    }
+
+    for (IDataProvider provider : providers)
+      provider.set();
   }
 
   protected ArrayList<ISubprogram> getSubprogramsCopy()
@@ -166,11 +195,11 @@ public abstract class Bindable
     }
   }
 
-  protected ArrayList<IRenderable> getRenderablesCopy()
+  protected ArrayList<IView> getViewsCopy()
   {
-    synchronized (renderables)
+    synchronized (views)
     {
-      return new ArrayList<>(renderables.values());
+      return new ArrayList<>(views.values());
     }
   }
 }

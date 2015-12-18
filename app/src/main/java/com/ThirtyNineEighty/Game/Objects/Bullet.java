@@ -20,8 +20,6 @@ public class Bullet
       return;
 
     GameObject<?, ?> target = (GameObject<?, ?>) object;
-    GameDescription bulletDescription = getDescription();
-
-    target.subtractHealth(bulletDescription.getDamage());
+    target.subtractHealth(description.getDamage());
   }
 }

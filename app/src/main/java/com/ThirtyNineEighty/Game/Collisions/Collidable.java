@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game.Collisions;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.Common.Math.*;
 import com.ThirtyNineEighty.Resources.Sources.FilePhGeometrySource;
 import com.ThirtyNineEighty.Resources.Entities.PhGeometry;
@@ -14,14 +13,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Collidable
-  implements ICollidable,
-             Serializable
+  implements Serializable
 {
   private static final long serialVersionUID = 1L;
 
   private String name;
-  private IDataProvider<Data> dataProvider;
-
   private Vector3 position;
   private float[] verticesMatrix;
   private float[] normalsMatrix;
@@ -30,15 +26,13 @@ public class Collidable
 
   private transient PhGeometry geometryData;
 
-  public Collidable(String name, IDataProvider<Data> provider)
+  public Collidable(String name)
   {
     this.name = name;
 
     verticesMatrix = new float[16];
     normalsMatrix = new float[16];
-    dataProvider = provider;
     geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
-
     position = new Vector3();
 
     normals = new ArrayList<>();
@@ -48,8 +42,6 @@ public class Collidable
     vertices = new ArrayList<>();
     for (int i = 0; i < geometryData.vertices.size(); i++)
       vertices.add(new Vector3());
-
-    normalizeLocation();
   }
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
@@ -59,35 +51,17 @@ public class Collidable
     geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
   }
 
-  @Override
-  public Vector3 getPosition()
-  {
-    return position;
-  }
+  public Vector3 getPosition() { return position; }
 
-  @Override
-  public ArrayList<Vector3> getVertices()
-  {
-    return vertices;
-  }
+  public ArrayList<Vector3> getVertices() { return vertices; }
+  public ArrayList<Vector3> getNormals() { return normals; }
 
-  @Override
-  public ArrayList<Vector3> getNormals()
-  {
-    return normals;
-  }
+  public float getRadius() { return geometryData.radius; }
 
-  @Override
-  public float getRadius()
-  {
-    return geometryData.radius;
-  }
-
-  @Override
-  public void normalizeLocation()
+  public void setLocation(Vector3 inputPosition, Vector3 inputAngles)
   {
     // matrix
-    setMatrix(dataProvider.get());
+    setMatrix(inputPosition, inputAngles);
 
     // position
     Matrix.multiplyMV(position.getRaw(), 0, verticesMatrix, 0, Vector3.zero.getRaw(), 0);
@@ -112,16 +86,16 @@ public class Collidable
     }
   }
 
-  private void setMatrix(Data data)
+  private void setMatrix(Vector3 inputPosition, Vector3 inputAngles)
   {
     // Reset vertices matrix
     Matrix.setIdentityM(verticesMatrix, 0);
 
     // Set global
-    Matrix.translateM(verticesMatrix, 0, data.position.getX(), data.position.getY(), data.position.getZ());
-    Matrix.rotateM(verticesMatrix, 0, data.angles.getX(), 1, 0, 0);
-    Matrix.rotateM(verticesMatrix, 0, data.angles.getY(), 0, 1, 0);
-    Matrix.rotateM(verticesMatrix, 0, data.angles.getZ(), 0, 0, 1);
+    Matrix.translateM(verticesMatrix, 0, inputPosition.getX(), inputPosition.getY(), inputPosition.getZ());
+    Matrix.rotateM(verticesMatrix, 0, inputAngles.getX(), 1, 0, 0);
+    Matrix.rotateM(verticesMatrix, 0, inputAngles.getY(), 0, 1, 0);
+    Matrix.rotateM(verticesMatrix, 0, inputAngles.getZ(), 0, 0, 1);
 
     // Set local
     Matrix.translateM(verticesMatrix, 0, geometryData.position.getX(), geometryData.position.getY(), geometryData.position.getZ());

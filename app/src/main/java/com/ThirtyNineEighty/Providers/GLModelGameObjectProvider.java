@@ -23,7 +23,7 @@ public class GLModelGameObjectProvider<TObject extends GameObject<?, ?>>
     {
       destroyed = true;
 
-      IDataProvider<GLRenderable.Data> provider = new GLRenderableWorldObjectProvider<>(object, new GLRenderable.Data(), null);
+      IDataProvider<GLRenderable.Data> provider = new GLRenderableWorldObjectProvider<>(object, GLRenderable.Data.class, null);
       object.bind(new GLExplosionParticles(1000, 2000, GLExplosionParticles.Hemisphere, provider));
     }
   }

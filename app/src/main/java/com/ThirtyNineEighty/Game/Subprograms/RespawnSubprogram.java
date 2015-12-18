@@ -20,7 +20,7 @@ public class RespawnSubprogram
   private MapObject object;
   private GameObject<?, ?> respawned;
 
-  public RespawnSubprogram()
+  public RespawnSubprogram() // TODO: subprogram parameters system
   {
     count = 3;
 
@@ -33,6 +33,7 @@ public class RespawnSubprogram
   @Override
   protected void onUpdate()
   {
+    // if object still alive
     if (respawned != null && respawned.getHealth() > 0)
       return;
 
@@ -55,7 +56,7 @@ public class RespawnSubprogram
     object.setAngles(mapObj.getAngles());
 
     for (String subprogramName : mapObj.subprograms)
-      object.bind(GameContext.factory.createSubprogram(subprogramName, subprogramName, object));
+      object.bind(GameContext.factory.createSubprogram(subprogramName, object));
 
     return object;
   }

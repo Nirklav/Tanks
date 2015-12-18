@@ -1,16 +1,14 @@
 package com.ThirtyNineEighty.Renderable;
 
-import com.ThirtyNineEighty.System.EngineObject;
+import com.ThirtyNineEighty.Providers.IDataProvider;
 import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.System.IBindable;
 
 public abstract class Renderable
-  extends EngineObject
+  extends View
   implements IRenderable
 {
   private static final long serialVersionUID = 1L;
 
-  private IBindable bindable;
   private boolean visible = true;
 
   @Override
@@ -42,21 +40,12 @@ public abstract class Renderable
   }
 
   @Override
-  public void setBindable(IBindable value)
+  public void enable()
   {
-    bindable = value;
-  }
+    IDataProvider provider = getProvider();
+    if (provider != null)
+      provider.set();
 
-  protected void unbind()
-  {
-    final IRenderable renderable = this;
-    GameContext.content.postEvent(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        bindable.unbind(renderable);
-      }
-    });
+    super.enable();
   }
 }

@@ -11,11 +11,11 @@ import java.util.Comparator;
 
 public class ConvexHull
 {
-  private final ICollidable collidable;
+  private final Collidable collidable;
   private final Plane plane;
   private ArrayList<Vector2> convexHull;
 
-  public ConvexHull(ICollidable collidable, Plane plane)
+  public ConvexHull(Collidable collidable, Plane plane)
   {
     this.collidable = collidable;
     this.plane = plane;
@@ -107,7 +107,7 @@ public class ConvexHull
     return minVectorIndex;
   }
 
-  private ArrayList<Vector2> getDistinctProjection(ICollidable collidable, Plane plane)
+  private ArrayList<Vector2> getDistinctProjection(Collidable collidable, Plane plane)
   {
     Vector2 vector = Vector.getInstance(2);
     ArrayList<Vector2> result = new ArrayList<>();

@@ -5,7 +5,10 @@ import com.ThirtyNineEighty.Game.Objects.Properties.SkyBoxProperties;
 import com.ThirtyNineEighty.Game.Objects.SkyBox;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Common.Math.Angle;
+import com.ThirtyNineEighty.Providers.DataProvider;
 import com.ThirtyNineEighty.Renderable.Camera;
+import com.ThirtyNineEighty.Renderable.Common.CameraView;
+import com.ThirtyNineEighty.Renderable.Common.LightView;
 import com.ThirtyNineEighty.Renderable.Light;
 
 public class TankSelectWorld
@@ -23,20 +26,35 @@ public class TankSelectWorld
   private float angle = 35;
   private float length = 8;
 
-  private GameStartArgs args;
-
   public TankSelectWorld(GameStartArgs args)
-  {
-    this.args = args;
-  }
-
-  @Override
-  public void initialize()
   {
     add(new Land(Land.sand));
     add(new SkyBox(SkyBox.desert, new SkyBoxProperties(skyBoxScale)));
     add(player = new Tank(args.getTankName()));
-    super.initialize();
+
+    bind(new CameraView(new DataProvider<Camera>(Camera.class)
+    {
+      @Override
+      public void set(Camera camera)
+      {
+        camera.target.setFrom(player.getPosition());
+
+        float height = length / 2;
+        float x = length * (float)Math.cos(Math.toRadians(angle));
+        float y = length * (float)Math.sin(Math.toRadians(angle));
+
+        camera.eye.setFrom(x, y, height);
+      }
+    }));
+
+    bind(new LightView(new DataProvider<Light>(Light.class)
+    {
+      @Override
+      public void set(Light light)
+      {
+        light.Position.setFrom(lightX, lightY, lightHeight);
+      }
+    }));
   }
 
   public void addLength(float value)
@@ -59,23 +77,5 @@ public class TankSelectWorld
   {
     remove(player);
     add(player = new Tank(tankName));
-  }
-
-  @Override
-  public void setCamera(Camera camera)
-  {
-    camera.target.setFrom(player.getPosition());
-
-    float height = length / 2;
-    float x = length * (float)Math.cos(Math.toRadians(angle));
-    float y = length * (float)Math.sin(Math.toRadians(angle));
-
-    camera.eye.setFrom(x, y, height);
-  }
-
-  @Override
-  public void setLight(Light light)
-  {
-    light.Position.setFrom(lightX, lightY, lightHeight);
   }
 }

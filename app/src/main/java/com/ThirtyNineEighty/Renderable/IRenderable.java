@@ -1,13 +1,10 @@
 package com.ThirtyNineEighty.Renderable;
 
-import com.ThirtyNineEighty.System.IBindable;
-import com.ThirtyNineEighty.System.IEngineObject;
+import com.ThirtyNineEighty.System.IView;
 
 public interface IRenderable
-  extends IEngineObject
+  extends IView
 {
-  void setBindable(IBindable bindable);
-
   boolean isVisible();
   void setVisible(boolean value);
 
