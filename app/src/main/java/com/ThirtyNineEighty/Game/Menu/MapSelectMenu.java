@@ -6,6 +6,7 @@ import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
 import com.ThirtyNineEighty.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.Resources.Sources.FileMapDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -21,7 +22,7 @@ public class MapSelectMenu
   public MapSelectMenu(final GameStartArgs args)
   {
     this.args = args;
-    this.mapSelector = new Selector("maps", new Selector.Callback()
+    this.mapSelector = new Selector(FileContentSource.maps, new Selector.Callback()
     {
       @Override
       public void onChange(String current)

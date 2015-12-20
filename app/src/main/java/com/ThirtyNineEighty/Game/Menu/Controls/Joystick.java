@@ -43,7 +43,6 @@ public class Joystick
   {
     vector.setFrom(position);
     vector.subtract(stickPosition);
-    vector.multiplyToY(-1);
     return vector;
   }
 

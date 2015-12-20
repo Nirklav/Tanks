@@ -10,6 +10,7 @@ import com.ThirtyNineEighty.Common.Math.Vector;
 import com.ThirtyNineEighty.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Resources.MeshMode;
+import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.GameContext;
 
@@ -27,7 +28,8 @@ public class TankSelectMenu
   public TankSelectMenu(GameStartArgs args)
   {
     startArgs = args;
-    tankSelector = new Selector("tanks", new Selector.Callback()
+
+    tankSelector = new Selector(FileContentSource.tanks, new Selector.Callback()
     {
       @Override
       public void onChange(String current)
@@ -40,7 +42,8 @@ public class TankSelectMenu
         bulletLabel.setValue(getBulletDescription());
       }
     });
-    bulletSelector = new Selector("bullets", new Selector.Callback()
+
+    bulletSelector = new Selector(FileContentSource.bullets, new Selector.Callback()
     {
       @Override
       public void onChange(String current)

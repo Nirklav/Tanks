@@ -11,9 +11,15 @@ public class Selector
   private int selectedIndex;
   private Callback onChange;
 
-  public Selector(String name, Callback onChange)
+  public Selector(String resourceContentName, Callback onChange)
   {
-    this.values = GameContext.resources.getContent(new FileContentSource(name));
+    this.values = GameContext.resources.getContent(new FileContentSource(resourceContentName));
+    this.onChange = onChange;
+  }
+
+  public Selector(List<String> values, Callback onChange)
+  {
+    this.values = values;
     this.onChange = onChange;
   }
 

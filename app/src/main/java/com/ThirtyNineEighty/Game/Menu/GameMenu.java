@@ -169,9 +169,9 @@ public class GameMenu
       player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
   }
 
-  public float getJoystickAngle()
+  private float getJoystickAngle()
   {
     Vector2 vector = joystick.getVector();
-    return vector.getAngle(Vector2.xAxis);
+    return Vector2.xAxis.getAngle(vector);
   }
 }

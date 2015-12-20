@@ -38,7 +38,7 @@ public class GLModelLandProvider
 
     Vector3 position = player != null
       ? player.getPosition()
-      : Vector3.zero;
+      : land.getPosition();
 
     Vector2 shift = Spiral.get(id);
     shift.multiplyToX(Land.size);

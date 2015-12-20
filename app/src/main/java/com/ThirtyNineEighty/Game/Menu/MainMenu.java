@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Game.Menu.Controls.Button;
+import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -20,7 +21,7 @@ public class MainMenu
     super.initialize();
 
     Button continueButton = new Button("Continue");
-    continueButton.setPosition(0, 250);
+    continueButton.setPosition(0, 420);
     continueButton.setSize(600, 200);
     continueButton.setClickListener(new Runnable()
     {
@@ -41,7 +42,7 @@ public class MainMenu
     add(continueButton);
 
     Button newGameButton = new Button("Solo");
-    newGameButton.setPosition(0, 0);
+    newGameButton.setPosition(0, 200);
     newGameButton.setSize(600, 200);
     newGameButton.setClickListener(new Runnable()
     {
@@ -55,7 +56,7 @@ public class MainMenu
     add(newGameButton);
 
     Button cacheStatus = new Button("Show cache status");
-    cacheStatus.setPosition(0, -250);
+    cacheStatus.setPosition(0, -20);
     cacheStatus.setSize(600, 200);
     cacheStatus.setClickListener(new Runnable()
     {
@@ -92,5 +93,19 @@ public class MainMenu
     resourceCacheStatus.setAlign(GLLabel.AlignType.TopRight);
     resourceCacheStatus.setVisible(false);
     bind(resourceCacheStatus);
+
+    Button editor = new Button("Editor");
+    editor.setPosition(0, -240);
+    editor.setSize(600, 200);
+    editor.setClickListener(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        GameContext.content.setWorld(new EditorWorld());
+        GameContext.content.setMenu(new EditorMenu());
+      }
+    });
+    add(editor);
   }
 }

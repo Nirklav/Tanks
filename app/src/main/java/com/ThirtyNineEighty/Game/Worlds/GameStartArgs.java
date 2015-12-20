@@ -14,9 +14,9 @@ public class GameStartArgs
 
   public GameStartArgs()
   {
-    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource("maps"));
-    ArrayList<String> tanks = GameContext.resources.getContent(new FileContentSource("tanks"));
-    ArrayList<String> bullets = GameContext.resources.getContent(new FileContentSource("bullets"));
+    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource(FileContentSource.maps));
+    ArrayList<String> tanks = GameContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
+    ArrayList<String> bullets = GameContext.resources.getContent(new FileContentSource(FileContentSource.bullets));
 
     mapName = maps.get(0);
     tankName = tanks.get(0);

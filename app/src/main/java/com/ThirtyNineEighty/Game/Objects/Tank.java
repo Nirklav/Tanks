@@ -59,7 +59,10 @@ public class Tank
 
   public void turnTurret(float targetAngle)
   {
-    turretAngle += Angle.getDirection(getTurretAngle(), targetAngle) * description.getTurretRotationSpeed() * GameContext.getDelta();
+    float direction = Angle.getDirection(getTurretAngle(), targetAngle);
+    float speed = description.getTurretRotationSpeed();
+
+    turretAngle += direction * speed * GameContext.getDelta();
   }
 
   public float getRechargeProgress()

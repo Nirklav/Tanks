@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Factory;
 
+import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
+import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Providers.*;
 import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Subprograms.*;
@@ -7,6 +9,8 @@ import com.ThirtyNineEighty.Providers.GLModelTankProvider;
 import com.ThirtyNineEighty.Renderable.GL.*;
 import com.ThirtyNineEighty.Renderable.IRenderable;
 import com.ThirtyNineEighty.Game.Subprograms.ISubprogram;
+import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
+import com.ThirtyNineEighty.System.GameContext;
 
 import java.util.HashMap;
 
@@ -46,10 +50,22 @@ public class Factory
     addRenderable("glSkyBox", GLSkyBox.class);
   }
 
-  public WorldObject<?, ?> createObject(String type, Object... params)
+  public WorldObject<?, ?> createObject(String descriptionStr)
   {
-    Creator<? extends WorldObject<?, ?>> creator = objectCreators.get(type);
-    return creator.create(params);
+    Creator<? extends WorldObject<?, ?>> creator = getObjectCreator(descriptionStr);
+    return creator.create(descriptionStr);
+  }
+
+  public WorldObject<?, ?> createObject(String descriptionStr, Properties properties)
+  {
+    Creator<? extends WorldObject<?, ?>> creator = getObjectCreator(descriptionStr);
+    return creator.create(descriptionStr, properties);
+  }
+
+  private Creator<? extends WorldObject<?, ?>> getObjectCreator(String descriptionStr)
+  {
+    Description description = GameContext.resources.getDescription(new FileDescriptionSource(descriptionStr));
+    return objectCreators.get(description.getObjectType());
   }
 
   public ISubprogram createSubprogram(String type, Object... params)

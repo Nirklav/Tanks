@@ -9,6 +9,10 @@ public class GameWorld
 {
   private static final long serialVersionUID = 1L;
 
+  private static final float lightHeight = 100;
+  private static final float lightX = 50;
+  private static final float lightY = 50;
+
   public GameWorld(final Tank player)
   {
     this.player = player;
@@ -32,7 +36,7 @@ public class GameWorld
       @Override
       public void set(Light.Data light)
       {
-        light.Position.setFrom(50, 50, 200);
+        light.Position.setFrom(lightX, lightY, lightHeight);
       }
     }));
   }

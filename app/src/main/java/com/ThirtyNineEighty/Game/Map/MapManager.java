@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Game.Map.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.*;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
 import com.ThirtyNineEighty.Game.Worlds.*;
 import com.ThirtyNineEighty.Resources.Sources.*;
@@ -18,7 +17,7 @@ public final class MapManager
 
   public GameWorld create(GameStartArgs args)
   {
-    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource("maps"));
+    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource(FileContentSource.maps));
     String name = args.getMapName();
 
     if (!maps.contains(name))
@@ -49,8 +48,7 @@ public final class MapManager
 
   private WorldObject<?, ?> create(MapObject mapObj)
   {
-    Description description = GameContext.resources.getDescription(new FileDescriptionSource(mapObj.description));
-    WorldObject<?, ?> object = GameContext.factory.createObject(description.getObjectType(), mapObj.description, mapObj.properties);
+    WorldObject<?, ?> object = GameContext.factory.createObject(mapObj.description, mapObj.properties);
 
     object.setPosition(mapObj.getPosition());
     object.setAngles(mapObj.getAngles());

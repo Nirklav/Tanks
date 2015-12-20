@@ -2,11 +2,9 @@ package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
 import com.ThirtyNineEighty.System.*;
 
 import java.util.ArrayList;
@@ -49,8 +47,7 @@ public class RespawnSubprogram
 
   private static GameObject<?, ?> create(MapObject mapObj)
   {
-    Description description = GameContext.resources.getDescription(new FileDescriptionSource(mapObj.description));
-    GameObject<?, ?> object = (GameObject<?, ?>) GameContext.factory.createObject(description.getObjectType(), mapObj.description, mapObj.properties);
+    GameObject<?, ?> object = (GameObject<?, ?>) GameContext.factory.createObject(mapObj.description, mapObj.properties);
 
     object.setPosition(mapObj.getPosition());
     object.setAngles(mapObj.getAngles());
