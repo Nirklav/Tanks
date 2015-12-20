@@ -39,10 +39,10 @@ public class MapSelectMenu
   {
     super.initialize();
 
-    Button prevMap = new Button("Prev map");
-    prevMap.setPosition(70, -440);
-    prevMap.setSize(300, 200);
-    prevMap.setClickListener(new Runnable()
+    Button prevMapButton = new Button("Prev map");
+    prevMapButton.setPosition(70, -440);
+    prevMapButton.setSize(300, 200);
+    prevMapButton.setClickListener(new Runnable()
     {
       @Override
       public void run()
@@ -50,7 +50,7 @@ public class MapSelectMenu
         mapSelector.Prev();
       }
     });
-    add(prevMap);
+    add(prevMapButton);
 
     Button nextMapButton = new Button("Next map");
     nextMapButton.setPosition(390, -440);

@@ -3,6 +3,8 @@ package com.ThirtyNineEighty.Common.Math;
 import android.opengl.Matrix;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -41,6 +43,35 @@ public class Vector3
   {
     this();
     setFrom(vec);
+  }
+
+  public Vector3(String vectorStr) // {%f; %f; %f}
+  {
+    this();
+
+    String[] floats = vectorStr
+      .replaceAll("\\{", "")
+      .replaceAll("\\}", "")
+      .replaceAll(" ", "")
+      .split(";");
+
+    NumberFormat format = NumberFormat.getInstance();
+    Number number;
+    try
+    {
+      number = format.parse(floats[0]);
+      value[0] = number.floatValue();
+
+      number = format.parse(floats[1]);
+      value[1] = number.floatValue();
+
+      number = format.parse(floats[2]);
+      value[2] = number.floatValue();
+    }
+    catch (ParseException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
   public void setFrom(float x, float y, float z)

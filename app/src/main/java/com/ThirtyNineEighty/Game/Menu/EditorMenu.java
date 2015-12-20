@@ -1,11 +1,9 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import android.os.Environment;
 
+import com.ThirtyNineEighty.Common.EditorExporter;
 import com.ThirtyNineEighty.Common.Math.*;
 import com.ThirtyNineEighty.Game.Menu.Controls.*;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
-import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Game.Worlds.IWorld;
@@ -14,11 +12,9 @@ import com.ThirtyNineEighty.Resources.MeshMode;
 import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.System.GameContext;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditorMenu
   extends BaseMenu
@@ -119,14 +115,14 @@ public class EditorMenu
     });
     add(nextObject);
 
-    rightRotate = new Button("Right");
-    rightRotate.setPosition(800, -290);
-    rightRotate.setSize(150, 150);
+    rightRotate = new Button("Turn right");
+    rightRotate.setPosition(785, -465);
+    rightRotate.setSize(350, 150);
     add(rightRotate);
 
-    leftRotate = new Button("Left");
-    leftRotate.setPosition(600, -290);
-    leftRotate.setSize(150, 150);
+    leftRotate = new Button("Turn left");
+    leftRotate.setPosition(420, -465);
+    leftRotate.setSize(350, 150);
     add(leftRotate);
 
     Button apply = new Button("Apply");
@@ -149,57 +145,18 @@ public class EditorMenu
     smallSpeed.setSize(500, 150);
     add(smallSpeed);
 
-    Button export = new Button("Export");
-    export.setPosition(710, 0);
-    export.setSize(500, 150);
-    export.setClickListener(new Runnable()
+    Button exportBtn = new Button("Export");
+    exportBtn.setPosition(710, 0);
+    exportBtn.setSize(500, 150);
+    exportBtn.setClickListener(new Runnable()
     {
       @Override
       public void run()
       {
         try
         {
-          ArrayList<WorldObject<?, ?>> objects = new ArrayList<>();
-
           IWorld world = GameContext.content.getWorld();
-          world.getObjects(objects);
-
-          File externalStorage = Environment.getExternalStorageDirectory();
-          File storage = new File(externalStorage + "/TanksMaps");
-
-          if (!storage.exists())
-          {
-            boolean created = storage.mkdirs();
-            if (!created)
-            {
-              showMessage("Can't create TanksMaps directory");
-              return;
-            }
-          }
-
-          File outputFile = File.createTempFile("map", ".txt", storage);
-
-          FileOutputStream stream = new FileOutputStream(outputFile);
-          PrintStream print = new PrintStream(stream);
-
-          for (WorldObject<?, ?> object : objects)
-          {
-            Description description = object.getDescription();
-            String descriptionStr = description.getName();
-            Vector3 position = object.getPosition();
-            Vector3 angles = object.getAngles();
-
-            // Skip land
-            if (Land.sand.equals(descriptionStr))
-              continue;
-
-            print.append(descriptionStr).append(';');
-            print.append(position.toString()).append(';');
-            print.append(angles.toString()).append(';');
-          }
-
-          print.close();
-
+          EditorExporter.exportMap(world);
           showMessage("Exported");
         }
         catch (IOException e)
@@ -207,7 +164,28 @@ public class EditorMenu
           showMessage(e.getMessage());
         }
       }
-    }); add(export);
+    });
+    add(exportBtn);
+
+    Button importBtn = new Button("Import");
+    importBtn.setPosition(710, -170);
+    importBtn.setSize(500, 150);
+    importBtn.setClickListener(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        List<String> maps = EditorExporter.getMaps();
+        if (maps == null || maps.size() == 0)
+        {
+          showMessage("Maps not found");
+          return;
+        }
+
+        GameContext.content.setMenu(new EditorImportMenu());
+      }
+    });
+    add(importBtn);
 
     setCategorySelector();
     setObjectSelector(FileContentSource.decors);
