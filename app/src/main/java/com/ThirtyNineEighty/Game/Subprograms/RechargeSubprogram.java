@@ -1,8 +1,9 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.System.*;
 
 public class RechargeSubprogram
   extends Subprogram
@@ -25,7 +26,7 @@ public class RechargeSubprogram
     if (rechargeProgress >= GameDescription.maxRechargeLevel)
       rechargeProgress = GameDescription.maxRechargeLevel;
     else
-      rechargeProgress += description.getRechargeSpeed() * GameContext.getDelta();
+      rechargeProgress += description.getRechargeSpeed() * DeltaTime.get();
 
     tank.setRechargeProgress(rechargeProgress);
   }

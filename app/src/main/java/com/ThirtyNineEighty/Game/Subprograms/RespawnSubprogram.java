@@ -1,11 +1,12 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.System.*;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class RespawnSubprogram
     if (respawned != null && respawned.getHealth() > 0)
       return;
 
-    IWorld world = GameContext.content.getWorld();
+    IWorld world = TanksContext.content.getWorld();
 
     if (count > 0)
       world.add(respawned = create(object));
@@ -47,13 +48,13 @@ public class RespawnSubprogram
 
   private static GameObject<?, ?> create(MapObject mapObj)
   {
-    GameObject<?, ?> object = (GameObject<?, ?>) GameContext.factory.createObject(mapObj.description, mapObj.properties);
+    GameObject<?, ?> object = (GameObject<?, ?>) TanksContext.factory.createObject(mapObj.description, mapObj.properties);
 
     object.setPosition(mapObj.getPosition());
     object.setAngles(mapObj.getAngles());
 
     for (String subprogramName : mapObj.subprograms)
-      object.bind(GameContext.factory.createSubprogram(subprogramName, object));
+      object.bind(TanksContext.factory.createSubprogram(subprogramName, object));
 
     return object;
   }

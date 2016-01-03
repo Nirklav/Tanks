@@ -1,7 +1,8 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Game.Objects.Descriptions.Description;
-import com.ThirtyNineEighty.Game.Objects.Properties.Properties;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
+import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
 
 public class Decor
   extends WorldObject<Description, Properties>

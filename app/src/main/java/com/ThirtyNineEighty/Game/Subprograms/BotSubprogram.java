@@ -1,40 +1,36 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import android.support.annotation.Nullable;
-
-import com.ThirtyNineEighty.Game.Collisions.Tracer;
-import com.ThirtyNineEighty.Game.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Map.IMap;
+import com.ThirtyNineEighty.Base.Map.IPath;
+import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Collisions.Tracer;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.System.GameContext;
-
-import java.util.ArrayList;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 public class BotSubprogram
   extends Subprogram
 {
   private static final long serialVersionUID = 1L;
 
-  private final static float minDistance = 20;
+  private final static float minDistance = 10;
   private final static float minPathRebuildDistance = 50;
   private final static float maxDistance = 150;
   private final static float maxPathTimeMissedSec = 5;
 
   private Tank bot;
-  private ArrayList<Vector2> path;
-  private Vector2 pathEnd;
-  private int currentPathStep;
-  private float stepCompletion;
+  private IPath path;
   private float pathTimeMissedSec;
 
   public BotSubprogram(Tank bot)
   {
     this.bot = bot;
-    stepCompletion = bot.collidable.getRadius();
   }
 
   @Override
@@ -46,7 +42,7 @@ public class BotSubprogram
       return;
     }
 
-    IWorld world = GameContext.content.getWorld();
+    IWorld world = TanksContext.content.getWorld();
     WorldObject<?, ?> player = world.getPlayer();
 
     Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
@@ -57,12 +53,7 @@ public class BotSubprogram
     if (distance < maxDistance)
     {
       tryFire(player, targetVector);
-
-      Vector2 movingVector = getMovingVector(player, botPosition, playerPosition);
-      if (movingVector != null && distance > minDistance)
-        move(movingVector);
-
-      Vector.release(movingVector);
+      tryMove(player);
     }
 
     Vector.release(playerPosition);
@@ -88,81 +79,46 @@ public class BotSubprogram
     }
   }
 
-  @Nullable
-  private Vector2 getMovingVector(WorldObject<?, ?> target, Vector2 botPosition, Vector2 playerPosition)
+  private void tryMove(WorldObject<?, ?> target)
   {
-    Map map = GameContext.mapManager.getMap();
+    IWorld world = TanksContext.content.getWorld();
+    IMap map = world.getMap();
 
     // Find path
     if (path == null)
-    {
       path = map.findPath(bot, target);
-      if (path == null)
-        return null;
 
-      currentPathStep = 0;
-      pathEnd = path.get(path.size() - 1);
-    }
-
-    // If player drove away from path end
-    Vector2 vector = playerPosition.getSubtract(pathEnd);
-    if (vector.getLength() > minPathRebuildDistance)
-    {
-      Vector.release(path);
-      path = null;
-      return null;
-    }
-
-    // Select next step from path
-    Vector2 nextStepVector = Vector.getInstance(2);
-    while (true)
-    {
-      // If we arrived, reset path
-      if (currentPathStep >= path.size())
-      {
-        Vector.release(path);
-        path = null;
-        return null;
-      }
-
-      Vector2 nextStep = path.get(currentPathStep);
-      nextStepVector.setFrom(nextStep);
-      nextStepVector.subtract(botPosition);
-
-      if (nextStepVector.getLength() > stepCompletion)
-        return nextStepVector;
-
-      currentPathStep++;
-    }
-  }
-
-  private void move(Vector2 movingVector)
-  {
-    Map map = GameContext.mapManager.getMap();
-    float movingAngle = Vector2.xAxis.getAngle(movingVector);
-    float botAngle = bot.getAngles().getZ();
-
-    bot.rotate(movingAngle);
-
-    if (Math.abs(botAngle - movingAngle) >= 15)
+    if (path == null)
       return;
 
-    // Try move
-    if (map.canMove(bot))
+    // If player drove away from path end
+    Vector3 pathEnd = path.end();
+    Vector3 targetPosition = target.getPosition();
+    Vector3 vector = targetPosition.getSubtract(pathEnd);
+
+    if (vector.getLength() > minPathRebuildDistance)
     {
-      pathTimeMissedSec = 0.0f;
-      bot.move();
+      path.release();
+      path = null;
+      return;
     }
-    else
+
+    // We arrived
+    if (path.distance() < minDistance)
+      return;
+
+    // Move
+    boolean moved = path.moveObject();
+    if (!moved)
     {
       // Sum pass time
-      pathTimeMissedSec += GameContext.getDelta();
+      pathTimeMissedSec += DeltaTime.get();
 
       // Reset path, if we waiting pass too long
       if (pathTimeMissedSec > maxPathTimeMissedSec)
       {
         pathTimeMissedSec = 0.0f;
-        Vector.release(path);
+        path.release();
         path = null;
       }
     }

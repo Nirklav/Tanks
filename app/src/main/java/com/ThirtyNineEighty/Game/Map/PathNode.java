@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 
 class PathNode
 {

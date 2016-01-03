@@ -1,14 +1,17 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Map.IMap;
+import com.ThirtyNineEighty.Base.Map.IPath;
+import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
-import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Game.Objects.WorldObject;
-import com.ThirtyNineEighty.Game.Objects.GameObject;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.Common.Math.Vector3;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.GameContext;
+
 import com.android.internal.util.Predicate;
 
 import java.util.ArrayList;
@@ -18,11 +21,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 public class Map
+  implements IMap
 {
-  public final static int StateInProgress = 0;
-  public final static int StateWin = 1;
-  public final static int StateLose = 2;
-
   private final static int DirectionsCount = 8;
   private final static int Top = 0;
   private final static int TopLeft = 1;
@@ -38,8 +38,6 @@ public class Map
 
   private final HashMap<Long, Projection> projectionsCache;
 
-  private int state;
-
   public final String name;
   public final MapDescription description;
 
@@ -48,65 +46,51 @@ public class Map
     this.name = name;
     this.description = description;
     this.projectionsCache = new HashMap<>();
-    this.state = 0;
   }
 
-  public int getState() { return state; }
-  public void setState(int value)
+  @Override
+  public float size()
   {
-    state = value;
-    if (state == StateWin)
-    {
-      if (description.openingMaps != null)
-        for (String name : description.openingMaps)
-          GameContext.gameProgress.openMap(name);
-
-      if (description.openingTanks != null)
-        for (String name : description.openingTanks)
-          GameContext.gameProgress.openTank(name);
-
-      if (description.openingUpgrades != null)
-        for (String name : description.openingUpgrades)
-          GameContext.gameProgress.openUpgrade(name);
-    }
+    return description.size;
   }
 
-  public boolean canMove(GameObject<?, ?> object)
+  @Override
+  public boolean canMove(WorldObject<?, ?> object)
   {
     Vector2 position = Vector.getInstance(2, object.getPosition());
     Vector3 angles = object.getAngles();
-    GameDescription description = object.getDescription();
 
     Projection projection = getProjection(object);
     if (projection == null)
       return true;
 
-    float distance = projection.getRadius() + description.getSpeed() * GameContext.getDelta();
+    Description description = object.getDescription();
+    float distance = projection.getRadius() + description.getSpeed() * DeltaTime.get();
     Vector2 checkPoint = position.getMove(distance, angles.getZ());
-    ArrayList<Projection> projections = getProjections(object);
 
-    for (Projection current : projections)
+    for (Projection current : getProjections(object))
       if (current.contains(checkPoint, projection.getRadius()))
         return false;
 
     return true;
   }
 
-  public ArrayList<Vector2> findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target)
+  @Override
+  public IPath findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
-    Vector2 finderPosition = Vector.getInstance(2, finder.getPosition());
-    Vector2 targetPosition = Vector.getInstance(2, target.getPosition());
-
     float finderRadius = 0;
     Projection finderProjection = getProjection(finder);
     if (finderProjection != null)
       finderRadius = finderProjection.getRadius();
 
-    return findPath(finderPosition, targetPosition, finderRadius, getProjections(finder, target));
+    return findPath(finder, target, finderRadius, getProjections(finder, target));
   }
 
-  public ArrayList<Vector2> findPath(Vector2 start, Vector2 end, float finderRadius, ArrayList<Projection> projections)
+  private IPath findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target, float finderRadius, ArrayList<Projection> projections)
   {
+    Vector2 start = Vector.getInstance(2, finder.getPosition());
+    Vector2 end = Vector.getInstance(2, target.getPosition());
+
     normalizePoint(start);
     normalizePoint(end);
 
@@ -118,7 +102,7 @@ public class Map
     {
       PathNode currentNode = Collections.min(openSet, pathLengthComparator);
       if (currentNode.position.equals(end))
-        return getPath(currentNode);
+        return getPath(finder, currentNode);
 
       openSet.remove(currentNode);
       closedSet.add(currentNode);
@@ -238,7 +222,7 @@ public class Map
     return result;
   }
 
-  private static ArrayList<Vector2> getPath(PathNode node)
+  private static IPath getPath(WorldObject<?, ?> object, PathNode node)
   {
     ArrayList<Vector2> result = new ArrayList<>();
     PathNode currentNode = node;
@@ -271,7 +255,7 @@ public class Map
     Vector.release(direction);
 
     Collections.reverse(result);
-    return result;
+    return new Path(object, result);
   }
 
   @SuppressWarnings("SuspiciousNameCombination")

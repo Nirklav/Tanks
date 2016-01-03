@@ -1,14 +1,18 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Map.Map;
-import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Menus.Controls.*;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Game.Menu.Controls.*;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-import com.ThirtyNineEighty.System.*;
+import com.ThirtyNineEighty.Game.TanksContext;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 
 public class GameMenu
   extends BaseMenu
@@ -34,14 +38,12 @@ public class GameMenu
       @Override
       public void onUpdate()
       {
-        Map map = GameContext.mapManager.getMap();
-        IWorld world = GameContext.content.getWorld();
+        GameWorld world = (GameWorld) TanksContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
-
-        GameDescription currentDescription = player.getDescription();
+        GameDescription playerDescription = player.getDescription();
 
         // Player state
-        health.setMaxProgress(currentDescription.getHealth());
+        health.setMaxProgress(playerDescription.getHealth());
         health.setProgress(player.getHealth());
         recharge.setProgress(player.getRechargeProgress());
 
@@ -49,12 +51,12 @@ public class GameMenu
         processPlayerControl(player);
 
         // Map state
-        switch (map.getState())
+        switch (world.getState())
         {
-        case Map.StateWin:
+        case GameWorld.win:
           winLabel.setVisible(true);
           break;
-        case Map.StateLose:
+        case GameWorld.lose:
           loseLabel.setVisible(true);
           break;
         }
@@ -69,7 +71,7 @@ public class GameMenu
       @Override
       public void run()
       {
-        IWorld world = GameContext.content.getWorld();
+        IWorld world = TanksContext.content.getWorld();
         Tank player = (Tank) world.getPlayer();
         player.fire();
       }
@@ -84,9 +86,9 @@ public class GameMenu
       @Override
       public void run()
       {
-        IWorld world = GameContext.content.getWorld();
+        IWorld world = TanksContext.content.getWorld();
         world.disable();
-        GameContext.content.setMenu(new MainMenu());
+        TanksContext.content.setMenu(new MainMenu());
       }
     });
     add(menuButton);
@@ -147,7 +149,11 @@ public class GameMenu
         player.move();
 
       if (deltaAngle > 3)
-        player.rotate(joyAngle);
+      {
+        Vector3 targetAngles = Vector.getInstance(3, 0, 0, joyAngle);
+        player.rotateTo(targetAngles);
+        Vector.release(targetAngles);
+      }
     }
     // back
     else
@@ -156,17 +162,21 @@ public class GameMenu
         player.moveBack();
 
       if (deltaAngle < 177)
-        player.rotate(joyAngle - 180);
+      {
+        Vector3 targetAngles = Vector.getInstance(3, 0, 0, joyAngle - 180);
+        player.rotateTo(targetAngles);
+        Vector.release(targetAngles);
+      }
     }
 
     // turret
     GameDescription playerDescription = player.getDescription();
 
     if (leftTurretButton.getState())
-      player.addTurretAngle(playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
+      player.addTurretAngle(playerDescription.getTurretRotationSpeed() * DeltaTime.get());
 
     if (rightTurretButton.getState())
-      player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * GameContext.getDelta());
+      player.addTurretAngle(-playerDescription.getTurretRotationSpeed() * DeltaTime.get());
   }
 
   private float getJoystickAngle()

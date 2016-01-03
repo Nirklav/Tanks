@@ -1,14 +1,15 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Common.EditorExporter;
-import com.ThirtyNineEighty.Game.Menu.Controls.Button;
-import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
-import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.System.GameContext;
-
-import java.io.IOException;
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Game.Common.EditorExporter;
+import com.ThirtyNineEighty.Game.Common.LoadException;
+import com.ThirtyNineEighty.Base.Menus.Controls.Button;
+import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 public class EditorImportMenu
   extends BaseMenu
@@ -35,7 +36,7 @@ public class EditorImportMenu
       @Override
       public void run()
       {
-        GameContext.content.setMenu(new EditorMenu());
+        TanksContext.content.setMenu(new EditorMenu());
       }
     });
     add(menuButton);
@@ -50,20 +51,17 @@ public class EditorImportMenu
       {
         try
         {
-          IWorld world = GameContext.content.getWorld();
+          IWorld world = TanksContext.content.getWorld();
           EditorExporter.importMap(world, mapSelector.getCurrent());
-          GameContext.content.setMenu(new EditorMenu());
+          TanksContext.content.setMenu(new EditorMenu());
         }
-        catch (IOException e)
+        catch (LoadException e)
         {
           showMessage(e.getMessage());
         }
       }
     });
     add(apply);
-
-    mapNameLabel = new GLLabel(" ", MeshMode.Dynamic);
-    bind(mapNameLabel);
 
     mapSelector = new Selector(EditorExporter.getMaps(), new Selector.Callback()
     {
@@ -73,6 +71,9 @@ public class EditorImportMenu
         mapNameLabel.setValue(current);
       }
     });
+
+    mapNameLabel = new GLLabel(mapSelector.getCurrent(), MeshMode.Dynamic);
+    bind(mapNameLabel);
 
     Button prevMapButton = new Button("Prev map");
     prevMapButton.setPosition(-160, -220);

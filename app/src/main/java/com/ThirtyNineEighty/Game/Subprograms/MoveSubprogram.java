@@ -1,9 +1,11 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 public class MoveSubprogram
   extends Subprogram
@@ -26,7 +28,7 @@ public class MoveSubprogram
   public void onUpdate()
   {
     GameDescription description = movedObject.getDescription();
-    float stepLength = description.getSpeed() * GameContext.getDelta();
+    float stepLength = description.getSpeed() * DeltaTime.get();
     movedObject.move(stepLength);
 
     if (checkLength)
@@ -34,7 +36,7 @@ public class MoveSubprogram
       length -= stepLength;
       if (length < 0)
       {
-        IWorld world = GameContext.content.getWorld();
+        IWorld world = TanksContext.content.getWorld();
         world.remove(movedObject);
       }
     }

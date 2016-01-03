@@ -1,11 +1,12 @@
 package com.ThirtyNineEighty.Game.Objects;
 
+import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Game.Subprograms.MoveSubprogram;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Common.Math.*;
-import com.ThirtyNineEighty.System.*;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Common.Math.*;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 public class Tank
   extends GameObject<GameDescription, GameProperties>
@@ -36,7 +37,7 @@ public class Tank
     bullet.setPosition(position);
     bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
 
-    IWorld world = GameContext.content.getWorld();
+    IWorld world = TanksContext.content.getWorld();
     world.add(bullet);
 
     Vector.release(bulletAngles);
@@ -62,7 +63,7 @@ public class Tank
     float direction = Angle.getDirection(getTurretAngle(), targetAngle);
     float speed = description.getTurretRotationSpeed();
 
-    turretAngle += direction * speed * GameContext.getDelta();
+    turretAngle += direction * speed * DeltaTime.get();
   }
 
   public float getRechargeProgress()

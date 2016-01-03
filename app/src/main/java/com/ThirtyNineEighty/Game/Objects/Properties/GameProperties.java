@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Objects.Properties;
 
+import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
+
 import java.util.ArrayList;
 import java.util.List;
 

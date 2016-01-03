@@ -1,18 +1,21 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Menus.Selector;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
-import com.ThirtyNineEighty.Game.Menu.Controls.Button;
-import com.ThirtyNineEighty.Game.Menu.Controls.Gesture;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Menus.Controls.Button;
+import com.ThirtyNineEighty.Base.Menus.Controls.Gesture;
+import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
-import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.Resources.Sources.FileDescriptionSource;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileDescriptionSource;
 
 public class TankSelectMenu
   extends BaseMenu
@@ -34,7 +37,7 @@ public class TankSelectMenu
       @Override
       public void onChange(String current)
       {
-        TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
+        TankSelectWorld world = (TankSelectWorld) TanksContext.content.getWorld();
         world.setPlayer(current);
         startArgs.setTankName(current);
 
@@ -67,7 +70,7 @@ public class TankSelectMenu
       public void run()
       {
         Vector2 vec = gesture.get();
-        TankSelectWorld world = (TankSelectWorld) GameContext.content.getWorld();
+        TankSelectWorld world = (TankSelectWorld) TanksContext.content.getWorld();
 
         world.addAngle(vec.getX() / 10);
         world.addLength(vec.getY() / 50);
@@ -85,8 +88,8 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        GameContext.content.setWorld(null);
-        GameContext.content.setMenu(new MainMenu());
+        TanksContext.content.setWorld(null);
+        TanksContext.content.setMenu(new MainMenu());
       }
     });
     add(menuButton);
@@ -154,8 +157,8 @@ public class TankSelectMenu
         if (!isTankAvailable() || !isBulletAvailable())
           return;
 
-        GameContext.content.setMenu(new GameMenu());
-        GameContext.content.setWorld(GameContext.mapManager.create(startArgs));
+        TanksContext.content.setMenu(new GameMenu());
+        TanksContext.content.setWorld(new GameWorld(startArgs));
       }
     });
     add(gameButton);
@@ -210,11 +213,11 @@ public class TankSelectMenu
   {
     String tankName = startArgs.getTankName();
     GameDescription tankDescription = getDescription(startArgs.getTankName());
-    return tankDescription.openedOnStart() || GameContext.gameProgress.isTankOpen(tankName);
+    return tankDescription.openedOnStart() || TanksContext.data.isTankOpen(tankName);
   }
 
   private GameDescription getDescription(String name)
   {
-    return (GameDescription) GameContext.resources.getDescription(new FileDescriptionSource(name));
+    return (GameDescription) TanksContext.resources.getDescription(new FileDescriptionSource(name));
   }
 }

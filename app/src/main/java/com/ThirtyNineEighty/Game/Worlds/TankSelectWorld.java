@@ -1,12 +1,13 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
+import com.ThirtyNineEighty.Base.Worlds.BaseWorld;
 import com.ThirtyNineEighty.Game.Objects.Land;
-import com.ThirtyNineEighty.Game.Objects.Properties.SkyBoxProperties;
-import com.ThirtyNineEighty.Game.Objects.SkyBox;
+import com.ThirtyNineEighty.Base.Objects.Properties.SkyBoxProperties;
+import com.ThirtyNineEighty.Base.Objects.SkyBox;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Common.Math.Angle;
-import com.ThirtyNineEighty.Renderable.Common.Camera;
-import com.ThirtyNineEighty.Renderable.Common.Light;
+import com.ThirtyNineEighty.Base.Common.Math.Angle;
+import com.ThirtyNineEighty.Base.Renderable.Common.Camera;
+import com.ThirtyNineEighty.Base.Renderable.Common.Light;
 
 public class TankSelectWorld
   extends BaseWorld

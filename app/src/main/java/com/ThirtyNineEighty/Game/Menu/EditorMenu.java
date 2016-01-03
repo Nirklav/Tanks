@@ -1,18 +1,21 @@
 package com.ThirtyNineEighty.Game.Menu;
 
 
-import com.ThirtyNineEighty.Common.EditorExporter;
-import com.ThirtyNineEighty.Common.Math.*;
-import com.ThirtyNineEighty.Game.Menu.Controls.*;
-import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Game.Common.EditorExporter;
+import com.ThirtyNineEighty.Game.Common.LoadException;
+import com.ThirtyNineEighty.Base.Common.Math.*;
+import com.ThirtyNineEighty.Base.Menus.Controls.*;
+import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
-import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +55,7 @@ public class EditorMenu
       @Override
       public void onUpdate()
       {
-        EditorWorld world = (EditorWorld) GameContext.content.getWorld();
+        EditorWorld world = (EditorWorld) TanksContext.content.getWorld();
 
         processCamera(world);
         processRotation(world);
@@ -73,8 +76,8 @@ public class EditorMenu
       @Override
       public void run()
       {
-        GameContext.content.setWorld(null);
-        GameContext.content.setMenu(new MainMenu());
+        TanksContext.content.setWorld(null);
+        TanksContext.content.setMenu(new MainMenu());
       }
     });
     add(menuButton);
@@ -116,38 +119,53 @@ public class EditorMenu
     add(nextObject);
 
     rightRotate = new Button("Turn right");
-    rightRotate.setPosition(785, -465);
-    rightRotate.setSize(350, 150);
+    rightRotate.setPosition(760, -465);
+    rightRotate.setSize(400, 150);
     add(rightRotate);
 
     leftRotate = new Button("Turn left");
-    leftRotate.setPosition(420, -465);
-    leftRotate.setSize(350, 150);
+    leftRotate.setPosition(350, -465);
+    leftRotate.setSize(400, 150);
     add(leftRotate);
 
     Button apply = new Button("Apply");
-    apply.setPosition(710, 465);
-    apply.setSize(500, 150);
+    apply.setPosition(760, 465);
+    apply.setSize(400, 150);
     apply.setClickListener(new Runnable()
     {
       @Override
       public void run()
       {
-        EditorWorld world = (EditorWorld) GameContext.content.getWorld();
+        EditorWorld world = (EditorWorld) TanksContext.content.getWorld();
         if (world.isObjectCreated())
           world.apply();
       }
     });
     add(apply);
 
+    Button destroy = new Button("Destroy");
+    destroy.setPosition(760, 310);
+    destroy.setSize(400, 150);
+    destroy.setClickListener(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        EditorWorld world = (EditorWorld) TanksContext.content.getWorld();
+        if (world.isObjectCreated())
+          world.destroy();
+      }
+    });
+    add(destroy);
+
     smallSpeed = new ToggleButton("Small speed");
-    smallSpeed.setPosition(710, 310);
-    smallSpeed.setSize(500, 150);
+    smallSpeed.setPosition(760, 155);
+    smallSpeed.setSize(400, 150);
     add(smallSpeed);
 
     Button exportBtn = new Button("Export");
-    exportBtn.setPosition(710, 0);
-    exportBtn.setSize(500, 150);
+    exportBtn.setPosition(760, -50);
+    exportBtn.setSize(400, 150);
     exportBtn.setClickListener(new Runnable()
     {
       @Override
@@ -155,11 +173,11 @@ public class EditorMenu
       {
         try
         {
-          IWorld world = GameContext.content.getWorld();
+          IWorld world = TanksContext.content.getWorld();
           EditorExporter.exportMap(world);
           showMessage("Exported");
         }
-        catch (IOException e)
+        catch (LoadException e)
         {
           showMessage(e.getMessage());
         }
@@ -168,8 +186,8 @@ public class EditorMenu
     add(exportBtn);
 
     Button importBtn = new Button("Import");
-    importBtn.setPosition(710, -170);
-    importBtn.setSize(500, 150);
+    importBtn.setPosition(760, -220);
+    importBtn.setSize(400, 150);
     importBtn.setClickListener(new Runnable()
     {
       @Override
@@ -182,7 +200,7 @@ public class EditorMenu
           return;
         }
 
-        GameContext.content.setMenu(new EditorImportMenu());
+        TanksContext.content.setMenu(new EditorImportMenu());
       }
     });
     add(importBtn);
@@ -202,7 +220,7 @@ public class EditorMenu
 
     delta.setFrom(joyVector);
     delta.normalize();
-    delta.multiply(speed * GameContext.getDelta());
+    delta.multiply(speed * DeltaTime.get());
 
     world.addToCameraPosition(delta);
 
@@ -220,14 +238,14 @@ public class EditorMenu
 
     if (rightRotate.getState())
     {
-      Vector3 delta = Vector.getInstance(3, 0, 0, -speed * GameContext.getDelta());
+      Vector3 delta = Vector.getInstance(3, 0, 0, -speed * DeltaTime.get());
       world.addToObjectAngles(delta);
       Vector.release(delta);
     }
 
     if (leftRotate.getState())
     {
-      Vector3 delta = Vector.getInstance(3, 0, 0, speed * GameContext.getDelta());
+      Vector3 delta = Vector.getInstance(3, 0, 0, speed * DeltaTime.get());
       world.addToObjectAngles(delta);
       Vector.release(delta);
     }
@@ -253,7 +271,7 @@ public class EditorMenu
       @Override
       public void onChange(String current)
       {
-        EditorWorld world = (EditorWorld) GameContext.content.getWorld();
+        EditorWorld world = (EditorWorld) TanksContext.content.getWorld();
 
         if (world.isObjectCreated())
           world.destroy();

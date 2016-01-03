@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Common.Math.Angle;
+import com.ThirtyNineEighty.Base.DeltaTime;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.System.GameContext;
 
 public abstract class GameObject<TDescription extends GameDescription, TProperties extends GameProperties>
   extends WorldObject<TDescription, TProperties>
@@ -36,11 +36,13 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
       isDead = true;
   }
 
+  @Override
   public void move()
   {
     move(getSpeed());
   }
 
+  @Override
   public void moveBack()
   {
     move(- getSpeed());
@@ -48,19 +50,6 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
 
   private float getSpeed()
   {
-    return description.getSpeed() * GameContext.getDelta();
-  }
-
-  public void rotate(float targetAngleZ)
-  {
-    float correctedAngleZ = Angle.correct(targetAngleZ);
-    float speed = description.getRotationSpeed() * GameContext.getDelta();
-    float angleZ = angles.getZ();
-
-    if (Math.abs(correctedAngleZ - angleZ) < speed)
-      return;
-
-    float addedValue = speed * Angle.getDirection(angleZ, correctedAngleZ);
-    rotate(0, 0, addedValue);
+    return description.getSpeed() * DeltaTime.get();
   }
 }

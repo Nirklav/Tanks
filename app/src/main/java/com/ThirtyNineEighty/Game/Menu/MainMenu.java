@@ -1,14 +1,15 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Game.Menu.Controls.Button;
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Menus.Controls.Button;
+import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
-import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.System.GameContext;
-import com.ThirtyNineEighty.Game.Subprograms.Subprogram;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Base.Subprogram;
 
 public class MainMenu
   extends BaseMenu
@@ -28,14 +29,14 @@ public class MainMenu
       @Override
       public void run()
       {
-        IWorld world = GameContext.content.getWorld();
+        IWorld world = TanksContext.content.getWorld();
         if (world == null)
           return;
 
         if (world instanceof GameWorld)
         {
           world.enable();
-          GameContext.content.setMenu(new GameMenu());
+          TanksContext.content.setMenu(new GameMenu());
         }
       }
     });
@@ -49,8 +50,8 @@ public class MainMenu
       @Override
       public void run()
       {
-        GameContext.content.setWorld(null);
-        GameContext.content.setMenu(new MapSelectMenu(new GameStartArgs()));
+        TanksContext.content.setWorld(null);
+        TanksContext.content.setMenu(new MapSelectMenu(new GameStartArgs()));
       }
     });
     add(newGameButton);
@@ -64,7 +65,7 @@ public class MainMenu
       public void run()
       {
         resourceCacheStatus.setVisible(true);
-        resourceCacheStatus.setValue(GameContext.resources.getCacheStatus());
+        resourceCacheStatus.setValue(TanksContext.resources.getCacheStatus());
 
         bind(new Subprogram()
         {
@@ -88,7 +89,7 @@ public class MainMenu
     });
     add(cacheStatus);
 
-    resourceCacheStatus = new GLLabel(GameContext.resources.getCacheStatus(), MeshMode.Dynamic);
+    resourceCacheStatus = new GLLabel(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
     resourceCacheStatus.setPosition(960, 540);
     resourceCacheStatus.setAlign(GLLabel.AlignType.TopRight);
     resourceCacheStatus.setVisible(false);
@@ -102,8 +103,8 @@ public class MainMenu
       @Override
       public void run()
       {
-        GameContext.content.setWorld(new EditorWorld());
-        GameContext.content.setMenu(new EditorMenu());
+        TanksContext.content.setWorld(new EditorWorld());
+        TanksContext.content.setMenu(new EditorMenu());
       }
     });
     add(editor);

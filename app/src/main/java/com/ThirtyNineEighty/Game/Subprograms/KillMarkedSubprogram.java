@@ -1,45 +1,36 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Game.Map.Map;
-import com.ThirtyNineEighty.Game.Menu.MainMenu;
-import com.ThirtyNineEighty.Game.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Game.Worlds.IWorld;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Game.TanksContext;
+import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 
 import java.util.ArrayList;
 
 public class KillMarkedSubprogram
-  extends Subprogram
+  extends WinConditionSubprogram
 {
   private static final long serialVersionUID = 1L;
 
   private ArrayList<GameObject<?, ?>> marked;
 
-  public KillMarkedSubprogram()
-  { }
+  public KillMarkedSubprogram(GameWorld world)
+  {
+    super(world);
+  }
 
   @Override
-  protected void onUpdate()
+  protected void checkCondition()
   {
-    Map map = GameContext.mapManager.getMap();
-    IWorld world = GameContext.content.getWorld();
+    GameWorld world = (GameWorld) TanksContext.content.getWorld();
     GameObject<?, ?> player = (GameObject<?, ?>) world.getPlayer();
-
-    if (map.getState() != Map.StateInProgress)
-    {
-      unbind();
-      GameContext.content.setWorld(null);
-      GameContext.content.setMenu(new MainMenu());
-      return;
-    }
-
+    
     // Check lose
     if (player.getHealth() <= 0)
     {
-      map.setState(Map.StateLose);
-      delay(5000);
+      world.setState(this, GameWorld.State.failed);
+      unbind();
       return;
     }
 
@@ -72,8 +63,8 @@ public class KillMarkedSubprogram
 
     if (marked.size() == 0)
     {
-      map.setState(Map.StateWin);
-      delay(5000);
+      world.setState(this, GameWorld.State.completed);
+      unbind();
     }
   }
 }

@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.ThirtyNineEighty.System.GameActivity"
+            android:name="com.ThirtyNineEighty.Base.GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape"
             android:label="@string/app_name"

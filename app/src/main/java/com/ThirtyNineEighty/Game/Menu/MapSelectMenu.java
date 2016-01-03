@@ -1,14 +1,16 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Menus.Selector;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
-import com.ThirtyNineEighty.Game.Menu.Controls.Button;
+import com.ThirtyNineEighty.Base.Menus.Controls.Button;
+import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Renderable.GL.GLLabel;
-import com.ThirtyNineEighty.Resources.MeshMode;
-import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.Resources.Sources.FileMapDescriptionSource;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
+import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
+import com.ThirtyNineEighty.Game.Resources.Sources.FileMapDescriptionSource;
 
 public class MapSelectMenu
   extends BaseMenu
@@ -76,8 +78,8 @@ public class MapSelectMenu
         if (!isMapOpen(args.getMapName()))
           return;
 
-        GameContext.content.setMenu(new TankSelectMenu(args));
-        GameContext.content.setWorld(new TankSelectWorld(args));
+        TanksContext.content.setMenu(new TankSelectMenu(args));
+        TanksContext.content.setWorld(new TankSelectWorld(args));
       }
     });
     add(selectTank);
@@ -90,8 +92,8 @@ public class MapSelectMenu
       @Override
       public void run()
       {
-        GameContext.content.setWorld(null);
-        GameContext.content.setMenu(new MainMenu());
+        TanksContext.content.setWorld(null);
+        TanksContext.content.setMenu(new MainMenu());
       }
     });
     add(menu);
@@ -107,7 +109,7 @@ public class MapSelectMenu
 
   private boolean isMapOpen(String mapName)
   {
-    MapDescription mapDescription = GameContext.resources.getMap(new FileMapDescriptionSource(mapName));
-    return mapDescription.openedOnStart || GameContext.gameProgress.isMapOpen(mapName);
+    MapDescription mapDescription = TanksContext.resources.getMap(new FileMapDescriptionSource(mapName));
+    return mapDescription.openedOnStart || TanksContext.data.isMapOpen(mapName);
   }
 }

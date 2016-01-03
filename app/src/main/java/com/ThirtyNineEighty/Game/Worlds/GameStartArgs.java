@@ -1,8 +1,8 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
-import com.ThirtyNineEighty.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.System.GameContext;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
+import com.ThirtyNineEighty.Game.TanksContext;
 
 import java.util.ArrayList;
 
@@ -14,9 +14,9 @@ public class GameStartArgs
 
   public GameStartArgs()
   {
-    ArrayList<String> maps = GameContext.resources.getContent(new FileContentSource(FileContentSource.maps));
-    ArrayList<String> tanks = GameContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
-    ArrayList<String> bullets = GameContext.resources.getContent(new FileContentSource(FileContentSource.bullets));
+    ArrayList<String> maps = TanksContext.resources.getContent(new FileContentSource(FileContentSource.maps));
+    ArrayList<String> tanks = TanksContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
+    ArrayList<String> bullets = TanksContext.resources.getContent(new FileContentSource(FileContentSource.bullets));
 
     mapName = maps.get(0);
     tankName = tanks.get(0);

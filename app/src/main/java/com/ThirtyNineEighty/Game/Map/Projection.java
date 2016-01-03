@@ -1,12 +1,10 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Game.Collisions.ConvexHull;
-import com.ThirtyNineEighty.Game.Objects.WorldObject;
-import com.ThirtyNineEighty.Common.Math.Plane;
-import com.ThirtyNineEighty.Common.Math.Vector;
-import com.ThirtyNineEighty.Common.Math.Vector2;
-
-import java.util.ArrayList;
+import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
+import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Common.Math.Plane;
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 
 class Projection
 {

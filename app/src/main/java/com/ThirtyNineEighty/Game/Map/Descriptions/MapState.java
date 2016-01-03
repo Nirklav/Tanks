@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Map.Descriptions;
 
-import com.ThirtyNineEighty.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 
 import java.io.Serializable;
 
