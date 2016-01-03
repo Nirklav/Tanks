@@ -116,7 +116,9 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     {
       float angle = angles.get(i);
       float targetAngle = corrected.get(i);
-      float addedValue = speed * Angle.getDirection(angle, targetAngle);
+      float delta = Math.abs(targetAngle - angle);
+      float direction = Angle.getDirection(angle, targetAngle);
+      float addedValue = Math.min(delta, speed) * direction;
 
       angles.add(i, addedValue);
     }

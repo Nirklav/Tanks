@@ -2,10 +2,10 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
 import com.ThirtyNineEighty.Game.Common.EditorExporter;
 import com.ThirtyNineEighty.Game.Common.LoadException;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
-import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
@@ -106,24 +106,6 @@ public class EditorImportMenu
   {
     messageLabel.setVisible(true);
     messageLabel.setValue(message);
-
-    bind(new Subprogram()
-    {
-      boolean delayed;
-
-      @Override
-      protected void onUpdate()
-      {
-        if (!delayed)
-        {
-          delay(5000);
-          delayed = true;
-          return;
-        }
-
-        messageLabel.setVisible(false);
-        unbind();
-      }
-    });
+    bind(new DelayedRenderableSubprogram(messageLabel, 5000));
   }
 }

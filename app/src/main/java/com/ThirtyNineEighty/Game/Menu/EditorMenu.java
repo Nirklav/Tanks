@@ -4,6 +4,7 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
 import com.ThirtyNineEighty.Game.Common.EditorExporter;
 import com.ThirtyNineEighty.Game.Common.LoadException;
 import com.ThirtyNineEighty.Base.Common.Math.*;
@@ -287,24 +288,6 @@ public class EditorMenu
   {
     messageLabel.setVisible(true);
     messageLabel.setValue(message);
-
-    bind(new Subprogram()
-    {
-      boolean delayed;
-
-      @Override
-      protected void onUpdate()
-      {
-        if (!delayed)
-        {
-          delay(5000);
-          delayed = true;
-          return;
-        }
-
-        messageLabel.setVisible(false);
-        unbind();
-      }
-    });
+    bind(new DelayedRenderableSubprogram(messageLabel, 5000));
   }
 }

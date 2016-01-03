@@ -35,10 +35,10 @@ public class GameWorld
   public final static int win = 1;
   public final static int lose = 2;
 
-  private static final HashMap<Long, State> states = new HashMap<>();
+  private final HashMap<Long, State> states = new HashMap<>();
 
-  private static int lastState;
-  private static boolean lastStateChanged;
+  private int lastState;
+  private boolean lastStateChanged;
 
   private String mapName;
   private transient Map map;
@@ -112,7 +112,7 @@ public class GameWorld
         }
 
         int state = getState();
-        if (state == win)
+        if (state != inProgress)
         {
           if (map.description.openingMaps != null)
             for (String name : map.description.openingMaps)
@@ -152,14 +152,6 @@ public class GameWorld
       object.bind(TanksContext.factory.createSubprogram(subprogramName, object));
 
     return object;
-  }
-
-  @Override
-  public void uninitialize()
-  {
-    super.uninitialize();
-
-    states.clear();
   }
 
   @Override
