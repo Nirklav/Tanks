@@ -25,12 +25,15 @@ public class FileTextureSource
   }
 
   @Override
-  public String getName() { return name; }
+  public String getName()
+  {
+    return name;
+  }
 
   @Override
   public Texture load()
   {
-    return new Texture(loadTexture());
+    return new Texture(name, loadTexture());
   }
 
   @Override

@@ -11,31 +11,38 @@ import com.ThirtyNineEighty.Base.Resources.Entities.*;
 import com.ThirtyNineEighty.Base.Resources.Sources.*;
 import com.ThirtyNineEighty.Base.GameContext;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 public class GLSkyBox
   extends GLRenderable<GLRenderable.Data>
 {
   private static final long serialVersionUID = 1L;
 
+  private RenderableDescription description;
   private transient Texture textureData;
   private transient Geometry geometryData;
 
   public GLSkyBox(RenderableDescription description, IDataProvider<Data> provider)
   {
-    super(description, provider);
+    super(provider);
 
-    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
-    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+    this.description = description;
   }
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  @Override
+  public void initialize()
   {
-    in.defaultReadObject();
+    this.geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
 
-    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
-    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+    super.initialize();
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    GameContext.resources.release(geometryData);
+    GameContext.resources.release(textureData);
   }
 
   @Override
@@ -77,7 +84,7 @@ public class GLSkyBox
     textureData.validate();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getTrianglesCount() * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getPointsCount());
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);

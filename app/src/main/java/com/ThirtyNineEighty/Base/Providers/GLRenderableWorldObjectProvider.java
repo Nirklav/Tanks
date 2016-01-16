@@ -5,7 +5,7 @@ import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLRenderable;
 
 public class GLRenderableWorldObjectProvider<TData extends GLRenderable.Data, TObject extends WorldObject<?, ?>>
-  extends DataProvider<TData>
+  extends RenderableDataProvider<TData>
 {
   protected final TObject object;
   private final VisualDescription description;
@@ -21,6 +21,8 @@ public class GLRenderableWorldObjectProvider<TData extends GLRenderable.Data, TO
   @Override
   public final void set(TData data)
   {
+    super.set(data);
+
     data.position.setFrom(object.getPosition());
     data.angles.setFrom(object.getAngles());
     data.scale = 1;

@@ -13,9 +13,6 @@ import com.ThirtyNineEighty.Base.Resources.Sources.*;
 import com.ThirtyNineEighty.Base.Resources.Entities.*;
 import com.ThirtyNineEighty.Base.GameContext;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 public class GLModel
   extends GLRenderable<GLModel.Data>
 {
@@ -23,27 +20,37 @@ public class GLModel
 
   private transient Texture textureData;
   private transient Geometry geometryData;
+  private RenderableDescription description;
 
   public GLModel(RenderableDescription description, IDataProvider<Data> provider)
   {
-    super(description, provider);
+    super(provider);
 
-    geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
-    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+    this.description = description;
   }
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  @Override
+  public void initialize()
   {
-    in.defaultReadObject();
-
     geometryData = GameContext.resources.getGeometry(new FileGeometrySource(description.modelName));
     textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, true));
+
+    super.initialize();
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    GameContext.resources.release(textureData);
+    GameContext.resources.release(geometryData);
   }
 
   @Override
   public int getShaderId()
   {
-    return Shader.Shader3D;
+    return Shader.ShaderModel;
   }
 
   @Override
@@ -61,7 +68,7 @@ public class GLModel
   @Override
   public void draw(RendererContext context, Data data)
   {
-    Shader3D shader = (Shader3D) Shader.getCurrent();
+    ShaderModel shader = (ShaderModel) Shader.getCurrent();
     Light.Data light = context.getLight();
 
     // build PVM matrix
@@ -98,7 +105,7 @@ public class GLModel
     textureData.validate();
 
     // draw
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getTrianglesCount() * 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getPointsCount());
 
     // disable attribute arrays
     GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);

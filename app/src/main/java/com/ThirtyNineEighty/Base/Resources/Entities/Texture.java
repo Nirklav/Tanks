@@ -5,11 +5,14 @@ import android.opengl.GLES20;
 import com.ThirtyNineEighty.Base.GameContext;
 
 public class Texture
+  extends Resource
 {
   private int handle;
 
-  public Texture(int handle)
+  public Texture(String name, int handle)
   {
+    super(name);
+
     this.handle = handle;
   }
 

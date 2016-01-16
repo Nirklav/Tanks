@@ -22,6 +22,6 @@ public class StaticGeometrySource
   @Override
   protected LoadResult buildGeometry()
   {
-    return new LoadResult(buffer, trianglesCount, Vector3.zero, Vector3.zero);
+    return new LoadResult(buffer, trianglesCount * 3, Vector3.zero, Vector3.zero);
   }
 }

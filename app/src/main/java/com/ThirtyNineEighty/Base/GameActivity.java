@@ -6,6 +6,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -85,8 +86,9 @@ public class GameActivity
 
   protected void uninitialize()
   {
-    GameContext.resources.clearCache();
-    GameContext.data.close();
+    GameContext.context = null;
+    GameContext.renderer = null;
+    GameContext.glThread = null;
   }
 
   @Override
@@ -121,7 +123,8 @@ public class GameActivity
       {
         glView.queueEvent(new Runnable()
         {
-          @Override public void run()
+          @Override
+          public void run()
           {
             r.run();
             synchronized (waitObj)
@@ -171,6 +174,15 @@ public class GameActivity
   }
 
   @Override
+  public void onLowMemory()
+  {
+    super.onLowMemory();
+
+    int clearedResources = GameContext.resources.clearUnusedCache();
+    Log.d("GameActivity", String.format("OnLowMemory: Cleared %d resources", clearedResources));
+  }
+
+  @Override
   protected void onPause()
   {
     super.onPause();
@@ -192,11 +204,6 @@ public class GameActivity
 
     // reset other managers
     uninitialize();
-
-    GameContext.context = null;
-    GameContext.content = null;
-    GameContext.renderer = null;
-    GameContext.glThread = null;
   }
 
   @Override

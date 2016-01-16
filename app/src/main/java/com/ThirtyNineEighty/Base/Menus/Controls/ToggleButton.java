@@ -11,13 +11,13 @@ public class ToggleButton
   @Override
   public void onDown(float x, float y)
   {
-    sprite.setImage(state ? notPressed: pressed);
+    sprite.setImage(state ? notPressedImageName : pressedImageName);
   }
 
   @Override
   public void onUp(float x, float y)
   {
     state = !state;
-    sprite.setImage(state ? pressed : notPressed);
+    sprite.setImage(state ? pressedImageName : notPressedImageName);
   }
 }

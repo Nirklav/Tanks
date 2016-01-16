@@ -13,17 +13,17 @@ public class FrameBufferSource
 {
   public static final int ShadowBuffer = 0;
 
-  private int num;
+  private String name;
 
   public FrameBufferSource(int number)
   {
-    num = number;
+    name = String.format("frameBuffer%d", number);
   }
 
   @Override
   public String getName()
   {
-    return String.format("frameBuffer%d", num);
+    return name;
   }
 
   @Override
@@ -50,7 +50,7 @@ public class FrameBufferSource
     GLES20.glDeleteTextures(1, new int[]{ frameBuffer.depthTextureHandle }, 0);
   }
 
-  private static FrameBuffer build()
+  private FrameBuffer build()
   {
     ResultRunnable<FrameBuffer> runnable = new ResultRunnable<FrameBuffer>()
     {
@@ -85,7 +85,7 @@ public class FrameBufferSource
         if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
           throw new GLException(status, "GL_FRAMEBUFFER_COMPLETE failed, CANNOT use FBO");
 
-        return new FrameBuffer(frameBufferIds[0], depthTextureIds[0], renderTextureIds[0]);
+        return new FrameBuffer(name, frameBufferIds[0], depthTextureIds[0], renderTextureIds[0]);
       }
     };
 

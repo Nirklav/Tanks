@@ -21,12 +21,15 @@ public abstract class GeometrySource
 
   protected GeometrySource(String geometryName, MeshMode meshMode)
   {
-    name = geometryName;
+    name = String.format("%s-%s", geometryName, meshMode.name());
     mode = meshMode;
   }
 
   @Override
-  public String getName() { return String.format("%s-%s", name, mode.name()); }
+  public String getName()
+  {
+    return name;
+  }
 
   @Override
   public Geometry load()
@@ -35,11 +38,11 @@ public abstract class GeometrySource
     switch (mode)
     {
     case Dynamic:
-      return new Geometry(result.buffer, result.trianglesCount, result.position, result.angles);
+      return new Geometry(name, result.buffer, result.pointsCount, result.position, result.angles);
 
     case Static:
       int handle = loadGeometry(result.buffer);
-      return new Geometry(handle, result.trianglesCount, result.position, result.angles);
+      return new Geometry(name, handle, result.pointsCount, result.position, result.angles);
     }
 
     throw new IllegalArgumentException("Invalid mesh mode");
@@ -54,12 +57,12 @@ public abstract class GeometrySource
     switch (mode)
     {
     case Dynamic:
-      geometry.updateData(result.buffer, result.trianglesCount, result.position, result.angles);
+      geometry.updateData(result.buffer, result.pointsCount, result.position, result.angles);
       return;
 
     case Static:
       int handle = loadGeometry(result.buffer);
-      geometry.updateData(handle, result.trianglesCount, result.position, result.angles);
+      geometry.updateData(handle, result.pointsCount, result.position, result.angles);
       return;
     }
 
@@ -129,14 +132,14 @@ public abstract class GeometrySource
   protected static class LoadResult
   {
     public final FloatBuffer buffer;
-    public final int trianglesCount;
+    public final int pointsCount;
     public final Vector3 position;
     public final Vector3 angles;
 
-    public LoadResult(FloatBuffer buffer, int trianglesCount, Vector3 position, Vector3 angles)
+    public LoadResult(FloatBuffer buffer, int pointsCount, Vector3 position, Vector3 angles)
     {
       this.buffer = buffer;
-      this.trianglesCount = trianglesCount;
+      this.pointsCount = pointsCount;
       this.position = position;
       this.angles = angles;
     }

@@ -21,13 +21,56 @@ public class ConvexHull
     this.plane = plane;
   }
 
+  public boolean contains(Vector2 point)
+  {
+    if (convexHull == null)
+      convexHull = build(collidable, plane);
+
+    int count = convexHull.size();
+    Vector2 normal = Vector.getInstance(2);
+
+    for (int i = 0; i < count; i ++)
+    {
+      setNormal(normal, convexHull, i);
+
+      Vector2 projection = normal.getProjection(convexHull);
+      float pointProjection = point.getScalar(normal);
+
+      if (projection.getX() < pointProjection || projection.getY() > pointProjection)
+      {
+        Vector.release(normal);
+        return false;
+      }
+    }
+
+    Vector.release(normal);
+    return true;
+  }
+
+  private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
+  {
+    Vector2 firstPoint = vertices.get(num);
+    Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
+
+    Vector2 edge = secondPoint.getSubtract(firstPoint);
+
+    normal.setX(-edge.getY());
+    normal.setY(edge.getX());
+
+    normal.normalize();
+  }
+
   public ArrayList<Vector2> get()
   {
-    if (convexHull != null)
-      return convexHull;
+    if (convexHull == null)
+      convexHull = build(collidable, plane);
+    return convexHull;
+  }
 
+  private static ArrayList<Vector2> build(Collidable collidable, Plane plane)
+  {
     ArrayList<Vector2> projection = getDistinctProjection(collidable, plane);
-    convexHull = new ArrayList<>(projection.size());
+    ArrayList<Vector2> convexHull = new ArrayList<>(projection.size());
     if (projection.size() < 2)
       throw new IllegalStateException("projection size less than 2");
 
@@ -107,7 +150,7 @@ public class ConvexHull
     return minVectorIndex;
   }
 
-  private ArrayList<Vector2> getDistinctProjection(Collidable collidable, Plane plane)
+  private static ArrayList<Vector2> getDistinctProjection(Collidable collidable, Plane plane)
   {
     Vector2 vector = Vector.getInstance(2);
     ArrayList<Vector2> result = new ArrayList<>();

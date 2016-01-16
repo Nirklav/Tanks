@@ -4,6 +4,7 @@ import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
 import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Menus.Controls.*;
@@ -25,8 +26,8 @@ public class GameMenu
 
   private Joystick joystick;
 
-  private GLLabel winLabel;
-  private GLLabel loseLabel;
+  private GLLabelProvider winLabel;
+  private GLLabelProvider loseLabel;
 
   @Override
   public void initialize()
@@ -113,15 +114,15 @@ public class GameMenu
     health.setPosition(-220, 520);
     add(health);
 
-    winLabel = new GLLabel("WIN");
+    winLabel = new GLLabelProvider("WIN");
     winLabel.setCharSize(60, 80);
     winLabel.setVisible(false);
-    bind(winLabel);
+    bind(new GLLabel(winLabel));
 
-    loseLabel = new GLLabel("LOSE");
+    loseLabel = new GLLabelProvider("LOSE");
     loseLabel.setCharSize(60, 80);
     loseLabel.setVisible(false);
-    bind(loseLabel);
+    bind(new GLLabel(loseLabel));
   }
 
   private void processPlayerControl(Tank player)

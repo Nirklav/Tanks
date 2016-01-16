@@ -1,10 +1,10 @@
 package com.ThirtyNineEighty.Game.Map.Descriptions;
 
-import java.io.Serializable;
+import com.ThirtyNineEighty.Base.Resources.Entities.Resource;
 
 @SuppressWarnings("UnusedDeclaration") // fields set by serialization
 public class MapDescription
-  implements Serializable
+  extends Resource
 {
   private static final long serialVersionUID = 1L;
 
@@ -18,4 +18,9 @@ public class MapDescription
   public String[] openingUpgrades;
 
   public boolean openedOnStart;
+
+  public MapDescription(String name)
+  {
+    super(name);
+  }
 }

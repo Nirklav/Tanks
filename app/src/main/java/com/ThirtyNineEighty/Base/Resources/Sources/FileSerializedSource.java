@@ -1,8 +1,9 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
 import com.ThirtyNineEighty.Base.Common.Serializer;
+import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
 
-public class FileSerializedSource<TResource>
+public class FileSerializedSource<TResource extends IResource>
   implements ISource<TResource>
 {
   private final String name;

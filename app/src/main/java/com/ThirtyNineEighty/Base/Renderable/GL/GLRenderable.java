@@ -3,13 +3,10 @@ package com.ThirtyNineEighty.Base.Renderable.GL;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
-import com.ThirtyNineEighty.Base.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Renderable.Renderable;
 import com.ThirtyNineEighty.Base.Renderable.RendererContext;
-
-import java.io.Serializable;
 
 public abstract class GLRenderable<TData extends GLRenderable.Data>
   extends Renderable
@@ -20,18 +17,22 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
   protected float[] modelNormalMatrix;
   protected float[] modelMatrix;
 
-  protected RenderableDescription description;
-
   private IDataProvider<TData> provider;
 
-  protected GLRenderable(RenderableDescription description, IDataProvider<TData> provider)
+  protected GLRenderable(IDataProvider<TData> provider)
   {
-    this.description = description;
     this.provider = provider;
 
     modelMatrix = new float[16];
     modelNormalMatrix = new float[9];
     modelProjectionViewMatrix = new float[16];
+  }
+
+  @Override
+  public boolean isVisible()
+  {
+    TData data = provider.get();
+    return data.visible;
   }
 
   @Override
@@ -97,7 +98,7 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
   }
 
   public static class Data
-    implements Serializable
+    extends Renderable.Data
   {
     private static final long serialVersionUID = 1L;
 

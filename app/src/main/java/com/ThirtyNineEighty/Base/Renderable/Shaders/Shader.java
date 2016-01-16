@@ -11,11 +11,13 @@ import java.io.InputStream;
 
 public abstract class Shader
 {
-  public final static int Count = 4;
-  public final static int Shader3D = 0;
+  public final static int Count = 6;
+  public final static int ShaderModel = 0;
   public final static int ShaderSkyBox = 1;
   public final static int ShaderExplosionParticles = 2;
-  public final static int Shader2D = 3;
+  public final static int ShaderSprite = 3;
+  public final static int ShaderPolyLine = 4;
+  public final static int ShaderLabel = 5;
 
   protected static int currentId;
   private static Shader[] shaders;
@@ -30,10 +32,12 @@ public abstract class Shader
   static
   {
     shaders = new Shader[Count];
-    shaders[Shader2D] = new Shader2D();
-    shaders[Shader3D] = new Shader3D();
+    shaders[ShaderSprite] = new ShaderSprite();
+    shaders[ShaderModel] = new ShaderModel();
     shaders[ShaderExplosionParticles] = new ShaderExplosionParticles();
     shaders[ShaderSkyBox] = new ShaderSkyBox();
+    shaders[ShaderPolyLine] = new ShaderPolyLine();
+    shaders[ShaderLabel] = new ShaderLabel();
   }
 
   public static Shader getCurrent()

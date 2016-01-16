@@ -33,6 +33,11 @@ public class BotSubprogram
     this.bot = bot;
   }
 
+  public IPath getPath()
+  {
+    return path;
+  }
+
   @Override
   protected void onUpdate()
   {

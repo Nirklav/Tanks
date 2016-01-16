@@ -19,6 +19,11 @@ public class GameDescription
   protected ArrayList<String> supportedBullets;
   protected ArrayList<String> supportedUpgrades;
 
+  public GameDescription(String name)
+  {
+    super(name);
+  }
+
   public float getHealth() { return health; }
   public float getRechargeSpeed() { return rechargeSpeed; }
   public float getDamage() { return damage; }

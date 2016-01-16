@@ -1,20 +1,26 @@
 package com.ThirtyNineEighty.Base.Menus.Controls;
 
+import com.ThirtyNineEighty.Base.Providers.GLSpriteProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLSprite;
 
 public class ProgressBar
   extends Control
 {
-  private GLSprite edge;
-  private GLSprite background;
+  private GLSpriteProvider edge;
+  private GLSpriteProvider background;
 
   private float progress;
   private float maxProgress;
+  private float width;
+  private float height;
 
   public ProgressBar()
   {
-    bind(edge = new GLSprite("progressBarEdge"));
-    bind(background = new GLSprite("progressBarBackground"));
+    edge = new GLSpriteProvider("progressBarEdge");
+    background = new GLSpriteProvider("progressBarBackground");
+
+    bind(new GLSprite(edge));
+    bind(new GLSprite(background));
 
     progress = 100;
     maxProgress = 100;
@@ -30,6 +36,9 @@ public class ProgressBar
 
   public void setSize(float width, float height)
   {
+    this.width = width;
+    this.height = height;
+
     edge.setSize(width, height);
     background.setSize(width, height);
   }
@@ -55,10 +64,6 @@ public class ProgressBar
   private void applyProgress()
   {
     float relativeUnits = progress / maxProgress;
-
-    float width = edge.getWidth() * relativeUnits;
-    float height = background.getHeight();
-
-    background.setSize(width, height);
+    background.setSize(width * relativeUnits, height);
   }
 }

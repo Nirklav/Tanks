@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Base.Renderable.Shaders;
 
 import android.opengl.GLES20;
 
-public class Shader2D
+public class ShaderSprite
   extends Shader
 {
   public int attributePositionHandle;
@@ -16,7 +16,7 @@ public class Shader2D
   @Override
   public void compile()
   {
-    compile("Shaders/2D.vert", "Shaders/2D.frag");
+    compile("Shaders/Sprite.vert", "Shaders/Sprite.frag");
   }
 
   @Override

@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
@@ -21,18 +23,28 @@ public class TankSelectMenu
   extends BaseMenu
 {
   private Gesture gesture;
-  private GLLabel bulletLabel;
-  private GLLabel tankLabel;
+  private GLLabelProvider bulletLabel;
+  private GLLabelProvider tankLabel;
 
   private GameStartArgs startArgs;
   private Selector tankSelector;
   private Selector bulletSelector;
 
+  private transient ContentNames tanks;
+  private transient ContentNames bullets;
+
   public TankSelectMenu(GameStartArgs args)
   {
     startArgs = args;
+  }
 
-    tankSelector = new Selector(FileContentSource.tanks, new Selector.Callback()
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    tanks = TanksContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
+    tankSelector = new Selector(tanks.names, new Selector.Callback()
     {
       @Override
       public void onChange(String current)
@@ -46,7 +58,8 @@ public class TankSelectMenu
       }
     });
 
-    bulletSelector = new Selector(FileContentSource.bullets, new Selector.Callback()
+    bullets = TanksContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
+    bulletSelector = new Selector(bullets.names, new Selector.Callback()
     {
       @Override
       public void onChange(String current)
@@ -56,12 +69,6 @@ public class TankSelectMenu
         bulletLabel.setValue(getBulletDescription());
       }
     });
-  }
-
-  @Override
-  public void initialize()
-  {
-    super.initialize();
 
     gesture = new Gesture();
     gesture.setGestureListener(new Runnable()
@@ -163,15 +170,24 @@ public class TankSelectMenu
     });
     add(gameButton);
 
-    bulletLabel = new GLLabel(getBulletDescription(), MeshMode.Dynamic);
-    bulletLabel.setAlign(GLLabel.AlignType.TopLeft);
+    bulletLabel = new GLLabelProvider(getBulletDescription(), MeshMode.Dynamic);
+    bulletLabel.setAlign(GLLabelProvider.AlignType.TopLeft);
     bulletLabel.setPosition(-950, 330);
-    bind(bulletLabel);
+    bind(new GLLabel(bulletLabel));
 
-    tankLabel = new GLLabel(getTankDescription(), MeshMode.Dynamic);
-    tankLabel.setAlign(GLLabel.AlignType.TopRight);
+    tankLabel = new GLLabelProvider(getTankDescription(), MeshMode.Dynamic);
+    tankLabel.setAlign(GLLabelProvider.AlignType.TopRight);
     tankLabel.setPosition(950, 330);
-    bind(tankLabel);
+    bind(new GLLabel(tankLabel));
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    TanksContext.resources.release(tanks);
+    TanksContext.resources.release(bullets);
   }
 
   private String getBulletDescription()

@@ -1,8 +1,5 @@
 package com.ThirtyNineEighty.Base.Menus;
 
-import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.Base.GameContext;
-
 import java.util.List;
 
 public class Selector
@@ -10,12 +7,6 @@ public class Selector
   private List<String> values;
   private int selectedIndex;
   private Callback onChange;
-
-  public Selector(String resourceContentName, Callback onChange)
-  {
-    this.values = GameContext.resources.getContent(new FileContentSource(resourceContentName));
-    this.onChange = onChange;
-  }
 
   public Selector(List<String> values, Callback onChange)
   {

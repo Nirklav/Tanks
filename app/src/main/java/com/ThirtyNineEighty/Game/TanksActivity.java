@@ -79,4 +79,20 @@ public class TanksActivity
       }
     });
   }
+
+  @Override
+  protected void uninitialize()
+  {
+    super.uninitialize();
+
+    GameContext.content = null;
+    GameContext.collisions = null;
+    GameContext.factory = null;
+
+    GameContext.resources.clearCache();
+    GameContext.resources = TanksContext.resources = null;
+
+    GameContext.data.close();
+    GameContext.data = TanksContext.data = null;
+  }
 }

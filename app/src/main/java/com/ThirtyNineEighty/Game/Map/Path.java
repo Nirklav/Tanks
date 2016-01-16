@@ -33,6 +33,11 @@ public class Path
       : defaultStepCompletion;
   }
 
+  public ArrayList<Vector2> getPath()
+  {
+    return path;
+  }
+
   @Override
   public float distance()
   {

@@ -1,18 +1,18 @@
 package com.ThirtyNineEighty.Base.Renderable.Subprograms;
 
-import com.ThirtyNineEighty.Base.Renderable.IRenderable;
+import com.ThirtyNineEighty.Base.Providers.RenderableDataProvider;
 import com.ThirtyNineEighty.Base.Subprogram;
 
 public class DelayedRenderableSubprogram
   extends Subprogram
 {
-  private final IRenderable renderable;
+  private final RenderableDataProvider provider;
   private final int timeout;
   private boolean delayed;
 
-  public DelayedRenderableSubprogram(IRenderable renderable, int timeout)
+  public DelayedRenderableSubprogram(RenderableDataProvider provider, int timeout)
   {
-    this.renderable = renderable;
+    this.provider = provider;
     this.timeout = timeout;
   }
 
@@ -26,7 +26,7 @@ public class DelayedRenderableSubprogram
       return;
     }
 
-    renderable.setVisible(false);
+    provider.setVisible(false);
     unbind();
   }
 }

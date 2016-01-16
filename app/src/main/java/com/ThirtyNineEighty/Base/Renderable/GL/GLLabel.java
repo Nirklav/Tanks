@@ -1,195 +1,163 @@
 package com.ThirtyNineEighty.Base.Renderable.GL;
 
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
-import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.Providers.IDataProvider;
+import com.ThirtyNineEighty.Base.Renderable.Renderable;
+import com.ThirtyNineEighty.Base.Renderable.RendererContext;
+import com.ThirtyNineEighty.Base.Renderable.Shaders.Shader;
+import com.ThirtyNineEighty.Base.Renderable.Shaders.ShaderLabel;
+import com.ThirtyNineEighty.Base.Resources.Entities.Geometry;
+import com.ThirtyNineEighty.Base.Resources.Entities.Texture;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Base.Resources.Sources.FileTextureSource;
 import com.ThirtyNineEighty.Base.Resources.Sources.LabelGeometrySource;
 import com.ThirtyNineEighty.Base.GameContext;
 
-// Can process only \n and \t spec symbols
-// TODO: serializable
+import java.nio.FloatBuffer;
+
 public class GLLabel
-  extends GLSprite
+  extends Renderable
 {
+  private static final long serialVersionUID = 1L;
+
   public static final int tabLength = 3;
-
   public static final String FontSimple = "SimpleFont";
-  private static final int StandardWidth = 30;
-  private static final int StandardHeight = 40;
 
-  private int charWidth;
-  private int charHeight;
-  private String value;
+  private IDataProvider<Data> dataProvider;
+  private float[] modelViewMatrix;
+  private String fontTexture;
 
-  private AlignType alignType;
-  private Vector2 originalPosition;
+  private transient Texture textureData;
 
-  public GLLabel(String value) { this(value, FontSimple, StandardWidth, StandardHeight, MeshMode.Static); }
-  public GLLabel(String value, MeshMode mode) { this(value, FontSimple, StandardWidth, StandardHeight, mode); }
-  public GLLabel(String value, String fontTexture, int charWidth, int chatHeight,  MeshMode mode)
+  public GLLabel(IDataProvider<Data> provider)
   {
-    super(fontTexture, new LabelGeometrySource(value, mode, charWidth, chatHeight));
-
-    this.charWidth = charWidth;
-    this.charHeight = chatHeight;
-    this.value = value;
-
-    colorCoefficients.setFrom(1, 1, 0);
-
-    alignType = AlignType.Center;
-    originalPosition = Vector.getInstance(2, position);
-    setPosition();
+    this(FontSimple, provider);
   }
 
-  public void setValue(String value)
+  public GLLabel(String font, IDataProvider<Data> provider)
   {
-    if (value == null)
-      value = "";
-
-    if (value.equals(this.value))
-      return;
-
-    this.value = value;
-
-    setPosition();
-    rebuild();
-  }
-
-  public void setCharSize(int width, int height)
-  {
-    charWidth = width;
-    charHeight = height;
-
-    setPosition();
-    rebuild();
-  }
-
-  public void setAlign(AlignType value)
-  {
-    alignType = value;
-    setPosition();
+    dataProvider = provider;
+    fontTexture = font;
+    modelViewMatrix = new float[16];
   }
 
   @Override
-  public void setPosition(Vector2 value)
+  public void initialize()
   {
-    originalPosition.setFrom(value);
-    setPosition();
+    textureData = GameContext.resources.getTexture(new FileTextureSource(fontTexture, false));
+
+    super.initialize();
   }
 
   @Override
-  public void setPosition(float x, float y)
+  public void uninitialize()
   {
-    originalPosition.setFrom(x, y);
-    setPosition();
+    super.uninitialize();
+
+    GameContext.resources.release(textureData);
   }
 
-  private void setPosition()
+  @Override
+  public boolean isVisible()
   {
-    Vector2 shift;
+    Data data = dataProvider.get();
+    return data.visible;
+  }
 
-    switch (alignType)
+  @Override
+  public int getShaderId()
+  {
+    return Shader.ShaderLabel;
+  }
+
+  @Override
+  public IDataProvider getProvider()
+  {
+    return dataProvider;
+  }
+
+  @Override
+  public void draw(RendererContext context)
+  {
+    Data data = dataProvider.get();
+    Vector3 color = data.colorCoefficients;
+    ShaderLabel shader = (ShaderLabel)Shader.getCurrent();
+
+    // get dynamic resources
+    Geometry geometryData = GameContext.resources.getGeometry(new LabelGeometrySource(data.value, data.mode, data.charWidth, data.charHeight));
+
+    // build result matrix
+    Matrix.multiplyMM(modelViewMatrix, 0, context.getOrthoMatrix(), 0, data.modelMatrix, 0);
+
+    // bind texture to 0 slot
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.getHandle());
+
+    // send data to shader
+    GLES20.glUniform1i(shader.uniformTextureHandle, 0);
+    GLES20.glUniformMatrix4fv(shader.uniformModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
+    GLES20.glUniform4f(shader.uniformColorCoefficients, color.getX(), color.getY(), color.getZ(), 1);
+
+    // set buffer or reset if dynamic
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
+
+    switch (geometryData.getMode())
     {
-    case Center:
-      shift = getCenterShift();
+    case Static:
+      GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, 0);
+      GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, 8);
       break;
 
-    case TopRight:
-      shift = getCenterShift();
-      shift.multiplyToX(2);
-      shift.multiplyToY(0);
-      break;
-
-    case TopLeft:
-    default:
-      shift = Vector.getInstance(2);
-      break;
-
-    case TopCenter:
-      shift = getCenterShift();
-      shift.multiplyToY(2);
-      break;
-
-    case BottomRight:
-      shift = getCenterShift();
-      shift.multiplyToX(2);
-      shift.multiplyToY(2);
-      break;
-
-    case BottomLeft:
-      shift = getCenterShift();
-      shift.multiplyToX(0);
-      shift.multiplyToY(2);
-      break;
-
-    case BottomCenter:
-      shift = getCenterShift();
-      shift.setY(0);
+    case Dynamic:
+      FloatBuffer buffer = geometryData.getData();
+      buffer.position(0);
+      GLES20.glVertexAttribPointer(shader.attributePositionHandle, 2, GLES20.GL_FLOAT, false, 16, buffer);
+      buffer.position(2);
+      GLES20.glVertexAttribPointer(shader.attributeTexCoordHandle, 2, GLES20.GL_FLOAT, false, 16, buffer);
       break;
     }
 
-    shift.addToX(-charWidth / 2);
-    shift.addToY(-charHeight / 2);
+    // enable arrays
+    GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
+    GLES20.glEnableVertexAttribArray(shader.attributeTexCoordHandle);
 
-    super.setPosition(originalPosition.getSubtract(shift));
-    Vector.release(shift);
+    // validating if debug
+    shader.validate();
+    geometryData.validate();
+    textureData.validate();
+
+    // draw
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, geometryData.getPointsCount());
+
+    // disable arrays
+    GLES20.glDisableVertexAttribArray(shader.attributePositionHandle);
+    GLES20.glDisableVertexAttribArray(shader.attributeTexCoordHandle);
+
+    // release dynamic resources
+    GameContext.resources.release(geometryData);
   }
 
-  private Vector2 getCenterShift()
+  public static class Data
+    extends Renderable.Data
   {
-    int widthLength = 0;
-    int heightLength = 1;
+    private static final long serialVersionUID = 1L;
 
-    int currentLineLength = 0;
+    public float[] modelMatrix;
+    public Vector3 colorCoefficients;
 
-    // calculate mesh size
-    int length = value.length();
-    for (int i = 0; i < length; i++)
+    public String value;
+    public MeshMode mode;
+    public int charWidth;
+    public int charHeight;
+
+    public Data()
     {
-      char ch = value.charAt(i);
-
-      switch (ch)
-      {
-      case '\n':
-        heightLength++;
-
-        if (widthLength < currentLineLength)
-          widthLength = currentLineLength;
-
-        currentLineLength = 0;
-        continue;
-      case '\t':
-        currentLineLength += tabLength;
-        continue;
-      default:
-        currentLineLength++;
-      }
+      modelMatrix = new float[16];
+      colorCoefficients = Vector.getInstance(3);
     }
-
-    // check last line width
-    if (widthLength < currentLineLength)
-      widthLength = currentLineLength;
-
-    Vector2 shifts = Vector2.getInstance(2);
-    shifts.addToX((widthLength * charWidth) / 2);
-    shifts.addToY((heightLength * charHeight) / 2);
-    return shifts;
-  }
-
-  private void rebuild()
-  {
-    MeshMode mode = geometryData.getMode();
-    geometryData = GameContext.resources.getGeometry(new LabelGeometrySource(value, mode, charWidth, charHeight));
-  }
-
-  public enum AlignType
-  {
-    Center,
-    TopRight,
-    TopLeft,
-    TopCenter,
-    BottomRight,
-    BottomLeft,
-    BottomCenter
   }
 }

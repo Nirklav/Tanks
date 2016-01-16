@@ -1,19 +1,21 @@
 package com.ThirtyNineEighty.Base.Resources.Entities;
 
 public class Image
+  extends Resource
 {
-  private Texture texture;
+  private static final long serialVersionUID = 1L;
+
+  private String textureName;
   private float[] coordinates;
 
-  public Image(Texture tex, float[] coords)
+  public Image(String name, String textureName, float[] coordinates)
   {
-    texture = tex;
-    coordinates = coords;
+    super(name);
+
+    this.textureName = textureName;
+    this.coordinates = coordinates;
   }
 
-  public Texture getTexture() { return texture; }
-  public void setTexture(Texture value) { texture = value; }
-
+  public String getTextureName() { return textureName; }
   public float[] getCoordinates() { return coordinates; }
-  public void setCoordinates(float[] value) { coordinates = value; }
 }

@@ -1,10 +1,11 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
 import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Game.Common.EditorExporter;
 import com.ThirtyNineEighty.Game.Common.LoadException;
 import com.ThirtyNineEighty.Base.Common.Math.*;
@@ -37,14 +38,16 @@ public class EditorMenu
   }
 
   private Joystick joystick;
-  private GLLabel categoryLabel;
-  private GLLabel objectLabel;
-  private GLLabel messageLabel;
+  private GLLabelProvider categoryLabel;
+  private GLLabelProvider objectLabel;
+  private GLLabelProvider messageLabel;
   private Selector categorySelector;
   private Selector objectSelector;
   private Button rightRotate;
   private Button leftRotate;
   private ToggleButton smallSpeed;
+
+  private transient ContentNames objects;
 
   @Override
   public void initialize()
@@ -65,9 +68,9 @@ public class EditorMenu
 
     add(joystick = new Joystick(-710, -290, 150));
 
-    messageLabel = new GLLabel(" ", MeshMode.Dynamic);
+    messageLabel = new GLLabelProvider(" ", MeshMode.Dynamic);
     messageLabel.setVisible(false);
-    bind(messageLabel);
+    bind(new GLLabel(messageLabel));
 
     Button menuButton = new Button("Menu");
     menuButton.setPosition(-710, 465);
@@ -83,10 +86,10 @@ public class EditorMenu
     });
     add(menuButton);
 
-    categoryLabel = new GLLabel(FileContentSource.decors, MeshMode.Dynamic);
+    categoryLabel = new GLLabelProvider(FileContentSource.decors, MeshMode.Dynamic);
     categoryLabel.setPosition(-960, 310);
-    categoryLabel.setAlign(GLLabel.AlignType.TopLeft);
-    bind(categoryLabel);
+    categoryLabel.setAlign(GLLabelProvider.AlignType.TopLeft);
+    bind(new GLLabel(categoryLabel));
 
     Button nextCategory = new Button("Next category");
     nextCategory.setPosition(-710, 210);
@@ -101,10 +104,10 @@ public class EditorMenu
     });
     add(nextCategory);
 
-    objectLabel = new GLLabel(" ", MeshMode.Dynamic);
+    objectLabel = new GLLabelProvider(" ", MeshMode.Dynamic);
     objectLabel.setPosition(-960, 40);
-    objectLabel.setAlign(GLLabel.AlignType.TopLeft);
-    bind(objectLabel);
+    objectLabel.setAlign(GLLabelProvider.AlignType.TopLeft);
+    bind(new GLLabel(objectLabel));
 
     Button nextObject = new Button("Next object");
     nextObject.setPosition(-710, -60);
@@ -210,6 +213,14 @@ public class EditorMenu
     setObjectSelector(FileContentSource.decors);
   }
 
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    TanksContext.resources.release(objects);
+  }
+
   private void processCamera(EditorWorld world)
   {
     Vector2 joyVector = joystick.getVector();
@@ -267,7 +278,8 @@ public class EditorMenu
 
   private void setObjectSelector(String category)
   {
-    objectSelector = new Selector(category, new Selector.Callback()
+    objects = TanksContext.resources.getContent(new FileContentSource(category));
+    objectSelector = new Selector(objects.names, new Selector.Callback()
     {
       @Override
       public void onChange(String current)

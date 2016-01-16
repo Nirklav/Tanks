@@ -18,22 +18,11 @@ public class LabelGeometrySource
 
   public LabelGeometrySource(String value, MeshMode mode, int charWidth, int charHeight)
   {
-    super(String.format("String: %s Width: %d Height %d", value, charWidth, charHeight), mode);
+    super(String.format("String: %d (hash) Width: %d Height %d", value.hashCode(), charWidth, charHeight), mode);
 
     this.value = value;
     this.charWidth = charWidth;
     this.charHeight = charHeight;
-  }
-
-  @Override
-  public String getName() // Disable cache for dynamic label.
-  {
-    if (mode == MeshMode.Dynamic)
-    {
-      return null;
-    }
-
-    return super.getName();
   }
 
   @Override
@@ -137,6 +126,6 @@ public class LabelGeometrySource
     }
 
     FloatBuffer buffer = loadGeometry(geometry);
-    return new LoadResult(buffer, geometry.length / 12, Vector3.zero, Vector3.zero);
+    return new LoadResult(buffer, geometry.length / 4, Vector3.zero, Vector3.zero);
   }
 }

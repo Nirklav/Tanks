@@ -1,13 +1,12 @@
 package com.ThirtyNineEighty.Base.Objects.Descriptions;
 
-import java.io.Serializable;
+import com.ThirtyNineEighty.Base.Resources.Entities.Resource;
 
 public class Description
-  implements Serializable
+  extends Resource
 {
   private static final long serialVersionUID = 1L;
 
-  protected String name;
   protected String objectType;
 
   protected VisualDescription[] visuals;
@@ -18,7 +17,11 @@ public class Description
   protected boolean removeOnCollide;
   protected boolean openedOnStart;
 
-  public String getName() { return name; }
+  public Description(String name)
+  {
+    super(name);
+  }
+
   public String getObjectType() { return objectType; }
 
   public VisualDescription[] getVisuals() { return visuals; }

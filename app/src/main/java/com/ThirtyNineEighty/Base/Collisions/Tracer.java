@@ -91,7 +91,7 @@ public class Tracer
         continue;
 
       ConvexHull hull = new ConvexHull(object.collidable, plane);
-      boolean result = contain(hull.get(), lineProjection);
+      boolean result = hull.contains(lineProjection);
       hull.release();
 
       if (result)
@@ -108,37 +108,5 @@ public class Tracer
       if (current == object)
         return true;
     return false;
-  }
-
-  private boolean contain(ArrayList<Vector2> convexHull, Vector2 point)
-  {
-    Vector2 normal = Vector.getInstance(2);
-    int count = convexHull.size();
-
-    for (int i = 0; i < count; i ++)
-    {
-      setNormal(normal, convexHull, i);
-
-      Vector2 projection = normal.getProjection(convexHull);
-      float pointProjection = point.getScalar(normal);
-
-      if (projection.getX() < pointProjection || projection.getY() > pointProjection)
-        return false;
-    }
-
-    return true;
-  }
-
-  private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
-  {
-    Vector2 firstPoint = vertices.get(num);
-    Vector2 secondPoint = vertices.get(num + 1 == vertices.size() ? 0 : num + 1);
-
-    Vector2 edge = secondPoint.getSubtract(firstPoint);
-
-    normal.setX(-edge.getY());
-    normal.setY(edge.getX());
-
-    normal.normalize();
   }
 }

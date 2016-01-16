@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Objects;
 
-import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
@@ -34,22 +33,5 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
     health -= value;
     if (health < 0)
       isDead = true;
-  }
-
-  @Override
-  public void move()
-  {
-    move(getSpeed());
-  }
-
-  @Override
-  public void moveBack()
-  {
-    move(- getSpeed());
-  }
-
-  private float getSpeed()
-  {
-    return description.getSpeed() * DeltaTime.get();
   }
 }

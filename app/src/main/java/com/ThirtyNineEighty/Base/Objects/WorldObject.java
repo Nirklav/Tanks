@@ -13,9 +13,6 @@ import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.IRenderable;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileDescriptionSource;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 public abstract class WorldObject<TDescription extends Description, TProperties extends Properties>
   extends Bindable
 {
@@ -31,33 +28,16 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public Collidable collidable;
 
+  @SuppressWarnings("unchecked")
   protected WorldObject(String descriptionName, TProperties properties)
   {
     this.descriptionName = descriptionName;
-
-    this.description = getDescription(descriptionName);
     this.properties = properties;
     this.position = new Vector3();
     this.angles = new Vector3();
 
-    build();
-  }
+    description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-  {
-    in.defaultReadObject();
-
-    description = getDescription(descriptionName);
-  }
-
-  @SuppressWarnings("unchecked")
-  private TDescription getDescription(String descriptionName)
-  {
-    return (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
-  }
-
-  private void build()
-  {
     // Build visual models
     for (VisualDescription visual : description.getVisuals())
     {
@@ -72,8 +52,52 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     if (physical != null)
     {
       collidable = new Collidable(physical.modelName);
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void initialize()
+  {
+    if (description == null)
+      description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
+
+    if (collidable != null)
+    {
+      collidable.initialize();
       collidable.setLocation(position, angles);
     }
+
+    super.initialize();
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    if (collidable != null)
+      collidable.uninitialize();
+
+    GameContext.resources.release(description);
+  }
+
+  @Override
+  public void enable()
+  {
+    super.enable();
+
+    if (collidable != null)
+      collidable.enable();
+  }
+
+  @Override
+  public void disable()
+  {
+    super.disable();
+
+    if (collidable != null)
+      collidable.disable();
   }
 
   public void setCollidableLocation()
@@ -87,19 +111,16 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   }
 
+  public void rotate(Vector3 deltaAngles)
+  {
+    rotate(deltaAngles.getX(), deltaAngles.getY(), deltaAngles.getZ());
+  }
+
   public void rotate(float dX, float dY, float dZ)
   {
     angles.addToX(dX);
     angles.addToY(dY);
     angles.addToZ(dZ);
-    angles.correctAngles();
-
-    GameContext.collisions.addToResolving(this);
-  }
-
-  public void rotate(Vector3 deltaAngles)
-  {
-    angles.add(deltaAngles);
     angles.correctAngles();
 
     GameContext.collisions.addToResolving(this);
@@ -130,14 +151,17 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public void move()
   {
-    float length = description.getSpeed() * DeltaTime.get();
-    move(length);
+    move(getSpeed());
   }
 
   public void moveBack()
   {
-    float length = description.getSpeed() * DeltaTime.get();
-    move(- length);
+    move(- getSpeed());
+  }
+
+  private float getSpeed()
+  {
+    return description.getSpeed() * DeltaTime.get();
   }
 
   public void move(float length)

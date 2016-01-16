@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
+import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
 import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
@@ -9,12 +11,11 @@ import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
-import com.ThirtyNineEighty.Base.Subprogram;
 
 public class MainMenu
   extends BaseMenu
 {
-  private GLLabel resourceCacheStatus;
+  private GLLabelProvider resourceCacheStatus;
 
   @Override
   public void initialize()
@@ -64,36 +65,22 @@ public class MainMenu
       @Override
       public void run()
       {
-        resourceCacheStatus.setVisible(true);
         resourceCacheStatus.setValue(TanksContext.resources.getCacheStatus());
 
-        bind(new Subprogram()
+        if (!resourceCacheStatus.isVisible())
         {
-          private boolean delayed;
-
-          @Override
-          protected void onUpdate()
-          {
-            if (!delayed)
-            {
-              delayed = true;
-              delay(5000);
-              return;
-            }
-
-            resourceCacheStatus.setVisible(false);
-            unbind();
-          }
-        });
+          resourceCacheStatus.setVisible(true);
+          bind(new DelayedRenderableSubprogram(resourceCacheStatus, 5000));
+        }
       }
     });
     add(cacheStatus);
 
-    resourceCacheStatus = new GLLabel(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
+    resourceCacheStatus = new GLLabelProvider(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
     resourceCacheStatus.setPosition(960, 540);
-    resourceCacheStatus.setAlign(GLLabel.AlignType.TopRight);
+    resourceCacheStatus.setAlign(GLLabelProvider.AlignType.TopRight);
     resourceCacheStatus.setVisible(false);
-    bind(resourceCacheStatus);
+    bind(new GLLabel(resourceCacheStatus));
 
     Button editor = new Button("Editor");
     editor.setPosition(0, -240);

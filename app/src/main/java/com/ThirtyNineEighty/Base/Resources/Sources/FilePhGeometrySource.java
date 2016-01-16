@@ -22,7 +22,10 @@ public class FilePhGeometrySource
   }
 
   @Override
-  public String getName() { return name; }
+  public String getName()
+  {
+    return name;
+  }
 
   @Override
   public PhGeometry load()
@@ -78,7 +81,7 @@ public class FilePhGeometrySource
       }
 
       dataBuffer.clear();
-      return new PhGeometry(vertices, normals, position, angles, radius);
+      return new PhGeometry(name, vertices, normals, position, angles, radius);
     }
     catch(IOException e)
     {

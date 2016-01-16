@@ -28,9 +28,13 @@ public class FileGeometrySource
 
   private final static int headerSize = 4 + 12 + 12;
 
+  private String fileName;
+
   public FileGeometrySource(String name)
   {
     super(name, MeshMode.Static);
+
+    fileName = name;
   }
 
   @Override
@@ -38,8 +42,7 @@ public class FileGeometrySource
   {
     try
     {
-      String fileName = String.format("Models/%s.raw", name);
-      InputStream stream = GameContext.context.getAssets().open(fileName);
+      InputStream stream = GameContext.context.getAssets().open(String.format("Models/%s.raw", fileName));
 
       int size = stream.available();
       byte[] data = new byte[size];
@@ -60,7 +63,7 @@ public class FileGeometrySource
       Vector3 position = Vector.getInstance(3, headerBuffer);
       Vector3 angles = Vector3.getInstance(3, headerBuffer);
 
-      return new LoadResult(dataBuffer.asFloatBuffer(), trianglesCount, position, angles);
+      return new LoadResult(dataBuffer.asFloatBuffer(), trianglesCount * 3, position, angles);
     }
     catch(IOException e)
     {

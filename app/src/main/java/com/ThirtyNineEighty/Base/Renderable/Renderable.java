@@ -3,30 +3,22 @@ package com.ThirtyNineEighty.Base.Renderable;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.GameContext;
 
+import java.io.Serializable;
+
 public abstract class Renderable
   extends View
   implements IRenderable
 {
   private static final long serialVersionUID = 1L;
 
-  private boolean visible = true;
-
-  @Override
-  public boolean isVisible()
-  {
-    return visible;
-  }
-
-  @Override
-  public void setVisible(boolean value)
-  {
-    visible = value;
-  }
-
   @Override
   public void initialize()
   {
     super.initialize();
+
+    IDataProvider provider = getProvider();
+    if (provider != null)
+      provider.set();
 
     GameContext.renderer.add(this);
   }
@@ -39,13 +31,11 @@ public abstract class Renderable
     super.uninitialize();
   }
 
-  @Override
-  public void enable()
+  public static class Data
+    implements Serializable
   {
-    IDataProvider provider = getProvider();
-    if (provider != null)
-      provider.set();
+    private static final long serialVersionUID = 1L;
 
-    super.enable();
+    public boolean visible;
   }
 }

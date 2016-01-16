@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Worlds;
 
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Base.Worlds.BaseWorld;
@@ -19,7 +20,6 @@ import com.ThirtyNineEighty.Game.TanksContext;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameWorld
@@ -47,9 +47,11 @@ public class GameWorld
   {
     mapName = args.getMapName();
 
-    ArrayList<String> maps = TanksContext.resources.getContent(new FileContentSource(FileContentSource.maps));
-    if (!maps.contains(mapName))
+    ContentNames maps = TanksContext.resources.getContent(new FileContentSource(FileContentSource.maps));
+    if (!maps.names.contains(mapName))
       throw new IllegalArgumentException("name");
+
+    TanksContext.resources.release(maps);
 
     // Load map
     MapDescription mapDescription = TanksContext.resources.getMap(new FileMapDescriptionSource(mapName));

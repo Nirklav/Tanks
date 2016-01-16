@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Base.Renderable.Shaders;
 
 import android.opengl.GLES20;
 
-public class Shader3D
+public class ShaderModel
   extends Shader
 {
   public int attributePositionHandle;
@@ -19,7 +19,7 @@ public class Shader3D
   @Override
   public void compile()
   {
-    compile("Shaders/3D.vert", "Shaders/3D.frag");
+    compile("Shaders/Model.vert", "Shaders/Model.frag");
   }
 
   @Override

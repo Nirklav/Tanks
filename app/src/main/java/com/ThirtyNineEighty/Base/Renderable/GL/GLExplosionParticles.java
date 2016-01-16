@@ -9,11 +9,9 @@ import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.RendererContext;
 import com.ThirtyNineEighty.Base.Renderable.Shaders.*;
 import com.ThirtyNineEighty.Base.Resources.Entities.*;
+import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 import com.ThirtyNineEighty.Base.Resources.Sources.*;
 import com.ThirtyNineEighty.Base.GameContext;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class GLExplosionParticles
   extends GLRenderable<GLRenderable.Data>
@@ -25,6 +23,7 @@ public class GLExplosionParticles
 
   private transient Texture textureData;
   private transient Geometry geometryData;
+  private RenderableDescription description;
 
   private int count;
   private float time;
@@ -32,22 +31,30 @@ public class GLExplosionParticles
 
   public GLExplosionParticles(float lifeMs, int count, RenderableDescription description, IDataProvider<Data> provider)
   {
-    super(description, provider);
+    super(provider);
 
+    this.description = description;
     this.count = count;
     this.time = 0;
     this.life = lifeMs;
-
-    this.geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
-    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
   }
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  @Override
+  public void initialize()
   {
-    in.defaultReadObject();
+    this.geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
 
-    geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
-    textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
+    super.initialize();
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    GameContext.resources.release(geometryData);
+    GameContext.resources.release(textureData);
   }
 
   private static ISource<Geometry> getSource(String type)

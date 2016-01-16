@@ -1,49 +1,82 @@
 package com.ThirtyNineEighty.Base.Resources;
 
+import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
 import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ResourceCache<TResource>
+public class ResourceCache<TResource extends IResource>
 {
   private final String name;
-  private final HashMap<String, Container<TResource>> cache = new HashMap<>();
+  private final HashMap<String, ResourceHolder<TResource>> cache = new HashMap<>();
 
   public ResourceCache(String name)
   {
     this.name = name;
   }
 
-  public String getName() { return name; }
+  public String getName()
+  {
+    return name;
+  }
 
   public TResource get(ISource<TResource> source)
   {
+    if (source == null)
+      throw new NullPointerException("source is null");
+
     String cacheName = source.getName();
-    if (cacheName != null)
-    {
-      Container<TResource> container = cache.get(cacheName);
-      if (container != null)
-        return container.resource;
-    }
+    if (cacheName == null)
+      throw new IllegalStateException("Source name must be not null");
 
-    TResource resource = source.load();
+    ResourceHolder<TResource> container = cache.get(cacheName);
+    if (container == null)
+      cache.put(cacheName, container = new ResourceHolder<>(source));
 
-    if (cacheName != null)
-      cache.put(cacheName, new Container<>(resource, source));
+    return container.get();
+  }
 
-    return resource;
+  public void release(TResource resource)
+  {
+    ResourceHolder<TResource> holder = getHolder(resource);
+    holder.release();
   }
 
   public void reload()
   {
-    for (Container<TResource> container : cache.values())
-      container.reload();
+    for (ResourceHolder<TResource> holder : cache.values())
+      holder.reload();
+  }
+
+  public int clearUnused()
+  {
+    ArrayList<String> removing = null;
+
+    for (ResourceHolder<TResource> holder : cache.values())
+    {
+      boolean cleared = holder.tryClear();
+
+      if (cleared)
+      {
+        if (removing == null)
+          removing = new ArrayList<>();
+        removing.add(holder.getName());
+      }
+    }
+
+    if (removing == null)
+      return 0;
+
+    for (String resourceName : removing)
+      cache.remove(resourceName);
+    return removing.size();
   }
 
   public void clear()
   {
-    for(Container<TResource> container : cache.values())
-      container.release();
+    for(ResourceHolder<TResource> holder : cache.values())
+      holder.clear();
 
     cache.clear();
   }
@@ -53,25 +86,20 @@ public class ResourceCache<TResource>
     return cache.size();
   }
 
-  private static class Container<TResource>
+  private ResourceHolder<TResource> getHolder(TResource resource)
   {
-    public final TResource resource;
-    public final ISource<TResource> source;
+    if (resource == null)
+      throw new NullPointerException("resource is null");
 
-    public Container(TResource res, ISource<TResource> src)
-    {
-      resource = res;
-      source = src;
-    }
+    String name = resource.getName();
+    if (name == null)
+      throw new IllegalStateException("For reloading resource must have cache name");
 
-    public void reload()
-    {
-      source.reload(resource);
-    }
+    ResourceHolder<TResource> container = cache.get(name);
+    if (container == null)
+      throw new IllegalStateException(String.format("Cache does not contain resource with %s name", name));
 
-    public void release()
-    {
-      source.release(resource);
-    }
+    return container;
   }
 }
+

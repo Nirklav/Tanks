@@ -1,21 +1,20 @@
 package com.ThirtyNineEighty.Base.Menus.Controls;
 
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
+import com.ThirtyNineEighty.Base.Providers.GLSpriteProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLSprite;
-import com.ThirtyNineEighty.Base.Resources.Sources.FileImageSource;
-import com.ThirtyNineEighty.Base.Resources.Entities.Image;
-import com.ThirtyNineEighty.Base.GameContext;
 
 public class Button
   extends Control
 {
   protected boolean state;
 
-  protected GLSprite sprite;
-  protected GLLabel label;
+  protected String pressedImageName;
+  protected String notPressedImageName;
 
-  protected Image pressed;
-  protected Image notPressed;
+  protected GLSpriteProvider sprite;
+  protected GLLabelProvider label;
 
   private float x;
   private float y;
@@ -25,25 +24,18 @@ public class Button
   public Button(String caption) { this(caption, "pressedBtn", "notPressedBtn"); }
   public Button(String caption, String pressedImageName, String notPressedImageName)
   {
-    pressed = GameContext.resources.getImage(new FileImageSource(pressedImageName));
-    notPressed = GameContext.resources.getImage(new FileImageSource(notPressedImageName));
+    this.pressedImageName = pressedImageName;
+    this.notPressedImageName = notPressedImageName;
 
-    sprite = new GLSprite(notPressed);
+    sprite = new GLSpriteProvider(notPressedImageName);
     sprite.setZIndex(0);
+    bind(new GLSprite(sprite));
 
-    label = new GLLabel(caption);
+    label = new GLLabelProvider(caption);
     label.setZIndex(1);
+    bind(new GLLabel(label));
 
     setSize(200, 100);
-  }
-
-  @Override
-  public void initialize()
-  {
-    super.initialize();
-
-    bind(sprite);
-    bind(label);
   }
 
   public void setPosition(float x, float y)
@@ -72,14 +64,14 @@ public class Button
   public void onDown(float x, float y)
   {
     state = true;
-    sprite.setImage(pressed);
+    sprite.setImage(pressedImageName);
   }
 
   @Override
   public void onUp(float x, float y)
   {
     state = false;
-    sprite.setImage(notPressed);
+    sprite.setImage(notPressedImageName);
   }
 
   @Override

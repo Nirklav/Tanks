@@ -1,8 +1,10 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
-public interface ISource<TResource>
+import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
+
+public interface ISource<TResource extends IResource>
 {
-  String getName(); // Name for cache. If field equals null cache will not work.
+  String getName();
 
   TResource load();
   void reload(TResource resource);

@@ -93,10 +93,12 @@ public class Renderer
   {
     switch (shaderId)
     {
-    case Shader.Shader2D:
+    case Shader.ShaderSprite:
+    case Shader.ShaderLabel:
       return menus;
-    case Shader.Shader3D:
+    case Shader.ShaderModel:
     case Shader.ShaderSkyBox:
+    case Shader.ShaderPolyLine:
       return objects;
     case Shader.ShaderExplosionParticles:
       return particles;

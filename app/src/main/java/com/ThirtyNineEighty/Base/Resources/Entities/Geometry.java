@@ -9,20 +9,23 @@ import com.ThirtyNineEighty.Base.GameContext;
 import java.nio.FloatBuffer;
 
 public class Geometry
+  extends Resource
 {
   private MeshMode mode;
 
   private int handle;
   private FloatBuffer data;
 
-  private int trianglesCount;
+  private int pointsCount;
   private Vector3 position;
   private Vector3 angles;
 
-  public Geometry(int handle, int trianglesCount, Vector3 position, Vector3 angles)
+  public Geometry(String name, int handle, int pointsCount, Vector3 position, Vector3 angles)
   {
+    super(name);
+
     this.handle = handle;
-    this.trianglesCount = trianglesCount;
+    this.pointsCount = pointsCount;
     this.mode = MeshMode.Static;
     this.data = null;
 
@@ -30,10 +33,12 @@ public class Geometry
     this.angles = new Vector3(angles);
   }
 
-  public Geometry(FloatBuffer data, int trianglesCount, Vector3 position, Vector3 angles)
+  public Geometry(String name, FloatBuffer data, int pointsCount, Vector3 position, Vector3 angles)
   {
+    super(name);
+
     this.handle = 0;
-    this.trianglesCount = trianglesCount;
+    this.pointsCount = pointsCount;
     this.mode = MeshMode.Dynamic;
     this.data = data;
 
@@ -51,7 +56,7 @@ public class Geometry
     return data;
   }
 
-  public int getTrianglesCount() { return trianglesCount; }
+  public int getPointsCount() { return pointsCount; }
   public Vector3 getPosition() { return position; }
   public Vector3 getAngles() { return angles; }
 
@@ -61,7 +66,7 @@ public class Geometry
       throw new IllegalStateException("not right mode");
 
     this.handle = handle;
-    this.trianglesCount = trianglesCount;
+    this.pointsCount = trianglesCount;
 
     this.position = position == null ? null : new Vector3(position);
     this.angles = angles == null ? null : new Vector3(angles);
@@ -73,7 +78,7 @@ public class Geometry
       throw new IllegalStateException("not right mode");
 
     this.data = data;
-    this.trianglesCount = trianglesCount;
+    this.pointsCount = trianglesCount;
     this.position = position == null ? null : new Vector3(position);
     this.angles = angles == null ? null : new Vector3(angles);
   }

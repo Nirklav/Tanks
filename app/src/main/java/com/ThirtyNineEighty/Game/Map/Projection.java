@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Base.Collisions.Collision2D;
 import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Common.Math.Plane;
@@ -10,52 +11,49 @@ class Projection
 {
   private static final Plane plane = new Plane();
 
-  private final float radius;
+  private final WorldObject<?, ?> object;
+  private final ConvexHull hull;
   private Vector2 position;
 
-  public static Projection FromObject(WorldObject object)
+  public static Projection FromObject(WorldObject<?, ?> object)
   {
     if (object.collidable == null)
       return null;
 
-    ConvexHull hull = new ConvexHull(object.collidable, plane);
-    Vector2 position = Vector.getInstance(2, object.getPosition());
-
-    float radius = 0.0f;
-    Vector2 tempVector = Vector.getInstance(2);
-
-    for (Vector2 vec : hull.get())
-    {
-      tempVector.setFrom(vec);
-      tempVector.subtract(position);
-
-      float length = tempVector.getLength();
-      if (length > radius)
-        radius = length;
-    }
-
-    hull.release();
-    Vector.release(tempVector);
-    return new Projection(radius);
+    return new Projection(object);
   }
 
-  private Projection(float radius)
+  private Projection(WorldObject<?, ?> object)
   {
-    this.radius = radius;
-    this.position = Vector.getInstance(2);
+    this.object = object;
+    this.hull = new ConvexHull(object.collidable, plane);
+    this.position = Vector.getInstance(2, object.collidable.getPosition());
   }
 
   public void setPosition(Vector2 value)
   {
+    Vector2 delta = value.getSubtract(position);
     position.setFrom(value);
+
+    for (Vector2 hullPoint : hull.get())
+      hullPoint.add(delta);
+
+    Vector.release(delta);
   }
 
-  public boolean contains(Vector2 vector, float finderRadius)
+  public WorldObject<?, ?> getObject()
   {
-    Vector2 tempVector = Vector.getInstance(2, vector);
-    tempVector.subtract(position);
-    return radius + finderRadius > tempVector.getLength();
+    return object;
   }
 
-  public float getRadius() { return radius; }
+  public boolean isIntersect(Projection projection)
+  {
+    Collision2D collision = new Collision2D(hull.get(), projection.hull.get());
+    return collision.isCollide();
+  }
+
+  public boolean contains(Vector2 point)
+  {
+    return hull.contains(point);
+  }
 }

@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
@@ -57,19 +56,20 @@ public class Map
   @Override
   public boolean canMove(WorldObject<?, ?> object)
   {
-    Vector2 position = Vector.getInstance(2, object.getPosition());
-    Vector3 angles = object.getAngles();
-
     Projection projection = getProjection(object);
     if (projection == null)
       return true;
 
+    Vector2 position = Vector.getInstance(2, object.getPosition());
+    Vector3 angles = object.getAngles();
     Description description = object.getDescription();
-    float distance = projection.getRadius() + description.getSpeed() * DeltaTime.get();
-    Vector2 checkPoint = position.getMove(distance, angles.getZ());
+
+    position.move(description.getSpeed(), angles.getZ());
+
+    projection.setPosition(position);
 
     for (Projection current : getProjections(object))
-      if (current.contains(checkPoint, projection.getRadius()))
+      if (current.isIntersect(projection))
         return false;
 
     return true;
@@ -78,19 +78,16 @@ public class Map
   @Override
   public IPath findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
-    float finderRadius = 0;
     Projection finderProjection = getProjection(finder);
-    if (finderProjection != null)
-      finderRadius = finderProjection.getRadius();
 
-    return findPath(finder, target, finderRadius, getProjections(finder, target));
-  }
-
-  private IPath findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target, float finderRadius, ArrayList<Projection> projections)
-  {
     Vector2 start = Vector.getInstance(2, finder.getPosition());
     Vector2 end = Vector.getInstance(2, target.getPosition());
 
+    return findPath(start, end, finderProjection, getProjections(finder, target));
+  }
+
+  private IPath findPath(Vector2 start, Vector2 end, Projection finder, ArrayList<Projection> projections)
+  {
     normalizePoint(start);
     normalizePoint(end);
 
@@ -100,35 +97,48 @@ public class Map
 
     while (openSet.size() > 0)
     {
+      // Get next node with minimum path length to end
       PathNode currentNode = Collections.min(openSet, pathLengthComparator);
+
+      // If current node is equals endpoint then we found the path
       if (currentNode.position.equals(end))
         return getPath(finder, currentNode);
 
+      // Set currentNode as processed
       openSet.remove(currentNode);
       closedSet.add(currentNode);
 
+      // Process neighbours
       for (int i = 0; i < DirectionsCount; i++)
       {
-        Vector2 nextPoint = getNextPoint(currentNode.position, i);
+        Vector2 neighborPoint = getNeighborPoint(currentNode.position, i);
 
-        if (projections != null && any(projections, new ProjectionPredicate(finderRadius, nextPoint, end)))
+        // If point not exist
+        if (neighborPoint == null)
           continue;
 
-        float estimatedLength = getPathLength(nextPoint, end);
-        PathNode nextNode = new PathNode(currentNode, nextPoint, currentNode.lengthFromStart + stepSize, estimatedLength);
-
-        if (any(closedSet, new PositionEqualsPredicate(nextNode.position)))
+        // If closedSet already contains this point then skip it
+        if (any(closedSet, new PositionEqualsPredicate(neighborPoint)))
           continue;
 
-        PathNode openNode = find(openSet, new PositionEqualsPredicate(nextNode.position));
+        // If neighborPoint is blocked then skip it
+        if (projections != null && any(projections, new ProjectionPredicate(finder, neighborPoint, end)))
+          continue;
 
+        // Build neighborNode
+        float estimatedLength = getPathLength(neighborPoint, end);
+        float lengthFromStart = currentNode.lengthFromStart + stepSize;
+        PathNode neighborNode = new PathNode(currentNode, neighborPoint, lengthFromStart, estimatedLength);
+
+        // If openSet already contain node with this position then select node which is farther from the start
+        PathNode openNode = find(openSet, new PositionEqualsPredicate(neighborNode.position));
         if (openNode == null)
-          openSet.add(nextNode);
+          openSet.add(neighborNode);
         else
-          if (openNode.lengthFromStart > nextNode.lengthFromStart)
+          if (openNode.lengthFromStart > neighborNode.lengthFromStart)
           {
             openNode.from = currentNode;
-            openNode.lengthFromStart = nextNode.lengthFromStart;
+            openNode.lengthFromStart = neighborNode.lengthFromStart;
           }
       }
     }
@@ -194,7 +204,7 @@ public class Map
     }
   }
 
-  private Vector2 getNextPoint(Vector2 current, int direction)
+  private Vector2 getNeighborPoint(Vector2 current, int direction)
   {
     Vector2 result = Vector.getInstance(2);
     float x = current.getX();
@@ -216,13 +226,16 @@ public class Map
     {
       float value = result.get(i);
       if (Math.abs(value) > description.size)
-        result.set(i, Math.signum(value) * description.size);
+      {
+        Vector.release(result);
+        return null;
+      }
     }
 
     return result;
   }
 
-  private static IPath getPath(WorldObject<?, ?> object, PathNode node)
+  private static IPath getPath(Projection finder, PathNode node)
   {
     ArrayList<Vector2> result = new ArrayList<>();
     PathNode currentNode = node;
@@ -255,7 +268,7 @@ public class Map
     Vector.release(direction);
 
     Collections.reverse(result);
-    return new Path(object, result);
+    return new Path(finder.getObject(), result);
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
@@ -301,20 +314,26 @@ public class Map
   {
     private final Vector2 point;
     private final Vector2 end;
-    private final float finderRadius;
+    private final Projection finderProjection;
 
-    public ProjectionPredicate(float finderRadius, Vector2 point, Vector2 end)
+    public ProjectionPredicate(Projection finder, Vector2 point, Vector2 end)
     {
       this.point = point;
       this.end = end;
-      this.finderRadius = finderRadius;
+      this.finderProjection = finder;
     }
 
     @Override
     public boolean apply(Projection projection)
     {
-      return projection.contains(point, finderRadius)
-        && !projection.contains(end, finderRadius);
+      WorldObject<?, ?> object = projection.getObject();
+      WorldObject<?, ?> finder = finderProjection.getObject();
+
+      //noinspection SimplifiableIfStatement
+      if (object.getId().equals(finder.getId()))
+        return false;
+
+      return projection.contains(point);
     }
   }
 

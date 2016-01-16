@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Base;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class EngineObject
@@ -19,14 +20,41 @@ public abstract class EngineObject
     id = lastId.getAndIncrement();
   }
 
-  @Override
-  public Long getId() { return id; }
+  private void writeObject(java.io.ObjectOutputStream stream)
+    throws IOException
+  {
+    if (initialized)
+      throw new IllegalStateException("Can't serialize initialized object");
+
+    stream.defaultWriteObject();
+  }
+
+  private void readObject(java.io.ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+
+    if (initialized)
+      throw new IllegalStateException("Deserialized initialized object. This is not right.");
+  }
 
   @Override
-  public boolean isInitialized() { return initialized; }
+  public Long getId()
+  {
+    return id;
+  }
 
   @Override
-  public boolean isEnabled() { return enabled; }
+  public boolean isInitialized()
+  {
+    return initialized;
+  }
+
+  @Override
+  public boolean isEnabled()
+  {
+    return enabled;
+  }
 
   @Override
   public void initialize()

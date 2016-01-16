@@ -1,9 +1,9 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
-import java.util.ArrayList;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 
 public class FileContentSource
-  extends FileSerializedSource<ArrayList<String>>
+  extends FileSerializedSource<ContentNames>
 {
   public static final String other = "other";
   public static final String tanks = "tanks";

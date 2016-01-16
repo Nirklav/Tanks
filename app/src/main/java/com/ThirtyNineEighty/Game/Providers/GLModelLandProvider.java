@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Providers;
 import com.ThirtyNineEighty.Base.Common.Math.*;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Base.Providers.DataProvider;
+import com.ThirtyNineEighty.Base.Providers.RenderableDataProvider;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -10,7 +11,7 @@ import com.ThirtyNineEighty.Base.Renderable.GL.GLModel;
 import com.ThirtyNineEighty.Game.TanksContext;
 
 public class GLModelLandProvider
-  extends DataProvider<GLModel.Data>
+  extends RenderableDataProvider<GLModel.Data>
 {
   private static final long serialVersionUID = 1L;
 
@@ -27,6 +28,8 @@ public class GLModelLandProvider
   @Override
   public void set(GLModel.Data data)
   {
+    super.set(data);
+
     data.position.setFrom(getPosition(description.id));
     data.angles.setFrom(land.getAngles());
     data.scale = 1;

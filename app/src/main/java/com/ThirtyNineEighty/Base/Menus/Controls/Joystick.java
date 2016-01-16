@@ -2,14 +2,16 @@ package com.ThirtyNineEighty.Base.Menus.Controls;
 
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Providers.GLSpriteProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLSprite;
 
 public class Joystick
   extends Control
 {
   private float radius;
+  private float stickRadius;
 
-  private GLSprite stickSprite;
+  private GLSpriteProvider stickSprite;
 
   private Vector2 position;
   private Vector2 stickPosition;
@@ -19,6 +21,7 @@ public class Joystick
   public Joystick(float x, float y, float radius)
   {
     this.radius = radius;
+    this.stickRadius = radius / 4;
 
     position = Vector.getInstance(2);
     position.setFrom(x, y);
@@ -28,15 +31,15 @@ public class Joystick
 
     vector = Vector.getInstance(2);
 
-    GLSprite backgroundSprite = new GLSprite("joyBackground");
+    GLSpriteProvider backgroundSprite = new GLSpriteProvider("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);
     backgroundSprite.setPosition(position);
-    bind(backgroundSprite);
+    bind(new GLSprite(backgroundSprite));
 
-    stickSprite = new GLSprite("joyStick");
-    stickSprite.setSize(radius / 2, radius / 2);
+    stickSprite = new GLSpriteProvider("joyStick");
+    stickSprite.setSize(stickRadius * 2, stickRadius * 2);
     stickSprite.setPosition(stickPosition);
-    bind(stickSprite);
+    bind(new GLSprite(stickSprite));
   }
 
   public Vector2 getVector()
@@ -73,7 +76,6 @@ public class Joystick
 
   private void setStick(float x, float y)
   {
-    float stickRadius = stickSprite.getWidth() / 2f;
     float coeff = radius / (radius - stickRadius);
     float xCat = x - position.getX();
     float yCat = y - position.getY();

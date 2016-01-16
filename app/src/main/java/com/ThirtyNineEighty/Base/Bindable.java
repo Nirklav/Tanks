@@ -126,13 +126,13 @@ public abstract class Bindable
     if (view.isEnabled())
       throw new IllegalArgumentException("View should be disabled");
 
+    view.setBindable(this);
+
     if (isInitialized())
       view.initialize();
 
     if (isEnabled())
       view.enable();
-
-    view.setBindable(this);
 
     synchronized (views)
     {

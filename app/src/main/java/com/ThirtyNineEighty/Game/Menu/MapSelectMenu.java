@@ -2,6 +2,8 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Game.TanksContext;
@@ -16,15 +18,25 @@ public class MapSelectMenu
   extends BaseMenu
 {
   private final GameStartArgs args;
-  private final Selector mapSelector;
 
-  private GLLabel mapName;
-  private GLLabel closed;
+  private Selector mapSelector;
+  private GLLabelProvider mapName;
+  private GLLabelProvider closed;
+
+  private transient ContentNames maps;
 
   public MapSelectMenu(final GameStartArgs args)
   {
     this.args = args;
-    this.mapSelector = new Selector(FileContentSource.maps, new Selector.Callback()
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    maps = TanksContext.resources.getContent(new FileContentSource(FileContentSource.maps));
+    mapSelector = new Selector(maps.names, new Selector.Callback()
     {
       @Override
       public void onChange(String current)
@@ -34,12 +46,6 @@ public class MapSelectMenu
         closed.setVisible(!isMapOpen(current));
       }
     });
-  }
-
-  @Override
-  public void initialize()
-  {
-    super.initialize();
 
     Button prevMapButton = new Button("Prev map");
     prevMapButton.setPosition(70, -440);
@@ -98,13 +104,21 @@ public class MapSelectMenu
     });
     add(menu);
 
-    mapName = new GLLabel(mapSelector.getCurrent(), GLLabel.FontSimple, 40, 60, MeshMode.Dynamic);
-    bind(mapName);
+    mapName = new GLLabelProvider(mapSelector.getCurrent(), 40, 60, MeshMode.Dynamic);
+    bind(new GLLabel(mapName));
 
-    closed = new GLLabel("Closed");
+    closed = new GLLabelProvider("Closed");
     closed.setPosition(0, 100);
     closed.setVisible(!isMapOpen(mapSelector.getCurrent()));
-    bind(closed);
+    bind(new GLLabel(closed));
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    TanksContext.resources.release(maps);
   }
 
   private boolean isMapOpen(String mapName)

@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
+import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
 import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
 import com.ThirtyNineEighty.Game.Common.EditorExporter;
 import com.ThirtyNineEighty.Game.Common.LoadException;
@@ -15,18 +16,18 @@ public class EditorImportMenu
   extends BaseMenu
 {
   private Selector mapSelector;
-  private GLLabel messageLabel;
-  private GLLabel mapNameLabel;
+  private GLLabelProvider messageLabel;
+  private GLLabelProvider mapNameLabel;
 
   @Override
   public void initialize()
   {
     super.initialize();
 
-    messageLabel = new GLLabel(" ", MeshMode.Dynamic);
+    messageLabel = new GLLabelProvider(" ", MeshMode.Dynamic);
     messageLabel.setPosition(0, -100);
     messageLabel.setVisible(false);
-    bind(messageLabel);
+    bind(new GLLabel(messageLabel));
 
     Button menuButton = new Button("Back");
     menuButton.setPosition(-710, 465);
@@ -72,8 +73,8 @@ public class EditorImportMenu
       }
     });
 
-    mapNameLabel = new GLLabel(mapSelector.getCurrent(), MeshMode.Dynamic);
-    bind(mapNameLabel);
+    mapNameLabel = new GLLabelProvider(mapSelector.getCurrent(), MeshMode.Dynamic);
+    bind(new GLLabel(mapNameLabel));
 
     Button prevMapButton = new Button("Prev map");
     prevMapButton.setPosition(-160, -220);

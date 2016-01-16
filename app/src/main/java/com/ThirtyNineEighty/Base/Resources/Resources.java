@@ -1,8 +1,10 @@
 package com.ThirtyNineEighty.Base.Resources;
 
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
+import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Entities.FrameBuffer;
 import com.ThirtyNineEighty.Base.Resources.Entities.Geometry;
+import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
 import com.ThirtyNineEighty.Base.Resources.Entities.Image;
 import com.ThirtyNineEighty.Base.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Base.Resources.Entities.Texture;
@@ -20,7 +22,7 @@ public class Resources
   private final ResourceCache<Image> imagesCache;
   private final ResourceCache<PhGeometry> phGeometryCache;
   private final ResourceCache<Description> descriptionCache;
-  private final ResourceCache<ArrayList<String>> contentCache;
+  private final ResourceCache<ContentNames> contentCache;
   private final ResourceCache<FrameBuffer> frameBuffersCache;
 
   public Resources()
@@ -36,7 +38,7 @@ public class Resources
     add(frameBuffersCache = new ResourceCache<>("FrameBuffers"));
   }
 
-  protected <T> void add(ResourceCache<T> cache)
+  protected <T extends IResource> void add(ResourceCache<T> cache)
   {
     caches.add(cache);
   }
@@ -46,8 +48,16 @@ public class Resources
   public Image getImage(ISource<Image> source) { return imagesCache.get(source); }
   public PhGeometry getPhGeometry(ISource<PhGeometry> source) { return phGeometryCache.get(source); }
   public Description getDescription(ISource<Description> source) { return descriptionCache.get(source); }
-  public ArrayList<String> getContent(ISource<ArrayList<String>> source) { return contentCache.get(source); }
+  public ContentNames getContent(ISource<ContentNames> source) { return contentCache.get(source); }
   public FrameBuffer getFrameBuffer(ISource<FrameBuffer> source) { return frameBuffersCache.get(source); }
+
+  public void release(Texture resource) { textureCache.release(resource); }
+  public void release(Geometry resource) { geometryCache.release(resource); }
+  public void release(Image resource) { imagesCache.release(resource); }
+  public void release(PhGeometry resource) { phGeometryCache.release(resource); }
+  public void release(Description resource) { descriptionCache.release(resource); }
+  public void release(ContentNames resource) { contentCache.release(resource); }
+  public void release(FrameBuffer resource) { frameBuffersCache.release(resource); }
 
   public void preload()
   {
@@ -58,6 +68,15 @@ public class Resources
   {
     for(ResourceCache<?> cache : caches)
       cache.reload();
+  }
+
+  public int clearUnusedCache()
+  {
+    int count = 0;
+    for (ResourceCache<?> cache : caches)
+      count += cache.clearUnused();
+
+    return count;
   }
 
   public void clearCache()

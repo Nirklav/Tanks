@@ -3,16 +3,16 @@ package com.ThirtyNineEighty.Base.Collisions;
 import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Base.Common.Math.*;
+import com.ThirtyNineEighty.Base.EngineObject;
 import com.ThirtyNineEighty.Base.Resources.Sources.FilePhGeometrySource;
 import com.ThirtyNineEighty.Base.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Base.GameContext;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Collidable
+  extends EngineObject
   implements Serializable
 {
   private static final long serialVersionUID = 1L;
@@ -32,31 +32,52 @@ public class Collidable
 
     verticesMatrix = new float[16];
     normalsMatrix = new float[16];
-    geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
     position = new Vector3();
-
     normals = new ArrayList<>();
+    vertices = new ArrayList<>();
+  }
+
+  @Override
+  public void initialize()
+  {
+    geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
+
     for (int i = 0; i < geometryData.normals.size(); i++)
       normals.add(new Vector3());
 
-    vertices = new ArrayList<>();
     for (int i = 0; i < geometryData.vertices.size(); i++)
       vertices.add(new Vector3());
+
+    super.initialize();
   }
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+  @Override
+  public void uninitialize()
   {
-    in.defaultReadObject();
+    super.uninitialize();
 
-    geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
+    GameContext.resources.release(geometryData);
   }
 
-  public Vector3 getPosition() { return position; }
+  public Vector3 getPosition()
+  {
+    return position;
+  }
 
-  public ArrayList<Vector3> getVertices() { return vertices; }
-  public ArrayList<Vector3> getNormals() { return normals; }
+  public ArrayList<Vector3> getVertices()
+  {
+    return vertices;
+  }
 
-  public float getRadius() { return geometryData.radius; }
+  public ArrayList<Vector3> getNormals()
+  {
+    return normals;
+  }
+
+  public float getRadius()
+  {
+    return geometryData.radius;
+  }
 
   public void setLocation(Vector3 inputPosition, Vector3 inputAngles)
   {
@@ -110,20 +131,5 @@ public class Collidable
     normalsMatrix[12] = 0;
     normalsMatrix[13] = 0;
     normalsMatrix[14] = 0;
-  }
-
-  public static class Data
-    implements Serializable
-  {
-    private static final long serialVersionUID = 1L;
-
-    public Vector3 position;
-    public Vector3 angles;
-
-    public Data()
-    {
-      position = Vector.getInstance(3);
-      angles = Vector.getInstance(3);
-    }
   }
 }
