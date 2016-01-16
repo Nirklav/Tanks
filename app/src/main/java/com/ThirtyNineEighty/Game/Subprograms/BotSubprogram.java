@@ -58,7 +58,9 @@ public class BotSubprogram
     if (distance < maxDistance)
     {
       tryFire(player, targetVector);
-      tryMove(player);
+
+      if (distance > minDistance)
+        tryMove(player);
     }
 
     Vector.release(playerPosition);

@@ -30,15 +30,15 @@ public class Tank
     rechargeProgress = 0;
 
     Vector3 bulletAngles = angles.getSum(0, 0, turretAngle);
+
     Bullet bullet = new Bullet(properties.getBullet());
+    IWorld world = TanksContext.content.getWorld();
+    world.add(bullet);
 
     bullet.bind(new MoveSubprogram(bullet, 100));
     bullet.setAngles(bulletAngles);
     bullet.setPosition(position);
     bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
-
-    IWorld world = TanksContext.content.getWorld();
-    world.add(bullet);
 
     Vector.release(bulletAngles);
   }

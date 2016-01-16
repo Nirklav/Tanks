@@ -33,6 +33,7 @@ public class Map
   private final static int BottomRight = 7;
 
   private final static float stepSize = 3;
+  private final static int maxClosed = 50;
   private final static PathComparator pathLengthComparator = new PathComparator();
 
   private final HashMap<Long, Projection> projectionsCache;
@@ -107,6 +108,10 @@ public class Map
       // Set currentNode as processed
       openSet.remove(currentNode);
       closedSet.add(currentNode);
+
+      // If closed max
+      if (closedSet.size() >= maxClosed)
+        return null;
 
       // Process neighbours
       for (int i = 0; i < DirectionsCount; i++)

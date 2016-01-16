@@ -42,11 +42,8 @@ public class Collidable
   {
     geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
 
-    for (int i = 0; i < geometryData.normals.size(); i++)
-      normals.add(new Vector3());
-
-    for (int i = 0; i < geometryData.vertices.size(); i++)
-      vertices.add(new Vector3());
+    fill(normals, geometryData.normals.size());
+    fill(vertices, geometryData.vertices.size());
 
     super.initialize();
   }
@@ -55,6 +52,9 @@ public class Collidable
   public void uninitialize()
   {
     super.uninitialize();
+
+    clear(normals);
+    clear(vertices);
 
     GameContext.resources.release(geometryData);
   }
@@ -131,5 +131,20 @@ public class Collidable
     normalsMatrix[12] = 0;
     normalsMatrix[13] = 0;
     normalsMatrix[14] = 0;
+  }
+
+  private static void fill(ArrayList<Vector3> list, int count)
+  {
+    for (int i = 0; i < count; i++)
+    {
+      Vector3 vec = Vector.getInstance(3);
+      list.add(vec);
+    }
+  }
+
+  private static void clear(ArrayList<Vector3> list)
+  {
+    Vector.release(list);
+    list.clear();
   }
 }
