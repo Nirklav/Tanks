@@ -150,6 +150,9 @@ public class CollisionManager
         if (first.collidable == null || second.collidable == null)
           continue;
 
+        if (!first.isInitialized() || !second.isInitialized())
+          continue;
+
         if (first.collidable.getRadius() + second.collidable.getRadius() < getLength(first, second))
           continue;
 

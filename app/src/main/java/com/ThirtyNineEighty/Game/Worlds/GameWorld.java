@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
+import com.ThirtyNineEighty.Base.ISubprogram;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
@@ -151,7 +152,10 @@ public class GameWorld
     object.setAngles(mapObj.getAngles());
 
     for (String subprogramName : mapObj.subprograms)
-      object.bind(TanksContext.factory.createSubprogram(subprogramName, object));
+    {
+      ISubprogram subprogram = TanksContext.factory.createSubprogram(subprogramName, object);
+      object.bind(subprogram);
+    }
 
     return object;
   }

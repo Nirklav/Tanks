@@ -23,10 +23,12 @@ public class BotSubprogram
   private final static float minPathRebuildDistance = 50;
   private final static float maxDistance = 150;
   private final static float maxPathTimeMissedSec = 5;
+  private final static float maxPathNotFoundDelay = 5;
 
   private Tank bot;
   private IPath path;
   private float pathTimeMissedSec;
+  private float pathNotFoundDelay;
 
   public BotSubprogram(Tank bot)
   {
@@ -91,12 +93,23 @@ public class BotSubprogram
     IWorld world = TanksContext.content.getWorld();
     IMap map = world.getMap();
 
+    // If path find delay
+    if (pathNotFoundDelay > 0)
+    {
+      pathNotFoundDelay -= DeltaTime.get();
+      return;
+    }
+
     // Find path
     if (path == null)
       path = map.findPath(bot, target);
 
+    // Path not found, set delay
     if (path == null)
+    {
+      pathNotFoundDelay = maxPathNotFoundDelay;
       return;
+    }
 
     // If player drove away from path end
     Vector3 pathEnd = path.end();
@@ -109,10 +122,6 @@ public class BotSubprogram
       path = null;
       return;
     }
-
-    // We arrived
-    if (path.distance() < minDistance)
-      return;
 
     // Move
     boolean moved = path.moveObject();
