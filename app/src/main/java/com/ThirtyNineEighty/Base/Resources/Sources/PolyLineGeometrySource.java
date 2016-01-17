@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
+import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
 
@@ -13,7 +14,7 @@ public class PolyLineGeometrySource
 
   public PolyLineGeometrySource(ArrayList<Vector3> polyLine)
   {
-    super(null, MeshMode.Dynamic);
+    super(String.format("Hash: %d", getHash(polyLine)), MeshMode.Dynamic);
 
     this.polyLine = polyLine;
   }
@@ -22,22 +23,69 @@ public class PolyLineGeometrySource
   protected LoadResult buildGeometry()
   {
     int size = polyLine.size();
-    float[] data = new float[size * 3];
+    int pointsSize = (size - 1) * 6; //( 0 --- 0 --- 0 ) size 3, lines 2. line - 6 point.
+    float[] data = new float[pointsSize * 3];
 
-    for (int i = 0; i < size; i++)
+    for (int i = 1; i < size; i++)
     {
-      Vector3 vector = polyLine.get(i);
-      write(data, i, vector);
+      Vector3 start = polyLine.get(i - 1);
+      Vector3 end = polyLine.get(i);
+
+      write(data, i - 1, start, end);
     }
 
     FloatBuffer buffer = loadGeometry(data);
-    return new LoadResult(buffer, size, Vector3.zero, Vector3.zero);
+    return new LoadResult(buffer, pointsSize, Vector3.zero, Vector3.zero);
   }
 
-  private static void write(float[] data, int num, Vector3 vector)
+  private static void write(float[] data, int num, Vector3 start, Vector3 end)
   {
-    data[num    ] = vector.getX();
-    data[num + 1] = vector.getY();
-    data[num + 2] = vector.getZ();
+    Vector3 vector = end.getSubtract(start);
+
+    vector.normalize();
+    vector.orthogonal();
+
+    Vector3 leftTop = start.getSum(vector);
+    Vector3 rightTop = start.getSubtract(vector);
+    Vector3 leftBottom = end.getSum(vector);
+    Vector3 rightBottom = end.getSubtract(vector);
+
+    data[num * 18     ] = leftTop.getX();
+    data[num * 18 + 1 ] = leftTop.getY();
+    data[num * 18 + 2 ] = leftTop.getZ();
+
+    data[num * 18 + 3 ] = rightTop.getX();
+    data[num * 18 + 4 ] = rightTop.getY();
+    data[num * 18 + 5 ] = rightTop.getZ();
+
+    data[num * 18 + 6 ] = rightBottom.getX();
+    data[num * 18 + 7 ] = rightBottom.getY();
+    data[num * 18 + 8 ] = rightBottom.getZ();
+
+    data[num * 18 + 9 ] = leftTop.getX();
+    data[num * 18 + 10] = leftTop.getY();
+    data[num * 18 + 11] = leftTop.getZ();
+
+    data[num * 18 + 12] = rightBottom.getX();
+    data[num * 18 + 13] = rightBottom.getY();
+    data[num * 18 + 14] = rightBottom.getZ();
+
+    data[num * 18 + 15] = leftBottom.getX();
+    data[num * 18 + 16] = leftBottom.getY();
+    data[num * 18 + 17] = leftBottom.getZ();
+
+    Vector.release(vector);
+    Vector.release(leftTop);
+    Vector.release(rightTop);
+    Vector.release(leftBottom);
+    Vector.release(rightBottom);
+  }
+
+  private static int getHash(ArrayList<Vector3> polyLine)
+  {
+    int hashCode = 0;
+    for (Vector3 vec : polyLine)
+      hashCode = (hashCode * 397) ^ vec.hashCode();
+    return hashCode;
   }
 }

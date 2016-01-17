@@ -26,14 +26,23 @@ public class GLPolyLineBotSubprogramProvider
   @Override
   public void set(GLPolyLine.Data data)
   {
-    super.set(data);
-
     IPath iPath = bot.getPath();
     if (iPath == null)
+    {
+      setVisible(false);
+      super.set(data);
       return;
+    }
 
     if (!(iPath instanceof Path))
+    {
+      setVisible(false);
+      super.set(data);
       return;
+    }
+
+    setVisible(true);
+    super.set(data);
 
     Path path = (Path) iPath;
     ArrayList<Vector2> rawPath = path.getPath();
@@ -51,6 +60,7 @@ public class GLPolyLineBotSubprogramProvider
       {
         resultPoint = data.points.get(index);
         resultPoint.setFrom(point);
+        resultPoint.setZ(1);
       }
 
       index++;

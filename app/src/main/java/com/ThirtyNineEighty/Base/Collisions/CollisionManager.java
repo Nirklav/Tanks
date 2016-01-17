@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Collisions;
 
-import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -25,22 +24,6 @@ public class CollisionManager
   {
     if (!resolvingObjects.contains(object))
       resolvingObjects.add(object);
-
-    IWorld world = GameContext.content.getWorld();
-    IMap map = world.getMap();
-    if (map != null)
-    {
-      float mapSize = map.size();
-      Vector3 position = object.getPosition();
-
-      float x = position.getX();
-      if (Math.abs(x) >= mapSize)
-        position.setX(mapSize * Math.signum(x));
-
-      float y = position.getY();
-      if (Math.abs(y) >= mapSize)
-        position.setY(mapSize * Math.signum(y));
-    }
   }
 
   public void resolve(Collection<WorldObject<?, ?>> worldObjects)

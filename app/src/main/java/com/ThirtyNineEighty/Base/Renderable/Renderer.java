@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Base.Renderable;
 
 import android.opengl.GLES20;
+import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
 
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
@@ -158,6 +159,14 @@ public class Renderer
 
       Shader.setShader(renderable.getShaderId());
       renderable.draw(context);
+
+      int error;
+      if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
+      {
+        Class<?> renderableClass = renderable.getClass();
+        String message = String.format("Error after %s draw call", renderableClass.getName());
+        throw new GLException(error, message);
+      }
     }
   }
 

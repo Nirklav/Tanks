@@ -1,6 +1,7 @@
 package com.ThirtyNineEighty.Base.Renderable.GL;
 
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.GameContext;
@@ -35,7 +36,12 @@ public class GLPolyLine
     ShaderPolyLine shader = (ShaderPolyLine) Shader.getCurrent();
     Geometry geometryData = GameContext.resources.getGeometry(new PolyLineGeometrySource(data.points));
 
-    GLES20.glUniform3fv(shader.uniformColorHandle, 3, data.color.getRaw(), 0);
+    // build PVM matrix
+    Matrix.setIdentityM(modelMatrix, 0);
+    Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
+
+    GLES20.glUniform4fv(shader.uniformColorHandle, 1,  data.color.getRaw(), 0);
+    GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
 
     GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 12, 0);
 

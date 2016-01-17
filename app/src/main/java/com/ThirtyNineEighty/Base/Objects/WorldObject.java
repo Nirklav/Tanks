@@ -6,12 +6,14 @@ import com.ThirtyNineEighty.Base.Common.Math.Angle;
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.GameContext;
+import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.*;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.IRenderable;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileDescriptionSource;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
 
 public abstract class WorldObject<TDescription extends Description, TProperties extends Properties>
   extends Bindable
@@ -113,7 +115,11 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public void rotate(Vector3 deltaAngles)
   {
-    rotate(deltaAngles.getX(), deltaAngles.getY(), deltaAngles.getZ());
+    float x = deltaAngles.getX();
+    float y = deltaAngles.getY();
+    float z = deltaAngles.getZ();
+
+    rotate(x, y, z);
   }
 
   public void rotate(float dX, float dY, float dZ)
@@ -168,6 +174,8 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
   {
     position.move(length, angles);
 
+    normalizePosition();
+
     GameContext.collisions.addToResolving(this);
   }
 
@@ -177,19 +185,60 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     vector.multiply(length);
     position.add(vector);
 
+    normalizePosition();
+
     GameContext.collisions.addToResolving(this);
   }
 
-  public TDescription getDescription() { return description; }
-  public TProperties getProperties() { return properties; }
+  public TDescription getDescription()
+  {
+    return description;
+  }
 
-  public Vector3 getPosition() { return position; }
-  public void setPosition(Vector3 value) { position.setFrom(value); }
+  public TProperties getProperties()
+  {
+    return properties;
+  }
 
-  public Vector3 getAngles() { return angles; }
+  public Vector3 getPosition()
+  {
+    return position;
+  }
+
+  public void setPosition(Vector3 value)
+  {
+    position.setFrom(value);
+
+    normalizePosition();
+  }
+
+  public Vector3 getAngles()
+  {
+    return angles;
+  }
+
   public void setAngles(Vector3 value)
   {
     angles.setFrom(value);
     angles.correctAngles();
+  }
+
+  private void normalizePosition()
+  {
+    IWorld world = GameContext.content.getWorld();
+    IMap map = world.getMap();
+    if (map == null)
+      return;
+
+    float mapSize = map.size();
+    Vector3 position = getPosition();
+    int vecSize = position.getSize();
+
+    for (int i = 0; i < vecSize; i++)
+    {
+      float value = position.get(i);
+      if (Math.abs(value) >= mapSize)
+        position.set(i, mapSize * Math.signum(value));
+    }
   }
 }

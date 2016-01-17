@@ -8,6 +8,7 @@ public class ShaderPolyLine
   public int attributePositionHandle;
 
   public int uniformColorHandle;
+  public int uniformMatrixProjectionHandle;
 
   @Override
   public void compile()
@@ -18,7 +19,8 @@ public class ShaderPolyLine
   @Override
   protected void getLocations()
   {
-    attributePositionHandle = GLES20.glGetAttribLocation(programHandle, "a_position");
-    uniformColorHandle =      GLES20.glGetUniformLocation(programHandle, "u_color");
+    attributePositionHandle =       GLES20.glGetAttribLocation(programHandle, "a_position");
+    uniformMatrixProjectionHandle = GLES20.glGetUniformLocation(programHandle, "u_modelViewProjectionMatrix");
+    uniformColorHandle =            GLES20.glGetUniformLocation(programHandle, "u_color");
   }
 }
