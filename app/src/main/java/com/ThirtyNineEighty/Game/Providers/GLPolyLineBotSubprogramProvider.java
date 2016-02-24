@@ -47,23 +47,14 @@ public class GLPolyLineBotSubprogramProvider
     Path path = (Path) iPath;
     ArrayList<Vector2> rawPath = path.getPath();
 
-    int index = 0;
+    Vector.release(data.points);
+    data.points.clear();
+
     for (Vector2 point : rawPath)
     {
-      Vector3 resultPoint;
-      if (index >= data.points.size())
-      {
-        resultPoint = Vector.getInstance(3, point);
-        data.points.add(resultPoint);
-      }
-      else
-      {
-        resultPoint = data.points.get(index);
-        resultPoint.setFrom(point);
-        resultPoint.setZ(1);
-      }
-
-      index++;
+      Vector3 resultPoint = Vector.getInstance(3, point);
+      resultPoint.setZ(0.5f);
+      data.points.add(resultPoint);
     }
 
     data.color.setFrom(1, 1, 0);

@@ -38,8 +38,13 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     this.position = new Vector3();
     this.angles = new Vector3();
 
-    description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
+    TDescription description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
+    create(description, properties);
+    GameContext.resources.release(description);
+  }
 
+  protected void create(TDescription description, TProperties properties)
+  {
     // Build visual models
     for (VisualDescription visual : description.getVisuals())
     {
@@ -52,17 +57,14 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
     // Build physical model
     PhysicalDescription physical = description.getPhysical();
     if (physical != null)
-    {
       collidable = new Collidable(physical.modelName);
-    }
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public void initialize()
   {
-    if (description == null)
-      description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
+    description = (TDescription) GameContext.resources.getDescription(new FileDescriptionSource(descriptionName));
 
     if (collidable != null)
     {

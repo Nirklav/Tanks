@@ -273,7 +273,6 @@ public class Vector3
   {
     // a * dot(a, b) / dot(a,a)
     Vector3 lineVector = end.getSubtract(start);
-    lineVector.normalize();
     subtract(start);
 
     float first = lineVector.getScalar(this);

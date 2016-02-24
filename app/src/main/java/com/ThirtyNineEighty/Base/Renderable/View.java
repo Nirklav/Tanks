@@ -26,7 +26,8 @@ public abstract class View
       @Override
       public void run()
       {
-        bindable.unbind(view);
+        if (bindable != null)
+          bindable.unbind(view);
       }
     });
   }

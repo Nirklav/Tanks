@@ -47,6 +47,71 @@ public class ConvexHull
     return true;
   }
 
+  // TODO: create figures types and move this method out of here
+  public boolean isIntersectWithCircle(Vector2 center, float pointRadius)
+  {
+    if (convexHull == null)
+      convexHull = build(collidable, plane);
+
+    // Check convex hull vertices
+    Vector2 vector = Vector.getInstance(2);
+
+    for (Vector2 point : convexHull)
+    {
+      vector.setFrom(center);
+      vector.subtract(point);
+
+      if (vector.getLength() < pointRadius)
+      {
+        Vector.release(vector);
+        return true;
+      }
+    }
+    Vector.release(vector);
+
+    // Check convex hull edges
+    int count = convexHull.size();
+    Vector2 lineNormal = Vector2.getInstance(2);
+    Vector2 intersectPoint = Vector.getInstance(2);
+    Vector2 intersectToCenter = Vector.getInstance(2);
+
+    for (int i = 0; i < count; i++)
+    {
+      Vector2 firstPoint = convexHull.get(i);
+      Vector2 secondPoint = convexHull.get(i + 1 == count ? 0 : i + 1);
+
+      intersectPoint.setFrom(center);
+      intersectPoint.lineProjection(firstPoint, secondPoint);
+
+      lineNormal.setFrom(secondPoint);
+      lineNormal.subtract(firstPoint);
+      lineNormal.normalize();
+
+      float firstProjection = lineNormal.getScalar(firstPoint);
+      float secondProjection = lineNormal.getScalar(secondPoint);
+      float intersectProjection = lineNormal.getScalar(intersectPoint);
+
+      if (intersectProjection < firstProjection || intersectProjection > secondProjection)
+        continue;
+
+      intersectToCenter.setFrom(intersectPoint);
+      intersectToCenter.subtract(center);
+
+      if (intersectToCenter.getLength() > pointRadius)
+        continue;
+
+      Vector.release(lineNormal);
+      Vector.release(intersectPoint);
+      Vector.release(intersectToCenter);
+      return true;
+    }
+
+    Vector.release(lineNormal);
+    Vector.release(intersectPoint);
+    Vector.release(intersectToCenter);
+    return false;
+  }
+
   private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
   {
     Vector2 firstPoint = vertices.get(num);

@@ -44,6 +44,7 @@ public class PolyLineGeometrySource
 
     vector.normalize();
     vector.orthogonal();
+    vector.multiply(0.25f);
 
     Vector3 leftTop = start.getSum(vector);
     Vector3 rightTop = start.getSubtract(vector);

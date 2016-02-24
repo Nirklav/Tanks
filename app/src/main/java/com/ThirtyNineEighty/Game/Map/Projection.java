@@ -1,10 +1,8 @@
 package com.ThirtyNineEighty.Game.Map;
 
-import com.ThirtyNineEighty.Base.Collisions.Collision2D;
 import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Common.Math.Plane;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 
 class Projection
@@ -12,8 +10,7 @@ class Projection
   private static final Plane plane = new Plane();
 
   private final WorldObject<?, ?> object;
-  private final ConvexHull hull;
-  private Vector2 position;
+  private ConvexHull hull;
 
   public static Projection FromObject(WorldObject<?, ?> object)
   {
@@ -27,18 +24,12 @@ class Projection
   {
     this.object = object;
     this.hull = new ConvexHull(object.collidable, plane);
-    this.position = Vector.getInstance(2, object.collidable.getPosition());
   }
 
-  public void setPosition(Vector2 value)
+  public void set()
   {
-    Vector2 delta = value.getSubtract(position);
-    position.setFrom(value);
-
-    for (Vector2 hullPoint : hull.get())
-      hullPoint.add(delta);
-
-    Vector.release(delta);
+    hull.release();
+    hull = new ConvexHull(object.collidable, plane);
   }
 
   public WorldObject<?, ?> getObject()
@@ -46,14 +37,8 @@ class Projection
     return object;
   }
 
-  public boolean isIntersect(Projection projection)
+  public boolean contains(Vector2 point, float radius)
   {
-    Collision2D collision = new Collision2D(hull.get(), projection.hull.get());
-    return collision.isCollide();
-  }
-
-  public boolean contains(Vector2 point)
-  {
-    return hull.contains(point);
+    return hull.isIntersectWithCircle(point, radius);
   }
 }

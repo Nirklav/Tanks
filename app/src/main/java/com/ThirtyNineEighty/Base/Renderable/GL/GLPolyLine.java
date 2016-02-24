@@ -12,6 +12,7 @@ import com.ThirtyNineEighty.Base.Renderable.Shaders.ShaderPolyLine;
 import com.ThirtyNineEighty.Base.Resources.Entities.Geometry;
 import com.ThirtyNineEighty.Base.Resources.Sources.PolyLineGeometrySource;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class GLPolyLine
@@ -40,11 +41,18 @@ public class GLPolyLine
     Matrix.setIdentityM(modelMatrix, 0);
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
 
-    GLES20.glUniform4fv(shader.uniformColorHandle, 1,  data.color.getRaw(), 0);
+    GLES20.glUniform4fv(shader.uniformColorHandle, 1, data.color.getRaw(), 0);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixProjectionHandle, 1, false, modelProjectionViewMatrix, 0);
 
-    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 12, 0);
+    // reset VBO buffer
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
+    // set attributes data
+    FloatBuffer buffer = geometryData.getData();
+    buffer.position(0);
+    GLES20.glVertexAttribPointer(shader.attributePositionHandle, 3, GLES20.GL_FLOAT, false, 12, buffer);
+
+    // enable attributes
     GLES20.glEnableVertexAttribArray(shader.attributePositionHandle);
 
     // validating if debug

@@ -3,11 +3,9 @@ package com.ThirtyNineEighty.Game.Map;
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
-import com.ThirtyNineEighty.Base.Map.IMap;
+import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Map.IPath;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
-import com.ThirtyNineEighty.Base.Worlds.IWorld;
-import com.ThirtyNineEighty.Game.TanksContext;
 
 import java.util.ArrayList;
 
@@ -16,11 +14,16 @@ public class Path
 {
   private static final long serialVersionUID = 1L;
 
-  private static final float defaultStepCompletion = 1.0f;
+  private static final float defaultStepCompletion = 1f;
+  private static final float influenceOfPivotPoint = 2f;
+  private static final float pivotPointLifeTime = 5;
 
   private final WorldObject<?, ?> object;
   private final ArrayList<Vector2> path;
   private final float stepCompletion;
+
+  private Vector2 pivotPoint;
+  private float pivotPointTimeLeft;
 
   private int currentPathStep;
 
@@ -78,12 +81,14 @@ public class Path
 
   public boolean moveObject()
   {
+    if (isPivotPointDeprecated())
+      return false;
+
+    updatePivotPoint();
+
     Vector2 movingVector = getMovingVector();
     if (movingVector == null)
       return false;
-
-    IWorld world = TanksContext.content.getWorld();
-    IMap map = world.getMap();
 
     float movingAngle = Vector2.xAxis.getAngle(movingVector);
     Vector3 targetAngles = Vector.getInstance(3, 0, 0, movingAngle);
@@ -96,13 +101,53 @@ public class Path
       return true;
 
     // Try move
-    if (map.canMove(object))
+    object.move();
+    return true;
+  }
+
+  @SuppressWarnings("SimplifiableIfStatement")
+  private boolean isPivotPointDeprecated()
+  {
+    if (pivotPoint == null)
+      return false;
+
+    float vectorLength = getLength(object, pivotPoint);
+    if (vectorLength > influenceOfPivotPoint)
+      return false;
+
+    return pivotPointTimeLeft <= 0;
+  }
+
+  private void updatePivotPoint()
+  {
+    if (pivotPoint == null)
     {
-      object.move();
-      return true;
+      pivotPoint = Vector.getInstance(2, object.getPosition());
+      pivotPointTimeLeft = pivotPointLifeTime;
+      return;
     }
 
-    return false;
+    float vectorLength = getLength(object, pivotPoint);
+    if (vectorLength > influenceOfPivotPoint)
+    {
+      pivotPoint = Vector.getInstance(2, object.getPosition());
+      pivotPointTimeLeft = pivotPointLifeTime;
+      return;
+    }
+
+    pivotPointTimeLeft -= DeltaTime.get();
+  }
+
+  private static float getLength(WorldObject<?, ?> object, Vector2 point)
+  {
+    Vector2 position = Vector.getInstance(2, object.getPosition());
+    Vector2 vector = position.getSubtract(point);
+    float vectorLength = vector.getLength();
+
+    Vector.release(vector);
+    Vector.release(position);
+
+    return vectorLength;
   }
 
   private Vector2 getMovingVector()

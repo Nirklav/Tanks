@@ -2,13 +2,11 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
-import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
-import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.GameContext;
 
 import com.android.internal.util.Predicate;
@@ -52,28 +50,6 @@ public class Map
   public float size()
   {
     return description.size;
-  }
-
-  @Override
-  public boolean canMove(WorldObject<?, ?> object)
-  {
-    Projection projection = getProjection(object);
-    if (projection == null)
-      return true;
-
-    Vector2 position = Vector.getInstance(2, object.getPosition());
-    Vector3 angles = object.getAngles();
-    Description description = object.getDescription();
-
-    position.move(description.getSpeed(), angles.getZ());
-
-    projection.setPosition(position);
-
-    for (Projection current : getProjections(object))
-      if (current.isIntersect(projection))
-        return false;
-
-    return true;
   }
 
   @Override
@@ -151,7 +127,6 @@ public class Map
     return null;
   }
 
-  private ArrayList<Projection> getProjections(WorldObject<?, ?> finder) { return getProjections(finder, null); }
   private ArrayList<Projection> getProjections(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
     ArrayList<Projection> result = new ArrayList<>();
@@ -176,11 +151,10 @@ public class Map
 
   private Projection getProjection(WorldObject<?, ?> object)
   {
-    Vector2 position = Vector.getInstance(2, object.getPosition());
     Projection projection = projectionsCache.get(object.getId());
     if (projection != null)
     {
-      projection.setPosition(position);
+      projection.set();
       return projection;
     }
 
@@ -189,7 +163,7 @@ public class Map
       return null;
 
     projectionsCache.put(object.getId(), projection);
-    projection.setPosition(position);
+    projection.set();
     return projection;
   }
 
@@ -338,7 +312,8 @@ public class Map
       if (object.getId().equals(finder.getId()))
         return false;
 
-      return projection.contains(point);
+      float finderRadius = finder.collidable.getRadius();
+      return projection.contains(point, finderRadius);
     }
   }
 

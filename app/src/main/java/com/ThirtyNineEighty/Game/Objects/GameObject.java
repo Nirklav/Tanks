@@ -15,6 +15,12 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
   protected GameObject(String descriptionName, TProperties properties)
   {
     super(descriptionName, properties);
+  }
+
+  @Override
+  protected void create(TDescription description, TProperties properties)
+  {
+    super.create(description, properties);
 
     health = description.getHealth();
   }

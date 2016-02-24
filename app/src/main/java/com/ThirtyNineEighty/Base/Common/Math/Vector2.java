@@ -167,6 +167,28 @@ public class Vector2
     return mtv3;
   }
 
+  public void lineProjection(Vector2 start, Vector2 end)
+  {
+    // a * dot(a, b) / dot(a,a)
+    Vector2 lineVector = end.getSubtract(start);
+    subtract(start);
+
+    float crossProduct = getCross(lineVector);
+
+    float first = getScalar(lineVector);
+    float second = lineVector.getScalar(lineVector);
+
+    setFrom(lineVector);
+    multiply(first / second);
+
+    if (crossProduct < 0)
+      multiply(-1);
+
+    add(start);
+
+    Vector.release(lineVector);
+  }
+
   public Vector2 getNormalize()
   {
     throwIfReleased();
@@ -229,7 +251,7 @@ public class Vector2
       float projection = getScalar(current);
 
       if (result == null)
-        result = new Vector2(projection, projection);
+        result = Vector.getInstance(2, projection, projection);
 
       // x - max
       if (projection > result.getX())
@@ -241,6 +263,14 @@ public class Vector2
     }
 
     return result;
+  }
+
+  public Vector2 getCircleProjection(Vector2 center, float radius)
+  {
+    float projection = getScalar(center);
+    float min = projection - radius;
+    float max = projection + radius;
+    return Vector.getInstance(2, max, min);
   }
 
   @Override

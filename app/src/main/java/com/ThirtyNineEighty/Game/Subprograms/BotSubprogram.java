@@ -19,15 +19,13 @@ public class BotSubprogram
 {
   private static final long serialVersionUID = 1L;
 
-  private final static float minDistance = 10;
-  private final static float minPathRebuildDistance = 50;
+  private final static float minDistance = 20;
+  private final static float minPathRebuildDistance = 25;
   private final static float maxDistance = 150;
-  private final static float maxPathTimeMissedSec = 5;
   private final static float maxPathNotFoundDelay = 5;
 
   private Tank bot;
   private IPath path;
-  private float pathTimeMissedSec;
   private float pathNotFoundDelay;
 
   public BotSubprogram(Tank bot)
@@ -127,16 +125,8 @@ public class BotSubprogram
     boolean moved = path.moveObject();
     if (!moved)
     {
-      // Sum pass time
-      pathTimeMissedSec += DeltaTime.get();
-
-      // Reset path, if we waiting pass too long
-      if (pathTimeMissedSec > maxPathTimeMissedSec)
-      {
-        pathTimeMissedSec = 0.0f;
-        path.release();
-        path = null;
-      }
+      path.release();
+      path = null;
     }
   }
 }
