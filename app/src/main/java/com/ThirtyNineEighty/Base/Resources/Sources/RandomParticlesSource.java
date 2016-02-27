@@ -7,19 +7,27 @@ import com.ThirtyNineEighty.Base.Resources.MeshMode;
 
 import java.util.Random;
 
-public class HemisphereParticlesSource
+public class RandomParticlesSource
   extends GeometrySource
 {
   private static final int size = 10000;
   private static final int partSize = 12 + 12 + 16;
-  private static final float angleVariance = 120;
+  private static final int defaultAngleVariance = 120;
 
   private Random random;
   private float[] matrix;
+  private float angleVariance;
 
-  public HemisphereParticlesSource()
+  public RandomParticlesSource()
   {
-    super("Sphere_particles", MeshMode.Static);
+    this(defaultAngleVariance);
+  }
+
+  public RandomParticlesSource(float angleVariance)
+  {
+    super(String.format("Sphere_particles_%s", angleVariance), MeshMode.Static);
+
+    this.angleVariance = angleVariance;
   }
 
   @Override

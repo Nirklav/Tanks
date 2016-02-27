@@ -9,6 +9,8 @@ import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.GameContext;
 
+import com.ThirtyNineEighty.Game.Resources.Sources.FileMapDescriptionSource;
+import com.ThirtyNineEighty.Game.TanksContext;
 import com.android.internal.util.Predicate;
 
 import java.util.ArrayList;
@@ -39,11 +41,16 @@ public class Map
   public final String name;
   public final MapDescription description;
 
-  public Map(String name, MapDescription description)
+  public Map(String name)
   {
     this.name = name;
-    this.description = description;
+    this.description = TanksContext.resources.getMap(new FileMapDescriptionSource(name));
     this.projectionsCache = new HashMap<>();
+  }
+
+  public void release()
+  {
+    TanksContext.resources.release(description);
   }
 
   @Override

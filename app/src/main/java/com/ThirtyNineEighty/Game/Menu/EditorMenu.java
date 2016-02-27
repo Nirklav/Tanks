@@ -99,7 +99,7 @@ public class EditorMenu
       @Override
       public void run()
       {
-        categorySelector.Next();
+        categorySelector.next();
       }
     });
     add(nextCategory);
@@ -117,7 +117,7 @@ public class EditorMenu
       @Override
       public void run()
       {
-        objectSelector.Next();
+        objectSelector.next();
       }
     });
     add(nextObject);

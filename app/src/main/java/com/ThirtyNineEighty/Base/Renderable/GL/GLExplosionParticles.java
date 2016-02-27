@@ -9,7 +9,6 @@ import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.RendererContext;
 import com.ThirtyNineEighty.Base.Renderable.Shaders.*;
 import com.ThirtyNineEighty.Base.Resources.Entities.*;
-import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 import com.ThirtyNineEighty.Base.Resources.Sources.*;
 import com.ThirtyNineEighty.Base.GameContext;
 
@@ -18,32 +17,31 @@ public class GLExplosionParticles
 {
   private static final long serialVersionUID = 1L;
 
-  public static final RenderableDescription Sphere = new RenderableDescription("sphere", "particle");
-  public static final RenderableDescription Hemisphere = new RenderableDescription("hemisphere", "particle");
+  private static final RenderableDescription Description = new RenderableDescription("sphere", "particle");
 
   private transient Texture textureData;
   private transient Geometry geometryData;
-  private RenderableDescription description;
 
   private int count;
   private float time;
   private float life;
+  private float angleVariance;
 
-  public GLExplosionParticles(float lifeMs, int count, RenderableDescription description, IDataProvider<Data> provider)
+  public GLExplosionParticles(float lifeMs, int count, float angleVariance, IDataProvider<Data> provider)
   {
     super(provider);
 
-    this.description = description;
     this.count = count;
     this.time = 0;
     this.life = lifeMs;
+    this.angleVariance = angleVariance;
   }
 
   @Override
   public void initialize()
   {
-    this.geometryData = GameContext.resources.getGeometry(getSource(description.modelName));
-    this.textureData = GameContext.resources.getTexture(new FileTextureSource(description.textureName, false));
+    this.geometryData = GameContext.resources.getGeometry(new RandomParticlesSource(angleVariance));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(Description.textureName, false));
 
     super.initialize();
   }
@@ -55,15 +53,6 @@ public class GLExplosionParticles
 
     GameContext.resources.release(geometryData);
     GameContext.resources.release(textureData);
-  }
-
-  private static ISource<Geometry> getSource(String type)
-  {
-    if (type.equals(Hemisphere.modelName))
-      return new HemisphereParticlesSource();
-    if (type.equals(Sphere.modelName))
-      return null; // TODO:
-    return null;
   }
 
   @Override

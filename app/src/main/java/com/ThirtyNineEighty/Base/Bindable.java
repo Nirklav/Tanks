@@ -15,7 +15,6 @@ public abstract class Bindable
 
   private final HashMap<Long, ISubprogram> subprograms = new HashMap<>();
   private final HashMap<Long, IView> views = new HashMap<>();
-  private final HashMap<Long, IDataProvider> viewsProviders = new HashMap<>(); // view.Id -> IDataProvider
 
   private final ArrayList<IDataProvider> providers = new ArrayList<>(); // memory optimization
 
@@ -140,15 +139,6 @@ public abstract class Bindable
       if (views.containsKey(id))
         throw new IllegalStateException("View with this id already added (views)");
 
-      IDataProvider provider = view.getProvider();
-      if (provider != null)
-      {
-        if (viewsProviders.containsKey(id))
-          throw new IllegalStateException("View with this id already added (viewsProviders)");
-
-        viewsProviders.put(id, provider);
-      }
-
       views.put(id, view);
     }
   }
@@ -166,10 +156,7 @@ public abstract class Bindable
 
     synchronized (views)
     {
-      Long id = view.getId();
-
-      views.remove(id);
-      viewsProviders.remove(id);
+      views.remove(view.getId());
     }
   }
 
@@ -180,7 +167,8 @@ public abstract class Bindable
     {
       // copy because provider.set can add views
       providers.clear();
-      providers.addAll(viewsProviders.values());
+      for (IView view : views.values())
+        providers.add(view.getProvider());
     }
 
     for (IDataProvider provider : providers)

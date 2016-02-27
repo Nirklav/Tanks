@@ -8,7 +8,7 @@ import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
 import com.ThirtyNineEighty.Base.Resources.Entities.Image;
 import com.ThirtyNineEighty.Base.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Base.Resources.Entities.Texture;
-import com.ThirtyNineEighty.Base.Resources.Sources.HemisphereParticlesSource;
+import com.ThirtyNineEighty.Base.Resources.Sources.RandomParticlesSource;
 import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class Resources
 
   public void preload()
   {
-    geometryCache.get(new HemisphereParticlesSource());
+    geometryCache.get(new RandomParticlesSource());
   }
 
   public void reloadCache()

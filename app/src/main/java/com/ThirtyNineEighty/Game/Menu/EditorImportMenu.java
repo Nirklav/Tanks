@@ -84,7 +84,7 @@ public class EditorImportMenu
       @Override
       public void run()
       {
-        mapSelector.Prev();
+        mapSelector.prev();
       }
     });
     add(prevMapButton);
@@ -97,7 +97,7 @@ public class EditorImportMenu
       @Override
       public void run()
       {
-        mapSelector.Next();
+        mapSelector.next();
       }
     });
     add(nextMapButton);

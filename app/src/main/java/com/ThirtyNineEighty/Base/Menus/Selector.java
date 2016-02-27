@@ -19,7 +19,7 @@ public class Selector
     return values.get(selectedIndex);
   }
 
-  public void Next()
+  public void next()
   {
     selectedIndex++;
     if (selectedIndex >= values.size())
@@ -29,7 +29,7 @@ public class Selector
       onChange.onChange(values.get(selectedIndex));
   }
 
-  public void Prev()
+  public void prev()
   {
     selectedIndex--;
     if (selectedIndex < 0)

@@ -10,12 +10,14 @@ public class TanksResources
 {
   private final ResourceCache<MapDescription> mapsCache;
 
-  public MapDescription getMap(ISource<MapDescription> source) { return mapsCache.get(source); }
-
   public TanksResources()
   {
     super();
 
     add(mapsCache = new ResourceCache<>("Maps"));
   }
+
+  public MapDescription getMap(ISource<MapDescription> source) { return mapsCache.get(source); }
+
+  public void release(MapDescription resource) { mapsCache.release(resource); }
 }

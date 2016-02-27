@@ -109,7 +109,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        tankSelector.Next();
+        tankSelector.next();
       }
     });
     add(nextTankButton);
@@ -122,7 +122,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        tankSelector.Prev();
+        tankSelector.prev();
       }
     });
     add(prevTankButton);
@@ -135,7 +135,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        bulletSelector.Next();
+        bulletSelector.next();
       }
     });
     add(nextBulletButton);
@@ -148,7 +148,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        bulletSelector.Prev();
+        bulletSelector.prev();
       }
     });
     add(prevBulletButton);

@@ -2,14 +2,14 @@ package com.ThirtyNineEighty.Base;
 
 import java.util.ArrayList;
 
-public class EngineObjectHost
+public class EngineObjectHost<T extends IEngineObject>
   extends EngineObject
 {
   private static final long serialVersionUID = 1L;
 
-  private final ArrayList<IEngineObject> objects = new ArrayList<>();
+  private final ArrayList<T> objects = new ArrayList<>();
 
-  public void add(IEngineObject object)
+  public void add(T object)
   {
     if (object.isInitialized())
       throw new IllegalArgumentException("Bindable should be not initialized");
@@ -29,7 +29,7 @@ public class EngineObjectHost
     }
   }
 
-  public void remove(IEngineObject object)
+  public void remove(T object)
   {
     if (object.isEnabled())
       object.disable();
@@ -79,7 +79,7 @@ public class EngineObjectHost
       object.disable();
   }
 
-  private ArrayList<IEngineObject> getObjectsCopy()
+  private ArrayList<T> getObjectsCopy()
   {
     synchronized (objects)
     {

@@ -8,22 +8,17 @@ import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.Base.Subprogram;
 import com.ThirtyNineEighty.Base.Worlds.BaseWorld;
-import com.ThirtyNineEighty.Base.Renderable.Common.Camera;
-import com.ThirtyNineEighty.Base.Renderable.Common.Light;
+import com.ThirtyNineEighty.Base.Renderable.Common.*;
+import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Providers.GLPolyLineBotSubprogramProvider;
-import com.ThirtyNineEighty.Game.Resources.Sources.FileMapDescriptionSource;
-import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
-import com.ThirtyNineEighty.Game.Subprograms.BotSubprogram;
-import com.ThirtyNineEighty.Game.Subprograms.RechargeSubprogram;
-import com.ThirtyNineEighty.Game.Subprograms.WinConditionSubprogram;
+import com.ThirtyNineEighty.Game.Resources.Sources.FileMapDescriptionSource;
+import com.ThirtyNineEighty.Game.Subprograms.*;
 import com.ThirtyNineEighty.Game.TanksContext;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.HashMap;
 
 public class GameWorld
@@ -55,27 +50,23 @@ public class GameWorld
     if (!maps.names.contains(mapName))
       throw new IllegalArgumentException("name");
 
-    TanksContext.resources.release(maps);
-
-    // Load map
-    MapDescription mapDescription = TanksContext.resources.getMap(new FileMapDescriptionSource(mapName));
-    map = new Map(mapName, mapDescription);
+    MapDescription description = TanksContext.resources.getMap(new FileMapDescriptionSource(mapName));
 
     // Create player
     final Tank player = new Tank(args.getTankName(), args.getProperties());
     this.player = player;
 
-    player.setPosition(mapDescription.player.getPosition());
-    player.setAngles(mapDescription.player.getAngles());
+    player.setPosition(description.player.getPosition());
+    player.setAngles(description.player.getAngles());
     player.bind(new RechargeSubprogram(player));
     add(player);
 
     // Create objects
-    for (MapObject mapObj : mapDescription.objects)
+    for (MapObject mapObj : description.objects)
       add(create(mapObj));
 
     // Create map subprograms
-    for (String subprogramName : mapDescription.subprograms)
+    for (String subprogramName : description.subprograms)
       bind(TanksContext.factory.createSubprogram(subprogramName, this));
 
     // Bind camera and light
@@ -137,14 +128,9 @@ public class GameWorld
         }
       }
     });
-  }
 
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-  {
-    in.defaultReadObject();
-
-    MapDescription description = TanksContext.resources.getMap(new FileMapDescriptionSource(mapName));
-    map = new Map(mapName, description);
+    TanksContext.resources.release(description);
+    TanksContext.resources.release(maps);
   }
 
   private WorldObject<?, ?> create(MapObject mapObj)
@@ -165,6 +151,24 @@ public class GameWorld
     }
 
     return object;
+  }
+
+  @Override
+  public void initialize()
+  {
+    super.initialize();
+
+    // Create map
+    map = new Map(mapName);
+  }
+
+  @Override
+  public void uninitialize()
+  {
+    super.uninitialize();
+
+    // Release map
+    map.release();
   }
 
   @Override
