@@ -5,7 +5,6 @@ import com.ThirtyNineEighty.Base.Providers.GLModelWorldObjectProvider;
 import com.ThirtyNineEighty.Base.Providers.GLRenderableWorldObjectProvider;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLExplosionParticles;
-import com.ThirtyNineEighty.Base.Renderable.GL.GLRenderable;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLModel;
 
@@ -13,7 +12,6 @@ public class GLModelTankProvider
   extends GLModelWorldObjectProvider<Tank>
 {
   private static final long serialVersionUID = 1L;
-
   private boolean destroyed;
 
   public GLModelTankProvider(Tank tank, VisualDescription description)
@@ -32,13 +30,31 @@ public class GLModelTankProvider
       data.greenCoeff = 0.2f;
       data.blueCoeff = 0.2f;
     }
+  }
 
-    if (!destroyed && object.getHealth() <= 0)
+  @Override
+  protected void onEvent(String event)
+  {
+    switch (event)
     {
-      destroyed = true;
-
-      IDataProvider<GLRenderable.Data> provider = new GLRenderableWorldObjectProvider<>(object, GLRenderable.Data.class, null);
-      object.bind(new GLExplosionParticles(1000, 2000, 120, provider));
+    case Tank.EventHit: blowup(); break;
     }
+  }
+
+  private void blowup()
+  {
+    if (destroyed)
+      return;
+    if (object.getHealth() > 0)
+      return;
+
+    destroyed = true;
+
+    IDataProvider<GLExplosionParticles.Data> provider = new GLRenderableWorldObjectProvider<>(object, GLExplosionParticles.Data.class, null);
+    GLExplosionParticles particles = new GLExplosionParticles(provider)
+      .setLifeTime(1000)
+      .setCount(2000);
+
+    object.bind(particles);
   }
 }

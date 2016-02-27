@@ -30,8 +30,5 @@ public class GLRenderableWorldObjectProvider<TData extends GLRenderable.Data, TO
     set(data, description);
   }
 
-  protected void set(TData data, VisualDescription description)
-  {
-
-  }
+  protected void set(TData data, VisualDescription description) { }
 }

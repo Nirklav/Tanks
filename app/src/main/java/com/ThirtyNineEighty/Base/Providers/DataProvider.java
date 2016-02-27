@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Base.Providers;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.util.HashSet;
 
 public abstract class DataProvider<TData extends Serializable>
   implements IDataProvider<TData>,
@@ -16,12 +17,15 @@ public abstract class DataProvider<TData extends Serializable>
   private final SyncObject syncObject;
   private volatile boolean dataUpdated;
 
+  private HashSet<String> events;
+
   protected DataProvider(Class<TData> dataClass)
   {
     this.renderableOwnedData = create(dataClass);
     this.modelOwnedData = create(dataClass);
     this.transferData = create(dataClass);
     this.syncObject = new SyncObject();
+    this.events = new HashSet<>();
   }
 
   private TData create(Class<TData> dataClass)
@@ -37,11 +41,23 @@ public abstract class DataProvider<TData extends Serializable>
     }
   }
 
+  public final void enqueue(String event)
+  {
+    events.add(event);
+  }
+
   @Override
   public void set() // invoked by UpdateThread (Content)
   {
+    // Raise events.
+    for (String event : events)
+      onEvent(event);
+    events.clear();
+
+    // Ser data.
     set(modelOwnedData);
 
+    // Swap data.
     synchronized (syncObject)
     {
       TData tmp = transferData;
@@ -71,6 +87,7 @@ public abstract class DataProvider<TData extends Serializable>
     return renderableOwnedData;
   }
 
+  protected void onEvent(String event) { }
   public abstract void set(TData data);
 
   // For sync object serialization

@@ -13,6 +13,8 @@ public class Tank
 {
   private static final long serialVersionUID = 1L;
 
+  public static final String EventFire = "Tank_Fire";
+
   protected float turretAngle;
   protected float rechargeProgress;
 
@@ -41,6 +43,8 @@ public class Tank
     bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
 
     Vector.release(bulletAngles);
+
+    enqueueViewEvent(EventFire);
   }
 
   public float getRelativeTurretAngle()

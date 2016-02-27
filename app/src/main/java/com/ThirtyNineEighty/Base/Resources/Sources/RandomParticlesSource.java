@@ -12,22 +12,18 @@ public class RandomParticlesSource
 {
   private static final int size = 10000;
   private static final int partSize = 12 + 12 + 16;
-  private static final int defaultAngleVariance = 120;
 
   private Random random;
   private float[] matrix;
   private float angleVariance;
+  private Vector3 color;
 
-  public RandomParticlesSource()
+  public RandomParticlesSource(float angleVariance, Vector3 color)
   {
-    this(defaultAngleVariance);
-  }
-
-  public RandomParticlesSource(float angleVariance)
-  {
-    super(String.format("Sphere_particles_%s", angleVariance), MeshMode.Static);
+    super(String.format("Random_sphere_particles_%s_%s", angleVariance, color), MeshMode.Static);
 
     this.angleVariance = angleVariance;
+    this.color = new Vector3(color);
   }
 
   @Override
@@ -39,7 +35,7 @@ public class RandomParticlesSource
     float[] data = new float[size * partSize];
 
     for (int i = 0; i < size; i++)
-      writePart(data, i, Vector3.zero, createVector(), createColor());
+      writePart(data, i, Vector3.zero, createVector(), color);
 
     return new LoadResult(loadGeometry(data), size, new Vector3(), new Vector3());
   }
@@ -55,11 +51,6 @@ public class RandomParticlesSource
 
     Matrix.multiplyMV(vector.getRaw(), 0, matrix, 0, vector.getRaw(), 0);
     return vector;
-  }
-
-  private Vector3 createColor()
-  {
-    return new Vector3(1.4f, 0.6f, 0.0f);
   }
 
   private void writePart(float[] data, int index, Vector3 position, Vector3 vector, Vector3 color)

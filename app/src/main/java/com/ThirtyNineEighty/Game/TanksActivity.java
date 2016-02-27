@@ -54,7 +54,7 @@ public class TanksActivity
     TanksContext.factory.addRenderable("glSkyBox", GLSkyBox.class);
 
     TanksContext.factory.addProvider("glModelTankProvider", GLModelTankProvider.class);
-    TanksContext.factory.addProvider("glModelTankTurretProvider", GLModelTankTurretProvider.class);
+    TanksContext.factory.addProvider("glModelTurretProvider", GLModelTurretProvider.class);
     TanksContext.factory.addProvider("glModelLandProvider", GLModelLandProvider.class);
     TanksContext.factory.addProvider("glModelWorldObjectProvider", GLModelWorldObjectProvider.class);
     TanksContext.factory.addProvider("glRenderableSkyBoxProvider", GLRenderableSkyBoxProvider.class);

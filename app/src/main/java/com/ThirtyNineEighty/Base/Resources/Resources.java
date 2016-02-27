@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Base.Resources;
 
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Entities.FrameBuffer;
@@ -61,7 +62,6 @@ public class Resources
 
   public void preload()
   {
-    geometryCache.get(new RandomParticlesSource());
   }
 
   public void reloadCache()

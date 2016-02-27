@@ -175,6 +175,15 @@ public abstract class Bindable
       provider.set();
   }
 
+  protected void enqueueViewEvent(String event)
+  {
+    for (IView view : views.values())
+    {
+      IDataProvider provider = view.getProvider();
+      provider.enqueue(event);
+    }
+  }
+
   protected ArrayList<ISubprogram> getSubprogramsCopy()
   {
     synchronized (subprograms)

@@ -9,6 +9,8 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
 {
   private static final long serialVersionUID = 1L;
 
+  public static final String EventHit = "GameObject_Hit";
+
   protected float health;
   protected boolean isDead;
 
@@ -39,5 +41,7 @@ public abstract class GameObject<TDescription extends GameDescription, TProperti
     health -= value;
     if (health < 0)
       isDead = true;
+
+    enqueueViewEvent(EventHit);
   }
 }

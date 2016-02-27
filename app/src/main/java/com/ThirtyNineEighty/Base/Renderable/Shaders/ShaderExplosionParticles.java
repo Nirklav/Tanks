@@ -12,6 +12,7 @@ public class ShaderExplosionParticles
   public int uniformLifeTimeHandle;
   public int uniformMatrixHandle;
   public int uniformTextureHandle;
+  public int uniformPointSize;
 
   @Override
   public void compile()
@@ -29,5 +30,6 @@ public class ShaderExplosionParticles
     uniformLifeTimeHandle          = GLES20.glGetUniformLocation(programHandle, "u_lifeTime");
     uniformMatrixHandle            = GLES20.glGetUniformLocation(programHandle, "u_matrix");
     uniformTextureHandle           = GLES20.glGetUniformLocation(programHandle, "u_texture");
+    uniformPointSize               = GLES20.glGetUniformLocation(programHandle, "u_pointSize");
   }
 }
