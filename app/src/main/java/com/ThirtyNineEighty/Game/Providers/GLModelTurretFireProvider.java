@@ -10,8 +10,6 @@ import com.ThirtyNineEighty.Game.Objects.Tank;
 public class GLModelTurretFireProvider
   extends GLRenderableWorldObjectProvider<GLExplosionParticles.Data, Tank>
 {
-  private static final float radiusCoeff = 0.7f;
-
   private boolean setted;
   private Vector3 position;
   private Vector3 angles;
@@ -39,7 +37,7 @@ public class GLModelTurretFireProvider
       super.set(data, description);
 
       float angle = object.getRelativeTurretAngle();
-      float radius = object.collidable.getRadius() * radiusCoeff;
+      float radius = object.collidable.getRadius();
 
       data.angles.addToZ(angle);
       data.position.move(radius, data.angles);
@@ -51,7 +49,5 @@ public class GLModelTurretFireProvider
     }
 
     data.localAngles.setY(90);
-    data.minPointSize = 10;
-    data.maxPointSize = 20;
   }
 }

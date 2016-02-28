@@ -14,7 +14,7 @@ import com.ThirtyNineEighty.Base.Resources.Sources.*;
 import com.ThirtyNineEighty.Base.GameContext;
 
 public class GLExplosionParticles
-  extends GLRenderable<GLExplosionParticles.Data>
+  extends GLRenderable<GLRenderable.Data>
 {
   private static final long serialVersionUID = 1L;
 
@@ -24,10 +24,14 @@ public class GLExplosionParticles
   private transient Geometry geometryData;
 
   private int count;
-  private float currentTime;
-  private float lifeTime;
+  private float time;
+  private float life;
   private float angleVariance;
-  private Vector3 color;
+  private float explosionSize;
+  private float startPointSize;
+  private float endPointSize;
+  private Vector3 startColor;
+  private Vector3 endColor;
   private boolean unbinded;
 
   public GLExplosionParticles(IDataProvider<Data> provider)
@@ -35,10 +39,12 @@ public class GLExplosionParticles
     super(provider);
 
     this.count = 1000;
-    this.currentTime = 0;
-    this.lifeTime = 1000;
+    this.time = 0;
+    this.life = 1000;
     this.angleVariance = 120;
-    this.color = new Vector3(1.4f, 0.6f, 0.0f);
+    this.explosionSize = 0.5f;
+    this.startColor = new Vector3(1.4f, 0.6f, 0.0f, 1.0f);
+    this.endColor = new Vector3(0.3f, 0.3f, 0.3f, 0.1f);
   }
 
   public GLExplosionParticles setCount(int value)
@@ -47,9 +53,9 @@ public class GLExplosionParticles
     return this;
   }
 
-  public GLExplosionParticles setLifeTime(float value)
+  public GLExplosionParticles setLife(float value)
   {
-    lifeTime = value;
+    life = value;
     return this;
   }
 
@@ -59,16 +65,30 @@ public class GLExplosionParticles
     return this;
   }
 
-  public GLExplosionParticles setColor(Vector3 value)
+  public GLExplosionParticles setColor(Vector3 start, Vector3 end)
   {
-    color = new Vector3(value);
+    startColor.setFrom(start);
+    endColor.setFrom(end);
+    return this;
+  }
+
+  public GLExplosionParticles setExplosionSize(float value)
+  {
+    explosionSize = value;
+    return this;
+  }
+
+  public GLExplosionParticles setPointSize(float start, float end)
+  {
+    startPointSize = start;
+    endPointSize = end;
     return this;
   }
 
   @Override
   public void initialize()
   {
-    this.geometryData = GameContext.resources.getGeometry(new RandomParticlesSource(angleVariance, color));
+    this.geometryData = GameContext.resources.getGeometry(new RandomParticlesSource(angleVariance));
     this.textureData = GameContext.resources.getTexture(new FileTextureSource(Description.textureName, false));
 
     super.initialize();
@@ -94,16 +114,6 @@ public class GLExplosionParticles
   {
     ShaderExplosionParticles shader = (ShaderExplosionParticles) Shader.getCurrent();
 
-    if (isEnabled())
-    {
-      currentTime += 1000 * DeltaTime.get();
-      if (currentTime > lifeTime && !unbinded)
-      {
-        unbinded = true;
-        unbind();
-      }
-    }
-
     // build result matrix
     Matrix.multiplyMM(modelProjectionViewMatrix, 0, context.getProjectionViewMatrix(), 0, modelMatrix, 0);
 
@@ -112,23 +122,22 @@ public class GLExplosionParticles
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureData.getHandle());
 
     // send data to shader
-    GLES20.glUniform1i(shader.uniformTextureHandle, 0);
+    GLES20.glUniform2f(shader.uniformLifeTimeHandle, life, time);
     GLES20.glUniformMatrix4fv(shader.uniformMatrixHandle, 1, false, modelProjectionViewMatrix, 0);
-    GLES20.glUniform2f(shader.uniformLifeTimeHandle, lifeTime, currentTime);
-    GLES20.glUniform2f(shader.uniformPointSize, data.minPointSize, data.maxPointSize);
+    GLES20.glUniform1i(shader.uniformTextureHandle, 0);
+    GLES20.glUniform2f(shader.uniformPointSize, startPointSize, endPointSize);
+    GLES20.glUniform1f(shader.uniformExplosionSize, explosionSize);
+    GLES20.glUniform4fv(shader.uniformStartColor, 1, startColor.getRaw(), 0);
+    GLES20.glUniform4fv(shader.uniformEndColor, 1, endColor.getRaw(), 0);
 
     // bind data buffer
     GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, geometryData.getHandle());
 
     // set offsets to arrays for buffer
-    GLES20.glVertexAttribPointer(shader.attributePositionStartHandle, 3, GLES20.GL_FLOAT, false, 40, 0);
-    GLES20.glVertexAttribPointer(shader.attributeDirectionVectorHandle, 3, GLES20.GL_FLOAT, false, 40, 12);
-    GLES20.glVertexAttribPointer(shader.attributeColorHandle, 4, GLES20.GL_FLOAT, false, 40, 24);
+    GLES20.glVertexAttribPointer(shader.attributeDirectionVectorHandle, 3, GLES20.GL_FLOAT, false, 12, 0);
 
     // enable attribute arrays
-    GLES20.glEnableVertexAttribArray(shader.attributePositionStartHandle);
     GLES20.glEnableVertexAttribArray(shader.attributeDirectionVectorHandle);
-    GLES20.glEnableVertexAttribArray(shader.attributeColorHandle);
 
     // validating if debug
     shader.validate();
@@ -138,15 +147,17 @@ public class GLExplosionParticles
     GLES20.glDrawArrays(GLES20.GL_POINTS, 0, count);
 
     // disable attribute arrays
-    GLES20.glDisableVertexAttribArray(shader.attributePositionStartHandle);
     GLES20.glDisableVertexAttribArray(shader.attributeDirectionVectorHandle);
-    GLES20.glDisableVertexAttribArray(shader.attributeColorHandle);
-  }
 
-  public static class Data
-    extends GLRenderable.Data
-  {
-    public float minPointSize = 20;
-    public float maxPointSize = 50;
+    // update time
+    if (isEnabled())
+    {
+      time += 1000 * DeltaTime.get();
+      if (time > life && !unbinded)
+      {
+        unbinded = true;
+        unbind();
+      }
+    }
   }
 }

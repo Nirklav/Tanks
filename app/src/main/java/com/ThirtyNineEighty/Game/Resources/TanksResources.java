@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Resources;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Resources.ResourceCache;
 import com.ThirtyNineEighty.Base.Resources.Resources;
 import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
@@ -28,7 +27,6 @@ public class TanksResources
   {
     super.preload();
 
-    getGeometry(new RandomParticlesSource(120, new Vector3(1.4f, 0.6f, 0.0f)));
-    getGeometry(new RandomParticlesSource(30, new Vector3(0.4f, 0.4f, 0.4f)));
+    getGeometry(new RandomParticlesSource(120));
   }
 }

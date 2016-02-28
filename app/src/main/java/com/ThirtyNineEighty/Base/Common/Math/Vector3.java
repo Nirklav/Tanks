@@ -34,6 +34,12 @@ public class Vector3
     setFrom(x, y, z);
   }
 
+  public Vector3(float x, float y, float z, float f)
+  {
+    this(x, y, z);
+    value[3] = f;
+  }
+
   public Vector3(float[] raw)
   {
     value = raw;

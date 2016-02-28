@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Providers;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Base.Providers.GLModelWorldObjectProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLExplosionParticles;
@@ -44,10 +43,11 @@ public class GLModelTurretProvider
   private void fireEffect()
   {
     GLExplosionParticles particles = new GLExplosionParticles(new GLModelTurretFireProvider(object))
-      .setLifeTime(300)
-      .setCount(300)
-      .setAngleVariance(30)
-      .setColor(new Vector3(0.4f, 0.4f, 0.4f));
+      .setLife(400)
+      .setCount(1000)
+      .setAngleVariance(120)
+      .setPointSize(20, 30)
+      .setExplosionSize(0.33f);
 
     object.bind(particles);
   }

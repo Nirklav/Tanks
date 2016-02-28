@@ -52,7 +52,8 @@ public class GLModelTankProvider
 
     IDataProvider<GLExplosionParticles.Data> provider = new GLRenderableWorldObjectProvider<>(object, GLExplosionParticles.Data.class, null);
     GLExplosionParticles particles = new GLExplosionParticles(provider)
-      .setLifeTime(1000)
+      .setLife(1000)
+      .setPointSize(30, 50)
       .setCount(2000);
 
     object.bind(particles);
