@@ -46,8 +46,8 @@ public class GLModelTurretProvider
       .setLife(400)
       .setCount(1000)
       .setAngleVariance(120)
-      .setPointSize(20, 30)
-      .setExplosionSize(0.33f);
+      .setPointSize(20, 35)
+      .setExplosionSize(6);
 
     object.bind(particles);
   }

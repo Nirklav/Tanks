@@ -1,8 +1,6 @@
 package com.ThirtyNineEighty.Game.Providers;
 
 import com.ThirtyNineEighty.Base.Common.Math.*;
-import com.ThirtyNineEighty.Base.Objects.Descriptions.VisualDescription;
-import com.ThirtyNineEighty.Base.Providers.DataProvider;
 import com.ThirtyNineEighty.Base.Providers.RenderableDataProvider;
 import com.ThirtyNineEighty.Game.Objects.Land;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
@@ -16,12 +14,10 @@ public class GLModelLandProvider
   private static final long serialVersionUID = 1L;
 
   private final Land land;
-  private final VisualDescription description;
 
-  public GLModelLandProvider(Land land, VisualDescription description)
+  public GLModelLandProvider(Land land)
   {
     super(GLModel.Data.class);
-    this.description = description;
     this.land = land;
   }
 
@@ -30,12 +26,12 @@ public class GLModelLandProvider
   {
     super.set(data);
 
-    data.position.setFrom(getPosition(description.id));
+    data.position.setFrom(getPosition());
     data.angles.setFrom(land.getAngles());
     data.scale = 1;
   }
 
-  private Vector3 getPosition(int id)
+  private Vector3 getPosition()
   {
     IWorld world = TanksContext.content.getWorld();
     WorldObject<?, ?> player = world.getPlayer();
@@ -44,21 +40,13 @@ public class GLModelLandProvider
       ? player.getPosition()
       : land.getPosition();
 
-    Vector2 shift = Spiral.get(id);
-    shift.multiplyToX(Land.size);
-    shift.multiplyToY(Land.size);
-    shift.addToX(Land.size * Math.signum(position.getX()) / 2);
-    shift.addToY(Land.size * Math.signum(position.getY()) / 2);
-
     int landNumX = (int) (position.getX() / Land.size);
     int landNumY = (int) (position.getY() / Land.size);
 
     Vector3 renderPos = Vector.getInstance(3);
-    renderPos.setX(landNumX * Land.size + shift.getX());
-    renderPos.setY(landNumY * Land.size + shift.getY());
+    renderPos.setX(landNumX * Land.size + Land.size * Math.signum(position.getX()) / 2);
+    renderPos.setY(landNumY * Land.size + Land.size * Math.signum(position.getY()) / 2);
     renderPos.setZ(-0.1f);
-
-    Vector.release(shift);
 
     return renderPos;
   }

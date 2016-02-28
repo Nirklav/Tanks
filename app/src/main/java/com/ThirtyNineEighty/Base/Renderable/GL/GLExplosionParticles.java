@@ -42,13 +42,16 @@ public class GLExplosionParticles
     this.time = 0;
     this.life = 1000;
     this.angleVariance = 120;
-    this.explosionSize = 0.5f;
+    this.explosionSize = 8;
     this.startColor = new Vector3(1.4f, 0.6f, 0.0f, 1.0f);
     this.endColor = new Vector3(0.3f, 0.3f, 0.3f, 0.1f);
   }
 
   public GLExplosionParticles setCount(int value)
   {
+    if (value > RandomParticlesSource.size)
+      throw new IllegalArgumentException("value must be bigger than 0 and less than RandomParticlesSource.size");
+
     count = value;
     return this;
   }

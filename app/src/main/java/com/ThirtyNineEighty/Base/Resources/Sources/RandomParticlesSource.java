@@ -10,8 +10,8 @@ import java.util.Random;
 public class RandomParticlesSource
   extends GeometrySource
 {
-  private static final int size = 10000;
-  private static final int partSize = 12 + 12 + 16;
+  public static final int size = 10000;
+  private static final int partSize = 12;
 
   private Random random;
   private float[] matrix;
@@ -41,7 +41,7 @@ public class RandomParticlesSource
 
   private Vector3 setVector(Vector3 cached)
   {
-    cached.setFrom(0, 0, random.nextFloat() * 10 + 10);
+    cached.setFrom(0, 0, random.nextFloat() * 0.5f + 0.5f);
 
     Matrix.setRotateEulerM(matrix, 0,
       (random.nextFloat() - 0.5f) * angleVariance,
