@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Resources;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Entities.FrameBuffer;
@@ -9,7 +8,6 @@ import com.ThirtyNineEighty.Base.Resources.Entities.IResource;
 import com.ThirtyNineEighty.Base.Resources.Entities.Image;
 import com.ThirtyNineEighty.Base.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Base.Resources.Entities.Texture;
-import com.ThirtyNineEighty.Base.Resources.Sources.RandomParticlesSource;
 import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 
 import java.util.ArrayList;

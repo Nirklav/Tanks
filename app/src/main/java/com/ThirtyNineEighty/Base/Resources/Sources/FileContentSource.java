@@ -12,6 +12,7 @@ public class FileContentSource
   public static final String decors = "decors";
   public static final String bots = "bots";
   public static final String maps = "maps";
+  public static final String bonuses = "bonuses";
 
   public FileContentSource(String name)
   {

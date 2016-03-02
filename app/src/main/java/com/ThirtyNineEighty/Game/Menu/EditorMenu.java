@@ -35,6 +35,7 @@ public class EditorMenu
     categories = new ArrayList<>();
     categories.add(FileContentSource.decors);
     categories.add(FileContentSource.bots);
+    categories.add(FileContentSource.bonuses);
   }
 
   private Joystick joystick;

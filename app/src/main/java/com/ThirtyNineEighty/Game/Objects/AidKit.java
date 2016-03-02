@@ -17,10 +17,10 @@ public class AidKit
   @Override
   public void collide(WorldObject<?, ?> object)
   {
-    if (!(object instanceof GameObject))
-      return;
-
-    GameObject<?, ?> gameObject = (GameObject<?, ?>) object;
-    gameObject.addHealth(description.getHealth());
+    if (object instanceof GameObject)
+    {
+      GameObject<?, ?> gameObject = (GameObject<?, ?>) object;
+      gameObject.addHealth(description.getHealth());
+    }
   }
 }
