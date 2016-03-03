@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Menus.Controls;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.GameContext;
 
@@ -16,8 +15,8 @@ public class Gesture
 
   public Gesture()
   {
-    startPoint = Vector.getInstance(2);
-    endPoint = Vector.getInstance(2);
+    startPoint = Vector2.getInstance();
+    endPoint = Vector2.getInstance();
   }
 
   public Vector2 get()

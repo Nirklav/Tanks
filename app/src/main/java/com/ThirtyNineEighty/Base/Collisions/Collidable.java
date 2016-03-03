@@ -137,14 +137,14 @@ public class Collidable
   {
     for (int i = 0; i < count; i++)
     {
-      Vector3 vec = Vector.getInstance(3);
+      Vector3 vec = Vector3.getInstance();
       list.add(vec);
     }
   }
 
   private static void clear(ArrayList<Vector3> list)
   {
-    Vector.release(list);
+    Vector3.release(list);
     list.clear();
   }
 }

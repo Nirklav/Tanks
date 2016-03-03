@@ -46,16 +46,15 @@ public class GLLabelProvider
 
     this.charWidth = charWidth;
     this.charHeight = charHeight;
-    this.value = value;
     this.mode = mode;
-    this.colorCoefficients = Vector.getInstance(3, 1, 1, 0);
+    this.colorCoefficients = Vector3.getInstance(1, 1, 0);
     this.modelMatrix = new float[16];
     this.alignType = AlignType.Center;
-    this.position = Vector.getInstance(3);
-    this.originalPosition = Vector3.getInstance(3);
+    this.position = Vector3.getInstance();
+    this.originalPosition = Vector3.getInstance();
     this.needRebuildMatrix = true;
 
-    setPosition();
+    setValue(value);
   }
 
   @Override
@@ -125,15 +124,15 @@ public class GLLabelProvider
     needRebuildMatrix = true;
   }
 
-  public void setValue(String value)
+  public void setValue(String str)
   {
-    if (value == null)
-      value = "";
+    if (str == null)
+      str = "";
 
-    if (value.equals(this.value))
+    if (str.equals(value))
       return;
 
-    this.value = value;
+    value = str;
     setPosition();
   }
 
@@ -162,7 +161,7 @@ public class GLLabelProvider
 
     case TopLeft:
     default:
-      shift = Vector.getInstance(3);
+      shift = Vector3.getInstance();
       break;
 
     case TopCenter:
@@ -193,7 +192,7 @@ public class GLLabelProvider
 
     position.setFrom(originalPosition);
     position.subtract(shift);
-    Vector.release(shift);
+    Vector3.release(shift);
   }
 
   private Vector3 getCenterShift()
@@ -231,7 +230,7 @@ public class GLLabelProvider
     if (widthLength < currentLineLength)
       widthLength = currentLineLength;
 
-    Vector3 shifts = Vector.getInstance(3);
+    Vector3 shifts = Vector3.getInstance();
     shifts.addToX((widthLength * charWidth) / 2);
     shifts.addToY((heightLength * charHeight) / 2);
     return shifts;

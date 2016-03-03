@@ -189,7 +189,7 @@ public class GameActivity
     glView.onPause();
     pause = true;
 
-    // get world info
+    // get world
     IWorld world = GameContext.content.getWorld();
 
     // stop the world

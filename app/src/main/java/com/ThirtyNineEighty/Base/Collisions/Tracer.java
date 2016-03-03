@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Base.Collisions;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Common.Math.Plane;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.GameContext;
@@ -80,7 +79,7 @@ public class Tracer
       vector.subtract(projection);
       float secondLength = vector.getLength();
 
-      Vector.release(projection);
+      Vector3.release(projection);
 
       if (secondLength + firstLength > fullLength + extension)
         continue;
@@ -98,7 +97,7 @@ public class Tracer
         return true;
     }
 
-    Vector.release(vector);
+    Vector3.release(vector);
     return false;
   }
 

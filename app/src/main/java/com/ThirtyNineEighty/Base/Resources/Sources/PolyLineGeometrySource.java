@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
 
@@ -75,11 +74,11 @@ public class PolyLineGeometrySource
     data[num * 18 + 16] = leftBottom.getY();
     data[num * 18 + 17] = leftBottom.getZ();
 
-    Vector.release(vector);
-    Vector.release(leftTop);
-    Vector.release(rightTop);
-    Vector.release(leftBottom);
-    Vector.release(rightBottom);
+    Vector3.release(vector);
+    Vector3.release(leftTop);
+    Vector3.release(rightTop);
+    Vector3.release(leftBottom);
+    Vector3.release(rightBottom);
   }
 
   private static int getHash(ArrayList<Vector3> polyLine)

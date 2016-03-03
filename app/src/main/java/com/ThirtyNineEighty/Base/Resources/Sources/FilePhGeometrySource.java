@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Resources.Entities.PhGeometry;
 import com.ThirtyNineEighty.Base.GameContext;
@@ -48,16 +47,16 @@ public class FilePhGeometrySource
       ArrayList<Vector3> vertices = new ArrayList<>(numOfQuads * 4);
       ArrayList<Vector3> normals = new ArrayList<>();
 
-      Vector3 position = Vector.getInstance(3, dataBuffer);
-      Vector3 angles = Vector.getInstance(3, dataBuffer);
+      Vector3 position = Vector3.getInstance(dataBuffer);
+      Vector3 angles = Vector3.getInstance(dataBuffer);
 
       for (int i = 0; i < numOfQuads * 4; i++)
       {
-        Vector3 point = Vector.getInstance(3, dataBuffer);
+        Vector3 point = Vector3.getInstance(dataBuffer);
         if (!vertices.contains(point))
           vertices.add(point);
 
-        Vector3 normal = Vector.getInstance(3, dataBuffer);
+        Vector3 normal = Vector3.getInstance(dataBuffer);
         normal.normalize();
 
         boolean needAdd = true;

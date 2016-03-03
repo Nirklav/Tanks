@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Base.Objects;
 import com.ThirtyNineEighty.Base.Bindable;
 import com.ThirtyNineEighty.Base.Collisions.Collidable;
 import com.ThirtyNineEighty.Base.Common.Math.Angle;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.GameContext;
 import com.ThirtyNineEighty.Base.Map.IMap;
@@ -136,7 +135,7 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
 
   public void rotateTo(Vector3 targetAngles)
   {
-    Vector3 corrected = Vector.getInstance(3, targetAngles);
+    Vector3 corrected = Vector3.getInstance(targetAngles);
     corrected.correctAngles();
 
     float speed = description.getRotationSpeed() * DeltaTime.get();
@@ -152,7 +151,7 @@ public abstract class WorldObject<TDescription extends Description, TProperties 
       angles.add(i, addedValue);
     }
 
-    Vector.release(corrected);
+    Vector3.release(corrected);
     angles.correctAngles();
     GameContext.collisions.addToResolving(this);
   }

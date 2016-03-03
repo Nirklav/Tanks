@@ -225,7 +225,7 @@ public class EditorMenu
   private void processCamera(EditorWorld world)
   {
     Vector2 joyVector = joystick.getVector();
-    Vector3 delta = Vector.getInstance(3);
+    Vector3 delta = Vector3.getInstance();
 
     float speed = smallSpeed.getState()
       ? smallCameraSpeed
@@ -237,7 +237,7 @@ public class EditorMenu
 
     world.addToCameraPosition(delta);
 
-    Vector.release(delta);
+    Vector3.release(delta);
   }
 
   private void processRotation(EditorWorld world)
@@ -251,16 +251,16 @@ public class EditorMenu
 
     if (rightRotate.getState())
     {
-      Vector3 delta = Vector.getInstance(3, 0, 0, -speed * DeltaTime.get());
+      Vector3 delta = Vector3.getInstance(0, 0, -speed * DeltaTime.get());
       world.addToObjectAngles(delta);
-      Vector.release(delta);
+      Vector3.release(delta);
     }
 
     if (leftRotate.getState())
     {
-      Vector3 delta = Vector.getInstance(3, 0, 0, speed * DeltaTime.get());
+      Vector3 delta = Vector3.getInstance(0, 0, speed * DeltaTime.get());
       world.addToObjectAngles(delta);
-      Vector.release(delta);
+      Vector3.release(delta);
     }
   }
 

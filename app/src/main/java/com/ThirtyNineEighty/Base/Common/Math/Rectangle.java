@@ -7,8 +7,8 @@ public class Rectangle
 
   public Rectangle(Vector2 point1, Vector2 point2, float minLength)
   {
-    leftBottom = Vector.getInstance(2);
-    topRight = Vector.getInstance(2);
+    leftBottom = Vector2.getInstance();
+    topRight = Vector2.getInstance();
 
     Vector2 diff = point1.getSubtract(point2);
 

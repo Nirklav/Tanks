@@ -3,8 +3,10 @@ package com.ThirtyNineEighty.Base.Common.Math;
 import android.opengl.Matrix;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /*
  * Operation with prefix get - immutable;
@@ -17,6 +19,48 @@ public class Vector2
 
   public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
+
+  private static final VectorsPool<Vector2> pool = new VectorsPool<>(poolLimit);
+
+  public static Vector2 getInstance(Vector other)
+  {
+    Vector2 vector = getInstance();
+    vector.setFrom(other);
+    return vector;
+  }
+
+  public static Vector2 getInstance(float... values)
+  {
+    Vector2 vector = getInstance();
+    System.arraycopy(values, 0, vector.value, 0, values.length);
+    return vector;
+  }
+
+  public static Vector2 getInstance(ByteBuffer dataBuffer)
+  {
+    Vector2 vector = getInstance();
+    for (int i = 0; i < 2; i++)
+      vector.value[i] = dataBuffer.getFloat();
+    return vector;
+  }
+
+  public static Vector2 getInstance()
+  {
+    Vector2 vector = pool.acquire();
+    if (vector == null)
+      vector = new Vector2();
+    return vector;
+  }
+
+  public static void release(Vector2 vector)
+  {
+    pool.release(vector);
+  }
+
+  public static void release(Collection<Vector2> vectors)
+  {
+    pool.release(vectors);
+  }
 
   public Vector2()
   {
@@ -186,14 +230,14 @@ public class Vector2
 
     add(start);
 
-    Vector.release(lineVector);
+    Vector2.release(lineVector);
   }
 
   public Vector2 getNormalize()
   {
     throwIfReleased();
 
-    Vector2 result = getInstance(2, this);
+    Vector2 result = getInstance(this);
     result.normalize();
     return result;
   }
@@ -210,7 +254,7 @@ public class Vector2
   {
     throwIfReleased();
 
-    Vector2 result = getInstance(2, this);
+    Vector2 result = getInstance(this);
     result.subtract(other);
     return result;
   }
@@ -219,7 +263,7 @@ public class Vector2
   {
     throwIfReleased();
 
-    Vector2 result = getInstance(2, this);
+    Vector2 result = getInstance(this);
     result.add(other);
     return result;
   }
@@ -228,7 +272,7 @@ public class Vector2
   {
     throwIfReleased();
 
-    Vector2 result = getInstance(2, this);
+    Vector2 result = getInstance(this);
     result.multiply(coefficient);
     return result;
   }
@@ -237,7 +281,7 @@ public class Vector2
   {
     throwIfReleased();
 
-    Vector2 result = getInstance(2, this);
+    Vector2 result = getInstance(this);
     result.move(length, angle);
     return result;
   }
@@ -251,7 +295,7 @@ public class Vector2
       float projection = getScalar(current);
 
       if (result == null)
-        result = Vector.getInstance(2, projection, projection);
+        result = getInstance(projection, projection);
 
       // x - max
       if (projection > result.getX())
@@ -265,12 +309,17 @@ public class Vector2
     return result;
   }
 
-  public Vector2 getCircleProjection(Vector2 center, float radius)
+  @Override
+  public int getSize()
   {
-    float projection = getScalar(center);
-    float min = projection - radius;
-    float max = projection + radius;
-    return Vector.getInstance(2, max, min);
+    return 2;
+  }
+
+  @Override
+  public void clear()
+  {
+    value[0] = 0;
+    value[1] = 0;
   }
 
   @Override

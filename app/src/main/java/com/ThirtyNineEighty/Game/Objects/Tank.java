@@ -42,7 +42,7 @@ public class Tank
     bullet.setPosition(position);
     bullet.move(bullet.collidable.getRadius() + collidable.getRadius());
 
-    Vector.release(bulletAngles);
+    Vector3.release(bulletAngles);
 
     enqueueViewEvent(EventFire);
   }

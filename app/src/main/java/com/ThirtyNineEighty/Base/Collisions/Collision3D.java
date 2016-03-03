@@ -44,7 +44,7 @@ public class Collision3D
 
       if (mtv == null)
       {
-        mtv = Vector.getInstance(3, normal);
+        mtv = Vector3.getInstance(normal);
         minMTVLength = mtvLength;
       }
       else
@@ -57,7 +57,7 @@ public class Collision3D
       }
     }
 
-    Vector.release(normals);
+    Vector3.release(normals);
 
     return new CheckResult(mtv, minMTVLength);
   }
@@ -76,7 +76,7 @@ public class Collision3D
       setPlaneNormal(normal, firstNormals, secondNormals, i);
 
       if (!result.contains(normal))
-        result.add((Vector3)Vector.getInstance(3, normal));
+        result.add(Vector3.getInstance(normal));
     }
     return result;
   }
@@ -131,7 +131,7 @@ public class Collision3D
 
   public Vector3 getMTV()
   {
-    return Vector3.getInstance(3, mtv);
+    return Vector3.getInstance(mtv);
   }
 
   public float getMTVLength()

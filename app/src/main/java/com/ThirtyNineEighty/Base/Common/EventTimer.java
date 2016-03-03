@@ -110,6 +110,11 @@ public class EventTimer
 
   public void stop()
   {
+    stop(true);
+  }
+
+  public void stop(boolean clear)
+  {
     if (!isStarted())
       throw new IllegalStateException("timer not started");
 
@@ -118,7 +123,9 @@ public class EventTimer
       stopping = true;
       synchronized (syncObject)
       {
-        events.clear(); //TODO: need clear?
+        if (clear)
+          events.clear();
+
         syncObject.notifyAll();
       }
 

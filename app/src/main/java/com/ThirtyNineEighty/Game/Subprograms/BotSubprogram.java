@@ -10,7 +10,6 @@ import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.TanksContext;
 
@@ -50,8 +49,8 @@ public class BotSubprogram
     IWorld world = TanksContext.content.getWorld();
     WorldObject<?, ?> player = world.getPlayer();
 
-    Vector2 playerPosition = Vector.getInstance(2, player.getPosition());
-    Vector2 botPosition = Vector.getInstance(2, bot.getPosition());
+    Vector2 playerPosition = Vector2.getInstance(player.getPosition());
+    Vector2 botPosition = Vector2.getInstance(bot.getPosition());
     Vector2 targetVector = playerPosition.getSubtract(botPosition);
 
     float distance = targetVector.getLength();
@@ -63,9 +62,9 @@ public class BotSubprogram
         tryMove(player);
     }
 
-    Vector.release(playerPosition);
-    Vector.release(botPosition);
-    Vector.release(targetVector);
+    Vector2.release(playerPosition);
+    Vector2.release(botPosition);
+    Vector2.release(targetVector);
   }
 
   private void tryFire(WorldObject<?, ?> target, Vector2 targetVector)

@@ -34,7 +34,9 @@ public abstract class BaseMenu
     synchronized (objects)
     {
       controlsCopy.clear();
-      controlsCopy.addAll(objects);
+
+      for (IControl control : objects)
+        controlsCopy.add(control);
     }
 
     switch (action)

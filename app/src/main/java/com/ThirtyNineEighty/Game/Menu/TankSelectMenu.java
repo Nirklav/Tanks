@@ -12,7 +12,6 @@ import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
@@ -82,7 +81,7 @@ public class TankSelectMenu
         world.addAngle(vec.getX() / 10);
         world.addLength(vec.getY() / 50);
 
-        Vector.release(vec);
+        Vector2.release(vec);
       }
     });
     add(gesture);

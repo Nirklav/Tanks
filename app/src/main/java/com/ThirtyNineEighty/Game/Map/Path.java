@@ -53,11 +53,11 @@ public class Path
     {
       Vector3 vec = end.getSubtract(start);
       distance = vec.getLength();
-      Vector.release(vec);
+      Vector3.release(vec);
     }
 
-    Vector.release(start);
-    Vector.release(end);
+    Vector3.release(start);
+    Vector3.release(end);
     return distance;
   }
 
@@ -67,7 +67,7 @@ public class Path
     int size = path.size();
     if (size < 1)
       return null;
-    return Vector.getInstance(3, path.get(0));
+    return Vector3.getInstance(path.get(0));
   }
 
   @Override
@@ -76,7 +76,7 @@ public class Path
     int size = path.size();
     if (size < 1)
       return null;
-    return Vector.getInstance(3, path.get(size - 1));
+    return Vector3.getInstance(path.get(size - 1));
   }
 
   public boolean moveObject()
@@ -91,11 +91,11 @@ public class Path
       return false;
 
     float movingAngle = Vector2.xAxis.getAngle(movingVector);
-    Vector3 targetAngles = Vector.getInstance(3, 0, 0, movingAngle);
+    Vector3 targetAngles = Vector3.getInstance(0, 0, movingAngle);
     Vector3 objectAngles = object.getAngles();
 
     object.rotateTo(targetAngles);
-    Vector.release(targetAngles);
+    Vector3.release(targetAngles);
 
     if (Math.abs(objectAngles.getZ() - movingAngle) >= 15)
       return true;
@@ -122,7 +122,7 @@ public class Path
   {
     if (pivotPoint == null)
     {
-      pivotPoint = Vector.getInstance(2, object.getPosition());
+      pivotPoint = Vector2.getInstance( object.getPosition());
       pivotPointTimeLeft = pivotPointLifeTime;
       return;
     }
@@ -130,7 +130,7 @@ public class Path
     float vectorLength = getLength(object, pivotPoint);
     if (vectorLength > influenceOfPivotPoint)
     {
-      pivotPoint = Vector.getInstance(2, object.getPosition());
+      pivotPoint = Vector2.getInstance(object.getPosition());
       pivotPointTimeLeft = pivotPointLifeTime;
       return;
     }
@@ -140,27 +140,27 @@ public class Path
 
   private static float getLength(WorldObject<?, ?> object, Vector2 point)
   {
-    Vector2 position = Vector.getInstance(2, object.getPosition());
+    Vector2 position = Vector2.getInstance(object.getPosition());
     Vector2 vector = position.getSubtract(point);
     float vectorLength = vector.getLength();
 
-    Vector.release(vector);
-    Vector.release(position);
+    Vector2.release(vector);
+    Vector2.release(position);
 
     return vectorLength;
   }
 
   private Vector2 getMovingVector()
   {
-    Vector2 objectPosition = Vector.getInstance(2, object.getPosition());
-    Vector2 nextStepVector = Vector.getInstance(2);
+    Vector2 objectPosition = Vector2.getInstance(object.getPosition());
+    Vector2 nextStepVector = Vector2.getInstance();
 
     while (true)
     {
       // We arrived
       if (currentPathStep >= path.size())
       {
-        Vector.release(objectPosition);
+        Vector2.release(objectPosition);
         return null;
       }
 
@@ -170,7 +170,7 @@ public class Path
 
       if (nextStepVector.getLength() > stepCompletion)
       {
-        Vector.release(objectPosition);
+        Vector2.release(objectPosition);
         return nextStepVector;
       }
 
@@ -181,6 +181,6 @@ public class Path
   @Override
   public void release()
   {
-    Vector.release(path);
+    Vector2.release(path);
   }
 }

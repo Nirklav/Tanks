@@ -3,7 +3,6 @@ package com.ThirtyNineEighty.Base.Renderable.GL;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.Renderable;
@@ -157,7 +156,7 @@ public class GLLabel
     public Data()
     {
       modelMatrix = new float[16];
-      colorCoefficients = Vector.getInstance(3);
+      colorCoefficients = Vector3.getInstance();
     }
   }
 }

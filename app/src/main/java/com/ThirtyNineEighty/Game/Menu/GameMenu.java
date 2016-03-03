@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Menu;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
@@ -151,9 +150,9 @@ public class GameMenu
 
       if (deltaAngle > 3)
       {
-        Vector3 targetAngles = Vector.getInstance(3, 0, 0, joyAngle);
+        Vector3 targetAngles = Vector3.getInstance(0, 0, joyAngle);
         player.rotateTo(targetAngles);
-        Vector.release(targetAngles);
+        Vector3.release(targetAngles);
       }
     }
     // back
@@ -164,9 +163,9 @@ public class GameMenu
 
       if (deltaAngle < 177)
       {
-        Vector3 targetAngles = Vector.getInstance(3, 0, 0, joyAngle - 180);
+        Vector3 targetAngles = Vector3.getInstance(0, 0, joyAngle - 180);
         player.rotateTo(targetAngles);
-        Vector.release(targetAngles);
+        Vector3.release(targetAngles);
       }
     }
 

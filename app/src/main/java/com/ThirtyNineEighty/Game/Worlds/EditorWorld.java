@@ -23,7 +23,7 @@ public class EditorWorld
 
   public EditorWorld()
   {
-    cameraPosition = Vector.getInstance(3);
+    cameraPosition = Vector3.getInstance();
 
     add(land = new Land(Land.sand));
 

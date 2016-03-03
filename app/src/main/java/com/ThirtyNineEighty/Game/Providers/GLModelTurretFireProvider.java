@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Providers;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.VisualDescription;
 import com.ThirtyNineEighty.Base.Providers.GLRenderableWorldObjectProvider;
@@ -18,8 +17,8 @@ public class GLModelTurretFireProvider
   {
     super(object, GLExplosionParticles.Data.class, null);
 
-    position = Vector.getInstance(3);
-    angles = Vector3.getInstance(3);
+    position = Vector3.getInstance();
+    angles = Vector3.getInstance();
   }
 
   @Override

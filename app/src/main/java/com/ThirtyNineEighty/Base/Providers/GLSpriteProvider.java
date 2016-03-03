@@ -28,8 +28,8 @@ public class GLSpriteProvider
 
     this.imageName = imageName;
     this.modelMatrix = new float[16];
-    this.position = Vector.getInstance(3);
-    this.colorCoefficients = Vector.getInstance(3, 1, 1, 1);
+    this.position = Vector3.getInstance();
+    this.colorCoefficients = Vector3.getInstance(1, 1, 1);
     this.width = 1;
     this.height = 1;
   }

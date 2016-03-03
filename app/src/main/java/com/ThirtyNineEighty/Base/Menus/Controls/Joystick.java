@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Menus.Controls;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Providers.GLSpriteProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLSprite;
@@ -23,13 +22,13 @@ public class Joystick
     this.radius = radius;
     this.stickRadius = radius / 4;
 
-    position = Vector.getInstance(2);
+    position = Vector2.getInstance();
     position.setFrom(x, y);
 
-    stickPosition = Vector.getInstance(2);
+    stickPosition = Vector2.getInstance();
     stickPosition.setFrom(x, y);
 
-    vector = Vector.getInstance(2);
+    vector = Vector2.getInstance();
 
     GLSpriteProvider backgroundSprite = new GLSpriteProvider("joyBackground");
     backgroundSprite.setSize(radius * 2, radius * 2);

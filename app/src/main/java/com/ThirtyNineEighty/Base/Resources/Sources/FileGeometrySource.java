@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Base.Resources.Sources;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
 import com.ThirtyNineEighty.Base.GameContext;
@@ -60,8 +59,8 @@ public class FileGeometrySource
       headerBuffer.position(0);
 
       int trianglesCount = headerBuffer.getInt();
-      Vector3 position = Vector.getInstance(3, headerBuffer);
-      Vector3 angles = Vector3.getInstance(3, headerBuffer);
+      Vector3 position = Vector3.getInstance(headerBuffer);
+      Vector3 angles = Vector3.getInstance(headerBuffer);
 
       return new LoadResult(dataBuffer.asFloatBuffer(), trianglesCount * 3, position, angles);
     }

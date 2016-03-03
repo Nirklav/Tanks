@@ -17,18 +17,18 @@ public class Plane
 
   public Plane(Vector3 x, Vector3 y, Vector3 z)
   {
-    xAxis = Vector.getInstance(3, x);
-    yAxis = Vector.getInstance(3, y);
-    zAxis = Vector.getInstance(3, z);
+    xAxis = Vector3.getInstance(x);
+    yAxis = Vector3.getInstance(y);
+    zAxis = Vector3.getInstance(z);
   }
 
   public void release()
   {
     released = true;
 
-    Vector.release(xAxis);
-    Vector.release(yAxis);
-    Vector.release(zAxis);
+    Vector3.release(xAxis);
+    Vector3.release(yAxis);
+    Vector3.release(zAxis);
   }
 
   public Plane(Vector3 normal)
@@ -128,25 +128,25 @@ public class Plane
   public Vector3 getXAxis()
   {
     throwIfReleased();
-    return Vector.getInstance(3, xAxis);
+    return Vector3.getInstance(xAxis);
   }
 
   public Vector3 getYAxis()
   {
     throwIfReleased();
-    return Vector.getInstance(3, yAxis);
+    return Vector3.getInstance(yAxis);
   }
 
   public Vector3 getZAxis()
   {
     throwIfReleased();
-    return Vector.getInstance(3, zAxis);
+    return Vector3.getInstance(zAxis);
   }
 
   public Vector3 getNormal()
   {
     throwIfReleased();
-    return Vector.getInstance(3, zAxis);
+    return Vector3.getInstance(zAxis);
   }
 
   private void throwIfReleased()

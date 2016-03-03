@@ -4,7 +4,7 @@ public class Spiral
 {
   public static Vector2 get(int index)
   {
-    Vector2 result = Vector.getInstance(2);
+    Vector2 result = Vector2.getInstance();
 
     int direction = 0; // Right
     int currentPosition = 0;

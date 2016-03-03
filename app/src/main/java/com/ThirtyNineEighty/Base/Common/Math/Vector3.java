@@ -3,10 +3,12 @@ package com.ThirtyNineEighty.Base.Common.Math;
 import android.opengl.Matrix;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /*
  * Operation with prefix get - immutable;
@@ -21,6 +23,48 @@ public class Vector3
   public final static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
   public final static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
   public final static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
+
+  private static final VectorsPool<Vector3> pool = new VectorsPool<>(poolLimit);
+
+  public static Vector3 getInstance(Vector other)
+  {
+    Vector3 vector = getInstance();
+    vector.setFrom(other);
+    return vector;
+  }
+
+  public static Vector3 getInstance(float... values)
+  {
+    Vector3 vector = getInstance();
+    System.arraycopy(values, 0, vector.value, 0, values.length);
+    return vector;
+  }
+
+  public static Vector3 getInstance(ByteBuffer dataBuffer)
+  {
+    Vector3 vector = getInstance();
+    for (int i = 0; i < 3; i++)
+      vector.value[i] = dataBuffer.getFloat();
+    return vector;
+  }
+
+  public static Vector3 getInstance()
+  {
+    Vector3 vector = pool.acquire();
+    if (vector == null)
+      vector = new Vector3();
+    return vector;
+  }
+
+  public static void release(Vector3 vector)
+  {
+    pool.release(vector);
+  }
+
+  public static void release(Collection<Vector3> vectors)
+  {
+    pool.release(vectors);
+  }
 
   public Vector3()
   {
@@ -151,8 +195,8 @@ public class Vector3
 
     float angle = vecOne.getAngle(vecTwo);
 
-    Vector.release(vecOne);
-    Vector.release(vecTwo);
+    Vector2.release(vecOne);
+    Vector2.release(vecTwo);
 
     return angle;
   }
@@ -215,18 +259,18 @@ public class Vector3
   {
     throwIfReleased();
 
-    setFrom(getX() + other.getX(),
-            getY() + other.getY(),
-            getZ() + other.getZ());
+    addToX(other.getX());
+    addToY(other.getY());
+    addToZ(other.getZ());
   }
 
   public void subtract(Vector3 other)
   {
     throwIfReleased();
 
-    setFrom(getX() - other.getX(),
-            getY() - other.getY(),
-            getZ() - other.getZ());
+    addToX(- other.getX());
+    addToY(- other.getY());
+    addToZ(- other.getZ());
   }
 
   public void multiply(float coefficient)
@@ -242,14 +286,14 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 vector = Vector.getInstance(3);
+    Vector3 vector = getInstance();
     vector.setFromAngles(angles);
 
     value[0] += vector.getX() * length;
     value[1] += vector.getY() * length;
     value[2] += vector.getZ() * length;
 
-    Vector.release(vector);
+    Vector3.release(vector);
   }
 
   public Vector2 getProjection(ArrayList<Vector3> vertices)
@@ -261,7 +305,7 @@ public class Vector3
       float projection = getScalar(current);
 
       if (result == null)
-        result = new Vector2(projection, projection);
+        result = Vector2.getInstance(projection, projection);
 
       // x - max
       if (projection > result.getX())
@@ -288,7 +332,7 @@ public class Vector3
     multiply(first / second);
     add(start);
 
-    Vector.release(lineVector);
+    Vector3.release(lineVector);
   }
 
   public float getScalar(Vector3 other)
@@ -306,7 +350,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.normalize();
     return result;
   }
@@ -315,7 +359,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.scale(coefficient);
     return result;
   }
@@ -324,7 +368,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.cross(other);
     return result;
   }
@@ -333,7 +377,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.orthogonal();
     return result;
   }
@@ -342,7 +386,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.add(other);
     return result;
   }
@@ -351,7 +395,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.addToX(x);
     result.addToY(y);
     result.addToZ(z);
@@ -362,7 +406,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.subtract(other);
     return result;
   }
@@ -371,7 +415,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.multiply(coefficient);
     return result;
   }
@@ -380,7 +424,7 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.move(length, angles);
     return result;
   }
@@ -389,9 +433,24 @@ public class Vector3
   {
     throwIfReleased();
 
-    Vector3 result = Vector.getInstance(3, this);
+    Vector3 result = getInstance(this);
     result.lineProjection(start, end);
     return result;
+  }
+
+  @Override
+  public int getSize()
+  {
+    return 3;
+  }
+
+  @Override
+  public void clear()
+  {
+    value[0] = 0;
+    value[1] = 0;
+    value[2] = 0;
+    value[3] = 1;
   }
 
   @Override

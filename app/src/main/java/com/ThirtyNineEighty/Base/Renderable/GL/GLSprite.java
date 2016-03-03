@@ -176,7 +176,7 @@ public class GLSprite
     public Data()
     {
       modelMatrix = new float[16];
-      colorCoefficients = Vector.getInstance(3);
+      colorCoefficients = Vector3.getInstance();
     }
   }
 }

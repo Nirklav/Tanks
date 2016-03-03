@@ -27,7 +27,7 @@ public class ConvexHull
       convexHull = build(collidable, plane);
 
     int count = convexHull.size();
-    Vector2 normal = Vector.getInstance(2);
+    Vector2 normal = Vector2.getInstance();
 
     for (int i = 0; i < count; i ++)
     {
@@ -38,12 +38,12 @@ public class ConvexHull
 
       if (projection.getX() < pointProjection || projection.getY() > pointProjection)
       {
-        Vector.release(normal);
+        Vector2.release(normal);
         return false;
       }
     }
 
-    Vector.release(normal);
+    Vector2.release(normal);
     return true;
   }
 
@@ -54,7 +54,7 @@ public class ConvexHull
       convexHull = build(collidable, plane);
 
     // Check convex hull vertices
-    Vector2 vector = Vector.getInstance(2);
+    Vector2 vector = Vector2.getInstance();
 
     for (Vector2 point : convexHull)
     {
@@ -63,17 +63,17 @@ public class ConvexHull
 
       if (vector.getLength() < pointRadius)
       {
-        Vector.release(vector);
+        Vector2.release(vector);
         return true;
       }
     }
-    Vector.release(vector);
+    Vector2.release(vector);
 
     // Check convex hull edges
     int count = convexHull.size();
-    Vector2 lineNormal = Vector2.getInstance(2);
-    Vector2 intersectPoint = Vector.getInstance(2);
-    Vector2 intersectToCenter = Vector.getInstance(2);
+    Vector2 lineNormal = Vector2.getInstance();
+    Vector2 intersectPoint = Vector2.getInstance();
+    Vector2 intersectToCenter = Vector2.getInstance();
 
     for (int i = 0; i < count; i++)
     {
@@ -100,15 +100,15 @@ public class ConvexHull
       if (intersectToCenter.getLength() > pointRadius)
         continue;
 
-      Vector.release(lineNormal);
-      Vector.release(intersectPoint);
-      Vector.release(intersectToCenter);
+      Vector2.release(lineNormal);
+      Vector2.release(intersectPoint);
+      Vector2.release(intersectToCenter);
       return true;
     }
 
-    Vector.release(lineNormal);
-    Vector.release(intersectPoint);
-    Vector.release(intersectToCenter);
+    Vector2.release(lineNormal);
+    Vector2.release(intersectPoint);
+    Vector2.release(intersectToCenter);
     return false;
   }
 
@@ -148,8 +148,8 @@ public class ConvexHull
     Vector2 second = projection.remove(0);
     convexHull.add(second);
 
-    Vector2 prevVector = Vector.getInstance(2);
-    Vector2 currentVector = Vector.getInstance(2);
+    Vector2 prevVector = Vector2.getInstance();
+    Vector2 currentVector = Vector2.getInstance();
 
     for(Vector2 current : projection)
     {
@@ -169,8 +169,8 @@ public class ConvexHull
       convexHull.add(current);
     }
 
-    Vector.release(prevVector);
-    Vector.release(currentVector);
+    Vector2.release(prevVector);
+    Vector2.release(currentVector);
 
     return convexHull;
   }
@@ -217,7 +217,7 @@ public class ConvexHull
 
   private static ArrayList<Vector2> getDistinctProjection(Collidable collidable, Plane plane)
   {
-    Vector2 vector = Vector.getInstance(2);
+    Vector2 vector = Vector2.getInstance();
     ArrayList<Vector2> result = new ArrayList<>();
 
     for (Vector3 current : collidable.getVertices())
@@ -225,12 +225,12 @@ public class ConvexHull
       plane.getProjection(vector, current);
       if (!result.contains(vector))
       {
-        Vector2 copy = Vector.getInstance(2, vector);
+        Vector2 copy = Vector2.getInstance(vector);
         result.add(copy);
       }
     }
 
-    Vector.release(vector);
+    Vector2.release(vector);
     return result;
   }
 
@@ -243,8 +243,8 @@ public class ConvexHull
     public AngleComparator(Vector2 first)
     {
       this.first = first;
-      left = Vector.getInstance(2);
-      right = Vector.getInstance(2);
+      left = Vector2.getInstance();
+      right = Vector2.getInstance();
     }
 
     @Override
@@ -291,6 +291,6 @@ public class ConvexHull
 
   public void release()
   {
-    Vector3.release(convexHull);
+    Vector2.release(convexHull);
   }
 }

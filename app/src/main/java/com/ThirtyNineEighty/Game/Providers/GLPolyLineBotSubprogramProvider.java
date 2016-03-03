@@ -1,6 +1,5 @@
 package com.ThirtyNineEighty.Game.Providers;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Map.IPath;
@@ -47,12 +46,12 @@ public class GLPolyLineBotSubprogramProvider
     Path path = (Path) iPath;
     ArrayList<Vector2> rawPath = path.getPath();
 
-    Vector.release(data.points);
+    Vector3.release(data.points);
     data.points.clear();
 
     for (Vector2 point : rawPath)
     {
-      Vector3 resultPoint = Vector.getInstance(3, point);
+      Vector3 resultPoint = Vector3.getInstance(point);
       resultPoint.setZ(0.5f);
       data.points.add(resultPoint);
     }

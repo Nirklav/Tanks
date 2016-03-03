@@ -51,6 +51,9 @@ public class Map
   public void release()
   {
     TanksContext.resources.release(description);
+
+    for (Projection projection : projectionsCache.values())
+      projection.release();
   }
 
   @Override
@@ -64,8 +67,8 @@ public class Map
   {
     Projection finderProjection = getProjection(finder);
 
-    Vector2 start = Vector.getInstance(2, finder.getPosition());
-    Vector2 end = Vector.getInstance(2, target.getPosition());
+    Vector2 start = Vector2.getInstance(finder.getPosition());
+    Vector2 end = Vector2.getInstance(target.getPosition());
 
     return findPath(start, end, finderProjection, getProjections(finder, target));
   }
@@ -192,7 +195,7 @@ public class Map
 
   private Vector2 getNeighborPoint(Vector2 current, int direction)
   {
-    Vector2 result = Vector.getInstance(2);
+    Vector2 result = Vector2.getInstance();
     float x = current.getX();
     float y = current.getY();
 
@@ -213,7 +216,7 @@ public class Map
       float value = result.get(i);
       if (Math.abs(value) > description.size)
       {
-        Vector.release(result);
+        Vector2.release(result);
         return null;
       }
     }
@@ -227,8 +230,8 @@ public class Map
     PathNode currentNode = node;
 
     Vector2 prevPosition = null;
-    Vector2 lastDirection = Vector.getInstance(2);
-    Vector2 direction = Vector2.getInstance(2);
+    Vector2 lastDirection = Vector2.getInstance();
+    Vector2 direction = Vector2.getInstance();
 
     while (currentNode != null)
     {
@@ -250,8 +253,8 @@ public class Map
       currentNode = currentNode.from;
     }
 
-    Vector.release(lastDirection);
-    Vector.release(direction);
+    Vector2.release(lastDirection);
+    Vector2.release(direction);
 
     Collections.reverse(result);
     return new Path(finder.getObject(), result);

@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Base.Renderable.GL;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Renderable.Renderable;
@@ -86,8 +85,8 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
     // set scale
     Matrix.scaleM(modelMatrix, 0, data.scale, data.scale, data.scale);
 
-    Vector.release(localPosition);
-    Vector.release(localAngles);
+    Vector3.release(localPosition);
+    Vector3.release(localAngles);
   }
 
   private void setNormalMatrix()
@@ -112,11 +111,11 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
 
     public Data()
     {
-      position = Vector.getInstance(3);
-      angles = Vector.getInstance(3);
+      position = Vector3.getInstance();
+      angles = Vector3.getInstance();
 
-      localPosition = Vector.getInstance(3);
-      localAngles = Vector.getInstance(3);
+      localPosition = Vector3.getInstance();
+      localAngles = Vector3.getInstance();
 
       scale = 1;
     }

@@ -43,7 +43,7 @@ public class GLModelLandProvider
     int landNumX = (int) (position.getX() / Land.size);
     int landNumY = (int) (position.getY() / Land.size);
 
-    Vector3 renderPos = Vector.getInstance(3);
+    Vector3 renderPos = Vector3.getInstance();
     renderPos.setX(landNumX * Land.size + Land.size * Math.signum(position.getX()) / 2);
     renderPos.setY(landNumY * Land.size + Land.size * Math.signum(position.getY()) / 2);
     renderPos.setZ(-0.1f);
