@@ -19,6 +19,9 @@ public class Collidable
 
   private String name;
   private Vector3 position;
+  private Vector3 lastInputPosition;
+  private Vector3 lastInputAngles;
+
   private float[] verticesMatrix;
   private float[] normalsMatrix;
   private ArrayList<Vector3> normals;
@@ -81,6 +84,10 @@ public class Collidable
 
   public void setLocation(Vector3 inputPosition, Vector3 inputAngles)
   {
+    // check position or angles is changed
+    if (!isLocationChanged(inputPosition, inputAngles))
+      return;
+
     // matrix
     setMatrix(inputPosition, inputAngles);
 
@@ -105,6 +112,25 @@ public class Collidable
       Matrix.multiplyMV(global.getRaw(), 0, normalsMatrix, 0, local.getRaw(), 0);
       global.normalize();
     }
+  }
+
+  private boolean isLocationChanged(Vector3 inputPosition, Vector3 inputAngles)
+  {
+    if (lastInputPosition == null || lastInputAngles == null)
+    {
+      lastInputPosition = new Vector3(inputPosition);
+      lastInputAngles = new Vector3(inputAngles);
+    }
+    else
+    {
+      if (inputPosition.equals(lastInputPosition) && inputAngles.equals(lastInputAngles))
+        return false;
+
+      lastInputPosition.setFrom(inputPosition);
+      lastInputAngles.setFrom(inputAngles);
+    }
+
+    return true;
   }
 
   private void setMatrix(Vector3 inputPosition, Vector3 inputAngles)
