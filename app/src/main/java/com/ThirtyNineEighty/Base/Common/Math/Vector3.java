@@ -23,8 +23,13 @@ public class Vector3
   public final static Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
   public final static Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
   public final static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
+  public final static int size = 3;
 
-  private static final VectorsPool<Vector3> pool = new VectorsPool<>(poolLimit);
+  private static final VectorsPool<Vector3> pool = new VectorsPool<>("Vector3", poolLimit);
+  public static String getStatistics()
+  {
+    return pool.getStatistics();
+  }
 
   public static Vector3 getInstance(Vector other)
   {
@@ -43,7 +48,7 @@ public class Vector3
   public static Vector3 getInstance(ByteBuffer dataBuffer)
   {
     Vector3 vector = getInstance();
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < size; i++)
       vector.value[i] = dataBuffer.getFloat();
     return vector;
   }
@@ -441,7 +446,7 @@ public class Vector3
   @Override
   public int getSize()
   {
-    return 3;
+    return size;
   }
 
   @Override

@@ -19,8 +19,13 @@ public class Vector2
 
   public final static Vector2 xAxis = new Vector2(1.0f, 0.0f);
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
+  public final static int size = 2;
 
-  private static final VectorsPool<Vector2> pool = new VectorsPool<>(poolLimit);
+  private static final VectorsPool<Vector2> pool = new VectorsPool<>("Vector2", poolLimit);
+  public static String getStatistics()
+  {
+    return pool.getStatistics();
+  }
 
   public static Vector2 getInstance(Vector other)
   {
@@ -39,7 +44,7 @@ public class Vector2
   public static Vector2 getInstance(ByteBuffer dataBuffer)
   {
     Vector2 vector = getInstance();
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < size; i++)
       vector.value[i] = dataBuffer.getFloat();
     return vector;
   }
@@ -312,7 +317,7 @@ public class Vector2
   @Override
   public int getSize()
   {
-    return 2;
+    return size;
   }
 
   @Override

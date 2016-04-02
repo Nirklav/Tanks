@@ -19,6 +19,7 @@ public class Gesture
     endPoint = Vector2.getInstance();
   }
 
+  // called from update thread
   public Vector2 get()
   {
     synchronized (syncObject)

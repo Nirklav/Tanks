@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
@@ -15,7 +17,7 @@ import com.ThirtyNineEighty.Base.Resources.MeshMode;
 public class MainMenu
   extends BaseMenu
 {
-  private GLLabelProvider resourceCacheStatus;
+  private GLLabelProvider statsLabel;
 
   @Override
   public void initialize()
@@ -57,30 +59,34 @@ public class MainMenu
     });
     add(newGameButton);
 
-    Button cacheStatus = new Button("Show cache status");
-    cacheStatus.setPosition(0, -20);
-    cacheStatus.setSize(600, 200);
-    cacheStatus.setClickListener(new Runnable()
+    Button statsButton = new Button("Show statistics");
+    statsButton.setPosition(0, -20);
+    statsButton.setSize(600, 200);
+    statsButton.setClickListener(new Runnable()
     {
       @Override
       public void run()
       {
-        resourceCacheStatus.setValue(TanksContext.resources.getCacheStatus());
+        String resources = TanksContext.resources.getCacheStatus();
+        String vec2stats = Vector2.getStatistics();
+        String vec3stats = Vector3.getStatistics();
 
-        if (!resourceCacheStatus.isVisible())
+        statsLabel.setValue(String.format("%s\n%s\n%s",resources, vec2stats, vec3stats));
+
+        if (!statsLabel.isVisible())
         {
-          resourceCacheStatus.setVisible(true);
-          bind(new DelayedRenderableSubprogram(resourceCacheStatus, 5000));
+          statsLabel.setVisible(true);
+          bind(new DelayedRenderableSubprogram(statsLabel, 5000));
         }
       }
     });
-    add(cacheStatus);
+    add(statsButton);
 
-    resourceCacheStatus = new GLLabelProvider(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
-    resourceCacheStatus.setPosition(960, 540);
-    resourceCacheStatus.setAlign(GLLabelProvider.AlignType.TopRight);
-    resourceCacheStatus.setVisible(false);
-    bind(new GLLabel(resourceCacheStatus));
+    statsLabel = new GLLabelProvider(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
+    statsLabel.setPosition(960, 540);
+    statsLabel.setAlign(GLLabelProvider.AlignType.TopRight);
+    statsLabel.setVisible(false);
+    bind(new GLLabel(statsLabel));
 
     Button editor = new Button("Editor");
     editor.setPosition(0, -240);

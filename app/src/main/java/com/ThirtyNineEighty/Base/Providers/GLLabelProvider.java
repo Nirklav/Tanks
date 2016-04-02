@@ -2,7 +2,6 @@ package com.ThirtyNineEighty.Base.Providers;
 
 import android.opengl.Matrix;
 
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;

@@ -3,15 +3,26 @@ package com.ThirtyNineEighty.Base.Common.Math;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class VectorsPool<TVector extends Vector>
 {
+  // statistics
+  private final AtomicLong allAcquireCounter;
+  private final AtomicLong successfulAcquireCounter;
+
+  // data
+  private final String name;
   private final ConcurrentLinkedQueue<TVector> pool;
   private final AtomicInteger poolSize;
   private final int limit;
 
-  public VectorsPool(int limit)
+  public VectorsPool(String name, int limit)
   {
+    this.allAcquireCounter = new AtomicLong();
+    this.successfulAcquireCounter = new AtomicLong();
+
+    this.name = name;
     this.pool = new ConcurrentLinkedQueue<>();
     this.poolSize = new AtomicInteger();
     this.limit = limit;
@@ -19,9 +30,12 @@ public class VectorsPool<TVector extends Vector>
 
   public TVector acquire()
   {
+    allAcquireCounter.incrementAndGet();
+
     TVector vector = pool.poll();
     if (vector != null)
     {
+      successfulAcquireCounter.incrementAndGet();
       poolSize.decrementAndGet();
       vector.refCounter ++;
     }
@@ -56,6 +70,16 @@ public class VectorsPool<TVector extends Vector>
         pool.offer(vector);
       toCache--;
     }
+  }
+
+  public String getStatistics()
+  {
+    return String.format("[%s]\nall: %d\nsuccessful: %d\nsize: %d\n"
+      , name
+      , allAcquireCounter.get()
+      , successfulAcquireCounter.get()
+      , poolSize.get()
+    );
   }
 
   private void clear(TVector vector)
