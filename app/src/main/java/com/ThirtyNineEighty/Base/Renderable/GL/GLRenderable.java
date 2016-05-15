@@ -17,6 +17,7 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
   protected float[] modelMatrix;
 
   private IDataProvider<TData> provider;
+  private Data prevData;
 
   protected GLRenderable(IDataProvider<TData> provider)
   {
@@ -64,6 +65,14 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
 
   private void setModelMatrix(TData data)
   {
+    if (prevData != null && prevData.equals(data))
+      return;
+    else
+    {
+      prevData = new Data();
+      prevData.setFrom(data);
+    }
+
     // reset matrix
     Matrix.setIdentityM(modelMatrix, 0);
 
@@ -118,6 +127,34 @@ public abstract class GLRenderable<TData extends GLRenderable.Data>
       localAngles = Vector3.getInstance();
 
       scale = 1;
+    }
+
+    public void setFrom(Data data)
+    {
+      position.setFrom(data.position);
+      angles.setFrom(data.angles);
+      localPosition.setFrom(data.localPosition);
+      localAngles.setFrom(data.localAngles);
+      scale = data.scale;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if (o == null)
+        return false;
+      if (o == this)
+        return true;
+      if (o instanceof Data)
+      {
+        Data otherData = (Data) o;
+        return position.equals(otherData.position)
+          && angles.equals(otherData.angles)
+          && localPosition.equals(otherData.localPosition)
+          && localAngles.equals(otherData.localAngles)
+          && Float.compare(scale, otherData.scale) == 0;
+      }
+      return false;
     }
   }
 }

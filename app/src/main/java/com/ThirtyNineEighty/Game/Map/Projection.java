@@ -1,7 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
-import com.ThirtyNineEighty.Base.Common.Math.Vector;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Common.Math.Plane;
@@ -11,6 +10,7 @@ class Projection
 {
   private static final Plane plane = new Plane();
 
+  private final Object syncObject;
   private final WorldObject<?, ?> object;
   private Vector3 hullPosition;
   private ConvexHull hull;
@@ -27,21 +27,25 @@ class Projection
   {
     this.object = object;
     this.hullPosition = Vector3.getInstance();
+    this.syncObject = new Object();
 
     set();
   }
 
   public void set()
   {
-    Vector3 currentPosition = object.collidable.getPosition();
-    if (hull != null && currentPosition.equals(hullPosition))
-      return;
+    synchronized (syncObject)
+    {
+      Vector3 currentPosition = object.collidable.getPosition();
+      if (hull != null && currentPosition.equals(hullPosition))
+        return;
 
-    if (hull != null)
-      hull.release();
+      if (hull != null)
+        hull.release();
 
-    hullPosition.setFrom(currentPosition);
-    hull = new ConvexHull(object.collidable, plane);
+      hullPosition.setFrom(currentPosition);
+      hull = new ConvexHull(object.collidable, plane);
+    }
   }
 
   public WorldObject<?, ?> getObject()
@@ -51,14 +55,20 @@ class Projection
 
   public boolean contains(Vector2 point, float radius)
   {
-    return hull.isIntersectWithCircle(point, radius);
+    synchronized (syncObject)
+    {
+      return hull.isIntersectWithCircle(point, radius);
+    }
   }
 
   public void release()
   {
-    if (hull != null)
-      hull.release();
+    synchronized (syncObject)
+    {
+      if (hull != null)
+        hull.release();
 
-    Vector3.release(hullPosition);
+      Vector3.release(hullPosition);
+    }
   }
 }

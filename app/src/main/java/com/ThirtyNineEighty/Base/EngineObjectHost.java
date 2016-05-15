@@ -12,10 +12,10 @@ public class EngineObjectHost<T extends IEngineObject>
   public void add(T object)
   {
     if (object.isInitialized())
-      throw new IllegalArgumentException("Bindable should be not initialized");
+      throw new IllegalArgumentException("EngineObject should be not initialized");
 
     if (object.isEnabled())
-      throw new IllegalArgumentException("Bindable should be disabled");
+      throw new IllegalArgumentException("EngineObject should be disabled");
 
     if (isInitialized())
       object.initialize();

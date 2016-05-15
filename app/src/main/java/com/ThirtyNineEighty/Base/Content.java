@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Base;
 import java.util.ArrayList;
 
 import com.ThirtyNineEighty.Base.Common.EventTimer;
+import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Menus.IMenu;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -19,6 +20,9 @@ public class Content
 
   private final ArrayList<WorldObject<?, ?>> worldObjects; // memory optimization
 
+  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 50);
+  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 30);
+
   public Content()
   {
     subprograms = new ArrayList<>();
@@ -27,7 +31,7 @@ public class Content
 
     updateTimer = new EventTimer(
       "update"
-      , 20
+      , 30
       , new Runnable()
       {
         @Override
@@ -50,6 +54,8 @@ public class Content
 
   private void updateSubprograms()
   {
+    subprogramsSw.start();
+
     for (ISubprogram subprogram : subprograms)
     {
       if (!subprogram.isEnabled())
@@ -67,10 +73,14 @@ public class Content
       }
     }
     subprogramActions.clear();
+
+    subprogramsSw.stop();
   }
 
   private void resolveCollisions()
   {
+    collisionsSw.start();
+
     if (world == null)
       return;
 
@@ -81,6 +91,8 @@ public class Content
       object.setCollidableLocation();
 
     GameContext.collisions.resolve(worldObjects);
+
+    collisionsSw.stop();
   }
 
   public IWorld getWorld() { return world; }

@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
@@ -38,6 +39,8 @@ public class Map
 
   private final HashMap<Long, Projection> projectionsCache;
 
+  private final Stopwatch findSw;
+
   public final String name;
   public final MapDescription description;
 
@@ -46,6 +49,7 @@ public class Map
     this.name = name;
     this.description = TanksContext.resources.getMap(new FileMapDescriptionSource(name));
     this.projectionsCache = new HashMap<>();
+    this.findSw = new Stopwatch("Map.findPath", 10);
   }
 
   public void release()
@@ -65,12 +69,17 @@ public class Map
   @Override
   public IPath findPath(WorldObject<?, ?> finder, WorldObject<?, ?> target)
   {
-    Projection finderProjection = getProjection(finder);
-
     Vector2 start = Vector2.getInstance(finder.getPosition());
     Vector2 end = Vector2.getInstance(target.getPosition());
 
-    return findPath(start, end, finderProjection, getProjections(finder, target));
+    Projection finderProjection = getProjection(finder);
+    ArrayList<Projection> projections = getProjections(finder, target);
+
+    findSw.start();
+    IPath result = findPath(start, end, finderProjection, projections);
+    findSw.stop();
+
+    return result;
   }
 
   private IPath findPath(Vector2 start, Vector2 end, Projection finder, ArrayList<Projection> projections)
@@ -161,20 +170,22 @@ public class Map
 
   private Projection getProjection(WorldObject<?, ?> object)
   {
-    Projection projection = projectionsCache.get(object.getId());
-    if (projection != null)
+    synchronized (projectionsCache)
     {
-      projection.set();
+      Projection projection = projectionsCache.get(object.getId());
+      if (projection != null)
+      {
+        projection.set();
+        return projection;
+      }
+
+      projection = Projection.FromObject(object);
+      if (projection == null)
+        return null;
+
+      projectionsCache.put(object.getId(), projection);
       return projection;
     }
-
-    projection = Projection.FromObject(object);
-    if (projection == null)
-      return null;
-
-    projectionsCache.put(object.getId(), projection);
-    projection.set();
-    return projection;
   }
 
   private void normalizePoint(Vector point)

@@ -20,9 +20,6 @@ public class DataManager
 
   public void saveWorld(String name, IWorld world)
   {
-    if (world.isInitialized())
-      throw new IllegalStateException("can't save initialized world");
-
     dataBase.worlds.save(name, new SavedWorldEntity(world));
   }
 

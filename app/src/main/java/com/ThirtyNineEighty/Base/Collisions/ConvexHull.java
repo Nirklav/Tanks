@@ -50,6 +50,11 @@ public class ConvexHull
   // TODO: create figures types and move this method out of here
   public boolean isIntersectWithCircle(Vector2 center, float pointRadius)
   {
+    // optimization
+    if (!canIntersectWithCircle(center, pointRadius))
+      return false;
+
+    // build convex hull
     if (convexHull == null)
       convexHull = build(collidable, plane);
 
@@ -123,6 +128,19 @@ public class ConvexHull
     normal.setY(edge.getX());
 
     normal.normalize();
+  }
+
+  private boolean canIntersectWithCircle(Vector2 center, float pointRadius)
+  {
+    float collidableRadius = collidable.getRadius();
+    Vector2 collidablePosition = plane.getProjection(collidable.getPosition());
+    Vector2 delta = center.getSubtract(collidablePosition);
+    float length = delta.getLength();
+
+    Vector2.release(collidablePosition);
+    Vector2.release(delta);
+
+    return length < pointRadius + collidableRadius;
   }
 
   public ArrayList<Vector2> get()

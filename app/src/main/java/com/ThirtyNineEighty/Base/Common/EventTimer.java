@@ -4,6 +4,8 @@ import java.util.ArrayDeque;
 
 public class EventTimer
 {
+  private final long MinSleepTime = 10;
+
   private final Object syncObject;
   private final Runnable userRunnable;
   private final Runnable timerRunnable;
@@ -61,7 +63,7 @@ public class EventTimer
               synchronized (syncObject)
               {
                 long sleepTime = getSleepTime();
-                if (sleepTime > 0)
+                if (sleepTime > MinSleepTime)
                   syncObject.wait(sleepTime);
 
                 if (timeToRun())
@@ -84,7 +86,7 @@ public class EventTimer
 
   private boolean timeToRun()
   {
-    return getSleepTime() <= 0;
+    return getSleepTime() <= MinSleepTime;
   }
 
   private long getSleepTime()
