@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Objects.GameObject;

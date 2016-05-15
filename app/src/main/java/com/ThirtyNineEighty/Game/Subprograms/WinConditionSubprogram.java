@@ -1,6 +1,6 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 
 public abstract class WinConditionSubprogram

@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Game.Subprograms;
 
 import com.ThirtyNineEighty.Base.DeltaTime;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;

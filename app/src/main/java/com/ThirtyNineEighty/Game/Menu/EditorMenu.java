@@ -10,7 +10,7 @@ import com.ThirtyNineEighty.Game.Common.EditorExporter;
 import com.ThirtyNineEighty.Game.Common.LoadException;
 import com.ThirtyNineEighty.Base.Common.Math.*;
 import com.ThirtyNineEighty.Base.Menus.Controls.*;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;

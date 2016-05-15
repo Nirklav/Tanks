@@ -1,11 +1,11 @@
 package com.ThirtyNineEighty.Game.Worlds;
 
-import com.ThirtyNineEighty.Base.ISubprogram;
+import com.ThirtyNineEighty.Base.Subprograms.ISubprogram;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Worlds.BaseWorld;
 import com.ThirtyNineEighty.Base.Renderable.Common.*;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;

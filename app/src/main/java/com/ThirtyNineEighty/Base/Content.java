@@ -6,6 +6,8 @@ import com.ThirtyNineEighty.Base.Common.EventTimer;
 import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Menus.IMenu;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Subprograms.ISubprogram;
+import com.ThirtyNineEighty.Base.Subprograms.TaskRunner;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 
 public class Content
@@ -14,14 +16,15 @@ public class Content
   private volatile IMenu menu;
 
   private final EventTimer updateTimer;
+  private final TaskRunner taskRunner;
 
   private final ArrayList<ISubprogram> subprograms;
   private final ArrayList<Action> subprogramActions;
 
   private final ArrayList<WorldObject<?, ?>> worldObjects; // memory optimization
 
-  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 50);
-  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 30);
+  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 15);
+  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 20);
 
   public Content()
   {
@@ -29,9 +32,10 @@ public class Content
     subprogramActions = new ArrayList<>();
     worldObjects = new ArrayList<>();
 
+    taskRunner = new TaskRunner();
     updateTimer = new EventTimer(
       "update"
-      , 30
+      , 20
       , new Runnable()
       {
         @Override
@@ -61,8 +65,11 @@ public class Content
       if (!subprogram.isEnabled())
         continue;
 
+      taskRunner.prepare(subprogram);
       subprogram.update();
     }
+
+    taskRunner.run();
 
     for (Action action : subprogramActions)
     {

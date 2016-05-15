@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Base.Providers.*;
 import com.ThirtyNineEighty.Base.Objects.*;
 import com.ThirtyNineEighty.Base.Renderable.IRenderable;
-import com.ThirtyNineEighty.Base.ISubprogram;
+import com.ThirtyNineEighty.Base.Subprograms.ISubprogram;
 import com.ThirtyNineEighty.Base.Resources.Sources.FileDescriptionSource;
 
 import java.util.HashMap;

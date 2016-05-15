@@ -4,9 +4,10 @@ import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Collisions.Tracer;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
+import com.ThirtyNineEighty.Base.Subprograms.TaskPriority;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -25,6 +26,7 @@ public class BotSubprogram
 
   private Tank bot;
   private IPath path;
+  private boolean findPath;
   private float pathNotFoundDelay;
 
   public BotSubprogram(Tank bot)
@@ -35,6 +37,39 @@ public class BotSubprogram
   public IPath getPath()
   {
     return path;
+  }
+
+  @Override
+  protected void onPrepare()
+  {
+    // Not need path
+    if (!findPath)
+      return;
+
+    // If path find delay
+    if (pathNotFoundDelay > 0)
+    {
+      pathNotFoundDelay -= DeltaTime.get();
+      return;
+    }
+
+    addTask(TaskPriority.Low, new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        // Find path
+        IWorld world = TanksContext.content.getWorld();
+        IMap map = world.getMap();
+        path = map.findPath(bot, world.getPlayer());
+
+        // Path not found, set delay
+        if (path == null)
+          pathNotFoundDelay = maxPathNotFoundDelay;
+        else
+          findPath = false;
+      }
+    });
   }
 
   @Override
@@ -87,24 +122,9 @@ public class BotSubprogram
 
   private void tryMove(WorldObject<?, ?> target)
   {
-    IWorld world = TanksContext.content.getWorld();
-    IMap map = world.getMap();
-
-    // If path find delay
-    if (pathNotFoundDelay > 0)
-    {
-      pathNotFoundDelay -= DeltaTime.get();
-      return;
-    }
-
-    // Find path
-    if (path == null)
-      path = map.findPath(bot, target);
-
-    // Path not found, set delay
     if (path == null)
     {
-      pathNotFoundDelay = maxPathNotFoundDelay;
+      findPath = true;
       return;
     }
 
@@ -117,6 +137,7 @@ public class BotSubprogram
     {
       path.release();
       path = null;
+      findPath = true;
       return;
     }
 
@@ -126,6 +147,7 @@ public class BotSubprogram
     {
       path.release();
       path = null;
+      findPath = true;
     }
   }
 }

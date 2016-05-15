@@ -2,7 +2,7 @@ package com.ThirtyNineEighty.Base;
 
 public final class DeltaTime
 {
-  private static final float MinDelta = 1f / 15f; // 15 updates for 1 second
+  private static final float MinDelta = 1f / 5f; // 5 updates for 1 second
 
   private volatile static boolean isFirst;
   private volatile static long delta;

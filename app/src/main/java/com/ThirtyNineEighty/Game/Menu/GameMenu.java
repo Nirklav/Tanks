@@ -4,7 +4,7 @@ import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Menus.Controls.*;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;

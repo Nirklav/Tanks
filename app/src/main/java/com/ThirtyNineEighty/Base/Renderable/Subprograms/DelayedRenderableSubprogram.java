@@ -1,7 +1,7 @@
 package com.ThirtyNineEighty.Base.Renderable.Subprograms;
 
 import com.ThirtyNineEighty.Base.Providers.RenderableDataProvider;
-import com.ThirtyNineEighty.Base.Subprogram;
+import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 
 public class DelayedRenderableSubprogram
   extends Subprogram
