@@ -45,6 +45,9 @@ public class Collidable
   {
     geometryData = GameContext.resources.getPhGeometry(new FilePhGeometrySource(name));
 
+    lastInputPosition = null;
+    lastInputAngles = null;
+
     fill(normals, geometryData.normals.size());
     fill(vertices, geometryData.vertices.size());
 
@@ -65,6 +68,11 @@ public class Collidable
   public Vector3 getPosition()
   {
     return position;
+  }
+
+  public Vector3 getAngles()
+  {
+    return lastInputAngles;
   }
 
   public ArrayList<Vector3> getVertices()

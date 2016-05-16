@@ -3,6 +3,7 @@ package com.ThirtyNineEighty.Game.Map;
 import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
+import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Map
   implements IMap
@@ -38,6 +40,7 @@ public class Map
   private final static PathComparator pathLengthComparator = new PathComparator();
 
   private final HashMap<Long, Projection> projectionsCache;
+  private final HashSet<Vector2> blockedPoints;
 
   private final Stopwatch findSw;
 
@@ -49,7 +52,43 @@ public class Map
     this.name = name;
     this.description = TanksContext.resources.getMap(new FileMapDescriptionSource(name));
     this.projectionsCache = new HashMap<>();
+    this.blockedPoints = buildBlocked();
     this.findSw = new Stopwatch("Map.findPath", 10);
+  }
+
+  private HashSet<Vector2> buildBlocked()
+  {
+    ArrayList<WorldObject<?, ?>> objects = new ArrayList<>();
+    HashSet<Vector2> result = new HashSet<>();
+
+    float modulo = description.size % stepSize;
+    float minPoint = -(description.size - modulo);
+    Vector2 point = new Vector2();
+
+    IWorld world = GameContext.content.getWorld();
+    world.getObjects(objects);
+
+    for(WorldObject<?, ?> object : objects)
+    {
+      Properties properties = object.getProperties();
+      if (!properties.isStaticObject())
+        continue;
+
+      Projection projection = getProjection(object);
+      if (projection == null)
+        continue;
+
+      for (float x = minPoint; x < description.size; x += stepSize)
+        for (float y = minPoint; y < description.size; y += stepSize)
+        {
+          point.setFrom(x, y);
+
+          if (projection.contains(point))
+            result.add(new Vector2(point));
+        }
+    }
+
+    return result;
   }
 
   public void release()
@@ -58,6 +97,8 @@ public class Map
 
     for (Projection projection : projectionsCache.values())
       projection.release();
+
+    Vector2.release(blockedPoints);
   }
 
   @Override
@@ -121,8 +162,12 @@ public class Map
         if (any(closedSet, new PositionEqualsPredicate(neighborPoint)))
           continue;
 
+        // If point blocked by static object then skip it
+        if (blockedPoints.contains(neighborPoint))
+          continue;
+
         // If neighborPoint is blocked then skip it
-        if (projections != null && any(projections, new ProjectionPredicate(finder, neighborPoint, end)))
+        if (projections != null && any(projections, new ProjectionPredicate(finder, neighborPoint)))
           continue;
 
         // Build neighborNode
@@ -313,13 +358,11 @@ public class Map
     implements Predicate<Projection>
   {
     private final Vector2 point;
-    private final Vector2 end;
     private final Projection finderProjection;
 
-    public ProjectionPredicate(Projection finder, Vector2 point, Vector2 end)
+    public ProjectionPredicate(Projection finder, Vector2 point)
     {
       this.point = point;
-      this.end = end;
       this.finderProjection = finder;
     }
 

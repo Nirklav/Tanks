@@ -7,7 +7,7 @@ import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Menus.IMenu;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Subprograms.ISubprogram;
-import com.ThirtyNineEighty.Base.Subprograms.TaskRunner;
+import com.ThirtyNineEighty.Base.Subprograms.TaskScheduler;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 
 public class Content
@@ -16,15 +16,16 @@ public class Content
   private volatile IMenu menu;
 
   private final EventTimer updateTimer;
-  private final TaskRunner taskRunner;
+  private final TaskScheduler taskScheduler;
 
   private final ArrayList<ISubprogram> subprograms;
   private final ArrayList<Action> subprogramActions;
 
   private final ArrayList<WorldObject<?, ?>> worldObjects; // memory optimization
 
-  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 15);
-  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 20);
+  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 70);
+  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 30);
+  private final Stopwatch updateSw = new Stopwatch("Update", 100);
 
   public Content()
   {
@@ -32,7 +33,7 @@ public class Content
     subprogramActions = new ArrayList<>();
     worldObjects = new ArrayList<>();
 
-    taskRunner = new TaskRunner();
+    taskScheduler = new TaskScheduler();
     updateTimer = new EventTimer(
       "update"
       , 20
@@ -41,6 +42,8 @@ public class Content
         @Override
         public void run()
         {
+          updateSw.start();
+
           DeltaTime.update();
 
           updateSubprograms();
@@ -51,6 +54,8 @@ public class Content
 
           if (menu != null)
             menu.setViews();
+
+          updateSw.stop();
         }
       }
     );
@@ -65,11 +70,11 @@ public class Content
       if (!subprogram.isEnabled())
         continue;
 
-      taskRunner.prepare(subprogram);
+      taskScheduler.prepare(subprogram);
       subprogram.update();
     }
 
-    taskRunner.run();
+    taskScheduler.run();
 
     for (Action action : subprogramActions)
     {
@@ -208,6 +213,11 @@ public class Content
 
     reset(world);
     reset(menu);
+  }
+
+  public long getAverageUpdateMs()
+  {
+    return updateSw.average();
   }
 
   private static void reset(IEngineObject object)

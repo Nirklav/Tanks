@@ -4,6 +4,8 @@ import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
+import com.ThirtyNineEighty.Base.Subprograms.ITask;
+import com.ThirtyNineEighty.Base.Subprograms.ITaskAdder;
 import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Collisions.Tracer;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
@@ -25,7 +27,9 @@ public class BotSubprogram
   private final static float maxPathNotFoundDelay = 5;
 
   private Tank bot;
+
   private IPath path;
+  private ITask pathTask;
   private boolean findPath;
   private float pathNotFoundDelay;
 
@@ -40,7 +44,7 @@ public class BotSubprogram
   }
 
   @Override
-  protected void onPrepare()
+  protected void onPrepare(ITaskAdder adder)
   {
     // Not need path
     if (!findPath)
@@ -53,7 +57,8 @@ public class BotSubprogram
       return;
     }
 
-    addTask(TaskPriority.Low, new Runnable()
+    findPath = false;
+    pathTask = adder.schedule(TaskPriority.Low, new Runnable()
     {
       @Override
       public void run()
@@ -66,8 +71,6 @@ public class BotSubprogram
         // Path not found, set delay
         if (path == null)
           pathNotFoundDelay = maxPathNotFoundDelay;
-        else
-          findPath = false;
       }
     });
   }
@@ -122,6 +125,14 @@ public class BotSubprogram
 
   private void tryMove(WorldObject<?, ?> target)
   {
+    if (pathTask != null)
+    {
+      if (!pathTask.isCompleted())
+        return;
+
+      pathTask = null;
+    }
+
     if (path == null)
     {
       findPath = true;

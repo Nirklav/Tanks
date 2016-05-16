@@ -13,4 +13,9 @@ public class Decor
   {
     super(descriptionName, new Properties());
   }
+
+  public Decor(String descriptionName, Properties properties)
+  {
+    super(descriptionName, properties);
+  }
 }

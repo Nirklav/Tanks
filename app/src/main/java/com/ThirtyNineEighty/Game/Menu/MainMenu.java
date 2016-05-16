@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Menu;
 
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.GameContext;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
@@ -70,8 +71,9 @@ public class MainMenu
         String resources = TanksContext.resources.getCacheStatus();
         String vec2stats = Vector2.getStatistics();
         String vec3stats = Vector3.getStatistics();
+        String contentStats = String.format("Update: %d ms", GameContext.content.getAverageUpdateMs());
 
-        statsLabel.setValue(String.format("%s\n%s\n%s",resources, vec2stats, vec3stats));
+        statsLabel.setValue(String.format("%s\n%s\n%s\n\n%s",resources, vec2stats, vec3stats, contentStats));
 
         if (!statsLabel.isVisible())
         {

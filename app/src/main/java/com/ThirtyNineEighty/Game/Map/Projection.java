@@ -12,7 +12,8 @@ class Projection
 
   private final Object syncObject;
   private final WorldObject<?, ?> object;
-  private Vector3 hullPosition;
+  private Vector3 collidablePosition;
+  private Vector3 collidableAngles;
   private ConvexHull hull;
 
   public static Projection FromObject(WorldObject<?, ?> object)
@@ -26,7 +27,8 @@ class Projection
   private Projection(WorldObject<?, ?> object)
   {
     this.object = object;
-    this.hullPosition = Vector3.getInstance();
+    this.collidablePosition = Vector3.getInstance();
+    this.collidableAngles = Vector3.getInstance();
     this.syncObject = new Object();
 
     set();
@@ -37,13 +39,19 @@ class Projection
     synchronized (syncObject)
     {
       Vector3 currentPosition = object.collidable.getPosition();
-      if (hull != null && currentPosition.equals(hullPosition))
+      Vector3 currentAngles = object.collidable.getAngles();
+
+      if (hull != null
+        && currentPosition.equals(collidablePosition)
+        && currentAngles.equals(collidableAngles))
         return;
 
       if (hull != null)
         hull.release();
 
-      hullPosition.setFrom(currentPosition);
+      collidablePosition.setFrom(currentPosition);
+      collidableAngles.setFrom(currentAngles);
+
       hull = new ConvexHull(object.collidable, plane);
     }
   }
@@ -51,6 +59,14 @@ class Projection
   public WorldObject<?, ?> getObject()
   {
     return object;
+  }
+
+  public boolean contains(Vector2 point)
+  {
+    synchronized (syncObject)
+    {
+      return hull.contains(point);
+    }
   }
 
   public boolean contains(Vector2 point, float radius)
@@ -68,7 +84,8 @@ class Projection
       if (hull != null)
         hull.release();
 
-      Vector3.release(hullPosition);
+      Vector3.release(collidablePosition);
+      Vector3.release(collidableAngles);
     }
   }
 }

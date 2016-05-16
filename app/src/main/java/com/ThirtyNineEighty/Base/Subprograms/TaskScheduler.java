@@ -6,7 +6,7 @@ import com.ThirtyNineEighty.Base.Common.Stopwatch;
 
 import java.util.PriorityQueue;
 
-public class TaskRunner
+public class TaskScheduler
 {
   private static final int MaxRunTime = 10;
   private static final int CriticalRunTime = 50;
@@ -15,11 +15,11 @@ public class TaskRunner
   private final PriorityQueue<Task> tasks;
   private final Stopwatch stopwatch;
 
-  public TaskRunner()
+  public TaskScheduler()
   {
     adder = new TaskAdder();
     tasks = new PriorityQueue<>();
-    stopwatch = new Stopwatch("TaskRunner", CriticalRunTime);
+    stopwatch = new Stopwatch("TaskScheduler", CriticalRunTime);
   }
 
   public void prepare(ISubprogram subprogram)
@@ -51,7 +51,7 @@ public class TaskRunner
   private class TaskAdder
     implements ITaskAdder
   {
-    public ITask add(int priority, Runnable task)
+    public ITask schedule(int priority, Runnable task)
     {
       if (task == null)
         throw new IllegalArgumentException("task == null");

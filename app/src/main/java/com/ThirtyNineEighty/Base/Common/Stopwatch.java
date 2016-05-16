@@ -11,6 +11,8 @@ public class Stopwatch
 
   private long startMillis;
   private long criticalMillis;
+  private long allMillis;
+  private long counter;
   private String name;
 
   public Stopwatch(String watchName) { this (watchName, 100); }
@@ -26,6 +28,11 @@ public class Stopwatch
     return endMillis - startMillis;
   }
 
+  public long average()
+  {
+    return allMillis / counter;
+  }
+
   public void start()
   {
     startMillis = System.currentTimeMillis();
@@ -33,8 +40,12 @@ public class Stopwatch
 
   public void stop()
   {
+    counter++;
+
     long endMillis = System.currentTimeMillis();
     long elapsed = endMillis - startMillis;
+
+    allMillis += elapsed;
 
     if (elapsed > criticalMillis)
       Log.e("Stopwatch", String.format("%s; Elapsed: %d; Critical: %d;", name, elapsed, criticalMillis));

@@ -2,5 +2,5 @@ package com.ThirtyNineEighty.Base.Subprograms;
 
 public interface ITaskAdder
 {
-  ITask add(int priority, Runnable task);
+  ITask schedule(int priority, Runnable task);
 }
