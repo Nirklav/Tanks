@@ -47,7 +47,7 @@ public class Stopwatch
 
     allMillis += elapsed;
 
-    if (elapsed > criticalMillis)
+    if (criticalMillis > 0 && elapsed > criticalMillis)
       Log.e("Stopwatch", String.format("%s; Elapsed: %d; Critical: %d;", name, elapsed, criticalMillis));
   }
 }

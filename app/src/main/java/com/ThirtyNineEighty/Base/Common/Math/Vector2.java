@@ -165,6 +165,18 @@ public class Vector2
     value[1] /= length;
   }
 
+  public void rotate(float angle)
+  {
+    throwIfReleased();
+
+    double radians = Math.toRadians(angle);
+    double ca = Math.cos(radians);
+    double sa = Math.sin(radians);
+
+    value[0] = (float) (ca * value[0] - sa * value[1]);
+    value[1] = (float) (sa * value[0] + ca * value[1]);
+  }
+
   public void subtract(Vector2 other)
   {
     throwIfReleased();
@@ -244,6 +256,15 @@ public class Vector2
 
     Vector2 result = getInstance(this);
     result.normalize();
+    return result;
+  }
+
+  public Vector2 getRotated(float angles)
+  {
+    throwIfReleased();
+
+    Vector2 result = getInstance(this);
+    result.rotate(angles);
     return result;
   }
 

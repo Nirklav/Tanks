@@ -2,6 +2,7 @@ package com.ThirtyNineEighty.Game.Map;
 
 import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
+import com.ThirtyNineEighty.Base.Objects.Properties.Properties;
 import com.ThirtyNineEighty.Base.Objects.WorldObject;
 import com.ThirtyNineEighty.Base.Common.Math.Plane;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
@@ -12,13 +13,21 @@ class Projection
 
   private final Object syncObject;
   private final WorldObject<?, ?> object;
-  private Vector3 collidablePosition;
-  private Vector3 collidableAngles;
+
   private ConvexHull hull;
+  private Vector3 position;
+  private Vector3 angles;
+
+  private Vector2 projProsition;
+  private float projAngle;
 
   public static Projection FromObject(WorldObject<?, ?> object)
   {
     if (object.collidable == null)
+      return null;
+
+    Properties properties = object.getProperties();
+    if (properties.isIgnoreOnMap())
       return null;
 
     return new Projection(object);
@@ -27,8 +36,9 @@ class Projection
   private Projection(WorldObject<?, ?> object)
   {
     this.object = object;
-    this.collidablePosition = Vector3.getInstance();
-    this.collidableAngles = Vector3.getInstance();
+    this.position = Vector3.getInstance();
+    this.angles = Vector3.getInstance();
+    this.projProsition = Vector2.getInstance();
     this.syncObject = new Object();
 
     set();
@@ -42,17 +52,31 @@ class Projection
       Vector3 currentAngles = object.collidable.getAngles();
 
       if (hull != null
-        && currentPosition.equals(collidablePosition)
-        && currentAngles.equals(collidableAngles))
+        && currentPosition.equals(position)
+        && currentAngles.equals(angles))
         return;
 
-      if (hull != null)
-        hull.release();
+      Vector2 currentProjPosition = plane.getProjection(currentPosition);
+      float currentProjAngle = currentAngles.getZ();
 
-      collidablePosition.setFrom(currentPosition);
-      collidableAngles.setFrom(currentAngles);
+      if (hull == null)
+        hull = new ConvexHull(object.collidable, plane);
+      else
+      {
+        Vector2 deltaPos = currentProjPosition.getSubtract(projProsition);
+        float deltaZ = currentProjAngle - projAngle;
 
-      hull = new ConvexHull(object.collidable, plane);
+        hull.move(deltaPos);
+        hull.rotate(deltaZ);
+
+        Vector2.release(deltaPos);
+      }
+
+      position.setFrom(currentPosition);
+      angles.setFrom(angles);
+
+      projProsition.setFrom(currentProjPosition);
+      projAngle = currentProjAngle;
     }
   }
 
@@ -81,11 +105,10 @@ class Projection
   {
     synchronized (syncObject)
     {
-      if (hull != null)
-        hull.release();
+      hull.release();
 
-      Vector3.release(collidablePosition);
-      Vector3.release(collidableAngles);
+      Vector3.release(position);
+      Vector3.release(angles);
     }
   }
 }

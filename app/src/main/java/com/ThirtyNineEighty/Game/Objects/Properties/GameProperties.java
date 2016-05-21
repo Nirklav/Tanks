@@ -17,6 +17,11 @@ public class GameProperties
   public GameProperties()
   { }
 
+  public GameProperties(boolean ignoreOnMap)
+  {
+    setIgnoreOnMap(ignoreOnMap);
+  }
+
   public GameProperties(String bullet, List<String> upgrades)
   {
     this.bullet = bullet;

@@ -7,6 +7,8 @@ import com.ThirtyNineEighty.Base.Renderable.GL.GLRenderable;
 public class GLRenderableWorldObjectProvider<TData extends GLRenderable.Data, TObject extends WorldObject<?, ?>>
   extends RenderableDataProvider<TData>
 {
+  private static final long serialVersionUID = 1L;
+
   protected final TObject object;
   private final VisualDescription description;
 

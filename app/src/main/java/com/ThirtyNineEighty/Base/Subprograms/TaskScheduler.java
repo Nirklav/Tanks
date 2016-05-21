@@ -3,23 +3,36 @@ package com.ThirtyNineEighty.Base.Subprograms;
 import android.support.annotation.NonNull;
 
 import com.ThirtyNineEighty.Base.Common.Stopwatch;
+import com.ThirtyNineEighty.Base.GameContext;
 
-import java.util.PriorityQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class TaskScheduler
 {
   private static final int MaxRunTime = 10;
-  private static final int CriticalRunTime = 50;
+  private static final int CriticalRunTime = -1;
 
   private final TaskAdder adder;
-  private final PriorityQueue<Task> tasks;
-  private final Stopwatch stopwatch;
+  private final PriorityBlockingQueue<Task> tasks;
+  private final Stopwatch[] stopwatches;
+  private final Future<?>[] futures;
+  private final int processors;
 
   public TaskScheduler()
   {
     adder = new TaskAdder();
-    tasks = new PriorityQueue<>();
-    stopwatch = new Stopwatch("TaskScheduler", CriticalRunTime);
+    tasks = new PriorityBlockingQueue<>();
+
+    Runtime runtime = Runtime.getRuntime();
+    int processorsCount = runtime.availableProcessors();
+
+    stopwatches = new Stopwatch[processorsCount];
+    for (int i = 0; i < processorsCount; i++)
+      stopwatches[i] = new Stopwatch("TaskScheduler.Worker-" + i, CriticalRunTime);
+
+    futures = new Future[processorsCount];
+    processors = processorsCount;
   }
 
   public void prepare(ISubprogram subprogram)
@@ -32,7 +45,20 @@ public class TaskScheduler
 
   public void run()
   {
+    int size = tasks.size();
+    if (size == 0)
+      return;
+
+    if (size == 1 || processors == 1)
+      runImpl(stopwatches[0]);
+    else
+      runParallel();
+  }
+
+  private void runImpl(Stopwatch stopwatch)
+  {
     stopwatch.start();
+
     while (true)
     {
       Task task = tasks.poll();
@@ -46,6 +72,34 @@ public class TaskScheduler
     }
 
     stopwatch.stop();
+  }
+
+  private void runParallel()
+  {
+    // Submit tasks
+    for (int i = 0; i < processors; i++)
+    {
+      final int num = i;
+      futures[i] = GameContext.threadPool.submit(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          runImpl(stopwatches[num]);
+        }
+      });
+    }
+
+    // Wait tasks
+    try
+    {
+      for (int i = 0; i < processors; i++)
+        futures[i].get();
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
   private class TaskAdder

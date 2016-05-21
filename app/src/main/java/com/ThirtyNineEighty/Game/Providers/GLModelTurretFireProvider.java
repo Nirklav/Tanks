@@ -9,6 +9,8 @@ import com.ThirtyNineEighty.Game.Objects.Tank;
 public class GLModelTurretFireProvider
   extends GLRenderableWorldObjectProvider<GLExplosionParticles.Data, Tank>
 {
+  private static final long serialVersionUID = 1L;
+
   private boolean setted;
   private Vector3 position;
   private Vector3 angles;

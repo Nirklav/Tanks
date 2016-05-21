@@ -16,6 +16,8 @@ import com.ThirtyNineEighty.Base.Menus.IMenu;
 import com.ThirtyNineEighty.Base.Renderable.*;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 
+import java.util.concurrent.Executors;
+
 public class GameActivity
   extends Activity
   implements View.OnTouchListener,
@@ -72,6 +74,7 @@ public class GameActivity
     GameContext.context = this;
     GameContext.glThread = this;
     GameContext.renderer = renderer;
+    GameContext.threadPool = Executors.newCachedThreadPool();
   }
 
   protected void initializeFactory()

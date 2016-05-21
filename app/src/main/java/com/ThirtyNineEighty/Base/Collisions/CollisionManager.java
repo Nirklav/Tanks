@@ -11,14 +11,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class CollisionManager
 {
   private final ArrayList<WorldObject<?, ?>> resolvingObjects = new ArrayList<>();
-  private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
   public void addToResolving(WorldObject<?, ?> object)
   {
@@ -41,7 +38,7 @@ public class CollisionManager
     final CountDownLatch latch = new CountDownLatch(pairs.size());
     for (final Pair pair : pairs)
     {
-      Future<Pair> task = threadPool.submit(new Callable<Pair>()
+      Future<Pair> task = GameContext.threadPool.submit(new Callable<Pair>()
       {
         @Override
         public Pair call() throws Exception

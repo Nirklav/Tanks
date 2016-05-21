@@ -70,6 +70,8 @@ public class VectorsPool<TVector extends Vector>
         pool.offer(vector);
       toCache--;
     }
+
+    vectors.clear();
   }
 
   public String getStatistics()

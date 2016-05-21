@@ -53,7 +53,7 @@ public class Map
     this.description = TanksContext.resources.getMap(new FileMapDescriptionSource(name));
     this.projectionsCache = new HashMap<>();
     this.blockedPoints = buildBlocked();
-    this.findSw = new Stopwatch("Map.findPath", 10);
+    this.findSw = new Stopwatch("Map.findPath", 40);
   }
 
   private HashSet<Vector2> buildBlocked()
@@ -68,7 +68,7 @@ public class Map
     IWorld world = GameContext.content.getWorld();
     world.getObjects(objects);
 
-    for(WorldObject<?, ?> object : objects)
+    for (WorldObject<?, ?> object : objects)
     {
       Properties properties = object.getProperties();
       if (!properties.isStaticObject())

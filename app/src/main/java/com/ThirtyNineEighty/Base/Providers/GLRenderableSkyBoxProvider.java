@@ -8,6 +8,8 @@ import com.ThirtyNineEighty.Base.Renderable.GL.GLRenderable;
 public class GLRenderableSkyBoxProvider
   extends GLRenderableWorldObjectProvider<GLRenderable.Data, SkyBox>
 {
+  private static final long serialVersionUID = 1L;
+
   public GLRenderableSkyBoxProvider(SkyBox object, VisualDescription description)
   {
     super(object, GLRenderable.Data.class, description);

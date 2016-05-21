@@ -6,6 +6,7 @@ import com.ThirtyNineEighty.Base.Map.IPath;
 import com.ThirtyNineEighty.Base.Providers.RenderableDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLPolyLine;
 import com.ThirtyNineEighty.Game.Map.Path;
+import com.ThirtyNineEighty.Game.Objects.GameObject;
 import com.ThirtyNineEighty.Game.Subprograms.BotSubprogram;
 
 import java.util.ArrayList;
@@ -13,19 +14,30 @@ import java.util.ArrayList;
 public class GLPolyLineBotSubprogramProvider
   extends RenderableDataProvider<GLPolyLine.Data>
 {
-  private final BotSubprogram bot;
+  private static final long serialVersionUID = 1L;
 
-  public GLPolyLineBotSubprogramProvider(BotSubprogram bot)
+  private final GameObject<?, ?> bot;
+  private final BotSubprogram botSubprogram;
+
+  public GLPolyLineBotSubprogramProvider(GameObject<?, ?> bot, BotSubprogram botSubprogram)
   {
     super(GLPolyLine.Data.class);
 
     this.bot = bot;
+    this.botSubprogram = botSubprogram;
   }
 
   @Override
   public void set(GLPolyLine.Data data)
   {
-    IPath iPath = bot.getPath();
+    if (bot.getHealth() <= 0)
+    {
+      setVisible(false);
+      super.set(data);
+      return;
+    }
+
+    IPath iPath = botSubprogram.getPath();
     if (iPath == null)
     {
       setVisible(false);

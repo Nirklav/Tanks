@@ -8,6 +8,8 @@ import com.ThirtyNineEighty.Base.Factory.Factory;
 import com.ThirtyNineEighty.Base.Renderable.IRenderer;
 import com.ThirtyNineEighty.Base.Resources.Resources;
 
+import java.util.concurrent.ExecutorService;
+
 public class GameContext
 {
   private static long mainThreadId;
@@ -20,6 +22,7 @@ public class GameContext
 
   public static boolean debuggable;
 
+  public static ExecutorService threadPool;
   public static Context context;
   public static Content content;
   public static IRenderer renderer;

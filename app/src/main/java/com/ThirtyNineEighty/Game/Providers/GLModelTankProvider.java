@@ -12,6 +12,7 @@ public class GLModelTankProvider
   extends GLModelWorldObjectProvider<Tank>
 {
   private static final long serialVersionUID = 1L;
+
   private boolean destroyed;
 
   public GLModelTankProvider(Tank tank, VisualDescription description)
