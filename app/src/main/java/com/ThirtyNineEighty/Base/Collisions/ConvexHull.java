@@ -31,6 +31,9 @@ public class ConvexHull
 
   public boolean contains(Vector2 point)
   {
+    if (!canContainsPoint(point))
+      return false;
+
     if (convexHull == null)
       convexHull = provider.get();
 
@@ -55,6 +58,18 @@ public class ConvexHull
     return true;
   }
 
+  private boolean canContainsPoint(Vector2 point)
+  {
+    Vector2 center = getCenter();
+    float radius = getRadius();
+
+    Vector2 vec = point.getSubtract(center);
+    float length = vec.getLength();
+    Vector2.release(vec);
+
+    return length < radius;
+  }
+
   private static void setNormal(Vector2 normal, ArrayList<Vector2> vertices, int num)
   {
     Vector2 firstPoint = vertices.get(num);
@@ -68,73 +83,14 @@ public class ConvexHull
     normal.normalize();
   }
 
-  public boolean isIntersectWithCircle(Vector2 center, float pointRadius)
+  public boolean isIntersectWithCircle(Vector2 circleCenter, float circleRadius)
   {
     // Optimization
-    if (!canIntersectWithCircle(center, pointRadius))
+    if (!canIntersectWithCircle(circleCenter, circleRadius))
       return false;
 
-    // Get hull
-    if (convexHull == null)
-      convexHull = provider.get();
-
-    // Check convex hull vertices
-    Vector2 vector = Vector2.getInstance();
-
-    for (Vector2 point : convexHull)
-    {
-      vector.setFrom(center);
-      vector.subtract(point);
-
-      if (vector.getLength() < pointRadius)
-      {
-        Vector2.release(vector);
-        return true;
-      }
-    }
-    Vector2.release(vector);
-
-    // Check convex hull edges
-    int count = convexHull.size();
-    Vector2 lineNormal = Vector2.getInstance();
-    Vector2 intersectPoint = Vector2.getInstance();
-    Vector2 intersectToCenter = Vector2.getInstance();
-
-    for (int i = 0; i < count; i++)
-    {
-      Vector2 firstPoint = convexHull.get(i);
-      Vector2 secondPoint = convexHull.get(i + 1 == count ? 0 : i + 1);
-
-      intersectPoint.setFrom(center);
-      intersectPoint.lineProjection(firstPoint, secondPoint);
-
-      lineNormal.setFrom(secondPoint);
-      lineNormal.subtract(firstPoint);
-      lineNormal.normalize();
-
-      float firstProjection = lineNormal.getScalar(firstPoint);
-      float secondProjection = lineNormal.getScalar(secondPoint);
-      float intersectProjection = lineNormal.getScalar(intersectPoint);
-
-      if (intersectProjection < firstProjection || intersectProjection > secondProjection)
-        continue;
-
-      intersectToCenter.setFrom(intersectPoint);
-      intersectToCenter.subtract(center);
-
-      if (intersectToCenter.getLength() > pointRadius)
-        continue;
-
-      Vector2.release(lineNormal);
-      Vector2.release(intersectPoint);
-      Vector2.release(intersectToCenter);
-      return true;
-    }
-
-    Vector2.release(lineNormal);
-    Vector2.release(intersectPoint);
-    Vector2.release(intersectToCenter);
-    return false;
+    float maxRadius = getMaxCircleRadius(circleCenter);
+    return circleRadius > maxRadius;
   }
 
   private boolean canIntersectWithCircle(Vector2 otherCenter, float otherRadius)
@@ -149,6 +105,77 @@ public class ConvexHull
     return length < radius + otherRadius;
   }
 
+  public float getMaxCircleRadius(Vector2 circleCenter)
+  {
+    // Get hull
+    if (convexHull == null)
+      convexHull = provider.get();
+
+    float circleRadius = Float.MAX_VALUE;
+
+    // Check convex hull vertices
+    Vector2 vector = Vector2.getInstance();
+    try
+    {
+      for (Vector2 point : convexHull)
+      {
+        vector.setFrom(circleCenter);
+        vector.subtract(point);
+
+        float length = vector.getLength();
+        if (length < circleRadius)
+          circleRadius = length;
+      }
+    }
+    finally
+    {
+      Vector2.release(vector);
+    }
+
+    // Check convex hull edges
+    int count = convexHull.size();
+    Vector2 lineNormal = Vector2.getInstance();
+    Vector2 intersectPoint = Vector2.getInstance();
+    Vector2 intersectToCenter = Vector2.getInstance();
+    try
+    {
+      for (int i = 0; i < count; i++)
+      {
+        Vector2 firstPoint = convexHull.get(i);
+        Vector2 secondPoint = convexHull.get(i + 1 == count ? 0 : i + 1);
+
+        intersectPoint.setFrom(circleCenter);
+        intersectPoint.lineProjection(firstPoint, secondPoint);
+
+        lineNormal.setFrom(secondPoint);
+        lineNormal.subtract(firstPoint);
+        lineNormal.normalize();
+
+        float firstProjection = lineNormal.getScalar(firstPoint);
+        float secondProjection = lineNormal.getScalar(secondPoint);
+        float intersectProjection = lineNormal.getScalar(intersectPoint);
+
+        if (intersectProjection < firstProjection || intersectProjection > secondProjection)
+          continue;
+
+        intersectToCenter.setFrom(intersectPoint);
+        intersectToCenter.subtract(circleCenter);
+
+        float length = intersectToCenter.getLength();
+        if (length < circleRadius)
+          circleRadius = length;
+      }
+    }
+    finally
+    {
+      Vector2.release(lineNormal);
+      Vector2.release(intersectPoint);
+      Vector2.release(intersectToCenter);
+    }
+
+    return circleRadius;
+  }
+
   public Vector2 getCenter()
   {
     if (center != null)
@@ -159,7 +186,6 @@ public class ConvexHull
 
     int size = convexHull.size();
 
-    // Find area
     float area2 = 0;
     float sumX = 0;
     float sumY = 0;
@@ -178,6 +204,7 @@ public class ConvexHull
       sumY += ey * e;
       area2 += e;
     }
+
     float area = area2 / 2;
     center = Vector2.getInstance(sumX / (6 * area), sumY / (6 * area));
     return center;

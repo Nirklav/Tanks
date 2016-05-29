@@ -1,5 +1,7 @@
 package com.ThirtyNineEighty.Game.Map;
 
+import com.ThirtyNineEighty.Base.Collisions.ConvexHull;
+import com.ThirtyNineEighty.Base.Common.Math.Plane;
 import com.ThirtyNineEighty.Base.Common.Stopwatch;
 import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Map.IPath;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.Future;
 
 public class Map
   implements IMap
@@ -35,14 +38,18 @@ public class Map
   private final static int BottomLeft = 6;
   private final static int BottomRight = 7;
 
-  private final static float stepSize = 3;
-  private final static int maxClosed = 50;
+  protected final static float stepSize = 3;
+  private final static int maxClosed = 200;
   private final static PathComparator pathLengthComparator = new PathComparator();
 
   private final HashMap<Long, Projection> projectionsCache;
-  private final HashSet<Vector2> blockedPoints;
+  private final HashMap<Vector2, Float> pointsCache;
 
+  private final ArrayList<Stopwatch> stopwatches;
   private final Stopwatch findSw;
+  private final Stopwatch projectionsAnySw;
+  private final Stopwatch minOpenFindSw;
+  private final Stopwatch closedCheckSw;
 
   public final String name;
   public final MapDescription description;
@@ -52,43 +59,93 @@ public class Map
     this.name = name;
     this.description = TanksContext.resources.getMap(new FileMapDescriptionSource(name));
     this.projectionsCache = new HashMap<>();
-    this.blockedPoints = buildBlocked();
-    this.findSw = new Stopwatch("Map.findPath", 40);
+    this.pointsCache = buildCache(description);
+
+    stopwatches = new ArrayList<>();
+    stopwatches.add(findSw = new Stopwatch("findPath"));
+    stopwatches.add(projectionsAnySw = new Stopwatch("projectionsAny"));
+    stopwatches.add(minOpenFindSw = new Stopwatch("minOpenFind"));
+    stopwatches.add(closedCheckSw = new Stopwatch("closedCheck"));
   }
 
-  private HashSet<Vector2> buildBlocked()
+  private static HashMap<Vector2, Float> buildCache(final MapDescription description)
   {
-    ArrayList<WorldObject<?, ?>> objects = new ArrayList<>();
-    HashSet<Vector2> result = new HashSet<>();
+    final Plane plane = new Plane();
+    final HashMap<Vector2, Float> pointsCache = new HashMap<>();
 
     float modulo = description.size % stepSize;
-    float minPoint = -(description.size - modulo);
-    Vector2 point = new Vector2();
+    final float minPoint = -(description.size - modulo);
 
     IWorld world = GameContext.content.getWorld();
+    ArrayList<WorldObject<?, ?>> objects = new ArrayList<>();
     world.getObjects(objects);
 
-    for (WorldObject<?, ?> object : objects)
+    ArrayList<Future<?>> tasks = new ArrayList<>();
+    for (final WorldObject<?, ?> object : objects)
     {
+      if (object.collidable == null)
+        continue;
+
       Properties properties = object.getProperties();
       if (!properties.isStaticObject())
         continue;
 
-      Projection projection = getProjection(object);
-      if (projection == null)
+      if (properties.isIgnoreOnMap())
         continue;
 
-      for (float x = minPoint; x < description.size; x += stepSize)
-        for (float y = minPoint; y < description.size; y += stepSize)
+      tasks.add(GameContext.threadPool.submit(new Runnable()
+      {
+        @Override
+        public void run()
         {
-          point.setFrom(x, y);
+          Vector2 point = new Vector2();
+          ConvexHull hull = new ConvexHull(object.collidable, plane);
 
-          if (projection.contains(point))
-            result.add(new Vector2(point));
+          for (float x = minPoint; x < description.size; x += stepSize)
+            for (float y = minPoint; y < description.size; y += stepSize)
+            {
+              point.setFrom(x, y);
+              normalizePoint(point);
+
+              if (hull.contains(point))
+              {
+                synchronized (pointsCache)
+                {
+                  pointsCache.put(new Vector2(point), 0f);
+                }
+              }
+              else
+              {
+                float maxRadius = hull.getMaxCircleRadius(point);
+
+                // If radius for point already exist and lass than new then skip it
+                synchronized (pointsCache)
+                {
+                  Float existingRadius = pointsCache.get(point);
+                  if (existingRadius != null && existingRadius < maxRadius)
+                    continue;
+
+                  pointsCache.put(new Vector2(point), maxRadius);
+                }
+              }
+            }
+
+          Vector2.release(point);
         }
+      }));
     }
 
-    return result;
+    try
+    {
+      for (Future<?> result : tasks)
+        result.get();
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
+
+    return pointsCache;
   }
 
   public void release()
@@ -98,7 +155,8 @@ public class Map
     for (Projection projection : projectionsCache.values())
       projection.release();
 
-    Vector2.release(blockedPoints);
+    projectionsCache.clear();
+    pointsCache.clear();
   }
 
   @Override
@@ -128,22 +186,24 @@ public class Map
     normalizePoint(start);
     normalizePoint(end);
 
-    ArrayList<PathNode> closedSet = new ArrayList<>();
-    ArrayList<PathNode> openSet = new ArrayList<>();
-    openSet.add(new PathNode(start, 0, getPathLength(start, end)));
+    HashSet<Vector2> closedSet = new HashSet<>();
+    HashMap<Vector2, PathNode> openSet = new HashMap<>();
+    openSet.put(start, new PathNode(start, end));
 
     while (openSet.size() > 0)
     {
       // Get next node with minimum path length to end
-      PathNode currentNode = Collections.min(openSet, pathLengthComparator);
+      minOpenFindSw.start();
+      PathNode currentNode = Collections.min(openSet.values(), pathLengthComparator);
+      minOpenFindSw.stop();
 
       // If current node is equals endpoint then we found the path
       if (currentNode.position.equals(end))
         return getPath(finder, currentNode);
 
       // Set currentNode as processed
-      openSet.remove(currentNode);
-      closedSet.add(currentNode);
+      openSet.remove(currentNode.position);
+      closedSet.add(currentNode.position);
 
       // If closed max
       if (closedSet.size() >= maxClosed)
@@ -159,32 +219,48 @@ public class Map
           continue;
 
         // If closedSet already contains this point then skip it
-        if (any(closedSet, new PositionEqualsPredicate(neighborPoint)))
-          continue;
+        closedCheckSw.start();
+        try
+        {
+          if (closedSet.contains(neighborPoint))
+            continue;
+        }
+        finally
+        {
+          closedCheckSw.stop();
+        }
 
         // If point blocked by static object then skip it
-        if (blockedPoints.contains(neighborPoint))
+        Float maxRadius = pointsCache.get(neighborPoint);
+        if (maxRadius != null && maxRadius < finder.radius())
           continue;
 
         // If neighborPoint is blocked then skip it
-        if (projections != null && any(projections, new ProjectionPredicate(finder, neighborPoint)))
-          continue;
+        projectionsAnySw.start();
+        try
+        {
+          if (projections != null && any(projections, new ProjectionPredicate(finder, neighborPoint)))
+            continue;
+        }
+        finally
+        {
+          projectionsAnySw.stop();
+        }
 
         // Build neighborNode
-        float estimatedLength = getPathLength(neighborPoint, end);
-        float lengthFromStart = currentNode.lengthFromStart + stepSize;
-        PathNode neighborNode = new PathNode(currentNode, neighborPoint, lengthFromStart, estimatedLength);
+        PathNode neighborNode = new PathNode(currentNode, neighborPoint, end);
 
         // If openSet already contain node with this position then select node which is farther from the start
-        PathNode openNode = find(openSet, new PositionEqualsPredicate(neighborNode.position));
-        if (openNode == null)
-          openSet.add(neighborNode);
-        else
-          if (openNode.lengthFromStart > neighborNode.lengthFromStart)
-          {
-            openNode.from = currentNode;
-            openNode.lengthFromStart = neighborNode.lengthFromStart;
-          }
+        PathNode existingNode = openSet.get(neighborNode.position);
+        if (existingNode == null)
+        {
+          openSet.put(neighborNode.position, neighborNode);
+        }
+        else if (existingNode.lengthFromStart > neighborNode.lengthFromStart)
+        {
+          existingNode.lengthFromStart = neighborNode.lengthFromStart;
+          existingNode.from = neighborNode.from;
+        }
       }
     }
 
@@ -233,7 +309,7 @@ public class Map
     }
   }
 
-  private void normalizePoint(Vector point)
+  private static void normalizePoint(Vector point)
   {
     int size = point.getSize();
     for (int i = 0; i < size; i++)
@@ -316,12 +392,17 @@ public class Map
     return new Path(finder.getObject(), result);
   }
 
-  @SuppressWarnings("SuspiciousNameCombination")
-  private static float getPathLength(Vector2 start, Vector2 end)
+  public String getStatistics()
   {
-    float x = Math.abs(start.getX() - end.getX());
-    float y = Math.abs(start.getY() - end.getY());
-    return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    StringBuilder result = new StringBuilder();
+    for (Stopwatch sw : stopwatches)
+    {
+      result.append(sw.name())
+            .append(": ")
+            .append(sw.all())
+            .append("\n");
+    }
+    return result.toString();
   }
 
   private static <T> boolean any(Collection<T> collection, Predicate<T> predicate)
@@ -335,23 +416,6 @@ public class Map
       if (predicate.apply(current))
         return current;
     return null;
-  }
-
-  private static class PositionEqualsPredicate
-    implements Predicate<PathNode>
-  {
-    private final Vector2 position;
-
-    public PositionEqualsPredicate(Vector2 value)
-    {
-      position = value;
-    }
-
-    @Override
-    public boolean apply(PathNode pathNode)
-    {
-      return pathNode.position.equals(position);
-    }
   }
 
   private static class ProjectionPredicate
@@ -385,11 +449,11 @@ public class Map
     implements Comparator<PathNode>
   {
     @Override
-    public int compare(PathNode first, PathNode second)
+    public int compare(PathNode lhs, PathNode rhs)
     {
-      float firstLength = first.getFullLength();
-      float secondLength = second.getFullLength();
-      return Float.compare(firstLength, secondLength);
+      float lhsLength = lhs.getFullLength();
+      float rhsLength = rhs.getFullLength();
+      return Float.compare(lhsLength, rhsLength);
     }
   }
 }

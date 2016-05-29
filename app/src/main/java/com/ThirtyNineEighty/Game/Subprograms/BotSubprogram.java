@@ -29,7 +29,7 @@ public class BotSubprogram
   private Tank bot;
 
   private IPath path;
-  private ITask pathTask;
+  private transient ITask pathTask;
   private boolean findPath;
   private float pathNotFoundDelay;
 

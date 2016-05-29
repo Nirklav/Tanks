@@ -30,6 +30,9 @@ class Projection
     if (properties.isIgnoreOnMap())
       return null;
 
+    if (properties.isStaticObject())
+      return null;
+
     return new Projection(object);
   }
 
@@ -85,19 +88,19 @@ class Projection
     return object;
   }
 
-  public boolean contains(Vector2 point)
+  public boolean contains(Vector2 otherCenter, float otherRadius)
   {
     synchronized (syncObject)
     {
-      return hull.contains(point);
+      return hull.isIntersectWithCircle(otherCenter, otherRadius);
     }
   }
 
-  public boolean contains(Vector2 point, float radius)
+  public float radius()
   {
     synchronized (syncObject)
     {
-      return hull.isIntersectWithCircle(point, radius);
+      return hull.getRadius();
     }
   }
 

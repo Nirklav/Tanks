@@ -21,11 +21,7 @@ public class Vector2
   public final static Vector2 yAxis = new Vector2(0.0f, 1.0f);
   public final static int size = 2;
 
-  private static final VectorsPool<Vector2> pool = new VectorsPool<>("Vector2", poolLimit);
-  public static String getStatistics()
-  {
-    return pool.getStatistics();
-  }
+  public static final VectorsPool<Vector2> pool = new VectorsPool<>("Vector2", poolLimit);
 
   public static Vector2 getInstance(Vector other)
   {

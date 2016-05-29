@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Game.Menu;
 
+import com.ThirtyNineEighty.Base.GameContext;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
@@ -194,18 +195,21 @@ public class TankSelectMenu
     GameProperties properties = startArgs.getProperties();
     GameDescription bulletDescription = getDescription(properties.getBullet());
 
-    return String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
+    String result = String.format("Available: %s\nBullets: %s\nDamage: %d hp\nSpeed: %d m/s"
       , isBulletAvailable() ? "Yes" : "No"
       , properties.getBullet()
       , (int)bulletDescription.getDamage()
       , (int)bulletDescription.getSpeed()
     );
+
+    GameContext.resources.release(bulletDescription);
+    return result;
   }
 
   private String getTankDescription()
   {
     GameDescription tankDescription = getDescription(startArgs.getTankName());
-    return String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
+    String result = String.format("Opened: %s\nTank: %s\nHealth: %d hp\nSpeed: %d m/s\nTurret speed: %d degree/s\nRecharge speed %d per/s"
       , isTankAvailable() ? "Yes" : "No"
       , startArgs.getTankName()
       , (int)tankDescription.getHealth()
@@ -213,6 +217,9 @@ public class TankSelectMenu
       , (int)tankDescription.getTurretRotationSpeed()
       , (int)tankDescription.getRechargeSpeed()
     );
+
+    GameContext.resources.release(tankDescription);
+    return result;
   }
 
   private boolean isBulletAvailable()
@@ -220,15 +227,23 @@ public class TankSelectMenu
     GameProperties properties = startArgs.getProperties();
     GameDescription tankDescription = getDescription(startArgs.getTankName());
 
-    return tankDescription
-      .getSupportedBullets().contains(properties.getBullet());
+    boolean result = tankDescription
+      .getSupportedBullets()
+      .contains(properties.getBullet());
+
+    GameContext.resources.release(tankDescription);
+    return result;
   }
 
   private boolean isTankAvailable()
   {
     String tankName = startArgs.getTankName();
     GameDescription tankDescription = getDescription(startArgs.getTankName());
-    return tankDescription.openedOnStart() || TanksContext.data.isTankOpen(tankName);
+
+    boolean result = tankDescription.openedOnStart() || TanksContext.data.isTankOpen(tankName);
+
+    GameContext.resources.release(tankDescription);
+    return result;
   }
 
   private GameDescription getDescription(String name)

@@ -31,33 +31,40 @@ public abstract class BaseMenu
 
     int id = event.getPointerId(pointerIndex);
 
-    synchronized (objects)
-    {
-      controlsCopy.clear();
-
-      for (IControl control : objects)
-        controlsCopy.add(control);
-    }
+    ArrayList<IControl> controls = getControlsCopy();
 
     switch (action)
     {
     case MotionEvent.ACTION_DOWN:
     case MotionEvent.ACTION_POINTER_DOWN:
-      for (IControl control : controlsCopy)
+      for (IControl control : controls)
         control.processDown(id, x, y);
       break;
 
     case MotionEvent.ACTION_MOVE:
-      for (IControl control : controlsCopy)
+      for (IControl control : controls)
         control.processMove(id, x, y);
       break;
 
     case MotionEvent.ACTION_UP:
     case MotionEvent.ACTION_POINTER_UP:
     case MotionEvent.ACTION_CANCEL:
-      for (IControl control : controlsCopy)
+      for (IControl control : controls)
         control.processUp(id, x, y);
       break;
+    }
+  }
+
+  private ArrayList<IControl> getControlsCopy()
+  {
+    synchronized (objects)
+    {
+      controlsCopy.clear();
+
+      for (IControl control : objects)
+        controlsCopy.add(control);
+
+      return controlsCopy;
     }
   }
 }

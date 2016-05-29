@@ -132,21 +132,21 @@ public class Renderer
     synchronized (syncObject)
     {
       // Objects
-      GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-
       draw(context, objects);
 
-      GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-
       // Particles
+      GLES20.glDepthMask(false);
       GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 
       draw(context, particles);
 
+      GLES20.glDepthMask(true);
       GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
       // Menus
+      GLES20.glDisable(GLES20.GL_DEPTH_TEST);
       draw(context, menus);
+      GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     }
   }
 
@@ -178,6 +178,7 @@ public class Renderer
 
     GLES20.glEnable(GLES20.GL_CULL_FACE);
     GLES20.glEnable(GLES20.GL_BLEND);
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     GLES20.glDepthFunc(GLES20.GL_LEQUAL);
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
     GLES20.glViewport(0, 0, w, h);

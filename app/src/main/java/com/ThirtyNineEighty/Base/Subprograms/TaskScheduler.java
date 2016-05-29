@@ -7,32 +7,40 @@ import com.ThirtyNineEighty.Base.GameContext;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class TaskScheduler
 {
-  private static final int MaxRunTime = 10;
+  private static final int MaxRunTime = 15;
   private static final int CriticalRunTime = -1;
 
+  // Tasks data
   private final TaskAdder adder;
   private final PriorityBlockingQueue<Task> tasks;
-  private final Stopwatch[] stopwatches;
-  private final Future<?>[] futures;
+
+  // Threads data
   private final int processors;
+  private final Future<?>[] futures;
+  private final Stopwatch[] stopwatches;
+
+  // Stats
+  private Watcher watcher;
 
   public TaskScheduler()
   {
     adder = new TaskAdder();
     tasks = new PriorityBlockingQueue<>();
 
-    Runtime runtime = Runtime.getRuntime();
-    int processorsCount = runtime.availableProcessors();
+    processors = Runtime
+      .getRuntime()
+      .availableProcessors();
 
-    stopwatches = new Stopwatch[processorsCount];
-    for (int i = 0; i < processorsCount; i++)
+    futures = new Future[processors];
+    stopwatches = new Stopwatch[processors];
+    for (int i = 0; i < processors; i++)
       stopwatches[i] = new Stopwatch("TaskScheduler.Worker-" + i, CriticalRunTime);
 
-    futures = new Future[processorsCount];
-    processors = processorsCount;
+    watcher = new Watcher(TimeUnit.MILLISECONDS.toNanos(MaxRunTime));
   }
 
   public void prepare(ISubprogram subprogram)
@@ -45,6 +53,9 @@ public class TaskScheduler
 
   public void run()
   {
+    if (!watcher.tryStart())
+      return;
+
     int size = tasks.size();
     if (size == 0)
       return;
@@ -53,6 +64,8 @@ public class TaskScheduler
       runImpl(stopwatches[0]);
     else
       runParallel();
+
+    watcher.stop();
   }
 
   private void runImpl(Stopwatch stopwatch)
@@ -119,7 +132,8 @@ public class TaskScheduler
 }
 
 class Task
-  implements ITask, Comparable<Task>
+  implements ITask,
+             Comparable<Task>
 {
   private static long lastId;
 
@@ -175,5 +189,50 @@ class Task
   public int hashCode()
   {
     return (int)(id ^ (id>>>32));
+  }
+}
+
+class Watcher
+{
+  private boolean initialized;
+
+  private static final long secondNanos = 1000 * 1000;
+
+  private long maxNanosPerSec;
+  private long startSecondNanos;
+  private long elapsedNanos;
+  private long startNanos;
+
+  public Watcher(long maxNanosPerSec)
+  {
+    this.maxNanosPerSec = maxNanosPerSec;
+  }
+
+  public boolean tryStart()
+  {
+    if (!initialized)
+    {
+      initialized = true;
+      startNanos = System.nanoTime();
+      startSecondNanos = startNanos;
+      return true;
+    }
+
+    long currentNanos = System.nanoTime();
+
+    startNanos = currentNanos;
+    if (secondNanos < currentNanos - startSecondNanos)
+    {
+      startSecondNanos = startNanos;
+      elapsedNanos = 0;
+    }
+
+    return elapsedNanos <= maxNanosPerSec;
+  }
+
+  public void stop()
+  {
+    long endNanos = System.nanoTime();
+    elapsedNanos += endNanos - startNanos;
   }
 }

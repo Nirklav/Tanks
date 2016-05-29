@@ -25,11 +25,7 @@ public class Vector3
   public final static Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
   public final static int size = 3;
 
-  private static final VectorsPool<Vector3> pool = new VectorsPool<>("Vector3", poolLimit);
-  public static String getStatistics()
-  {
-    return pool.getStatistics();
-  }
+  public static final VectorsPool<Vector3> pool = new VectorsPool<>("Vector3", poolLimit);
 
   public static Vector3 getInstance(Vector other)
   {

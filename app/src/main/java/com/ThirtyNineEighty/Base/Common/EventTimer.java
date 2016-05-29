@@ -1,17 +1,18 @@
 package com.ThirtyNineEighty.Base.Common;
 
 import java.util.ArrayDeque;
+import java.util.concurrent.TimeUnit;
 
 public class EventTimer
 {
-  private final long MinSleepTime = 10;
+  private final long MinSleepMs = 10;
 
   private final Object syncObject;
   private final Runnable userRunnable;
   private final Runnable timerRunnable;
   private final ArrayDeque<Event> events;
-  private final int period;
-  private long lastExecute;
+  private final long periodNanos;
+  private long lastExecuteNanos;
 
   private volatile boolean stopping;
 
@@ -22,11 +23,11 @@ public class EventTimer
 
   public EventTimer(String name, int periodMs, Runnable r)
   {
-    period = periodMs;
+    periodNanos = TimeUnit.MILLISECONDS.toNanos(periodMs);
     userRunnable = r;
     threadName = name;
 
-    lastExecute = System.currentTimeMillis();
+    lastExecuteNanos = System.nanoTime();
     syncObject = new Object();
     events = new ArrayDeque<>();
 
@@ -62,8 +63,8 @@ public class EventTimer
 
               synchronized (syncObject)
               {
-                long sleepTime = getSleepTime();
-                if (sleepTime > MinSleepTime)
+                long sleepTime = getSleepMs();
+                if (sleepTime > MinSleepMs)
                   syncObject.wait(sleepTime);
 
                 if (timeToRun())
@@ -72,7 +73,7 @@ public class EventTimer
 
             } // end of sleep cycle
 
-            lastExecute = System.currentTimeMillis();
+            lastExecuteNanos = System.nanoTime();
             userRunnable.run();
           } // end of runnable cycle
         }
@@ -86,18 +87,19 @@ public class EventTimer
 
   private boolean timeToRun()
   {
-    return getSleepTime() <= MinSleepTime;
+    return getSleepMs() <= MinSleepMs;
   }
 
-  private long getSleepTime()
+  private long getSleepMs()
   {
-    long sleepTime = period;
-    long timeLeft = System.currentTimeMillis() - lastExecute;
-    long remaining = sleepTime - timeLeft;
-    if (remaining < period)
-      sleepTime = remaining;
+    long sleepTimeNano = periodNanos;
+    long timeLeftNano = System.nanoTime() - lastExecuteNanos;
 
-    return sleepTime;
+    long remaining = sleepTimeNano - timeLeftNano;
+    if (remaining < periodNanos)
+      sleepTimeNano = remaining;
+
+    return TimeUnit.NANOSECONDS.toMillis(sleepTimeNano);
   }
 
   public void start()

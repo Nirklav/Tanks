@@ -1,5 +1,6 @@
 package com.ThirtyNineEighty.Base.Resources;
 
+import com.ThirtyNineEighty.Base.IStatistics;
 import com.ThirtyNineEighty.Base.Objects.Descriptions.Description;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
 import com.ThirtyNineEighty.Base.Resources.Entities.FrameBuffer;
@@ -13,6 +14,7 @@ import com.ThirtyNineEighty.Base.Resources.Sources.ISource;
 import java.util.ArrayList;
 
 public class Resources
+  implements IStatistics
 {
   private final ArrayList<ResourceCache<?>> caches;
 
@@ -83,7 +85,7 @@ public class Resources
       cache.clear();
   }
 
-  public String getCacheStatus()
+  public String getStatistics()
   {
     StringBuilder info = new StringBuilder(20 * caches.size());
 

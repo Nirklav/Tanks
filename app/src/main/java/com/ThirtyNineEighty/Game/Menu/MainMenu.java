@@ -3,6 +3,8 @@ package com.ThirtyNineEighty.Game.Menu;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.GameContext;
+import com.ThirtyNineEighty.Base.IStatistics;
+import com.ThirtyNineEighty.Base.Map.IMap;
 import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
@@ -14,6 +16,8 @@ import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
+
+import java.util.ArrayList;
 
 public class MainMenu
   extends BaseMenu
@@ -68,12 +72,29 @@ public class MainMenu
       @Override
       public void run()
       {
-        String resources = TanksContext.resources.getCacheStatus();
-        String vec2stats = Vector2.getStatistics();
-        String vec3stats = Vector3.getStatistics();
-        String contentStats = String.format("Update: %d ms", GameContext.content.getAverageUpdateMs());
+        ArrayList<IStatistics> statistics = new ArrayList<>();
+        statistics.add(TanksContext.resources);
+        statistics.add(GameContext.content);
+        statistics.add(Vector2.pool);
+        statistics.add(Vector3.pool);
 
-        statsLabel.setValue(String.format("%s\n%s\n%s\n\n%s",resources, vec2stats, vec3stats, contentStats));
+        IWorld world = GameContext.content.getWorld();
+        if (world != null)
+        {
+          IMap map = world.getMap();
+          if (map != null)
+            statistics.add(map);
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (IStatistics stats : statistics)
+        {
+          result
+            .append(stats.getStatistics())
+            .append('\n');
+        }
+
+        statsLabel.setValue(result.toString());
 
         if (!statsLabel.isVisible())
         {
@@ -84,7 +105,7 @@ public class MainMenu
     });
     add(statsButton);
 
-    statsLabel = new GLLabelProvider(TanksContext.resources.getCacheStatus(), MeshMode.Dynamic);
+    statsLabel = new GLLabelProvider(null, MeshMode.Dynamic);
     statsLabel.setPosition(960, 540);
     statsLabel.setAlign(GLLabelProvider.AlignType.TopRight);
     statsLabel.setVisible(false);

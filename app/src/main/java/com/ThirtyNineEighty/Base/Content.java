@@ -11,6 +11,7 @@ import com.ThirtyNineEighty.Base.Subprograms.TaskScheduler;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 
 public class Content
+  implements IStatistics
 {
   private volatile IWorld world;
   private volatile IMenu menu;
@@ -23,15 +24,22 @@ public class Content
 
   private final ArrayList<WorldObject<?, ?>> worldObjects; // memory optimization
 
-  private final Stopwatch subprogramsSw = new Stopwatch("Subprograms", 70);
-  private final Stopwatch collisionsSw = new Stopwatch("Collisions", 30);
-  private final Stopwatch updateSw = new Stopwatch("Update", 100);
+  // Statistics
+  private final ArrayList<Stopwatch> stopwatches;
+  private final Stopwatch subprogramsSw;
+  private final Stopwatch collisionsSw;
+  private final Stopwatch updateSw;
 
   public Content()
   {
     subprograms = new ArrayList<>();
     subprogramActions = new ArrayList<>();
     worldObjects = new ArrayList<>();
+
+    stopwatches = new ArrayList<>(3);
+    stopwatches.add(subprogramsSw = new Stopwatch("Subprograms", 70));
+    stopwatches.add(collisionsSw = new Stopwatch("Collisions", 30));
+    stopwatches.add(updateSw = new Stopwatch("Update", 100));
 
     taskScheduler = new TaskScheduler();
     updateTimer = new EventTimer(
@@ -215,11 +223,6 @@ public class Content
     reset(menu);
   }
 
-  public long getAverageUpdateMs()
-  {
-    return updateSw.average();
-  }
-
   private static void reset(IEngineObject object)
   {
     if (object == null)
@@ -230,6 +233,16 @@ public class Content
 
     if (object.isInitialized())
       object.uninitialize();
+  }
+
+  public String getStatistics()
+  {
+    StringBuilder builder = new StringBuilder();
+
+    for (Stopwatch stopwatch : stopwatches)
+      builder.append(stopwatch).append("\n");
+
+    return builder.toString();
   }
 
   private static class Action
