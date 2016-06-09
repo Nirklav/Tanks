@@ -22,6 +22,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     dependencies {
-        compile 'com.android.support:support-annotations:22.2.1'
+        compile 'com.android.support:support-annotations:23.2.1'
     }
 }
