@@ -12,10 +12,10 @@ public class DataManager
     this.dataBase = dataBase;
   }
 
-  public SavedWorldEntity getSavedWorld(String name)
+  public IWorld getSavedWorld(String name)
   {
     Record<SavedWorldEntity> record = dataBase.worlds.read(name);
-    return record == null ? null : record.data;
+    return record == null ? null : record.data.world;
   }
 
   public void saveWorld(String name, IWorld world)

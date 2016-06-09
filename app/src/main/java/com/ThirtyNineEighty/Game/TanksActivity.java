@@ -2,11 +2,11 @@ package com.ThirtyNineEighty.Game;
 
 import com.ThirtyNineEighty.Base.Collisions.CollisionManager;
 import com.ThirtyNineEighty.Base.Content;
-import com.ThirtyNineEighty.Base.Data.Entities.SavedWorldEntity;
 import com.ThirtyNineEighty.Base.Factory.Factory;
 import com.ThirtyNineEighty.Base.GameActivity;
 import com.ThirtyNineEighty.Base.GameContext;
 import com.ThirtyNineEighty.Base.Objects.SkyBox;
+import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Game.Data.TanksDataBase;
 import com.ThirtyNineEighty.Game.Data.TanksDataManager;
 import com.ThirtyNineEighty.Game.Menu.MainMenu;
@@ -71,12 +71,12 @@ public class TanksActivity
       @Override
       public void run()
       {
-        SavedWorldEntity saved = TanksContext.data.getSavedWorld(SavedWorld);
+        IWorld saved = TanksContext.data.getSavedWorld(SavedWorld);
         if (saved == null)
           return;
 
-        TanksContext.content.setWorld(saved.world);
-        saved.world.disable();
+        TanksContext.content.setWorld(saved);
+        saved.disable();
       }
     });
   }
