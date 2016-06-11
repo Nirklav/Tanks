@@ -9,9 +9,10 @@ import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
 import com.ThirtyNineEighty.Base.Renderable.Subprograms.DelayedRenderableSubprogram;
+import com.ThirtyNineEighty.Game.ContentState.States.EditorState;
+import com.ThirtyNineEighty.Game.ContentState.States.GameState;
+import com.ThirtyNineEighty.Game.ContentState.States.MapSelectState;
 import com.ThirtyNineEighty.Game.TanksContext;
-import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
-import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
 import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
@@ -42,10 +43,7 @@ public class MainMenu
           return;
 
         if (world instanceof GameWorld)
-        {
-          world.enable();
-          TanksContext.content.setMenu(new GameMenu());
-        }
+          TanksContext.contentState.set(new GameState(world));
       }
     });
     add(continueButton);
@@ -58,8 +56,7 @@ public class MainMenu
       @Override
       public void run()
       {
-        TanksContext.content.setWorld(null);
-        TanksContext.content.setMenu(new MapSelectMenu(new GameStartArgs()));
+        TanksContext.contentState.set(new MapSelectState());
       }
     });
     add(newGameButton);
@@ -119,8 +116,7 @@ public class MainMenu
       @Override
       public void run()
       {
-        TanksContext.content.setWorld(new EditorWorld());
-        TanksContext.content.setMenu(new EditorMenu());
+        TanksContext.contentState.set(new EditorState());
       }
     });
     add(editor);

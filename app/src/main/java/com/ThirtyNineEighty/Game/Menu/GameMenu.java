@@ -9,6 +9,7 @@ import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Menus.Controls.*;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
+import com.ThirtyNineEighty.Game.ContentState.States.MainState;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
 import com.ThirtyNineEighty.Game.Objects.Tank;
 import com.ThirtyNineEighty.Game.TanksContext;
@@ -86,9 +87,7 @@ public class GameMenu
       @Override
       public void run()
       {
-        IWorld world = TanksContext.content.getWorld();
-        world.disable();
-        TanksContext.content.setMenu(new MainMenu());
+        TanksContext.contentState.set(new MainState(false));
       }
     });
     add(menuButton);

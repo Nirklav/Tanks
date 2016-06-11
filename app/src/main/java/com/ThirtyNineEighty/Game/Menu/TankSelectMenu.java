@@ -5,13 +5,14 @@ import com.ThirtyNineEighty.Base.Menus.BaseMenu;
 import com.ThirtyNineEighty.Base.Menus.Selector;
 import com.ThirtyNineEighty.Base.Providers.GLLabelProvider;
 import com.ThirtyNineEighty.Base.Resources.Entities.ContentNames;
+import com.ThirtyNineEighty.Game.ContentState.States.GameLoadingState;
+import com.ThirtyNineEighty.Game.ContentState.States.MainState;
 import com.ThirtyNineEighty.Game.Objects.Properties.GameProperties;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Menus.Controls.Gesture;
 import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.GameStartArgs;
-import com.ThirtyNineEighty.Game.Worlds.GameWorld;
 import com.ThirtyNineEighty.Game.Worlds.TankSelectWorld;
 import com.ThirtyNineEighty.Base.Common.Math.Vector2;
 import com.ThirtyNineEighty.Game.Objects.Descriptions.GameDescription;
@@ -95,8 +96,7 @@ public class TankSelectMenu
       @Override
       public void run()
       {
-        TanksContext.content.setWorld(null);
-        TanksContext.content.setMenu(new MainMenu());
+        TanksContext.contentState.set(new MainState(true));
       }
     });
     add(menuButton);
@@ -164,8 +164,7 @@ public class TankSelectMenu
         if (!isTankAvailable() || !isBulletAvailable())
           return;
 
-        TanksContext.content.setMenu(new GameMenu());
-        TanksContext.content.setWorld(new GameWorld(startArgs));
+        TanksContext.contentState.set(new GameLoadingState(startArgs));
       }
     });
     add(gameButton);

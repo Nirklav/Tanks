@@ -8,8 +8,8 @@ import com.ThirtyNineEighty.Base.Resources.Sources.FileContentSource;
 import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
 import com.ThirtyNineEighty.Base.Worlds.BaseWorld;
 import com.ThirtyNineEighty.Base.Renderable.Common.*;
+import com.ThirtyNineEighty.Game.ContentState.States.MainState;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapDescription;
-import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Map.Descriptions.MapObject;
 import com.ThirtyNineEighty.Game.Map.Map;
 import com.ThirtyNineEighty.Game.Objects.Tank;
@@ -101,8 +101,8 @@ public class GameWorld
       {
         if (clearWorld)
         {
-          TanksContext.content.setMenu(new MainMenu());
-          TanksContext.content.setWorld(null);
+          TanksContext.contentState.set(new MainState(true));
+          unbind();
           return;
         }
 
@@ -154,6 +154,9 @@ public class GameWorld
 
     // Create map
     map = new Map(mapName);
+
+    // Loading is over, set next state
+    TanksContext.contentState.next();
   }
 
   @Override

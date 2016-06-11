@@ -11,6 +11,8 @@ import com.ThirtyNineEighty.Game.Common.LoadException;
 import com.ThirtyNineEighty.Base.Common.Math.*;
 import com.ThirtyNineEighty.Base.Menus.Controls.*;
 import com.ThirtyNineEighty.Base.Subprograms.Subprogram;
+import com.ThirtyNineEighty.Game.ContentState.States.EditorImportState;
+import com.ThirtyNineEighty.Game.ContentState.States.MainState;
 import com.ThirtyNineEighty.Game.TanksContext;
 import com.ThirtyNineEighty.Game.Worlds.EditorWorld;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
@@ -81,8 +83,7 @@ public class EditorMenu
       @Override
       public void run()
       {
-        TanksContext.content.setWorld(null);
-        TanksContext.content.setMenu(new MainMenu());
+        TanksContext.contentState.set(new MainState(true));
       }
     });
     add(menuButton);
@@ -205,7 +206,7 @@ public class EditorMenu
           return;
         }
 
-        TanksContext.content.setMenu(new EditorImportMenu());
+        TanksContext.contentState.set(new EditorImportState());
       }
     });
     add(importBtn);

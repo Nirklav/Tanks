@@ -10,6 +10,7 @@ import com.ThirtyNineEighty.Base.Menus.Controls.Button;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
 import com.ThirtyNineEighty.Base.Renderable.GL.GLLabel;
 import com.ThirtyNineEighty.Base.Resources.MeshMode;
+import com.ThirtyNineEighty.Game.ContentState.States.EditorState;
 import com.ThirtyNineEighty.Game.TanksContext;
 
 public class EditorImportMenu
@@ -37,7 +38,7 @@ public class EditorImportMenu
       @Override
       public void run()
       {
-        TanksContext.content.setMenu(new EditorMenu());
+        TanksContext.contentState.set(new EditorState());
       }
     });
     add(menuButton);
@@ -54,7 +55,8 @@ public class EditorImportMenu
         {
           IWorld world = TanksContext.content.getWorld();
           EditorExporter.importMap(world, mapSelector.getCurrent());
-          TanksContext.content.setMenu(new EditorMenu());
+
+          TanksContext.contentState.set(new EditorState());
         }
         catch (LoadException e)
         {

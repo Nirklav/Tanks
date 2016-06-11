@@ -7,9 +7,12 @@ import com.ThirtyNineEighty.Base.GameActivity;
 import com.ThirtyNineEighty.Base.GameContext;
 import com.ThirtyNineEighty.Base.Objects.SkyBox;
 import com.ThirtyNineEighty.Base.Worlds.IWorld;
+import com.ThirtyNineEighty.Game.ContentState.ContentStateManager;
+import com.ThirtyNineEighty.Game.ContentState.States.IContentState;
+import com.ThirtyNineEighty.Game.ContentState.States.MainLoadingState;
+import com.ThirtyNineEighty.Game.ContentState.States.MainState;
 import com.ThirtyNineEighty.Game.Data.TanksDataBase;
 import com.ThirtyNineEighty.Game.Data.TanksDataManager;
-import com.ThirtyNineEighty.Game.Menu.MainMenu;
 import com.ThirtyNineEighty.Game.Objects.*;
 import com.ThirtyNineEighty.Game.Providers.*;
 import com.ThirtyNineEighty.Game.Resources.TanksResources;
@@ -30,6 +33,7 @@ public class TanksActivity
     GameContext.factory = new Factory();
     GameContext.resources = TanksContext.resources = new TanksResources();
     GameContext.data = TanksContext.data = new TanksDataManager(new TanksDataBase(this));
+    TanksContext.contentState = new ContentStateManager();
   }
 
   @Override
@@ -65,18 +69,17 @@ public class TanksActivity
   {
     super.initializeContent();
 
-    TanksContext.content.setMenuAsync(new MainMenu());
     TanksContext.content.postEvent(new Runnable()
     {
       @Override
       public void run()
       {
-        IWorld saved = TanksContext.data.getSavedWorld(SavedWorld);
-        if (saved == null)
-          return;
+        IWorld saved = TanksContext.data.getSavedWorld(GameActivity.SavedWorld);
+        IContentState state = saved != null
+          ? new MainLoadingState(saved)
+          : new MainState(false);
 
-        TanksContext.content.setWorld(saved);
-        saved.disable();
+        TanksContext.contentState.set(state);
       }
     });
   }
@@ -89,6 +92,7 @@ public class TanksActivity
     GameContext.content = null;
     GameContext.collisions = null;
     GameContext.factory = null;
+    TanksContext.contentState = null;
 
     GameContext.resources.clearCache();
     GameContext.resources = TanksContext.resources = null;
