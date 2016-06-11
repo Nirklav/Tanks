@@ -6,22 +6,32 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ThirtyNineEighty.Base.Data.Entities.SavedWorldEntity;
 
+import java.util.ArrayList;
+
 public class DataBase
   extends SQLiteOpenHelper
 {
+  private final ArrayList<Table<?>> tables;
   public final Table<SavedWorldEntity> worlds;
 
   public DataBase(Context context)
   {
     super(context, "Data", null, 1);
 
-    worlds = new Table<>(this, "SavedWorlds");
+    tables = new ArrayList<>();
+    register(worlds = new Table<>(this, "SavedWorlds"));
+  }
+
+  protected void register(Table<?> table)
+  {
+    tables.add(table);
   }
 
   @Override
   public void onCreate(SQLiteDatabase database)
   {
-    worlds.create(database);
+    for (Table<?> table : tables)
+      table.create(database);
   }
 
   @Override
