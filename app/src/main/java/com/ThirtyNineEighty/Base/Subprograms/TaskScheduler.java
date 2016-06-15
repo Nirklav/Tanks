@@ -55,17 +55,22 @@ public class TaskScheduler
   {
     if (!watcher.tryStart())
       return;
+    
+    try
+    {
+      int size = tasks.size();
+      if (size == 0)
+        return;
 
-    int size = tasks.size();
-    if (size == 0)
-      return;
-
-    if (size == 1 || processors == 1)
-      runImpl(stopwatches[0]);
-    else
-      runParallel();
-
-    watcher.stop();
+      if (size == 1 || processors == 1)
+        runImpl(stopwatches[0]);
+      else
+        runParallel();
+    }
+    finally
+    {
+      watcher.stop();
+    }
   }
 
   private void runImpl(Stopwatch stopwatch)
