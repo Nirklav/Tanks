@@ -18,7 +18,7 @@ class Projection
   private Vector3 position;
   private Vector3 angles;
 
-  private Vector2 projProsition;
+  private Vector2 projPosition;
   private float projAngle;
 
   public static Projection FromObject(WorldObject<?, ?> object)
@@ -41,7 +41,7 @@ class Projection
     this.object = object;
     this.position = Vector3.getInstance();
     this.angles = Vector3.getInstance();
-    this.projProsition = Vector2.getInstance();
+    this.projPosition = Vector2.getInstance();
     this.syncObject = new Object();
 
     set();
@@ -66,7 +66,7 @@ class Projection
         hull = new ConvexHull(object.collidable, plane);
       else
       {
-        Vector2 deltaPos = currentProjPosition.getSubtract(projProsition);
+        Vector2 deltaPos = currentProjPosition.getSubtract(projPosition);
         float deltaZ = currentProjAngle - projAngle;
 
         hull.move(deltaPos);
@@ -78,7 +78,7 @@ class Projection
       position.setFrom(currentPosition);
       angles.setFrom(angles);
 
-      projProsition.setFrom(currentProjPosition);
+      projPosition.setFrom(currentProjPosition);
       projAngle = currentProjAngle;
     }
   }
