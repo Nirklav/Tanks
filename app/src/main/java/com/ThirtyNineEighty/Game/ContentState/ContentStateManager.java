@@ -20,7 +20,12 @@ public class ContentStateManager
     }
     catch (Exception e)
     {
-      String msg = String.format("Error on apply. Prev state: %s. New state: %s", prev.getType(), current.getType());
+      String msg;
+      if (prev != null)
+        msg = String.format("Error on apply. Prev state: %s. New state: %s", prev.getType(), current.getType());
+      else
+        msg = e.getMessage();
+
       throw new RuntimeException(msg, e);
     }
   }

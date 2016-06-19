@@ -5,7 +5,6 @@ import android.opengl.Matrix;
 
 import com.ThirtyNineEighty.Base.Common.Math.Vector3;
 import com.ThirtyNineEighty.Base.DeltaTime;
-import com.ThirtyNineEighty.Base.Objects.Descriptions.RenderableDescription;
 import com.ThirtyNineEighty.Base.Providers.IDataProvider;
 import com.ThirtyNineEighty.Base.Renderable.RendererContext;
 import com.ThirtyNineEighty.Base.Renderable.Shaders.*;
@@ -17,8 +16,6 @@ public class GLExplosionParticles
   extends GLRenderable<GLRenderable.Data>
 {
   private static final long serialVersionUID = 1L;
-
-  private static final RenderableDescription Description = new RenderableDescription("sphere", "particle");
 
   private transient Texture textureData;
   private transient Geometry geometryData;
@@ -38,13 +35,15 @@ public class GLExplosionParticles
   {
     super(provider);
 
-    this.count = 1000;
-    this.time = 0;
-    this.life = 1000;
-    this.angleVariance = 120;
-    this.explosionSize = 8;
-    this.startColor = new Vector3(1.4f, 0.6f, 0.0f, 1.0f);
-    this.endColor = new Vector3(0.3f, 0.3f, 0.3f, 0.1f);
+    count = 1000;
+    time = 0;
+    life = 1000;
+    angleVariance = 60;
+    explosionSize = 8;
+    startPointSize = 5;
+    endPointSize = 5;
+    startColor = new Vector3(1.4f, 0.6f, 0.0f, 1.0f);
+    endColor = new Vector3(0.3f, 0.3f, 0.3f, 0.1f);
   }
 
   public GLExplosionParticles setCount(int value)
@@ -92,7 +91,7 @@ public class GLExplosionParticles
   public void initialize()
   {
     this.geometryData = GameContext.resources.getGeometry(new RandomParticlesSource(angleVariance));
-    this.textureData = GameContext.resources.getTexture(new FileTextureSource(Description.textureName, false));
+    this.textureData = GameContext.resources.getTexture(new FileTextureSource(ParticleTexture, false));
 
     super.initialize();
   }
@@ -156,6 +155,8 @@ public class GLExplosionParticles
     if (isEnabled())
     {
       time += 1000 * DeltaTime.get();
+
+      // auto unbind if explosion is over
       if (time > life && !unbinded)
       {
         unbinded = true;

@@ -27,6 +27,6 @@ public class TanksResources
   {
     super.preload();
 
-    getGeometry(new RandomParticlesSource(120));
+    getGeometry(new RandomParticlesSource(60));
   }
 }

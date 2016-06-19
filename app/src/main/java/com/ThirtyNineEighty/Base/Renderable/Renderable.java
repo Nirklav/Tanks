@@ -9,6 +9,9 @@ public abstract class Renderable
   extends View
   implements IRenderable
 {
+  protected static final String ParticleTexture = "particle";
+  protected static final String FontTexture = "SimpleFont";
+
   private static final long serialVersionUID = 1L;
 
   @Override

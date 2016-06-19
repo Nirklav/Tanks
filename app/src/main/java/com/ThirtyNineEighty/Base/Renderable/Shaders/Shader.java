@@ -11,13 +11,14 @@ import java.io.InputStream;
 
 public abstract class Shader
 {
-  public final static int Count = 6;
+  public final static int Count = 7;
   public final static int ShaderModel = 0;
   public final static int ShaderSkyBox = 1;
   public final static int ShaderExplosionParticles = 2;
   public final static int ShaderSprite = 3;
   public final static int ShaderPolyLine = 4;
   public final static int ShaderLabel = 5;
+  public final static int ShaderParticles = 6;
 
   protected static int currentId;
   private static Shader[] shaders;
@@ -38,6 +39,7 @@ public abstract class Shader
     shaders[ShaderSkyBox] = new ShaderSkyBox();
     shaders[ShaderPolyLine] = new ShaderPolyLine();
     shaders[ShaderLabel] = new ShaderLabel();
+    shaders[ShaderParticles] = new ShaderParticles();
   }
 
   public static Shader getCurrent()

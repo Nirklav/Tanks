@@ -24,7 +24,6 @@ public class GLLabel
   private static final long serialVersionUID = 1L;
 
   public static final int tabLength = 3;
-  public static final String FontSimple = "SimpleFont";
 
   private IDataProvider<Data> dataProvider;
   private float[] modelViewMatrix;
@@ -34,7 +33,7 @@ public class GLLabel
 
   public GLLabel(IDataProvider<Data> provider)
   {
-    this(FontSimple, provider);
+    this(FontTexture, provider);
   }
 
   public GLLabel(String font, IDataProvider<Data> provider)

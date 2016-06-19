@@ -19,7 +19,7 @@ public class RandomParticlesSource
 
   public RandomParticlesSource(float angleVariance)
   {
-    super(String.format("Random_sphere_particles_%s", angleVariance), MeshMode.Static);
+    super(String.format("Random_sphere_particles_%f", angleVariance), MeshMode.Static);
 
     this.angleVariance = angleVariance;
   }
@@ -41,12 +41,12 @@ public class RandomParticlesSource
 
   private Vector3 setVector(Vector3 cached)
   {
-    cached.setFrom(0, 0, random.nextFloat() * 0.5f + 0.5f);
+    cached.setFrom(0, 0, random.nextFloat() * 0.8f + 0.2f);
 
-    Matrix.setRotateEulerM(matrix, 0,
-      (random.nextFloat() - 0.5f) * angleVariance,
-      (random.nextFloat() - 0.5f) * angleVariance,
-      (random.nextFloat() - 0.5f) * angleVariance);
+    Matrix.setRotateM(matrix, 0, angleVariance
+      , random.nextFloat() - 0.5f
+      , random.nextFloat() - 0.5f
+      , random.nextFloat() - 0.5f);
 
     Matrix.multiplyMV(cached.getRaw(), 0, matrix, 0, cached.getRaw(), 0);
     return cached;
@@ -56,8 +56,8 @@ public class RandomParticlesSource
   {
     final int floatsCount = 3;
 
-    data[index * floatsCount     ] = vector.getX();
-    data[index * floatsCount + 1 ] = vector.getY();
-    data[index * floatsCount + 2 ] = vector.getZ();
+    data[index * floatsCount    ] = vector.getX();
+    data[index * floatsCount + 1] = vector.getY();
+    data[index * floatsCount + 2] = vector.getZ();
   }
 }

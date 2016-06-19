@@ -102,6 +102,7 @@ public class Renderer
     case Shader.ShaderPolyLine:
       return objects;
     case Shader.ShaderExplosionParticles:
+    case Shader.ShaderParticles:
       return particles;
     default:
       throw new IllegalStateException("unknown shader id");

@@ -59,7 +59,7 @@ public class TankSelectMenu
       }
     });
 
-    bullets = TanksContext.resources.getContent(new FileContentSource(FileContentSource.tanks));
+    bullets = TanksContext.resources.getContent(new FileContentSource(FileContentSource.bullets));
     bulletSelector = new Selector(bullets.names, new Selector.Callback()
     {
       @Override

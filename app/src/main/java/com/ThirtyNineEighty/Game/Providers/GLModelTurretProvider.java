@@ -45,8 +45,8 @@ public class GLModelTurretProvider
     GLExplosionParticles particles = new GLExplosionParticles(new GLModelTurretFireProvider(object))
       .setLife(400)
       .setCount(1000)
-      .setAngleVariance(120)
-      .setPointSize(20, 35)
+      .setAngleVariance(90)
+      .setPointSize(30, 45)
       .setExplosionSize(6);
 
     object.bind(particles);
