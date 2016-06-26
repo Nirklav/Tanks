@@ -23,18 +23,8 @@ public class ResourceCache<TResource extends IResource>
 
   public TResource get(ISource<TResource> source)
   {
-    if (source == null)
-      throw new NullPointerException("source is null");
-
-    String cacheName = source.getName();
-    if (cacheName == null)
-      throw new IllegalStateException("Source name must be not null");
-
-    ResourceHolder<TResource> container = cache.get(cacheName);
-    if (container == null)
-      cache.put(cacheName, container = new ResourceHolder<>(source));
-
-    return container.get();
+    ResourceHolder<TResource> holder = getHolder(source);
+    return holder.get();
   }
 
   public void release(TResource resource)
@@ -86,20 +76,36 @@ public class ResourceCache<TResource extends IResource>
     return cache.size();
   }
 
+  private ResourceHolder<TResource> getHolder(ISource<TResource> source)
+  {
+    if (source == null)
+      throw new NullPointerException("Source is null");
+
+    String name = source.getName();
+    if (name == null)
+      throw new IllegalStateException("Source must have cache name");
+
+    ResourceHolder<TResource> holder = cache.get(name);
+    if (holder == null)
+      cache.put(name, holder = new ResourceHolder<>(source));
+
+    return holder;
+  }
+
   private ResourceHolder<TResource> getHolder(TResource resource)
   {
     if (resource == null)
-      throw new NullPointerException("resource is null");
+      throw new NullPointerException("Resource is null");
 
     String name = resource.getName();
     if (name == null)
-      throw new IllegalStateException("For reloading resource must have cache name");
+      throw new IllegalStateException("Resource must have cache name");
 
-    ResourceHolder<TResource> container = cache.get(name);
-    if (container == null)
+    ResourceHolder<TResource> holder = cache.get(name);
+    if (holder == null)
       throw new IllegalStateException(String.format("Cache does not contain resource with %s name", name));
 
-    return container;
+    return holder;
   }
 }
 
